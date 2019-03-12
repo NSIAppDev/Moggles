@@ -12,14 +12,14 @@ namespace Moggles.Tests
     [TestClass]
     public class ApplicationIntegrationTests
     {
-        private TestFixture<TestStartup> _fixture;
+        private MogglesApplicationFactory<TestStartup> _factory;
         private HttpClient _client;
 
         [TestInitialize]
         public void BeforeEach()
         {
-            _fixture = new TestFixture<TestStartup>(relativeTargetProjectParentDir: "Moggles", reflectBaseType: true);
-            _client = _fixture.Client;
+            _factory = new MogglesApplicationFactory<TestStartup>();
+            _client = _factory.CreateClient();
         }
 
         [TestMethod]
@@ -89,7 +89,7 @@ namespace Moggles.Tests
         [TestCleanup]
         public void Cleanup()
         {
-            _fixture.Dispose();
+            _factory.Dispose();
         }
     }
 }
