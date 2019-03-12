@@ -6,8 +6,6 @@ namespace MogglesClient.PublicInterface
     {
         private readonly string _name;
 
-        //This is a workaround for Ecommerce
-        //For the case when the backend solution goes to sleep and MogglesClient is never restarted
 #if NETFULL
         static MogglesFeatureToggle()
         {

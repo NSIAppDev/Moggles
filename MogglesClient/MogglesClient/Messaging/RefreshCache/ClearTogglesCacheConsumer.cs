@@ -20,8 +20,6 @@ namespace MogglesClient.Messaging.RefreshCache
             _featureToggleLoggingService = (IMogglesLoggingService)MogglesContainer.Resolve<IMogglesLoggingService>();
             _mogglesConfigurationManager = (IMogglesConfigurationManager)MogglesContainer.Resolve<IMogglesConfigurationManager>();
 
-            //This is a workaround for Ecommerce
-            //For the case when the backend solution goes to sleep and MogglesClient is never restarted
 #if NETFULL
             if (!InstancesAreCreated())
             {
