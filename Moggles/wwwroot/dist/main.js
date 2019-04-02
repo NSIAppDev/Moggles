@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "4170f75fe3b3c7fc4785"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "69ce25189ad0893eb7b6"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -12575,6 +12575,8 @@ module.exports = Html5Entities;
 //
 //
 //
+//
+//
 
 
 
@@ -16596,7 +16598,14 @@ var staticRenderFns = [
       ),
       _vm._v(" "),
       _c("a", { staticClass: "navbar-brand", attrs: { href: "/" } }, [
-        _vm._v("NS Feature Toggles")
+        _c("img", {
+          staticClass: "d-inline-block align-top",
+          attrs: {
+            src: "/img/Moggles-LogoType.png",
+            alt: "Moggles, Toggles for non development wizards",
+            height: "30"
+          }
+        })
       ])
     ])
   },

@@ -10,7 +10,9 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/">NS Feature Toggles</a>
+					<a class="navbar-brand" href="/">
+						<img src="/img/Moggles-LogoType.png" alt="Moggles, Toggles for non development wizards" class="d-inline-block align-top" height="30" />
+					</a>
                 </div>
 
                 <!-- Collect the nav links, forms, and other content for toggling -->
