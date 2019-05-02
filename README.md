@@ -6,6 +6,15 @@ Web application that centralizes feature flags across all applications in an ent
 
 Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClient). 
 
+1. [Technologies used](#technologies-used)
+2. [Features](#features)
+3. [Setup](#setup)
+4. [License](#license)
+
+## Technologies used  
+.NET Core, Microsoft SQL Server, Vue.js, ...  
+To be added.
+
 ## Features
 
 * **Add application.** -> [Go to screenshot](./MogglesImages/AddApplication.PNG)
@@ -21,3 +30,33 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
   * For each environment the application will show the deployed feature toggles such that the team knows when the code was published on each environment.
   * The queue name for this event will need to be provided.
   * The consumer implemented in Moggles will read the message from the queue (published by [MogglesClient](https://github.com/NSIAppDev/MogglesClient)) and it will update the status of each feature toggle. The expected message contract can be found [here](./MogglesContracts/RegisteredTogglesUpdate.cs).
+
+## Setup  
+#### **Configuration keys**   
+ * Database connection string
+   ```C#
+   "ConnectionStrings": {
+      "FeatureTogglesConnection": "Server=ServerName;Database=Moggles;Integrated Security=true;Application Name=Moggles"
+   }
+   ```  
+ * Messaging
+   ```C#
+   "Messaging": {
+      "UseMessaging": "true",
+      "Url": "rabbitmq://messageBusUrl",
+      "Username": "user",
+      "Password": "password",
+      "QueueName": "moggles_deploy_status_queue"
+   }
+   ```
+ * Application insights instrumentation key  
+   ```C#
+   "ApplicationInsights": {
+      "InstrumentationKey": "instrumentation key"
+    }
+   ```  
+ * Custom roles
+ To be added.
+  
+## License
+The project is licensed under the [GNU Affero General Public License v3.0](./LICENSE) 
