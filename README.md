@@ -48,7 +48,7 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
 * Add the **configuration keys** in appsettings.json.
     
 #### **Deploying the application:**  
-The application needs to be deployed on a web server, built in ```Release``` mode. 
+The application needs to be deployed on a web server, built in ```Release``` mode.  
     
 #### **Configuration keys**   
  * Database connection string  
@@ -84,13 +84,13 @@ The application needs to be deployed on a web server, built in ```Release``` mod
    }
    ```
 #### Tests  
-Running the unit tests and API tests don't require any additional setup.  
-Running the UI tests:  
- Run ```npm install``` from the project directory (where package.json is located).    
- * Mocha tests  
-   Run ```npm run test``` from the project directory (where package.json is located).   
- * Jest tests  
-   Run ```npm run test-j``` from the project directory (where package.json is located).   
+* Running the unit tests and API tests don't require any additional setup.  
+* Running the UI tests:  
+  Run ```npm install``` from the project directory (where package.json is located).    
+  * Mocha tests  
+    Run ```npm run test``` from the project directory (where package.json is located).   
+  * Jest tests  
+    Run ```npm run test-j``` from the project directory (where package.json is located).   
 
 
 #### Troubleshooting  
