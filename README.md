@@ -85,8 +85,13 @@ The application needs to be deployed on a web server, built in ```Release``` mod
    ```
 #### Tests  
 Running the unit tests and API tests don't require any additional setup.  
-Running UI tests:
-To be added.
+Running the UI tests:  
+ Run ```npm install``` from the project directory (where package.json is located).    
+ * Mocha tests  
+   Run ```npm run test``` from the project directory (where package.json is located).   
+ * Jest tests  
+   Run ```npm run test-j``` from the project directory (where package.json is located).   
+
 
 #### Troubleshooting  
 If ```InvalidOperationException: No authenticationScheme was specified, and there was no DefaultChallengeScheme found.``` exception is thrown when running the application: right click on Moggles project -> Properties -> Debug -> check 'Enable Windows Authentication'.  
