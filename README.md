@@ -21,10 +21,12 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
   * The feature flag is added to a specific application in all environments.
 * **Turn on/off feature flags on different environments, edit notes and set feature as accepted by the client.** -> [Go to screenshot](./MogglesImages/EditFeatureToggle.PNG)
 
-:heavy_exclamation_mark: *In order to make use of the following features a [Rabbitmq](https://www.rabbitmq.com/configure.html) machine will need to be setup and ```UseMessaging``` key will need to be set in the application configuration file.*
-
+:heavy_exclamation_mark: *In order to make use of the following features a [Rabbitmq](https://www.rabbitmq.com/configure.html) machine will need to be setup and ```UseMessaging``` key will need to be set in the application configuration file.*  
+ The **message bus url**, **user** and **password** will need to be provided.  
+ 
 #### **Force cache refresh.** -> [Go to screenshot](./MogglesImages/ForceCache.PNG)
-  * If the impact of a toggle needs to be immediate, a force cache message can be published by the application. [MogglesClient](https://github.com/NSIAppDev/MogglesClient#force-cache-refresh) will read the message from the queue and it will refresh the cache for the corresponding application and environment. The published message contract can be found [here](./MogglesContracts/RefreshTogglesCache.cs) (*the namespace of the contract class will also have to match*).
+  * If the impact of a toggle needs to be visible prior to the new refresh time of the cache, a force cache message can be published by the application. [MogglesClient](https://github.com/NSIAppDev/MogglesClient#force-cache-refresh) will read the message from the queue and it will refresh the cache for the corresponding application and environment. The published message contract can be found [here](./MogglesContracts/RefreshTogglesCache.cs) (*the namespace of the contract class will also have to match*).
+  * The cache will be refreshed as soon as the message is published and read from the queue by [MogglesClient](https://github.com/NSIAppDev/MogglesClient#force-cache-refresh).
 #### **Show deployed feature toggles.** -> [Go to screenshot](./MogglesImages/ShowDeployedToggles.PNG)  
   * For each environment the application will show the deployed feature toggles such that the team knows when the code was published on each environment (visible in green).
   * The consumer implemented in Moggles will read the message from the queue (published by [MogglesClient](https://github.com/NSIAppDev/MogglesClient#show-deployed-feature-toggles)) and it will update the status of each feature toggle. The expected message contract can be found [here](./MogglesContracts/RegisteredTogglesUpdate.cs) (*the namespace of the contract class will also have to match*).
@@ -38,8 +40,9 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
   Node.js needs to be installed.  
   * **DEV mode**  
     1. Run ```npm install``` from the project directory (where package.json is located).    
-       When building in Debug mode, the Webpack commands will run automatically.
-    2. Add the **configuration keys** in appsettings.json.
+    2. Run ```npm run dev-full``` from the project directory (where package.json is located).   
+    3. Add the **configuration keys** in appsettings.json.
+    4. Run the application in ```Debug``` mode.
   * **PRODUCTION mode**   
     1. Add the **configuration keys** in appsettings.json.
     2. Run the application in ```Release``` mode.  
