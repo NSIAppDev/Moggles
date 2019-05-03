@@ -8,7 +8,11 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
 
 1. [Features](#features)
 2. [Technologies used](#technologies-used)
-3. [Setup](#setup)
+3. [Setup](#setup)  
+ 3.1 [Running the application](#running-the-application)  
+ 3.2 [Deploying the application](#deploying-the-application)  
+ 3.3 [Tests](#tests)  
+ 3.4 [Troubleshooting](#troubleshooting)  
 4. [License](#license)
 
 ## Features
@@ -37,19 +41,14 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
 * ASP.NET Core, Microsoft SQL Server, MasssTransit, RabbitMQ, Vue.js.
 
 ## Setup  
-* **Running the application:**    
-  Node.js needs to be installed.  
-  * **DEV mode**  
-    1. Run ```npm install``` from the project directory (where package.json is located).    
-    2. Run ```npm run dev-full``` from the project directory (where package.json is located).   
-    3. Add the **configuration keys** in appsettings.json.
-    4. Run the application in ```Debug``` mode.
-  * **PRODUCTION mode**   
-    1. Add the **configuration keys** in appsettings.json.
-    2. Run the application in ```Release``` mode.  
+#### Running the application:     
+* Node.js needs to be installed.  
+* Run ```npm install``` from the project directory (where package.json is located).    
+* Run ```npm run dev-full``` from the project directory (where package.json is located).   
+* Add the **configuration keys** in appsettings.json.
     
-* **Deploying the application:**  
-  The application needs to be deployed on a web server, built in ```Release``` mode. 
+#### **Deploying the application:**  
+The application needs to be deployed on a web server, built in ```Release``` mode. 
     
 #### **Configuration keys**   
  * Database connection string  
@@ -84,7 +83,13 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
       "Admins": "MY_DOMAIN\myAdminGroup"
    }
    ```
-   
+#### Tests  
+Running the unit tests and API tests don't require any additional setup.  
+Running UI tests:
+To be added.
+
+#### Troubleshooting  
+If ```InvalidOperationException: No authenticationScheme was specified, and there was no DefaultChallengeScheme found.``` exception is thrown when running the application: right click on Moggles project -> Properties -> Debug -> check 'Enable Windows Authentication'.  
   
 ## License
 The project is licensed under the [GNU Affero General Public License v3.0](./LICENSE) 
