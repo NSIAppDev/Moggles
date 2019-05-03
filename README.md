@@ -34,15 +34,17 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
 * ASP.NET Core, Microsoft SQL Server, MasssTransit, RabbitMQ, Vue.js.
 
 ## Setup  
-* In order to run the application:    
+* **Running the application:**    
   Node.js needs to be installed.  
   * **DEV mode**  
-    Run ```npm install``` from the project directory (where package.json is located).    
-    When building in Debug mode, the Webpack commands will run automatically.
+    1. Run ```npm install``` from the project directory (where package.json is located).    
+       When building in Debug mode, the Webpack commands will run automatically.
+    2. Add the **configuration keys** in appsettings.json.
   * **PRODUCTION mode**   
-    Run the application in ```Release``` mode.  
+    1. Add the **configuration keys** in appsettings.json.
+    2. Run the application in ```Release``` mode.  
     
-* In order to deploy the application:  
+* **Deploying the application:**  
   The application needs to be deployed on a web server, built in ```Release``` mode. 
     
 #### **Configuration keys**   
@@ -69,7 +71,7 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
    ```C#
    "ApplicationInsights": {
       "InstrumentationKey": "instrumentation key"
-    }
+   }
    ```  
  * Custom roles  
    The application uses by default windows authentication (**form based authentication is not implemented**) with role based authorization. This part can be removed by removing the ```ConfigureAuthServices``` method from ```Startup``` and the authorize policy from the ```HomeController```, resulting in anonymous authentication. 
