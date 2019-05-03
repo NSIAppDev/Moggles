@@ -12,7 +12,7 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
 4. [License](#license)
 
 ## Technologies used  
-.NET Core, Microsoft SQL Server, Vue.js, ...  
+* .NET Core, Microsoft SQL Server, MasssTransit, RabbitMQ, Vue.js, ...  
 To be added.
 
 ## Features
@@ -30,9 +30,9 @@ To be added.
 * **Force cache refresh.** -> [Go to screenshot](./MogglesImages/ForceCache.PNG)
   * If the impact of a toggle needs to be immediate, a force cache message can be published by the application. [MogglesClient](https://github.com/NSIAppDev/MogglesClient) will read the message from the queue and it will refresh the cache for the corresponding application. The published message contract can be found [here](./MogglesContracts/RefreshTogglesCache.cs).
 * **Show deployed feature toggles.** -> [Go to screenshot](./MogglesImages/ShowDeployedToggles.PNG)  
-  * For each environment the application will show the deployed feature toggles such that the team knows when the code was published on each environment.
-  * The queue name for this event will need to be provided.
+  * For each environment the application will show the deployed feature toggles such that the team knows when the code was published on each environment (visible in green).
   * The consumer implemented in Moggles will read the message from the queue (published by [MogglesClient](https://github.com/NSIAppDev/MogglesClient)) and it will update the status of each feature toggle. The expected message contract can be found [here](./MogglesContracts/RegisteredTogglesUpdate.cs).
+  * The queue name for this event will need to be provided.
 
 ## Setup  
 #### **Configuration keys**   
