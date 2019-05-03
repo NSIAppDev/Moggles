@@ -21,7 +21,8 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
   * The feature flag is added to a specific application in all environments.
 * **Turn on/off feature flags on different environments, edit notes and set feature as accepted by the client.** -> [Go to screenshot](./MogglesImages/EditFeatureToggle.PNG)
 
-:heavy_exclamation_mark: *In order to make use of the following features a [Rabbitmq](https://www.rabbitmq.com/configure.html) machine will need to be setup and ```UseMessaging``` key will need to be set in the application configuration file.*  
+:heavy_exclamation_mark: *In order to make use of the following features a [Rabbitmq](https://www.rabbitmq.com/configure.html) machine will need to be setup and ```UseMessaging``` key will need to be set in the application configuration file.* 
+
  The **message bus url**, **user** and **password** will need to be provided.  
  
 #### **Force cache refresh.** -> [Go to screenshot](./MogglesImages/ForceCache.PNG)
