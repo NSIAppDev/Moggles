@@ -24,22 +24,23 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
 :heavy_exclamation_mark: *In order to make use of the following features a [Rabbitmq](https://www.rabbitmq.com/configure.html) machine will need to be setup and ```UseMessaging``` key will need to be set in the application configuration file.*
 
 #### **Force cache refresh.** -> [Go to screenshot](./MogglesImages/ForceCache.PNG)
-  * If the impact of a toggle needs to be immediate, a force cache message can be published by the application. [MogglesClient](https://github.com/NSIAppDev/MogglesClient#force-cache-refresh) will read the message from the queue and it will refresh the cache for the corresponding application and environment. The published message contract can be found [here](./MogglesContracts/RefreshTogglesCache.cs).
+  * If the impact of a toggle needs to be immediate, a force cache message can be published by the application. [MogglesClient](https://github.com/NSIAppDev/MogglesClient#force-cache-refresh) will read the message from the queue and it will refresh the cache for the corresponding application and environment. The published message contract can be found [here](./MogglesContracts/RefreshTogglesCache.cs) (*the namespace of the contract class will also have to match*).
 #### **Show deployed feature toggles.** -> [Go to screenshot](./MogglesImages/ShowDeployedToggles.PNG)  
   * For each environment the application will show the deployed feature toggles such that the team knows when the code was published on each environment (visible in green).
-  * The consumer implemented in Moggles will read the message from the queue (published by [MogglesClient](https://github.com/NSIAppDev/MogglesClient#show-deployed-feature-toggles)) and it will update the status of each feature toggle. The expected message contract can be found [here](./MogglesContracts/RegisteredTogglesUpdate.cs).
+  * The consumer implemented in Moggles will read the message from the queue (published by [MogglesClient](https://github.com/NSIAppDev/MogglesClient#show-deployed-feature-toggles)) and it will update the status of each feature toggle. The expected message contract can be found [here](./MogglesContracts/RegisteredTogglesUpdate.cs) (*the namespace of the contract class will also have to match*).
   * The queue name for this event will need to be provided.
 
 ## Technologies used  
 * ASP.NET Core, Microsoft SQL Server, MasssTransit, RabbitMQ, Vue.js.
 
 ## Setup  
-* In order to run the application:
-  * **DEV mode**
-    1. Run ```npm install``` from the project directory (where package.json is located). Node.js needs to be installed.
-    2. When building in Debug mode, the Webpack commands will run automatically.
+* In order to run the application:    
+  Node.js needs to be installed.  
+  * **DEV mode**  
+    Run ```npm install``` from the project directory (where package.json is located).    
+    When building in Debug mode, the Webpack commands will run automatically.
   * **PRODUCTION mode**   
-    1. Run the application in ```Release``` mode.  
+    Run the application in ```Release``` mode.  
     
 * In order to deploy the application:  
   The application needs to be deployed on a web server, built in ```Release``` mode. 
