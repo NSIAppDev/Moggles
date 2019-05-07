@@ -11,8 +11,9 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
 3. [Setup](#setup)  
  3.1 [Running the application](#running-the-application)  
  3.2 [Deploying the application](#deploying-the-application)  
- 3.3 [Tests](#tests)  
- 3.4 [Troubleshooting](#troubleshooting)  
+ 3.3 [Configuration keys](#configuration-keys)  
+ 3.4 [Tests](#tests)  
+ 3.5 [Troubleshooting](#troubleshooting)  
 4. [License](#license)
 
 ## Features
@@ -27,15 +28,15 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
 
 :heavy_exclamation_mark: *In order to make use of the following features a [Rabbitmq](https://www.rabbitmq.com/configure.html) machine will need to be setup and ```UseMessaging``` key will need to be set in the application configuration file.* 
 
- The **message bus url**, **user** and **password** will need to be provided.  
+ The **message bus url**, **user** and **password** will need to be provided in the [application configuration file](#configuration-keys).
  
 #### **Force cache refresh.** -> [Go to screenshot](./MogglesImages/ForceCache.PNG)
   * If the impact of a toggle needs to be visible prior to the new refresh time of the cache, a force cache message can be published by the application. [MogglesClient](https://github.com/NSIAppDev/MogglesClient#force-cache-refresh) will read the message from the queue and it will refresh the cache for the corresponding application and environment. The published message contract can be found [here](./MogglesContracts/RefreshTogglesCache.cs) (*the namespace of the contract class will also have to match*).
   * The cache will be refreshed as soon as the message is published and read from the queue by [MogglesClient](https://github.com/NSIAppDev/MogglesClient#force-cache-refresh).
 #### **Show deployed feature toggles.** -> [Go to screenshot](./MogglesImages/ShowDeployedToggles.PNG)  
   * For each environment the application will show the deployed feature toggles such that the team knows when the code was published on each environment (visible in green).
-  * The consumer implemented in Moggles will read the message from the queue (published by [MogglesClient](https://github.com/NSIAppDev/MogglesClient#show-deployed-feature-toggles)) and it will update the status of each feature toggle. The expected message contract can be found [here](./MogglesContracts/RegisteredTogglesUpdate.cs) (*the namespace of the contract class will also have to match*).
-  * The queue name for this event will need to be provided.
+  * Moggles will read the message from the queue (published by [MogglesClient](https://github.com/NSIAppDev/MogglesClient#show-deployed-feature-toggles)) and it will update the status of each feature toggle. The expected message contract can be found [here](./MogglesContracts/RegisteredTogglesUpdate.cs) (*the namespace of the contract class will also have to match*).
+  * The queue name for this event will need to be provided in the [application configuration file](#configuration-keys).
 
 ## Technologies used  
 * ASP.NET Core, Microsoft SQL Server, MasssTransit, RabbitMQ, Vue.js.
@@ -48,7 +49,7 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
 * Add the **configuration keys** in appsettings.json.
     
 #### **Deploying the application:**  
-The application needs to be deployed on a web server, built in ```Release``` mode.  
+The application needs to be deployed on a web server (for example [IIS](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/?view=aspnetcore-2.2)), built in ```Release``` mode.  
     
 #### **Configuration keys**   
  * Database connection string  
@@ -73,7 +74,7 @@ The application needs to be deployed on a web server, built in ```Release``` mod
  * Application insights instrumentation key  
    ```C#
    "ApplicationInsights": {
-      "InstrumentationKey": "instrumentation key"
+      "InstrumentationKey": "myInstrumentationKey"
    }
    ```  
  * Custom roles  
