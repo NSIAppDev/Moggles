@@ -86,7 +86,6 @@ namespace Moggles
         private void ConfigureMassTransitAndMessageBus(IServiceCollection services)
         {
             services.AddMassTransit(c => { c.AddConsumer<FeatureToggleDeployStatusConsumer>(); });
-            services.AddMassTransit(c => { c.AddConsumer<FeatureToggleDeployStatusConsumerOld>(); });
 
             services.AddSingleton(ConfigureMessageBus);
 
