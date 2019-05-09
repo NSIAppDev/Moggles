@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Configurations>Debug;Release;Staging</Configurations>
+    <AssemblyName>Moggles.Domain</AssemblyName>
+    <RootNamespace>Moggles.Domain</RootNamespace>
+  </PropertyGroup>
+
+</Project>

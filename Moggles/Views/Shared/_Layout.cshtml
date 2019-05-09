@@ -1,0 +1,28 @@
+﻿@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - Moggles</title>
+
+	<base href="~/" />
+
+	<link rel="stylesheet" href="~/dist/vendor.css" asp-append-version="true" />
+	<environment include="Staging">
+		<link rel="stylesheet" href="~/dist/site-stage.css" asp-append-version="true" />
+	</environment>
+	<environment include="Production">
+		<link rel="stylesheet" href="~/dist/site.css" asp-append-version="true" />
+	</environment>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
+
+	@Html.Raw(JavaScriptSnippet.FullScript)
+</head>
+<body>
+    @RenderBody()
+
+    <script src="~/dist/vendor.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
