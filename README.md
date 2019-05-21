@@ -39,7 +39,7 @@ Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClie
   * The queue name for this event will need to be provided in the [application configuration file](#configuration-keys).
 
 ## Technologies used  
-* ASP.NET Core, Microsoft SQL Server, MasssTransit, RabbitMQ, Vue.js.
+* ASP.NET Core, Microsoft SQL Server, MassTransit, RabbitMQ, Vue.js.
 
 ## Setup  
 #### Running the application:     
