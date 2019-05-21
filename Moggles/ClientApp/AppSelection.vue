@@ -43,7 +43,10 @@
 			this.getApplications()
 			Bus.$on("new-app-added", () => {
 				this.getApplications
-            });
+			});
+			Bus.$on("reload-application-toggles", () => {
+				this.changeApp(this.selectedAppId);
+			});
 		}
     }
 </script>

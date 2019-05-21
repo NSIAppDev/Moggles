@@ -1,5 +1,17 @@
 ﻿<template>
 	<div>
+		<spinner ref="spinner" v-model="spinner" size="sm"></spinner>
+		<alert v-model="showSuccessAlert" placement="top-right" duration="1500" type="success" width="400px" dismissable>
+			<span class="icon-ok-circled alert-icon-float-left"></span>
+			<p>Cache Refreshed.</p>
+		</alert>
+		<alert type="info" v-model="showRefreshAlert">
+			<button type="button" class="close" @click="closeRefreshAlert"><span>×</span></button>
+			<h4>Toggles Have Been Modified, would you like to refresh the environments?</h4>
+			<span v-for="env in environmentsToRefresh" class="env-button">
+				<button class="btn btn-default text-uppercase" @click="refreshEnvironment(env)"><strong>{{env}}</strong></button>
+			</span>
+		</alert>
 		<vue-good-table ref="toggleGrid"
 						:columns="gridColumns"
 						:rows="toggles"
@@ -31,7 +43,7 @@
 				</span>
 			</template>
 		</vue-good-table>
-		<modal v-model="showEditModal" ok-text="Save" cancel-text="Cancel" :callback="saveToggle">
+		<modal v-model="showEditModal">
 			<div slot="modal-header" class="modal-header">
 				<h4 class="modal-title">Edit Feature Flags</h4>
 			</div>
@@ -41,7 +53,7 @@
 						<div v-if="col.type == 'boolean'">
 							<label class="col-sm-4 control-label">{{col.label}}</label>
 							<div class="col-sm-8 margin-top-8">
-								<div class="checkbox">
+								<div class="checkbox" @click="environmentEdited(col.field)">
 									<checkbox v-if="rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" type="success"></checkbox>
 									<checkbox v-if="!rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]"></checkbox>
 								</div>
@@ -57,6 +69,10 @@
 						</div>
 					</div>
 				</div>
+			</div>
+			<div slot="modal-footer" class="modal-footer">
+				<button type="button" class="btn btn-default" @click="cancelEdit">Cancel</button>
+				<button type="button" class="btn btn-primary" @click="saveToggle">Save</button>
 			</div>
 		</modal>
 		<modal v-model="showDeleteConfirmation" ok-text="Delete" cancel-text="Cancel" :callback="deleteToggle">
@@ -75,7 +91,7 @@
 	</div>
 </template>
 <script>
-	import { modal, checkbox } from 'vue-strap'
+	import { modal, checkbox, alert, spinner } from 'vue-strap'
 	import axios from 'axios'
 	import _ from 'lodash'
 	import { Bus } from './event-bus'
@@ -83,7 +99,9 @@
 		environmentsList: [],
 		components: {
 			modal,
-			checkbox
+			checkbox,
+			alert,
+			spinner
 		},
 		data() {
 			const PAGE_SIZE = 15;
@@ -97,10 +115,19 @@
 				showAcceptedFeatures: false,
 				showDeleteConfirmation: false,
 				rowDataToDelete: null,
-				toggleIsDeployed: false
+				toggleIsDeployed: false,
+				environmentsEdited: [],
+				environmentsToRefresh: [],
+				refreshAlertVisible: false,
+                showSuccessAlert: false,
+				spinner: false,
+                isCacheRefreshEnabled: false
 			}
 		},
 		created() {
+            axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
+                this.isCacheRefreshEnabled = response.data;
+            }).catch(error => window.alert(error));
 			Bus.$on("app-changed", app => {
 				this.selectedApp = app;
 				this.initializeGrid(app)
@@ -126,15 +153,25 @@
 					toggleUpdateModel.statuses.push({
 						environment: envName,
 						enabled: this.rowToEdit[envName]
-					})
+					});
 				});
-
+				if (this.isCacheRefreshEnabled) {
+					_.forEach(this.environmentsEdited, envName => {
+						this.addEnvironemntToRefreshList(envName);
+					});
+				}
 				axios.put('/api/featuretoggles', toggleUpdateModel)
 					.then((result) => {
 						this.showEditModal = false
 						this.rowToEdit = null
 						this.loadGridData(this.selectedApp.id)
+						this.environmentsEdited = [];
 					}).catch(error => window.alert(error))
+			},
+			cancelEdit() {
+				this.showEditModal = false
+				this.rowToEdit = null
+				this.environmentsEdited = [];
 			},
 			createGridColumns() {
 				let columns = [
@@ -281,8 +318,55 @@
 
 					Bus.$emit('env-loaded', response.data)
 				}).catch(error => window.alert(error));
-			}
+			},
+			environmentEdited(env) {
+				let index = _.indexOf(this.environmentsEdited, env);
+				if (index === -1) {
+					this.environmentsEdited.push(env);
+				}
+			},
+			refreshEnvironment(env) {
+				if (!this.selectedApp)
+                    return;
 
+				let param = {
+					applicationId: this.selectedApp.id,
+                    envName: env
+                };
+
+                this.spinner = true;
+                axios.post('api/CacheRefresh', param)
+                    .then((response) => {
+                        this.spinner = false;
+						this.showSuccessAlert = true;
+						_.remove(this.environmentsToRefresh, function (e) {
+							return e == env;
+						});
+						///shouldn't need the below code, but computed value doesn't register the length as 0 without it
+						if (this.environmentsToRefresh.length === 0) {
+							this.environmentsToRefresh = [];
+						}
+                    }).catch((e) => {
+                        window.alert(e);
+                    }).finally(() => {
+                        this.spinner = false;
+                    });
+			},
+			addEnvironemntToRefreshList(env) {
+				let index = _.indexOf(this.environmentsToRefresh, env);
+				if (index === -1) {
+					this.environmentsToRefresh.push(env);
+					this.refreshAlertVisible = true;
+				}
+			},
+			closeRefreshAlert() {
+				this.refreshAlertVisible = false;
+			}
+		},
+		computed: {
+			showRefreshAlert() {
+				return this.environmentsToRefresh.length > 0 ? this.refreshAlertVisible : false;
+			}
 		}
 	}
 </script>
@@ -313,5 +397,9 @@
 
 	.margin-top-8 {
 		margin-top: 8px;
+	}
+
+	.env-button {
+		margin-right: 10px;
 	}
 </style>

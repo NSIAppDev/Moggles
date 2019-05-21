@@ -29,6 +29,7 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tools <span class="caret"></span></a>
                             <ul class="dropdown-menu">
+                                <li><a href="#" @click="() => {this.ReloadCurrentApplicationToggles();}">Reload Application Toggles</a></li>
                                 <li><a href="#" @click="showAddToggle = true">Add Feature Toggle</a></li>
                                 <li><a href="#" @click="showAddApp = true">Add New Application</a></li>
                                 <li><a href="#" @click="showAddEnv = true">Add New Environment</a></li>
@@ -77,6 +78,7 @@
     import AddFeatureToggle from './AddFeatureToggle'
     import AddEnvironment from './AddEnvironment'
     import ForceCacheRefresh from './ForceCacheRefresh'
+    import { Bus } from './event-bus'
     import { modal } from 'vue-strap'
     import axios from 'axios'
 	
@@ -88,6 +90,11 @@
                 showAddToggle: false,
                 showForceCacheRefresh: false,
                 isCacheRefreshEnabled: false
+            }
+        },
+        methods: {
+            ReloadCurrentApplicationToggles(){
+                Bus.$emit("reload-application-toggles");
             }
         },
         created() {
