@@ -128,9 +128,11 @@
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
             }).catch(error => window.alert(error));
-			Bus.$on("app-changed", app => {
-				this.selectedApp = app;
-				this.initializeGrid(app)
+            Bus.$on("app-changed", app => {
+                if (app) {
+                    this.selectedApp = app;
+                    this.initializeGrid(app)
+                }
 			})
 
 			Bus.$on("env-added", () => {
@@ -316,8 +318,8 @@
 					this.loadGridData(app.id);
 					this.$refs['toggleGrid'].reset()
 
-					Bus.$emit('env-loaded', response.data)
-				}).catch(error => window.alert(error));
+                        Bus.$emit('env-loaded', response.data)
+                    }).catch((e) => { window.alert(e) });
 			},
 			environmentEdited(env) {
 				let index = _.indexOf(this.environmentsEdited, env);

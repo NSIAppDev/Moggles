@@ -32,11 +32,13 @@
 				axios.get('/api/applications')
 					.then((response) => {
 						this.applicationList = response.data
-						if (!this.selectedAppId) {
-							this.selectedAppId = response.data[0].id
+                        if (!this.selectedAppId) {
+                            if (response.data.length > 0) {
+                                this.selectedAppId = response.data[0].id;
+                            }
 						}
-					})
-					.catch(error => window.alert(error))
+                    })
+                    .catch(error => { window.alert(error) })
 			}
         },
 		created() {

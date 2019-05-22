@@ -61,7 +61,9 @@
         },
         mounted() {
             Bus.$on("app-changed", app => {
-                this.applicationId = app.id;
+                if (app) {
+                    this.applicationId = app.id;
+                }
             });
 
             Bus.$on("env-loaded", envs => {
