@@ -148,7 +148,8 @@
 				let toggleUpdateModel = {
 					id: this.rowToEdit.id,
 					userAccepted: this.rowToEdit.userAccepted,
-					notes: this.rowToEdit.notes,
+                    notes: this.rowToEdit.notes,
+                    featureToggleName: this.rowToEdit.toggleName,
 					statuses: []
 				}
 				_.forEach(this.environmentsList, envName => {
