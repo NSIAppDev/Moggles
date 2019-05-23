@@ -149,7 +149,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var app = new Application {Id = 1, AppName = "TestApp"};
             var existingValue = new FeatureToggle { Id = 1, Application = app, ApplicationId = app.Id, ToggleName = "TestToggle", FeatureToggleStatuses = new List<FeatureToggleStatus>(), Notes = "FirstNote"};
-            var updatedValue = new FeatureToggleUpdateModel { Id = 1, Notes = "Update", UserAccepted = true, Statuses = new List<FeatureToggleStatusUpdateModel>()};
+            var updatedValue = new FeatureToggleUpdateModel { Id = 1, FeatureToggleName = "UpdatedFeatureToggleName", Notes = "Update", UserAccepted = true, Statuses = new List<FeatureToggleStatusUpdateModel>()};
 
             _context.FeatureToggles.Add(existingValue);
             _context.SaveChanges();
@@ -159,6 +159,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var result = controller.Update(updatedValue) as OkObjectResult;
 
             //assert
+            _context.FeatureToggles.FirstOrDefault().ToggleName.Should().Be("UpdatedFeatureToggleName");
             _context.FeatureToggles.FirstOrDefault().Notes.Should().Be(updatedValue.Notes);
             _context.FeatureToggles.FirstOrDefault().UserAccepted.Should().BeTrue();
         }

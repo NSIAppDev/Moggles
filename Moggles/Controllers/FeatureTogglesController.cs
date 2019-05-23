@@ -76,6 +76,7 @@ namespace Moggles.Controllers
             if (featureToggle is null)
                 throw new InvalidOperationException("Feature toggle not found!");
 
+            featureToggle.ToggleName = model.FeatureToggleName;
             featureToggle.UserAccepted = model.UserAccepted;
             featureToggle.Notes = model.Notes;
             foreach (var toggleStatus in model.Statuses)
