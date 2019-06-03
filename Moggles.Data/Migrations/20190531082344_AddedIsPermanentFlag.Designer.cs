@@ -3,13 +3,15 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Moggles.Data.Migrations
 {
     [DbContext(typeof(TogglesContext))]
-    partial class TogglesContextModelSnapshot : ModelSnapshot
+    [Migration("20190531082344_AddedIsPermanentFlag")]
+    partial class AddedIsPermanentFlag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -11926,85 +11926,94 @@ function normalizeComponent (
 
 /***/ }),
 /* 7 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 
 /*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
 */
 // css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
+module.exports = function (useSourceMap) {
+  var list = []; // return the list of modules as css string
 
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
+  list.toString = function toString() {
+    return this.map(function (item) {
+      var content = cssWithMappingToString(item, useSourceMap);
 
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
+      if (item[2]) {
+        return '@media ' + item[2] + '{' + content + '}';
+      } else {
+        return content;
+      }
+    }).join('');
+  }; // import a list of modules into the list
+
+
+  list.i = function (modules, mediaQuery) {
+    if (typeof modules === 'string') {
+      modules = [[null, modules, '']];
+    }
+
+    var alreadyImportedModules = {};
+
+    for (var i = 0; i < this.length; i++) {
+      var id = this[i][0];
+
+      if (id != null) {
+        alreadyImportedModules[id] = true;
+      }
+    }
+
+    for (i = 0; i < modules.length; i++) {
+      var item = modules[i]; // skip already imported module
+      // this implementation is not 100% perfect for weird media query combinations
+      // when a module is imported multiple times with different media queries.
+      // I hope this will never occur (Hey this way we have smaller bundles)
+
+      if (item[0] == null || !alreadyImportedModules[item[0]]) {
+        if (mediaQuery && !item[2]) {
+          item[2] = mediaQuery;
+        } else if (mediaQuery) {
+          item[2] = '(' + item[2] + ') and (' + mediaQuery + ')';
+        }
+
+        list.push(item);
+      }
+    }
+  };
+
+  return list;
 };
 
 function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
+  var content = item[1] || '';
+  var cssMapping = item[3];
 
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
+  if (!cssMapping) {
+    return content;
+  }
 
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
+  if (useSourceMap && typeof btoa === 'function') {
+    var sourceMapping = toComment(cssMapping);
+    var sourceURLs = cssMapping.sources.map(function (source) {
+      return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */';
+    });
+    return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+  }
 
-	return [content].join('\n');
-}
+  return [content].join('\n');
+} // Adapted from convert-source-map (MIT)
 
-// Adapted from convert-source-map (MIT)
+
 function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
+  // eslint-disable-next-line no-undef
+  var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+  var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+  return '/*# ' + data + ' */';
 }
-
 
 /***/ }),
 /* 8 */
@@ -12243,13 +12252,9 @@ function applyToTag (styleElement, obj) {
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(7)(false);
-// imports
-
-
-// module
+// Module
 exports.push([module.i, "\nbody {\n  padding-top: 70px;\n  background: #ffffff;\n}\n.margin-right-10 {\n  margin-right: 10px;\n}\n.vertical-align {\n  display: flex;\n  align-items: center;\n  height: 50px;\n}\n", ""]);
 
-// exports
 
 
 /***/ }),
@@ -12257,13 +12262,9 @@ exports.push([module.i, "\nbody {\n  padding-top: 70px;\n  background: #ffffff;\
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(7)(false);
-// imports
+// Module
+exports.push([module.i, "\n.width-55 {\n\t\twidth: 55px !important;\n}\nth.sortable, a {\n\t\tcursor: pointer;\n}\n.success > .dropdown-toggle {\n\t\tcolor: #fff;\n\t\tbackground-color: lightgreen !important;\n\t\tborder-color: #398439 !important;\n}\n.success > .dropdown-toggle.btn-success {\n\t\t\tcolor: #fff;\n\t\t\tbackground-color: #449d44 !important;\n\t\t\tborder-color: #398439 !important;\n}\nlabel.checkbox > .icon {\n\t\ttop: -.5rem !important;\n}\n.margin-top-8 {\n\t\tmargin-top: 8px;\n}\n.env-button {\n\t\tmargin-right: 10px;\n}\n.permanent-toggle {\n        margin-left: 10px;\n        font-size: small;\n        color: white;\n        background-color: red;\n        padding: 3pt 6pt\n}\n", ""]);
 
-
-// module
-exports.push([module.i, "\n.width-55 {\n\t\twidth: 55px !important;\n}\nth.sortable, a {\n\t\tcursor: pointer;\n}\n.success > .dropdown-toggle {\n\t\tcolor: #fff;\n\t\tbackground-color: lightgreen !important;\n\t\tborder-color: #398439 !important;\n}\n.success > .dropdown-toggle.btn-success {\n\t\t\tcolor: #fff;\n\t\t\tbackground-color: #449d44 !important;\n\t\t\tborder-color: #398439 !important;\n}\nlabel.checkbox > .icon {\n\t\ttop: -.5rem !important;\n}\n.margin-top-8 {\n\t\tmargin-top: 8px;\n}\n.env-button {\n\t\tmargin-right: 10px;\n}\n.margin-left-15 {\n        margin-left: 15px;\n}\n", ""]);
-
-// exports
 
 
 /***/ }),
@@ -12271,13 +12272,9 @@ exports.push([module.i, "\n.width-55 {\n\t\twidth: 55px !important;\n}\nth.sorta
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(7)(false);
-// imports
-
-
-// module
+// Module
 exports.push([module.i, "\n.validationMessage {\n    color: red\n}\n", ""]);
 
-// exports
 
 
 /***/ }),
@@ -12285,13 +12282,9 @@ exports.push([module.i, "\n.validationMessage {\n    color: red\n}\n", ""]);
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(7)(false);
-// imports
-
-
-// module
+// Module
 exports.push([module.i, "\n.validationMessage {\n    color: red\n}\n", ""]);
 
-// exports
 
 
 /***/ }),
@@ -12811,6 +12804,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 				userAccepted: this.rowToEdit.userAccepted,
 				notes: this.rowToEdit.notes,
 				featureToggleName: this.rowToEdit.toggleName,
+				isPermanent: this.rowToEdit.isPermanent,
 				statuses: []
 			};
 			__WEBPACK_IMPORTED_MODULE_2_lodash___default.a.forEach(this.environmentsList, function (envName) {
@@ -12862,6 +12856,17 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 					enabled: true,
 					placeholder: 'Filter'
 				}
+			}, {
+				field: 'isPermanent',
+				label: 'Is Permanent',
+				type: 'boolean',
+				sortable: true,
+				thClass: 'sortable',
+				filterOptions: {
+					enabled: true,
+					placeholder: 'Filter'
+				},
+				hidden: true
 			}, {
 				field: 'userAccepted',
 				label: 'Accepted by User',
@@ -12938,6 +12943,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 						id: toggle.id,
 						toggleName: toggle.toggleName,
 						userAccepted: toggle.userAccepted,
+						isPermanent: toggle.isPermanent,
 						notes: toggle.notes,
 						createdDate: new Date(toggle.createdDate)
 					};
@@ -14928,7 +14934,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = __webpack_require__(8).default
-var update = add("f83357ba", content, false, {});
+var update = add("2307849c", content, false, {});
 // Hot Module Replacement
 if(true) {
  // When the styles change, update the <style> tags
@@ -15048,7 +15054,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = __webpack_require__(8).default
-var update = add("978b4176", content, false, {});
+var update = add("2b04c4d8", content, false, {});
 // Hot Module Replacement
 if(true) {
  // When the styles change, update the <style> tags
@@ -15258,26 +15264,37 @@ var render = function() {
                             [_c("i", { staticClass: "fas fa-trash-alt" })]
                           )
                         ])
-                      : props.column.field == "createdDate"
+                      : props.column.field == "toggleName" &&
+                        props.row.isPermanent
                         ? _c("span", [
-                            _vm._v(
-                              "\n\t\t\t\t\t" +
-                                _vm._s(
-                                  _vm._f("moment")(
-                                    props.formattedRow.createdDate,
-                                    "M/D/YY hh:mm:ss A"
-                                  )
-                                ) +
-                                "\n\t\t\t\t"
-                            )
+                            _c("span", [_vm._v(_vm._s(props.row.toggleName))]),
+                            _vm._v(" "),
+                            _c("span", { staticClass: "permanent-toggle" }, [
+                              _vm._v("Permanent")
+                            ])
                           ])
-                        : _c("span", [
-                            _vm._v(
-                              "\n\t\t\t\t\t" +
-                                _vm._s(props.formattedRow[props.column.field]) +
-                                "\n\t\t\t\t"
-                            )
-                          ])
+                        : props.column.field == "createdDate"
+                          ? _c("span", [
+                              _vm._v(
+                                "\n                    " +
+                                  _vm._s(
+                                    _vm._f("moment")(
+                                      props.formattedRow.createdDate,
+                                      "M/D/YY hh:mm:ss A"
+                                    )
+                                  ) +
+                                  "\n                "
+                              )
+                            ])
+                          : _c("span", [
+                              _vm._v(
+                                "\n                    " +
+                                  _vm._s(
+                                    props.formattedRow[props.column.field]
+                                  ) +
+                                  "\n                "
+                              )
+                            ])
                 ]
               }
             }
@@ -15995,7 +16012,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = __webpack_require__(8).default
-var update = add("abf5e076", content, false, {});
+var update = add("7e65f754", content, false, {});
 // Hot Module Replacement
 if(true) {
  // When the styles change, update the <style> tags
@@ -16232,7 +16249,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = __webpack_require__(8).default
-var update = add("008b316c", content, false, {});
+var update = add("4d236e59", content, false, {});
 // Hot Module Replacement
 if(true) {
  // When the styles change, update the <style> tags

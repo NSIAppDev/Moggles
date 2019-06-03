@@ -10,6 +10,7 @@ namespace Moggles.Models
         public string FeatureToggleName { get; set; }
         public bool UserAccepted { get; set; }
         public string Notes { get; set; }
+        public bool IsPermanent { get; set; }
         public List<FeatureToggleStatusUpdateModel> Statuses { get; set; }
     }
 

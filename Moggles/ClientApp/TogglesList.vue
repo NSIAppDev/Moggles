@@ -26,22 +26,25 @@
 			<div slot="emptystate">
 				<div class="text-center">There are no toggles for this application or filtered search</div>
 			</div>
-			<template slot="table-row" slot-scope="props">
-				<span v-if="props.column.type == 'boolean'" :class="{ 'is-deployed': props.row[props.column.field + '_IsDeployed']}">
-					<checkbox v-if="props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" type="success" disabled></checkbox>
-					<checkbox v-if="!props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" disabled></checkbox>
-				</span>
-				<span v-else-if="props.column.field == 'id'">
-					<a @click="edit(props.row)"><i class="fas fa-edit"></i></a>
-					<a @click="confirmDelete(props.row)"><i class="fas fa-trash-alt"></i></a>
-				</span>
-				<span v-else-if="props.column.field == 'createdDate'">
-					{{props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A')}}
-				</span>
-				<span v-else>
-					{{props.formattedRow[props.column.field]}}
-				</span>
-			</template>
+            <template slot="table-row" slot-scope="props">
+                <span v-if="props.column.type == 'boolean'" :class="{ 'is-deployed': props.row[props.column.field + '_IsDeployed']}">
+                    <checkbox v-if="props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" type="success" disabled></checkbox>
+                    <checkbox v-if="!props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" disabled></checkbox>
+                </span>
+                <span v-else-if="props.column.field == 'id'">
+                    <a @click="edit(props.row)"><i class="fas fa-edit"></i></a>
+                    <a @click="confirmDelete(props.row)"><i class="fas fa-trash-alt"></i></a>
+                </span>
+                <span v-else-if="props.column.field == 'toggleName' && props.row.isPermanent">
+                    <span>{{props.row.toggleName}}</span>  <span class="permanent-toggle">Permanent</span>
+                </span>
+                <span v-else-if="props.column.field == 'createdDate'">
+                    {{props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A')}}
+                </span>
+                <span v-else>
+                    {{props.formattedRow[props.column.field]}}
+                </span>
+            </template>
 		</vue-good-table>
         <modal v-model="showEditModal">
             <div slot="modal-header" class="modal-header">
@@ -160,6 +163,7 @@
 					userAccepted: this.rowToEdit.userAccepted,
                     notes: this.rowToEdit.notes,
                     featureToggleName: this.rowToEdit.toggleName,
+                    isPermanent: this.rowToEdit.isPermanent,
 					statuses: []
 				}
 				_.forEach(this.environmentsList, envName => {
@@ -198,7 +202,7 @@
 						field: 'toggleName',
 						label: 'Feature Toggle Name',
 						sortable: true,
-						thClass: 'sortable',
+                        thClass: 'sortable',
 						filterOptions: {
 							enabled: true,
 							placeholder: 'Filter'
@@ -213,7 +217,19 @@
 							enabled: true,
 							placeholder: 'Filter'
 						}
-					},
+                    },
+                    {
+                        field: 'isPermanent',
+                        label: 'Is Permanent',
+                        type: 'boolean',
+                        sortable: true,
+                        thClass: 'sortable',
+                        filterOptions: {
+                            enabled: true,
+                            placeholder: 'Filter'
+                        },
+                        hidden: true
+                    },
 					{
 						field: 'userAccepted',
 						label: 'Accepted by User',
@@ -294,7 +310,8 @@
 						let rowModel = {
 							id: toggle.id,
 							toggleName: toggle.toggleName,
-							userAccepted: toggle.userAccepted,
+                            userAccepted: toggle.userAccepted,
+                            isPermanent: toggle.isPermanent,
 							notes: toggle.notes,
 							createdDate: new Date(toggle.createdDate)
 						}
@@ -421,5 +438,13 @@
 
     .margin-left-15 {
         margin-left: 15px;
+    }
+
+    .permanent-toggle {
+        margin-left: 10px;
+        font-size: small;
+        color: white;
+        background-color: red;
+        padding: 3pt 6pt
     }
 </style>

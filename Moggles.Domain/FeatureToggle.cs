@@ -16,6 +16,7 @@ namespace Moggles.Domain
         public bool UserAccepted { get; set; }
         public string Notes { get; set; }
         public DateTime CreatedDate { get; set; }
+        public bool IsPermanent { get; set; }
 
         public Application Application { get; set; }
         public int ApplicationId { get; set; }
