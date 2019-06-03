@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "83761412201b09433c26"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "762d6832c5de63d97993"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -12761,7 +12761,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 			refreshAlertVisible: false,
 			showSuccessAlert: false,
 			spinner: false,
-			isCacheRefreshEnabled: false
+			isCacheRefreshEnabled: false,
+			editFeatureToggleErrors: []
 		};
 	},
 	created: function created() {
@@ -12791,6 +12792,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 	methods: {
 		saveToggle: function saveToggle() {
 			var _this2 = this;
+
+			this.editFeatureToggleErrors = [];
+			if (this.stringIsNullOrEmpty(this.rowToEdit.toggleName)) {
+				this.editFeatureToggleErrors.push("Feature toggle name cannot be empty");
+				return;
+			};
 
 			var toggleUpdateModel = {
 				id: this.rowToEdit.id,
@@ -13021,6 +13028,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 		},
 		closeRefreshAlert: function closeRefreshAlert() {
 			this.refreshAlertVisible = false;
+		},
+		stringIsNullOrEmpty: function stringIsNullOrEmpty(text) {
+			return !text || /^\s*$/.test(text);
 		}
 	},
 	computed: {
@@ -15339,112 +15349,134 @@ var render = function() {
                 ? _c(
                     "div",
                     { staticClass: "form-horizontal" },
-                    _vm._l(_vm.gridColumns, function(col) {
-                      return _c("div", { staticClass: "form-group" }, [
-                        col.type == "boolean"
-                          ? _c("div", [
-                              _c(
-                                "label",
-                                { staticClass: "col-sm-4 control-label" },
-                                [_vm._v(_vm._s(col.label))]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "div",
-                                { staticClass: "col-sm-8 margin-top-8" },
-                                [
-                                  _c(
-                                    "div",
-                                    {
-                                      staticClass: "checkbox",
-                                      on: {
-                                        click: function($event) {
-                                          _vm.environmentEdited(col.field)
-                                        }
-                                      }
-                                    },
-                                    [
-                                      _vm.rowToEdit[col.field + "_IsDeployed"]
-                                        ? _c("checkbox", {
-                                            attrs: { type: "success" },
-                                            model: {
-                                              value: _vm.rowToEdit[col.field],
-                                              callback: function($$v) {
-                                                _vm.$set(
-                                                  _vm.rowToEdit,
-                                                  col.field,
-                                                  $$v
-                                                )
-                                              },
-                                              expression: "rowToEdit[col.field]"
-                                            }
-                                          })
-                                        : _vm._e(),
-                                      _vm._v(" "),
-                                      !_vm.rowToEdit[col.field + "_IsDeployed"]
-                                        ? _c("checkbox", {
-                                            model: {
-                                              value: _vm.rowToEdit[col.field],
-                                              callback: function($$v) {
-                                                _vm.$set(
-                                                  _vm.rowToEdit,
-                                                  col.field,
-                                                  $$v
-                                                )
-                                              },
-                                              expression: "rowToEdit[col.field]"
-                                            }
-                                          })
-                                        : _vm._e()
-                                    ],
-                                    1
-                                  )
-                                ]
-                              )
-                            ])
-                          : col.field !== "id" && col.field !== "createdDate"
+                    [
+                      _c(
+                        "div",
+                        { staticClass: "col-sm-8" },
+                        _vm._l(_vm.editFeatureToggleErrors, function(error) {
+                          return _c(
+                            "div",
+                            {
+                              key: error,
+                              staticClass: "validationMessage margin-left-15"
+                            },
+                            [_vm._v(_vm._s(error))]
+                          )
+                        })
+                      ),
+                      _vm._v(" "),
+                      _vm._l(_vm.gridColumns, function(col) {
+                        return _c("div", { staticClass: "form-group" }, [
+                          col.type == "boolean"
                             ? _c("div", [
-                                _c("div", { staticClass: "form-group" }, [
-                                  _c(
-                                    "label",
-                                    { staticClass: "col-sm-4 control-label" },
-                                    [_vm._v(_vm._s(col.label))]
-                                  ),
-                                  _vm._v(" "),
-                                  _c("div", { staticClass: "col-sm-6" }, [
-                                    _c("input", {
-                                      directives: [
-                                        {
-                                          name: "model",
-                                          rawName: "v-model",
-                                          value: _vm.rowToEdit[col.field],
-                                          expression: "rowToEdit[col.field]"
-                                        }
-                                      ],
-                                      staticClass: "form-control",
-                                      attrs: { type: "text" },
-                                      domProps: {
-                                        value: _vm.rowToEdit[col.field]
-                                      },
-                                      on: {
-                                        input: function($event) {
-                                          if ($event.target.composing) {
-                                            return
+                                _c(
+                                  "label",
+                                  { staticClass: "col-sm-4 control-label" },
+                                  [_vm._v(_vm._s(col.label))]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "div",
+                                  { staticClass: "col-sm-8 margin-top-8" },
+                                  [
+                                    _c(
+                                      "div",
+                                      {
+                                        staticClass: "checkbox",
+                                        on: {
+                                          click: function($event) {
+                                            _vm.environmentEdited(col.field)
                                           }
-                                          _vm.$set(
-                                            _vm.rowToEdit,
-                                            col.field,
-                                            $event.target.value
-                                          )
                                         }
-                                      }
-                                    })
+                                      },
+                                      [
+                                        _vm.rowToEdit[col.field + "_IsDeployed"]
+                                          ? _c("checkbox", {
+                                              attrs: { type: "success" },
+                                              model: {
+                                                value: _vm.rowToEdit[col.field],
+                                                callback: function($$v) {
+                                                  _vm.$set(
+                                                    _vm.rowToEdit,
+                                                    col.field,
+                                                    $$v
+                                                  )
+                                                },
+                                                expression:
+                                                  "rowToEdit[col.field]"
+                                              }
+                                            })
+                                          : _vm._e(),
+                                        _vm._v(" "),
+                                        !_vm.rowToEdit[
+                                          col.field + "_IsDeployed"
+                                        ]
+                                          ? _c("checkbox", {
+                                              model: {
+                                                value: _vm.rowToEdit[col.field],
+                                                callback: function($$v) {
+                                                  _vm.$set(
+                                                    _vm.rowToEdit,
+                                                    col.field,
+                                                    $$v
+                                                  )
+                                                },
+                                                expression:
+                                                  "rowToEdit[col.field]"
+                                              }
+                                            })
+                                          : _vm._e()
+                                      ],
+                                      1
+                                    )
+                                  ]
+                                )
+                              ])
+                            : col.field !== "id" && col.field !== "createdDate"
+                              ? _c("div", [
+                                  _c("div", { staticClass: "form-group" }, [
+                                    _c(
+                                      "label",
+                                      { staticClass: "col-sm-4 control-label" },
+                                      [_vm._v(_vm._s(col.label))]
+                                    ),
+                                    _vm._v(" "),
+                                    _c("div", { staticClass: "col-sm-6" }, [
+                                      _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: _vm.rowToEdit[col.field],
+                                            expression: "rowToEdit[col.field]"
+                                          }
+                                        ],
+                                        staticClass: "form-control",
+                                        attrs: { type: "text" },
+                                        domProps: {
+                                          value: _vm.rowToEdit[col.field]
+                                        },
+                                        on: {
+                                          input: function($event) {
+                                            if ($event.target.composing) {
+                                              return
+                                            }
+                                            _vm.$set(
+                                              _vm.rowToEdit,
+                                              col.field,
+                                              $event.target.value
+                                            )
+                                          }
+                                        }
+                                      })
+                                    ])
                                   ])
                                 ])
-                              ])
-                            : _vm._e()
-                      ])
-                    })
+                              : _vm._e()
+                        ])
+                      })
+                    ],
+                    2
                   )
                 : _vm._e()
             ]

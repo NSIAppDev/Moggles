@@ -46,38 +46,41 @@
                 </span>
             </template>
 		</vue-good-table>
-		<modal v-model="showEditModal">
-			<div slot="modal-header" class="modal-header">
-				<h4 class="modal-title">Edit Feature Flags</h4>
-			</div>
-			<div slot="modal-body" class="mocdal-body">
-				<div v-if="rowToEdit" class="form-horizontal">
-					<div class="form-group" v-for="col in gridColumns">
-						<div v-if="col.type == 'boolean'">
-							<label class="col-sm-4 control-label">{{col.label}}</label>
-							<div class="col-sm-8 margin-top-8">
-								<div class="checkbox" @click="environmentEdited(col.field)">
-									<checkbox v-if="rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" type="success"></checkbox>
-									<checkbox v-if="!rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]"></checkbox>
-								</div>
-							</div>
-						</div>
-						<div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
-							<div class="form-group">
-								<label class="col-sm-4 control-label">{{col.label}}</label>
-								<div class="col-sm-6">
-									<input type="text" class="form-control" v-model="rowToEdit[col.field]">
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div slot="modal-footer" class="modal-footer">
-				<button type="button" class="btn btn-default" @click="cancelEdit">Cancel</button>
-				<button type="button" class="btn btn-primary" @click="saveToggle">Save</button>
-			</div>
-		</modal>
+        <modal v-model="showEditModal">
+            <div slot="modal-header" class="modal-header">
+                <h4 class="modal-title">Edit Feature Flags</h4>
+            </div>
+            <div slot="modal-body" class="mocdal-body">
+                <div v-if="rowToEdit" class="form-horizontal">
+                    <div class="col-sm-8">
+                        <div v-for="error in editFeatureToggleErrors" :key="error" class="validationMessage margin-left-15">{{error}}</div>
+                    </div>
+                    <div class="form-group" v-for="col in gridColumns">
+                        <div v-if="col.type == 'boolean'">
+                            <label class="col-sm-4 control-label">{{col.label}}</label>
+                            <div class="col-sm-8 margin-top-8">
+                                <div class="checkbox" @click="environmentEdited(col.field)">
+                                    <checkbox v-if="rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" type="success"></checkbox>
+                                    <checkbox v-if="!rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]"></checkbox>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">{{col.label}}</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" v-model="rowToEdit[col.field]">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div slot="modal-footer" class="modal-footer">
+                <button type="button" class="btn btn-default" @click="cancelEdit">Cancel</button>
+                <button type="button" class="btn btn-primary" @click="saveToggle">Save</button>
+            </div>
+        </modal>
 		<modal v-model="showDeleteConfirmation" ok-text="Delete" cancel-text="Cancel" :callback="deleteToggle">
 			<div slot="modal-header" class="modal-header">
 				<h4 class="modal-title">You are about to delete a feature toggle</h4>
@@ -124,7 +127,8 @@
 				refreshAlertVisible: false,
                 showSuccessAlert: false,
 				spinner: false,
-                isCacheRefreshEnabled: false
+                isCacheRefreshEnabled: false,
+                editFeatureToggleErrors: []
 			}
 		},
 		created() {
@@ -147,7 +151,13 @@
 			})
 		},
 		methods: {
-			saveToggle() {
+            saveToggle() {
+                this.editFeatureToggleErrors = [];
+                if (this.stringIsNullOrEmpty(this.rowToEdit.toggleName)) {
+                    this.editFeatureToggleErrors.push("Feature toggle name cannot be empty")
+                    return;
+                };
+
 				let toggleUpdateModel = {
 					id: this.rowToEdit.id,
 					userAccepted: this.rowToEdit.userAccepted,
@@ -381,7 +391,10 @@
 			},
 			closeRefreshAlert() {
 				this.refreshAlertVisible = false;
-			}
+            },
+            stringIsNullOrEmpty(text) {
+                return !text || /^\s*$/.test(text);
+            }
 		},
 		computed: {
 			showRefreshAlert() {
@@ -422,6 +435,10 @@
 	.env-button {
 		margin-right: 10px;
 	}
+
+    .margin-left-15 {
+        margin-left: 15px;
+    }
 
     .permanent-toggle {
         margin-left: 10px;
