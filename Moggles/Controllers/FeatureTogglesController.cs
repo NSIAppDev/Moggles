@@ -45,7 +45,9 @@ namespace Moggles.Controllers
                         Id = fts.Id,
                         Environment = fts.Environment.EnvName,
                         Enabled = fts.Enabled,
-                        IsDeployed = fts.IsDeployed
+                        IsDeployed = fts.IsDeployed,
+                        LastUpdated = fts.LastUpdated,
+                        FirstTimeDeployDate = fts.FirstTimeDeployDate
                     }).ToList()
                 }));
         }

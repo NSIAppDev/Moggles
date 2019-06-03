@@ -58,17 +58,22 @@
                     <div class="form-group" v-for="col in gridColumns">
                         <div v-if="col.type == 'boolean'">
                             <label class="col-sm-4 control-label">{{col.label}}</label>
-                            <div class="col-sm-8 margin-top-8">
+                            <div class="col-sm-1 margin-top-8">
                                 <div class="checkbox" @click="environmentEdited(col.field)">
                                     <checkbox v-if="rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" type="success"></checkbox>
                                     <checkbox v-if="!rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]"></checkbox>
                                 </div>
+
+                            </div>
+                            <div class="col-sm-6 margin-top-8">                      
+                                <span v-if="isEnviroment(col.field)"><strong>Deployed:</strong> {{rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('MM/DD/YYYY hh:mm')}}</span>
+                                <span v-if="isEnviroment(col.field)"><strong>Last Updated:</strong> {{rowToEdit[col.field + '_LastUpdated'] | moment('MM/DD/YYYY hh:mm')}}</span>
                             </div>
                         </div>
                         <div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">{{col.label}}</label>
-                                <div class="col-sm-6">
+                                <div class="col-sm-7">
                                     <input type="text" class="form-control" v-model="rowToEdit[col.field]">
                                 </div>
                             </div>
@@ -275,7 +280,7 @@
 			},
 			edit(row) {
 				this.rowToEdit = row
-				this.showEditModal = true
+                this.showEditModal = true
 			},
 			confirmDelete(row) {
 				this.rowDataToDelete = row
@@ -319,7 +324,9 @@
 						this.environmentsList.forEach(env => {
 							let envStatus = _.find(toggle.statuses, status => status.environment === env)
 							rowModel[env] = envStatus ? envStatus.enabled : false;
-							rowModel[env + '_IsDeployed'] = envStatus ? envStatus.isDeployed : false;
+                            rowModel[env + '_IsDeployed'] = envStatus ? envStatus.isDeployed : false;
+                            rowModel[env + '_FirstTimeDeployDate'] = envStatus ? envStatus.firstTimeDeployDate : "";
+                            rowModel[env + '_LastUpdated'] = envStatus ? envStatus.lastUpdated : "";
 						});
 						return rowModel;
 					});
@@ -394,12 +401,15 @@
             },
             stringIsNullOrEmpty(text) {
                 return !text || /^\s*$/.test(text);
+            },
+            isEnviroment(env) {
+                return this.environmentsList.includes(env);
             }
 		},
 		computed: {
 			showRefreshAlert() {
 				return this.environmentsToRefresh.length > 0 ? this.refreshAlertVisible : false;
-			}
+            }
 		}
 	}
 </script>
