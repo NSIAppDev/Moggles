@@ -20,5 +20,7 @@ namespace Moggles.Models
         public bool Enabled { get; set; }
         public string Environment { get; set; }
         public bool IsDeployed { get; set; }
+        public DateTime? FirstTimeDeployDate { get; set; }
+        public DateTime LastUpdated { get; set; }
     }
 }
