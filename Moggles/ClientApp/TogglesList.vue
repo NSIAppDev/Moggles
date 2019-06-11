@@ -5,7 +5,7 @@
 			<span class="icon-ok-circled alert-icon-float-left"></span>
 			<p>Cache Refreshed.</p>
 		</alert>
-		<alert type="info" v-model="showRefreshAlert">
+		<alert type="info" :value="showRefreshAlert">
 			<button type="button" class="close" @click="closeRefreshAlert"><span>×</span></button>
 			<h4>Toggles Have Been Modified, would you like to refresh the environments?</h4>
 			<span v-for="env in environmentsToRefresh" class="env-button">
@@ -66,7 +66,7 @@
 
                             </div>
                             <div class="col-sm-6 margin-top-8">                      
-                                <span v-if="isEnviroment(col.field)"><strong>Deployed:</strong> {{rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('MM/DD/YYYY hh:mm')}}</span>
+                                <span v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null"><strong>Deployed:</strong> {{rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('MM/DD/YYYY hh:mm')}}</span>
                                 <span v-if="isEnviroment(col.field)"><strong>Last Updated:</strong> {{rowToEdit[col.field + '_LastUpdated'] | moment('MM/DD/YYYY hh:mm')}}</span>
                             </div>
                         </div>
@@ -131,7 +131,7 @@
 				environmentsToRefresh: [],
 				refreshAlertVisible: false,
                 showSuccessAlert: false,
-				spinner: false,
+                spinner: false,
                 isCacheRefreshEnabled: false,
                 editFeatureToggleErrors: []
 			}
@@ -176,7 +176,7 @@
 						environment: envName,
 						enabled: this.rowToEdit[envName]
 					});
-				});
+                });
 				if (this.isCacheRefreshEnabled) {
 					_.forEach(this.environmentsEdited, envName => {
 						this.addEnvironemntToRefreshList(envName);
@@ -390,8 +390,8 @@
                     });
 			},
 			addEnvironemntToRefreshList(env) {
-				let index = _.indexOf(this.environmentsToRefresh, env);
-				if (index === -1) {
+                let index = _.indexOf(this.environmentsToRefresh, env);
+                if (index === -1 && this.isEnviroment(env)) {
 					this.environmentsToRefresh.push(env);
 					this.refreshAlertVisible = true;
 				}
