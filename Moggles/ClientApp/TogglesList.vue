@@ -177,11 +177,11 @@
 						enabled: this.rowToEdit[envName]
 					});
                 });
-				//if (this.isCacheRefreshEnabled) {
+				if (this.isCacheRefreshEnabled) {
 					_.forEach(this.environmentsEdited, envName => {
 						this.addEnvironemntToRefreshList(envName);
 					});
-				//}
+				}
 				axios.put('/api/featuretoggles', toggleUpdateModel)
 					.then((result) => {
 						this.showEditModal = false
