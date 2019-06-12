@@ -66,8 +66,8 @@
 
                             </div>
                             <div class="col-sm-6 margin-top-8">                      
-                                <span v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null"><strong>Deployed:</strong> {{rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('MM/DD/YYYY hh:mm')}}</span>
-                                <span v-if="isEnviroment(col.field)"><strong>Last Updated:</strong> {{rowToEdit[col.field + '_LastUpdated'] | moment('MM/DD/YYYY hh:mm')}}</span>
+                                <div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null"><strong>Deployed:</strong> {{rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('MM/DD/YYYY hh:mm')}}</div>
+                                <div v-if="isEnviroment(col.field)"><strong>Last Updated:</strong> {{rowToEdit[col.field + '_LastUpdated'] | moment('MM/DD/YYYY hh:mm')}}</div>
                             </div>
                         </div>
                         <div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
@@ -210,7 +210,7 @@
                         thClass: 'sortable',
 						filterOptions: {
 							enabled: true,
-							placeholder: 'Filter'
+							placeholder: 'Filter Toggle Name'
 						}
 					},
 					{
@@ -220,7 +220,7 @@
 						thClass: 'sortable',
 						filterOptions: {
 							enabled: true,
-							placeholder: 'Filter'
+							placeholder: 'Filter Notes'
 						}
                     },
                     {
@@ -247,7 +247,7 @@
 								{ value: 'false', text: 'Unaccepted' }
 							],
 							filterValue: 'false',
-							placeholder: 'Filter'
+							placeholder: 'All'
 						}
 					},
 					{
@@ -270,7 +270,7 @@
 								{ value: 'true', text: 'Active' },
 								{ value: 'false', text: 'Inactive' }
 							],
-							placeholder: 'Filter'
+							placeholder: 'All'
 						},
 					}
 				}));
