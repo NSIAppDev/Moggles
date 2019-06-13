@@ -100,7 +100,7 @@
         created() {
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
-            }).catch(error => window.alert(error));
+            }).catch(error => { window.alert(error) });
         },
         components: {
 			"toggles-list": TogglesList,

@@ -12,8 +12,8 @@ module.exports = (env) => {
     const extractCSS = new ExtractTextPlugin('vendor.css');
 
     let entries = Object.keys(libs.dependencies);
-	entries.push('vue-good-table/dist/vue-good-table.css');
-	entries.push('bootstrap/dist/css/bootstrap.css');
+	entries.push('vue-good-table/dist/vue-good-table.min.css');
+	entries.push('bootstrap/dist/css/bootstrap.min.css');
 
     return [{
         stats: { modules: false },
@@ -23,7 +23,7 @@ module.exports = (env) => {
         },
         module: {
             rules: [
-                { test: /\.css(\?|$)/, use: extractCSS.extract({ use: isDevBuild || isStagingBuild ? 'css-loader' : 'css-loader?minimize' }) },
+                { test: /\.css(\?|$)/, use: extractCSS.extract({ use: 'css-loader' }) },
                 { test: /\.(png|woff|woff2|eot|ttf|svg)(\?|$)/, use: 'url-loader?limit=100000' }
             ]
         },

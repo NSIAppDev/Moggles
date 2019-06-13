@@ -39,12 +39,15 @@ namespace Moggles.Controllers
                     UserAccepted = ft.UserAccepted,
                     Notes = ft.Notes,
                     CreatedDate = ft.CreatedDate,
+                    IsPermanent = ft.IsPermanent,
                     Statuses = ft.FeatureToggleStatuses.Select(fts => new FeatureToggleStatusViewModel
                     {
                         Id = fts.Id,
                         Environment = fts.Environment.EnvName,
                         Enabled = fts.Enabled,
-                        IsDeployed = fts.IsDeployed
+                        IsDeployed = fts.IsDeployed,
+                        LastUpdated = fts.LastUpdated,
+                        FirstTimeDeployDate = fts.FirstTimeDeployDate
                     }).ToList()
                 }));
         }
@@ -76,8 +79,10 @@ namespace Moggles.Controllers
             if (featureToggle is null)
                 throw new InvalidOperationException("Feature toggle not found!");
 
+            featureToggle.ToggleName = model.FeatureToggleName;
             featureToggle.UserAccepted = model.UserAccepted;
             featureToggle.Notes = model.Notes;
+            featureToggle.IsPermanent = model.IsPermanent;
             foreach (var toggleStatus in model.Statuses)
             {
                 var status = featureToggle.FeatureToggleStatuses.FirstOrDefault(s => s.Environment.EnvName == toggleStatus.Environment);

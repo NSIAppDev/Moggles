@@ -44,7 +44,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var app = new Application {AppName = "BCC", Id = 1};
             var date = DateTime.Now;
             var firstFeatureToggle = new FeatureToggle{ Application = app, ApplicationId = app.Id, UserAccepted = true,
-                ToggleName = "TestToggle", CreatedDate = date, Notes = "TestNote" };
+                ToggleName = "TestToggle", CreatedDate = date, Notes = "TestNote", IsPermanent = true};
 
             var secondFeatureToggle = new FeatureToggle{ Application = app, ApplicationId = app.Id, UserAccepted = false,
                 ToggleName = "TestToggle", CreatedDate = date, Notes = "TestNote" };
@@ -64,6 +64,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             list.First().CreatedDate.Should().Be(date);
             list.First().ToggleName.Should().Be(firstFeatureToggle.ToggleName);
             list.First().UserAccepted.Should().Be(firstFeatureToggle.UserAccepted);
+            list.First().IsPermanent.Should().Be(firstFeatureToggle.IsPermanent);
         }
 
         [TestMethod]
@@ -148,8 +149,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = new Application {Id = 1, AppName = "TestApp"};
-            var existingValue = new FeatureToggle { Id = 1, Application = app, ApplicationId = app.Id, ToggleName = "TestToggle", FeatureToggleStatuses = new List<FeatureToggleStatus>(), Notes = "FirstNote"};
-            var updatedValue = new FeatureToggleUpdateModel { Id = 1, Notes = "Update", UserAccepted = true, Statuses = new List<FeatureToggleStatusUpdateModel>()};
+            var existingValue = new FeatureToggle { Id = 1, Application = app, ApplicationId = app.Id, ToggleName = "TestToggle", FeatureToggleStatuses = new List<FeatureToggleStatus>(), Notes = "FirstNote", IsPermanent = false};
+            var updatedValue = new FeatureToggleUpdateModel { Id = 1, FeatureToggleName = "UpdatedFeatureToggleName", Notes = "Update", UserAccepted = true, Statuses = new List<FeatureToggleStatusUpdateModel>(), IsPermanent = true};
 
             _context.FeatureToggles.Add(existingValue);
             _context.SaveChanges();
@@ -159,8 +160,10 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var result = controller.Update(updatedValue) as OkObjectResult;
 
             //assert
+            _context.FeatureToggles.FirstOrDefault().ToggleName.Should().Be("UpdatedFeatureToggleName");
             _context.FeatureToggles.FirstOrDefault().Notes.Should().Be(updatedValue.Notes);
             _context.FeatureToggles.FirstOrDefault().UserAccepted.Should().BeTrue();
+            _context.FeatureToggles.FirstOrDefault().IsPermanent.Should().BeTrue();
         }
 
         [TestMethod]

@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "69ce25189ad0893eb7b6"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "762d6832c5de63d97993"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -11810,6 +11810,16 @@ module.exports = (__webpack_require__(2))(192);
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Bus; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(1);
+
+var Bus = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]();
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = normalizeComponent;
 /* globals __VUE_SSR_CONTEXT__ */
 
@@ -11915,96 +11925,95 @@ function normalizeComponent (
 
 
 /***/ }),
-/* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Bus; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(1);
 
-var Bus = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]();
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports) {
 
 /*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
 */
 // css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
+module.exports = function (useSourceMap) {
+  var list = []; // return the list of modules as css string
 
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
+  list.toString = function toString() {
+    return this.map(function (item) {
+      var content = cssWithMappingToString(item, useSourceMap);
 
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
+      if (item[2]) {
+        return '@media ' + item[2] + '{' + content + '}';
+      } else {
+        return content;
+      }
+    }).join('');
+  }; // import a list of modules into the list
+
+
+  list.i = function (modules, mediaQuery) {
+    if (typeof modules === 'string') {
+      modules = [[null, modules, '']];
+    }
+
+    var alreadyImportedModules = {};
+
+    for (var i = 0; i < this.length; i++) {
+      var id = this[i][0];
+
+      if (id != null) {
+        alreadyImportedModules[id] = true;
+      }
+    }
+
+    for (i = 0; i < modules.length; i++) {
+      var item = modules[i]; // skip already imported module
+      // this implementation is not 100% perfect for weird media query combinations
+      // when a module is imported multiple times with different media queries.
+      // I hope this will never occur (Hey this way we have smaller bundles)
+
+      if (item[0] == null || !alreadyImportedModules[item[0]]) {
+        if (mediaQuery && !item[2]) {
+          item[2] = mediaQuery;
+        } else if (mediaQuery) {
+          item[2] = '(' + item[2] + ') and (' + mediaQuery + ')';
+        }
+
+        list.push(item);
+      }
+    }
+  };
+
+  return list;
 };
 
 function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
+  var content = item[1] || '';
+  var cssMapping = item[3];
 
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
+  if (!cssMapping) {
+    return content;
+  }
 
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
+  if (useSourceMap && typeof btoa === 'function') {
+    var sourceMapping = toComment(cssMapping);
+    var sourceURLs = cssMapping.sources.map(function (source) {
+      return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */';
+    });
+    return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+  }
 
-	return [content].join('\n');
-}
+  return [content].join('\n');
+} // Adapted from convert-source-map (MIT)
 
-// Adapted from convert-source-map (MIT)
+
 function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
+  // eslint-disable-next-line no-undef
+  var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+  var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+  return '/*# ' + data + ' */';
 }
-
 
 /***/ }),
 /* 8 */
@@ -12243,13 +12252,9 @@ function applyToTag (styleElement, obj) {
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(7)(false);
-// imports
-
-
-// module
+// Module
 exports.push([module.i, "\nbody {\n  padding-top: 70px;\n  background: #ffffff;\n}\n.margin-right-10 {\n  margin-right: 10px;\n}\n.vertical-align {\n  display: flex;\n  align-items: center;\n  height: 50px;\n}\n", ""]);
 
-// exports
 
 
 /***/ }),
@@ -12257,13 +12262,9 @@ exports.push([module.i, "\nbody {\n  padding-top: 70px;\n  background: #ffffff;\
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(7)(false);
-// imports
+// Module
+exports.push([module.i, "\n.width-55 {\n\t\twidth: 55px !important;\n}\nth.sortable, a {\n\t\tcursor: pointer;\n}\n.success > .dropdown-toggle {\n\t\tcolor: #fff;\n\t\tbackground-color: lightgreen !important;\n\t\tborder-color: #398439 !important;\n}\n.success > .dropdown-toggle.btn-success {\n\t\t\tcolor: #fff;\n\t\t\tbackground-color: #449d44 !important;\n\t\t\tborder-color: #398439 !important;\n}\nlabel.checkbox > .icon {\n\t\ttop: -.5rem !important;\n}\n.margin-top-8 {\n\t\tmargin-top: 8px;\n}\n.env-button {\n\t\tmargin-right: 10px;\n}\n.permanent-toggle {\n        margin-left: 10px;\n        font-size: small;\n        color: white;\n        background-color: red;\n        padding: 3pt 6pt\n}\n", ""]);
 
-
-// module
-exports.push([module.i, "\n.width-55 {\n\twidth: 55px !important;\n}\nth.sortable, a {\n\tcursor: pointer;\n}\n.success > .dropdown-toggle {\n\tcolor: #fff;\n\tbackground-color: lightgreen !important;\n\tborder-color: #398439 !important;\n}\n.success > .dropdown-toggle.btn-success {\n\t\tcolor: #fff;\n\t\tbackground-color: #449d44 !important;\n\t\tborder-color: #398439 !important;\n}\nlabel.checkbox > .icon {\n\ttop: -.5rem !important;\n}\n.margin-top-8 {\n\tmargin-top: 8px;\n}\n", ""]);
-
-// exports
 
 
 /***/ }),
@@ -12271,13 +12272,9 @@ exports.push([module.i, "\n.width-55 {\n\twidth: 55px !important;\n}\nth.sortabl
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(7)(false);
-// imports
-
-
-// module
+// Module
 exports.push([module.i, "\n.validationMessage {\n    color: red\n}\n", ""]);
 
-// exports
 
 
 /***/ }),
@@ -12285,13 +12282,9 @@ exports.push([module.i, "\n.validationMessage {\n    color: red\n}\n", ""]);
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(7)(false);
-// imports
-
-
-// module
+// Module
 exports.push([module.i, "\n.validationMessage {\n    color: red\n}\n", ""]);
 
-// exports
 
 
 /***/ }),
@@ -12502,10 +12495,11 @@ module.exports = Html5Entities;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AddFeatureToggle__ = __webpack_require__(49);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__AddEnvironment__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__ForceCacheRefresh__ = __webpack_require__(55);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_vue_strap__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_vue_strap___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_vue_strap__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_axios__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__event_bus__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_vue_strap__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_vue_strap___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_vue_strap__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_axios__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_axios__);
 //
 //
 //
@@ -12577,6 +12571,8 @@ module.exports = Html5Entities;
 //
 //
 //
+//
+
 
 
 
@@ -12598,13 +12594,19 @@ module.exports = Html5Entities;
             isCacheRefreshEnabled: false
         };
     },
+
+    methods: {
+        ReloadCurrentApplicationToggles: function ReloadCurrentApplicationToggles() {
+            __WEBPACK_IMPORTED_MODULE_7__event_bus__["a" /* Bus */].$emit("reload-application-toggles");
+        }
+    },
     created: function created() {
         var _this = this;
 
-        __WEBPACK_IMPORTED_MODULE_8_axios___default.a.get("/api/CacheRefresh/getCacheRefreshAvailability").then(function (response) {
+        __WEBPACK_IMPORTED_MODULE_9_axios___default.a.get("/api/CacheRefresh/getCacheRefreshAvailability").then(function (response) {
             _this.isCacheRefreshEnabled = response.data;
         }).catch(function (error) {
-            return window.alert(error);
+            window.alert(error);
         });
     },
 
@@ -12615,7 +12617,7 @@ module.exports = Html5Entities;
         "add-featuretoggle": __WEBPACK_IMPORTED_MODULE_4__AddFeatureToggle__["a" /* default */],
         "add-env": __WEBPACK_IMPORTED_MODULE_5__AddEnvironment__["a" /* default */],
         'force-cache-refresh': __WEBPACK_IMPORTED_MODULE_6__ForceCacheRefresh__["a" /* default */],
-        modal: __WEBPACK_IMPORTED_MODULE_7_vue_strap__["modal"]
+        modal: __WEBPACK_IMPORTED_MODULE_8_vue_strap__["modal"]
     }
 });
 
@@ -12630,9 +12632,28 @@ module.exports = Html5Entities;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_lodash__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__event_bus__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__event_bus__ = __webpack_require__(5);
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -12718,7 +12739,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 	environmentsList: [],
 	components: {
 		modal: __WEBPACK_IMPORTED_MODULE_0_vue_strap__["modal"],
-		checkbox: __WEBPACK_IMPORTED_MODULE_0_vue_strap__["checkbox"]
+		checkbox: __WEBPACK_IMPORTED_MODULE_0_vue_strap__["checkbox"],
+		alert: __WEBPACK_IMPORTED_MODULE_0_vue_strap__["alert"],
+		spinner: __WEBPACK_IMPORTED_MODULE_0_vue_strap__["spinner"]
 	},
 	data: function data() {
 		var PAGE_SIZE = 15;
@@ -12732,15 +12755,29 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 			showAcceptedFeatures: false,
 			showDeleteConfirmation: false,
 			rowDataToDelete: null,
-			toggleIsDeployed: false
+			toggleIsDeployed: false,
+			environmentsEdited: [],
+			environmentsToRefresh: [],
+			refreshAlertVisible: false,
+			showSuccessAlert: false,
+			spinner: false,
+			isCacheRefreshEnabled: false,
+			editFeatureToggleErrors: []
 		};
 	},
 	created: function created() {
 		var _this = this;
 
+		__WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("/api/CacheRefresh/getCacheRefreshAvailability").then(function (response) {
+			_this.isCacheRefreshEnabled = response.data;
+		}).catch(function (error) {
+			return window.alert(error);
+		});
 		__WEBPACK_IMPORTED_MODULE_3__event_bus__["a" /* Bus */].$on("app-changed", function (app) {
-			_this.selectedApp = app;
-			_this.initializeGrid(app);
+			if (app) {
+				_this.selectedApp = app;
+				_this.initializeGrid(app);
+			}
 		});
 
 		__WEBPACK_IMPORTED_MODULE_3__event_bus__["a" /* Bus */].$on("env-added", function () {
@@ -12756,10 +12793,18 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 		saveToggle: function saveToggle() {
 			var _this2 = this;
 
+			this.editFeatureToggleErrors = [];
+			if (this.stringIsNullOrEmpty(this.rowToEdit.toggleName)) {
+				this.editFeatureToggleErrors.push("Feature toggle name cannot be empty");
+				return;
+			};
+
 			var toggleUpdateModel = {
 				id: this.rowToEdit.id,
 				userAccepted: this.rowToEdit.userAccepted,
 				notes: this.rowToEdit.notes,
+				featureToggleName: this.rowToEdit.toggleName,
+				isPermanent: this.rowToEdit.isPermanent,
 				statuses: []
 			};
 			__WEBPACK_IMPORTED_MODULE_2_lodash___default.a.forEach(this.environmentsList, function (envName) {
@@ -12768,14 +12813,24 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 					enabled: _this2.rowToEdit[envName]
 				});
 			});
-
+			if (this.isCacheRefreshEnabled) {
+				__WEBPACK_IMPORTED_MODULE_2_lodash___default.a.forEach(this.environmentsEdited, function (envName) {
+					_this2.addEnvironemntToRefreshList(envName);
+				});
+			}
 			__WEBPACK_IMPORTED_MODULE_1_axios___default.a.put('/api/featuretoggles', toggleUpdateModel).then(function (result) {
 				_this2.showEditModal = false;
 				_this2.rowToEdit = null;
 				_this2.loadGridData(_this2.selectedApp.id);
+				_this2.environmentsEdited = [];
 			}).catch(function (error) {
 				return window.alert(error);
 			});
+		},
+		cancelEdit: function cancelEdit() {
+			this.showEditModal = false;
+			this.rowToEdit = null;
+			this.environmentsEdited = [];
 		},
 		createGridColumns: function createGridColumns() {
 			var columns = [{
@@ -12801,6 +12856,17 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 					enabled: true,
 					placeholder: 'Filter'
 				}
+			}, {
+				field: 'isPermanent',
+				label: 'Is Permanent',
+				type: 'boolean',
+				sortable: true,
+				thClass: 'sortable',
+				filterOptions: {
+					enabled: true,
+					placeholder: 'Filter'
+				},
+				hidden: true
 			}, {
 				field: 'userAccepted',
 				label: 'Accepted by User',
@@ -12877,6 +12943,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 						id: toggle.id,
 						toggleName: toggle.toggleName,
 						userAccepted: toggle.userAccepted,
+						isPermanent: toggle.isPermanent,
 						notes: toggle.notes,
 						createdDate: new Date(toggle.createdDate)
 					};
@@ -12915,9 +12982,60 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 				_this5.$refs['toggleGrid'].reset();
 
 				__WEBPACK_IMPORTED_MODULE_3__event_bus__["a" /* Bus */].$emit('env-loaded', response.data);
-			}).catch(function (error) {
-				return window.alert(error);
+			}).catch(function (e) {
+				window.alert(e);
 			});
+		},
+		environmentEdited: function environmentEdited(env) {
+			var index = __WEBPACK_IMPORTED_MODULE_2_lodash___default.a.indexOf(this.environmentsEdited, env);
+			if (index === -1) {
+				this.environmentsEdited.push(env);
+			}
+		},
+		refreshEnvironment: function refreshEnvironment(env) {
+			var _this6 = this;
+
+			if (!this.selectedApp) return;
+
+			var param = {
+				applicationId: this.selectedApp.id,
+				envName: env
+			};
+
+			this.spinner = true;
+			__WEBPACK_IMPORTED_MODULE_1_axios___default.a.post('api/CacheRefresh', param).then(function (response) {
+				_this6.spinner = false;
+				_this6.showSuccessAlert = true;
+				__WEBPACK_IMPORTED_MODULE_2_lodash___default.a.remove(_this6.environmentsToRefresh, function (e) {
+					return e == env;
+				});
+				///shouldn't need the below code, but computed value doesn't register the length as 0 without it
+				if (_this6.environmentsToRefresh.length === 0) {
+					_this6.environmentsToRefresh = [];
+				}
+			}).catch(function (e) {
+				window.alert(e);
+			}).finally(function () {
+				_this6.spinner = false;
+			});
+		},
+		addEnvironemntToRefreshList: function addEnvironemntToRefreshList(env) {
+			var index = __WEBPACK_IMPORTED_MODULE_2_lodash___default.a.indexOf(this.environmentsToRefresh, env);
+			if (index === -1) {
+				this.environmentsToRefresh.push(env);
+				this.refreshAlertVisible = true;
+			}
+		},
+		closeRefreshAlert: function closeRefreshAlert() {
+			this.refreshAlertVisible = false;
+		},
+		stringIsNullOrEmpty: function stringIsNullOrEmpty(text) {
+			return !text || /^\s*$/.test(text);
+		}
+	},
+	computed: {
+		showRefreshAlert: function showRefreshAlert() {
+			return this.environmentsToRefresh.length > 0 ? this.refreshAlertVisible : false;
 		}
 	}
 });
@@ -12933,7 +13051,7 @@ module.exports = (__webpack_require__(2))(227);
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__event_bus__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__event_bus__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_strap__ = __webpack_require__(3);
@@ -12981,10 +13099,12 @@ module.exports = (__webpack_require__(2))(227);
 			__WEBPACK_IMPORTED_MODULE_1_axios___default.a.get('/api/applications').then(function (response) {
 				_this2.applicationList = response.data;
 				if (!_this2.selectedAppId) {
-					_this2.selectedAppId = response.data[0].id;
+					if (response.data.length > 0) {
+						_this2.selectedAppId = response.data[0].id;
+					}
 				}
 			}).catch(function (error) {
-				return window.alert(error);
+				window.alert(error);
 			});
 		}
 	},
@@ -12995,6 +13115,9 @@ module.exports = (__webpack_require__(2))(227);
 		__WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* Bus */].$on("new-app-added", function () {
 			_this3.getApplications;
 		});
+		__WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* Bus */].$on("reload-application-toggles", function () {
+			_this3.changeApp(_this3.selectedAppId);
+		});
 	}
 });
 
@@ -13003,7 +13126,7 @@ module.exports = (__webpack_require__(2))(227);
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__event_bus__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__event_bus__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_strap__ = __webpack_require__(3);
@@ -13110,7 +13233,7 @@ module.exports = (__webpack_require__(2))(227);
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__event_bus__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__event_bus__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_strap__ = __webpack_require__(3);
@@ -13193,7 +13316,9 @@ module.exports = (__webpack_require__(2))(227);
         var _this2 = this;
 
         __WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* Bus */].$on("app-changed", function (app) {
-            _this2.applicationId = app.id;
+            if (app) {
+                _this2.applicationId = app.id;
+            }
         });
 
         __WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* Bus */].$on("toggles-loaded", function (toggles) {
@@ -13212,7 +13337,7 @@ module.exports = (__webpack_require__(2))(227);
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__event_bus__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__event_bus__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_strap__ = __webpack_require__(3);
@@ -13312,7 +13437,9 @@ module.exports = (__webpack_require__(2))(227);
         var _this2 = this;
 
         __WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* Bus */].$on("app-changed", function (app) {
-            _this2.applicationId = app.id;
+            if (app) {
+                _this2.applicationId = app.id;
+            }
         });
 
         __WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* Bus */].$on("env-loaded", function (envs) {
@@ -13331,7 +13458,7 @@ module.exports = (__webpack_require__(2))(227);
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__event_bus__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__event_bus__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_strap__ = __webpack_require__(3);
@@ -13402,7 +13529,9 @@ module.exports = (__webpack_require__(2))(227);
         var _this2 = this;
 
         __WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* Bus */].$on("app-changed", function (app) {
-            _this2.applicationId = app.id;
+            if (app) {
+                _this2.applicationId = app.id;
+            }
         });
 
         __WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* Bus */].$on("env-loaded", function (envs) {
@@ -14743,7 +14872,7 @@ module.exports = (__webpack_require__(2))(231);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_App_vue__ = __webpack_require__(14);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_ab83e986_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_App_vue__ = __webpack_require__(57);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(6);
 var disposed = false
 function injectStyle (context) {
   if (disposed) return
@@ -14805,7 +14934,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = __webpack_require__(8).default
-var update = add("f83357ba", content, false, {});
+var update = add("2307849c", content, false, {});
 // Hot Module Replacement
 if(true) {
  // When the styles change, update the <style> tags
@@ -14863,7 +14992,7 @@ function listToStyles (parentId, list) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_TogglesList_vue__ = __webpack_require__(15);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_48e57bf9_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_TogglesList_vue__ = __webpack_require__(44);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(6);
 var disposed = false
 function injectStyle (context) {
   if (disposed) return
@@ -14925,7 +15054,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = __webpack_require__(8).default
-var update = add("978b4176", content, false, {});
+var update = add("2b04c4d8", content, false, {});
 // Hot Module Replacement
 if(true) {
  // When the styles change, update the <style> tags
@@ -14954,6 +15083,92 @@ var render = function() {
   return _c(
     "div",
     [
+      _c("spinner", {
+        ref: "spinner",
+        attrs: { size: "sm" },
+        model: {
+          value: _vm.spinner,
+          callback: function($$v) {
+            _vm.spinner = $$v
+          },
+          expression: "spinner"
+        }
+      }),
+      _vm._v(" "),
+      _c(
+        "alert",
+        {
+          attrs: {
+            placement: "top-right",
+            duration: "1500",
+            type: "success",
+            width: "400px",
+            dismissable: ""
+          },
+          model: {
+            value: _vm.showSuccessAlert,
+            callback: function($$v) {
+              _vm.showSuccessAlert = $$v
+            },
+            expression: "showSuccessAlert"
+          }
+        },
+        [
+          _c("span", { staticClass: "icon-ok-circled alert-icon-float-left" }),
+          _vm._v(" "),
+          _c("p", [_vm._v("Cache Refreshed.")])
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "alert",
+        {
+          attrs: { type: "info" },
+          model: {
+            value: _vm.showRefreshAlert,
+            callback: function($$v) {
+              _vm.showRefreshAlert = $$v
+            },
+            expression: "showRefreshAlert"
+          }
+        },
+        [
+          _c(
+            "button",
+            {
+              staticClass: "close",
+              attrs: { type: "button" },
+              on: { click: _vm.closeRefreshAlert }
+            },
+            [_c("span", [_vm._v("×")])]
+          ),
+          _vm._v(" "),
+          _c("h4", [
+            _vm._v(
+              "Toggles Have Been Modified, would you like to refresh the environments?"
+            )
+          ]),
+          _vm._v(" "),
+          _vm._l(_vm.environmentsToRefresh, function(env) {
+            return _c("span", { staticClass: "env-button" }, [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-default text-uppercase",
+                  on: {
+                    click: function($event) {
+                      _vm.refreshEnvironment(env)
+                    }
+                  }
+                },
+                [_c("strong", [_vm._v(_vm._s(env))])]
+              )
+            ])
+          })
+        ],
+        2
+      ),
+      _vm._v(" "),
       _c(
         "vue-good-table",
         {
@@ -15049,26 +15264,37 @@ var render = function() {
                             [_c("i", { staticClass: "fas fa-trash-alt" })]
                           )
                         ])
-                      : props.column.field == "createdDate"
+                      : props.column.field == "toggleName" &&
+                        props.row.isPermanent
                         ? _c("span", [
-                            _vm._v(
-                              "\n\t\t\t\t" +
-                                _vm._s(
-                                  _vm._f("moment")(
-                                    props.formattedRow.createdDate,
-                                    "M/D/YY hh:mm:ss A"
-                                  )
-                                ) +
-                                "\n\t\t\t"
-                            )
+                            _c("span", [_vm._v(_vm._s(props.row.toggleName))]),
+                            _vm._v(" "),
+                            _c("span", { staticClass: "permanent-toggle" }, [
+                              _vm._v("Permanent")
+                            ])
                           ])
-                        : _c("span", [
-                            _vm._v(
-                              "\n\t\t\t\t" +
-                                _vm._s(props.formattedRow[props.column.field]) +
-                                "\n\t\t\t"
-                            )
-                          ])
+                        : props.column.field == "createdDate"
+                          ? _c("span", [
+                              _vm._v(
+                                "\n                    " +
+                                  _vm._s(
+                                    _vm._f("moment")(
+                                      props.formattedRow.createdDate,
+                                      "M/D/YY hh:mm:ss A"
+                                    )
+                                  ) +
+                                  "\n                "
+                              )
+                            ])
+                          : _c("span", [
+                              _vm._v(
+                                "\n                    " +
+                                  _vm._s(
+                                    props.formattedRow[props.column.field]
+                                  ) +
+                                  "\n                "
+                              )
+                            ])
                 ]
               }
             }
@@ -15088,11 +15314,6 @@ var render = function() {
       _c(
         "modal",
         {
-          attrs: {
-            "ok-text": "Save",
-            "cancel-text": "Cancel",
-            callback: _vm.saveToggle
-          },
           model: {
             value: _vm.showEditModal,
             callback: function($$v) {
@@ -15128,107 +15349,166 @@ var render = function() {
                 ? _c(
                     "div",
                     { staticClass: "form-horizontal" },
-                    _vm._l(_vm.gridColumns, function(col) {
-                      return _c("div", { staticClass: "form-group" }, [
-                        col.type == "boolean"
-                          ? _c("div", [
-                              _c(
-                                "label",
-                                { staticClass: "col-sm-4 control-label" },
-                                [_vm._v(_vm._s(col.label))]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "div",
-                                { staticClass: "col-sm-8 margin-top-8" },
-                                [
-                                  _c(
-                                    "div",
-                                    { staticClass: "checkbox" },
-                                    [
-                                      _vm.rowToEdit[col.field + "_IsDeployed"]
-                                        ? _c("checkbox", {
-                                            attrs: { type: "success" },
-                                            model: {
-                                              value: _vm.rowToEdit[col.field],
-                                              callback: function($$v) {
-                                                _vm.$set(
-                                                  _vm.rowToEdit,
-                                                  col.field,
-                                                  $$v
-                                                )
-                                              },
-                                              expression: "rowToEdit[col.field]"
-                                            }
-                                          })
-                                        : _vm._e(),
-                                      _vm._v(" "),
-                                      !_vm.rowToEdit[col.field + "_IsDeployed"]
-                                        ? _c("checkbox", {
-                                            model: {
-                                              value: _vm.rowToEdit[col.field],
-                                              callback: function($$v) {
-                                                _vm.$set(
-                                                  _vm.rowToEdit,
-                                                  col.field,
-                                                  $$v
-                                                )
-                                              },
-                                              expression: "rowToEdit[col.field]"
-                                            }
-                                          })
-                                        : _vm._e()
-                                    ],
-                                    1
-                                  )
-                                ]
-                              )
-                            ])
-                          : col.field !== "id" && col.field !== "createdDate"
+                    [
+                      _c(
+                        "div",
+                        { staticClass: "col-sm-8" },
+                        _vm._l(_vm.editFeatureToggleErrors, function(error) {
+                          return _c(
+                            "div",
+                            {
+                              key: error,
+                              staticClass: "validationMessage margin-left-15"
+                            },
+                            [_vm._v(_vm._s(error))]
+                          )
+                        })
+                      ),
+                      _vm._v(" "),
+                      _vm._l(_vm.gridColumns, function(col) {
+                        return _c("div", { staticClass: "form-group" }, [
+                          col.type == "boolean"
                             ? _c("div", [
-                                _c("div", { staticClass: "form-group" }, [
-                                  _c(
-                                    "label",
-                                    { staticClass: "col-sm-4 control-label" },
-                                    [_vm._v(_vm._s(col.label))]
-                                  ),
-                                  _vm._v(" "),
-                                  _c("div", { staticClass: "col-sm-6" }, [
-                                    _c("input", {
-                                      directives: [
-                                        {
-                                          name: "model",
-                                          rawName: "v-model",
-                                          value: _vm.rowToEdit[col.field],
-                                          expression: "rowToEdit[col.field]"
-                                        }
-                                      ],
-                                      staticClass: "form-control",
-                                      attrs: { type: "text" },
-                                      domProps: {
-                                        value: _vm.rowToEdit[col.field]
-                                      },
-                                      on: {
-                                        input: function($event) {
-                                          if ($event.target.composing) {
-                                            return
+                                _c(
+                                  "label",
+                                  { staticClass: "col-sm-4 control-label" },
+                                  [_vm._v(_vm._s(col.label))]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "div",
+                                  { staticClass: "col-sm-8 margin-top-8" },
+                                  [
+                                    _c(
+                                      "div",
+                                      {
+                                        staticClass: "checkbox",
+                                        on: {
+                                          click: function($event) {
+                                            _vm.environmentEdited(col.field)
                                           }
-                                          _vm.$set(
-                                            _vm.rowToEdit,
-                                            col.field,
-                                            $event.target.value
-                                          )
                                         }
-                                      }
-                                    })
+                                      },
+                                      [
+                                        _vm.rowToEdit[col.field + "_IsDeployed"]
+                                          ? _c("checkbox", {
+                                              attrs: { type: "success" },
+                                              model: {
+                                                value: _vm.rowToEdit[col.field],
+                                                callback: function($$v) {
+                                                  _vm.$set(
+                                                    _vm.rowToEdit,
+                                                    col.field,
+                                                    $$v
+                                                  )
+                                                },
+                                                expression:
+                                                  "rowToEdit[col.field]"
+                                              }
+                                            })
+                                          : _vm._e(),
+                                        _vm._v(" "),
+                                        !_vm.rowToEdit[
+                                          col.field + "_IsDeployed"
+                                        ]
+                                          ? _c("checkbox", {
+                                              model: {
+                                                value: _vm.rowToEdit[col.field],
+                                                callback: function($$v) {
+                                                  _vm.$set(
+                                                    _vm.rowToEdit,
+                                                    col.field,
+                                                    $$v
+                                                  )
+                                                },
+                                                expression:
+                                                  "rowToEdit[col.field]"
+                                              }
+                                            })
+                                          : _vm._e()
+                                      ],
+                                      1
+                                    )
+                                  ]
+                                )
+                              ])
+                            : col.field !== "id" && col.field !== "createdDate"
+                              ? _c("div", [
+                                  _c("div", { staticClass: "form-group" }, [
+                                    _c(
+                                      "label",
+                                      { staticClass: "col-sm-4 control-label" },
+                                      [_vm._v(_vm._s(col.label))]
+                                    ),
+                                    _vm._v(" "),
+                                    _c("div", { staticClass: "col-sm-6" }, [
+                                      _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: _vm.rowToEdit[col.field],
+                                            expression: "rowToEdit[col.field]"
+                                          }
+                                        ],
+                                        staticClass: "form-control",
+                                        attrs: { type: "text" },
+                                        domProps: {
+                                          value: _vm.rowToEdit[col.field]
+                                        },
+                                        on: {
+                                          input: function($event) {
+                                            if ($event.target.composing) {
+                                              return
+                                            }
+                                            _vm.$set(
+                                              _vm.rowToEdit,
+                                              col.field,
+                                              $event.target.value
+                                            )
+                                          }
+                                        }
+                                      })
+                                    ])
                                   ])
                                 ])
-                              ])
-                            : _vm._e()
-                      ])
-                    })
+                              : _vm._e()
+                        ])
+                      })
+                    ],
+                    2
                   )
                 : _vm._e()
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "modal-footer",
+              attrs: { slot: "modal-footer" },
+              slot: "modal-footer"
+            },
+            [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-default",
+                  attrs: { type: "button" },
+                  on: { click: _vm.cancelEdit }
+                },
+                [_vm._v("Cancel")]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-primary",
+                  attrs: { type: "button" },
+                  on: { click: _vm.saveToggle }
+                },
+                [_vm._v("Save")]
+              )
             ]
           )
         ]
@@ -15285,12 +15565,12 @@ var render = function() {
                       )
                     ]),
                     _vm._v(
-                      " feature toggle is active on at least one environment. Are you sure you want to delete it?\n\t\t\t"
+                      " feature toggle is active on at least one environment. Are you sure you want to delete it?\n\t\t\t\t"
                     )
                   ])
                 : _c("div", [
                     _vm._v(
-                      "\n\t\t\t\tAre you sure you want to delete this feature toggle?\n\t\t\t"
+                      "\n\t\t\t\t\tAre you sure you want to delete this feature toggle?\n\t\t\t\t"
                     )
                   ])
             ]
@@ -15319,7 +15599,7 @@ if (true) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_AppSelection_vue__ = __webpack_require__(17);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_1d178202_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_AppSelection_vue__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(6);
 var disposed = false
 /* script */
 
@@ -15417,7 +15697,7 @@ if (true) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_AddApplication_vue__ = __webpack_require__(18);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_6d2eb783_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_AddApplication_vue__ = __webpack_require__(48);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(6);
 var disposed = false
 /* script */
 
@@ -15670,7 +15950,7 @@ if (true) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_AddFeatureToggle_vue__ = __webpack_require__(19);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_2672ec5d_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_AddFeatureToggle_vue__ = __webpack_require__(51);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(6);
 var disposed = false
 function injectStyle (context) {
   if (disposed) return
@@ -15732,7 +16012,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = __webpack_require__(8).default
-var update = add("abf5e076", content, false, {});
+var update = add("7e65f754", content, false, {});
 // Hot Module Replacement
 if(true) {
  // When the styles change, update the <style> tags
@@ -15907,7 +16187,7 @@ if (true) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_AddEnvironment_vue__ = __webpack_require__(20);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_1bb1cac6_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_AddEnvironment_vue__ = __webpack_require__(54);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(6);
 var disposed = false
 function injectStyle (context) {
   if (disposed) return
@@ -15969,7 +16249,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = __webpack_require__(8).default
-var update = add("008b316c", content, false, {});
+var update = add("4d236e59", content, false, {});
 // Hot Module Replacement
 if(true) {
  // When the styles change, update the <style> tags
@@ -16176,7 +16456,7 @@ if (true) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_ForceCacheRefresh_vue__ = __webpack_require__(21);
 /* unused harmony namespace reexport */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_2ff467c0_hasScoped_false_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_ForceCacheRefresh_vue__ = __webpack_require__(56);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_runtime_component_normalizer__ = __webpack_require__(6);
 var disposed = false
 /* script */
 
@@ -16352,6 +16632,7 @@ if (true) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return render; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return staticRenderFns; });
 var render = function() {
+  var this$1 = this
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
@@ -16394,6 +16675,21 @@ var render = function() {
                     _vm._m(1),
                     _vm._v(" "),
                     _c("ul", { staticClass: "dropdown-menu" }, [
+                      _c("li", [
+                        _c(
+                          "a",
+                          {
+                            attrs: { href: "#" },
+                            on: {
+                              click: function() {
+                                this$1.ReloadCurrentApplicationToggles()
+                              }
+                            }
+                          },
+                          [_vm._v("Reload Application Toggles")]
+                        )
+                      ]),
+                      _vm._v(" "),
                       _c("li", [
                         _c(
                           "a",
