@@ -17,7 +17,7 @@ module.exports = (env) => {
             moduleFilenameTemplate:
                 path.relative(bundleOutputDir,
                     '[resourcePath]') // Point sourcemap entries to the original file locations on disk
-        })
+		})
     ];
 
     let stagingPlugins = [
@@ -27,8 +27,7 @@ module.exports = (env) => {
             moduleFilenameTemplate:
                 path.relative(bundleOutputDir,
                     '[resourcePath]') // Point sourcemap entries to the original file locations on disk
-        }),
-        new ExtractTextPlugin('site-stage.css')
+        })
     ];
 
     let productionPlugins = [
@@ -38,8 +37,7 @@ module.exports = (env) => {
             compress: {
                 warnings: false
             }
-        }),
-        new ExtractTextPlugin('site.css')
+        })
     ];
 
     let cssLoaders = isDevBuild
@@ -64,7 +62,7 @@ module.exports = (env) => {
         });
 
     return {
-        entry: { 'main': './ClientApp/boot.js' },
+		entry: { 'main': ['./ClientApp/boot.js', './sass/moggles.scss']},
         context: __dirname,
         output: {
             path: path.join(__dirname, bundleOutputDir),
@@ -73,22 +71,43 @@ module.exports = (env) => {
         },
 
         module: {
-            rules: [
-                {
-                    test: /\.css$/,
-					use: ['vue-style-loader', 'css-loader'],
-                    exclude: /node_modules/
-                },
-                {
-                    test: /\.scss$/,
-					use: ['vue-style-loader', 'css-loader', 'sass-loader'],
-                    exclude: /node_modules/
-                },
-                {
-                    test: /\.sass$/,
-					use: ['vue-style-loader', 'css-loader', 'sass-loader?indentedSyntax'],
-                    exclude: /node_modules/
-                },
+			rules: [
+				{
+					test: /\.css$/,
+					use: ['vue-style-loader', 'css-loader']
+				},
+				{
+					test: /\.scss$/,
+					use: [
+						{
+							loader: 'file-loader',
+							options: {
+								name: '[name].css',
+								outputPath: '../css/'
+							}
+						},
+						{
+							loader: 'extract-loader'
+						},
+						{
+							loader: 'css-loader'
+						},
+						{
+							loader: 'postcss-loader'
+						},
+						{
+							loader: 'sass-loader'
+						}
+					]
+				},
+				{
+					test: /\.sass$/,
+					use: [
+						'vue-style-loader',
+						'css-loader',
+						'sass-loader?indentedSyntax'
+					]
+				},
                 {
                     test: /\.vue$/,
                     loader: 'vue-loader',

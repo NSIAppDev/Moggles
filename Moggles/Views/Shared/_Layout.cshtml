@@ -8,13 +8,7 @@
 
 	<base href="~/" />
 
-	<link rel="stylesheet" href="~/dist/vendor.css" asp-append-version="true" />
-	<environment include="Staging">
-		<link rel="stylesheet" href="~/dist/site-stage.css" asp-append-version="true" />
-	</environment>
-	<environment include="Production">
-		<link rel="stylesheet" href="~/dist/site.css" asp-append-version="true" />
-	</environment>
+	<link rel="stylesheet" href="~/css/moggles.css" asp-append-version="true" />
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
 
 	@Html.Raw(JavaScriptSnippet.FullScript)

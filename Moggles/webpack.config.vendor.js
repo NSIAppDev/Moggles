@@ -12,8 +12,6 @@ module.exports = (env) => {
     const extractCSS = new ExtractTextPlugin('vendor.css');
 
     let entries = Object.keys(libs.dependencies);
-	entries.push('vue-good-table/dist/vue-good-table.min.css');
-	entries.push('bootstrap/dist/css/bootstrap.min.css');
 
     return [{
         stats: { modules: false },
