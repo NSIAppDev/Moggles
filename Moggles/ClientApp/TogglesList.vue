@@ -35,7 +35,7 @@
 					<a @click="confirmDelete(props.row)"><i class="fas fa-trash-alt"></i></a>
 				</span>
 				<span v-else-if="props.column.field == 'toggleName' && props.row.isPermanent">
-					<span>{{props.row.toggleName}}</span>  <span class="permanent-toggle">Permanent</span>
+					<span>{{props.row.toggleName}}</span> <span class="label label-danger">Permanent</span>
 				</span>
 				<span v-else-if="props.column.field == 'createdDate'">
 					{{props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A')}}
@@ -48,7 +48,7 @@
 		<modal v-model="showEditModal" title="Edit Feature Flags">
 			<div v-if="rowToEdit" class="form-horizontal">
 				<div class="col-sm-8">
-					<div v-for="error in editFeatureToggleErrors" :key="error" class="validationMessage margin-left-15">{{error}}</div>
+					<div v-for="error in editFeatureToggleErrors" :key="error" class="text-danger margin-left-15">{{error}}</div>
 				</div>
 				<div class="form-group" v-for="col in gridColumns">
 					<div v-if="col.type == 'boolean'">

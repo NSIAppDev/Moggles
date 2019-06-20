@@ -9,7 +9,7 @@
         <div class="panel-body">
             <div class="">
                 <div class="form-group">
-                    <div v-for="error in errors" :key="error" class="validationMessage">{{error}}</div>
+                    <div v-for="error in errors" :key="error" class="text-danger">{{error}}</div>
                     <input class="form-control" v-model="envName" type="text" name="envName" placeholder="Env name..." maxlength="50">
                 </div>
                 <div class="form-group">

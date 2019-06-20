@@ -15,18 +15,10 @@ body {
 	background: $white;
 }
 
-.margin-right-10 {
-	margin-right: 10px;
-}
-
 .vertical-align {
 	display: flex;
 	align-items: center;
 	height: 50px;
-}
-
-.validationMessage {
-	color: $red;
 }
 
 .width-55 {
@@ -67,14 +59,6 @@ label.checkbox > .icon {
 
 .env-button {
 	margin-right: 10px;
-}
-
-.permanent-toggle {
-	margin-left: 10px;
-	font-size: small;
-	color: $white;
-	background-color: $red;
-	padding: 3px 6px;
 }
 
 .page-blocker {

@@ -8,7 +8,7 @@
 
 		<div class="panel-body">
 			<div class="form-group">
-				<div v-for="error in errors" :key="error" class="validationMessage">{{error}}</div>
+				<div v-for="error in errors" :key="error" class="text-danger">{{error}}</div>
 				<input class="form-control" v-model="featureToggleName" type="text" name="ftName" placeholder="Feature toggle name..." maxlength="80">
 			</div>
 			<div class="form-group">

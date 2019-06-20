@@ -29,7 +29,7 @@
 			<div>
 				<button class="btn btn-default btn-primary" v-on:click="addApplication" type="button">Add</button>
 			</div>
-			<div v-for="error in errors" :key="error" class="validationMessage">{{error}}</div>
+			<div v-for="error in errors" :key="error" class="text-danger">{{error}}</div>
 		</div>
 	</div>
 </template>

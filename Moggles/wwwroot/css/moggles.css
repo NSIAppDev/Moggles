@@ -9337,18 +9337,12 @@ body {
   padding-top: 70px;
   background: #ffffff; }
 
-.margin-right-10 {
-  margin-right: 10px; }
-
 .vertical-align {
   display: -webkit-flex;
   display: flex;
   -webkit-align-items: center;
           align-items: center;
   height: 50px; }
-
-.validationMessage {
-  color: #ed1c24; }
 
 .width-55 {
   width: 55px !important; }
@@ -9381,13 +9375,6 @@ label.checkbox > .icon {
 
 .env-button {
   margin-right: 10px; }
-
-.permanent-toggle {
-  margin-left: 10px;
-  font-size: small;
-  color: #ffffff;
-  background-color: #ed1c24;
-  padding: 3px 6px; }
 
 .page-blocker {
   color: #d9edf7;
