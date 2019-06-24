@@ -1,31 +1,27 @@
 ﻿<template>
-    <div id="app-sel">        
-		<v-select :options="applicationList" v-model="selectedAppId" @change="changeApp" options-value="id" options-label="appName"></v-select>
+    <div id="app-sel"> 
+		<multi-select :limit="1" :options="applicationList" v-model="selectedApps" @change="changeApp" :value-key="'id'" :label-key="'appName'" :selected-icon="'fas fa-check'" ref="appSelection"></multi-select>
     </div>
 </template>
 
 <script>
 	import { Bus } from './event-bus'
 	import axios from 'axios'
-	import { select } from 'vue-strap'
 	import _ from 'lodash'
 
 	export default {
-		components: {
-			'v-select': select
-		},
         data() {
             return { 
 				applicationList: [],
-				selectedAppId: null
+				selectedApps: []
 			}
         },
         methods: {
-			changeApp(value) {
-				this.selectedAppId = value
-				var app = _.find(this.applicationList, (a) => a.id == this.selectedAppId)
+			changeApp() {
+				var app = _.find(this.applicationList, (a) => a.id == this.selectedApps[0])
                 if (app) {
-                    Bus.$emit('app-changed', app)
+					Bus.$emit('app-changed', app)
+					this.$refs.appSelection.showDropdown = false
                 }
             },
 			getApplications() {
@@ -33,8 +29,10 @@
 					.then((response) => {
 						this.applicationList = response.data
                         if (!this.selectedAppId) {
-                            if (response.data.length > 0) {
-                                this.selectedAppId = response.data[0].id;
+							if (response.data.length > 0) {
+								if (this.selectedApps.length == 0) {
+									this.selectedApps.push(response.data[0].id);
+								}
                             }
 						}
                     })
@@ -44,10 +42,10 @@
 		created() {
 			this.getApplications()
 			Bus.$on("new-app-added", () => {
-				this.getApplications
+				this.getApplications()
 			});
 			Bus.$on("reload-application-toggles", () => {
-				this.changeApp(this.selectedAppId);
+				this.changeApp();
 			});
 		}
     }

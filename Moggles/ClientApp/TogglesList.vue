@@ -1,15 +1,10 @@
 ﻿<template>
 	<div>
-		<spinner ref="spinner" v-model="spinner" size="sm"></spinner>
-		<alert v-model="showSuccessAlert" placement="top-right" duration="1500" type="success" width="400px" dismissable>
-			<span class="icon-ok-circled alert-icon-float-left"></span>
-			<p>Cache Refreshed.</p>
-		</alert>
-		<alert type="info" :value="showRefreshAlert">
+		<alert type="info" v-if="showRefreshAlert">
 			<button type="button" class="close" @click="closeRefreshAlert"><span>×</span></button>
 			<h4>Toggles Have Been Modified, would you like to refresh the environments?</h4>
-			<span v-for="env in environmentsToRefresh" class="env-button">
-				<button class="btn btn-default text-uppercase" @click="refreshEnvironment(env)"><strong>{{env}}</strong></button>
+			<span v-for="(env, index) in environmentsToRefresh" class="env-button">
+				<button class="btn btn-default text-uppercase" @click="refreshEnvironment(env, index)"><strong>{{env}}</strong></button>
 			</span>
 		</alert>
 		<vue-good-table ref="toggleGrid"
@@ -26,93 +21,92 @@
 			<div slot="emptystate">
 				<div class="text-center">There are no toggles for this application or filtered search</div>
 			</div>
-            <template slot="table-row" slot-scope="props">
-                <span v-if="props.column.type == 'boolean'" :class="{ 'is-deployed': props.row[props.column.field + '_IsDeployed']}">
-                    <checkbox v-if="props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" type="success" disabled></checkbox>
-                    <checkbox v-if="!props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" disabled></checkbox>
-                </span>
-                <span v-else-if="props.column.field == 'id'">
-                    <a @click="edit(props.row)"><i class="fas fa-edit"></i></a>
-                    <a @click="confirmDelete(props.row)"><i class="fas fa-trash-alt"></i></a>
-                </span>
-                <span v-else-if="props.column.field == 'toggleName' && props.row.isPermanent">
-                    <span>{{props.row.toggleName}}</span>  <span class="permanent-toggle">Permanent</span>
-                </span>
-                <span v-else-if="props.column.field == 'createdDate'">
-                    {{props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A')}}
-                </span>
-                <span v-else>
-                    {{props.formattedRow[props.column.field]}}
-                </span>
-            </template>
+			<template slot="table-row" slot-scope="props">
+				<span v-if="props.column.type == 'boolean'" class="pull-left" :class="{ 'is-deployed': props.row[props.column.field + '_IsDeployed']}">
+					<p-check class="p-icon p-fill p-locked" v-if="props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" color="success">
+						<i slot="extra" class="icon fas fa-check"></i>
+					</p-check>
+					<p-check class="p-icon p-fill p-locked" v-if="!props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" color="default">
+						<i slot="extra" class="icon fas fa-check"></i>
+					</p-check>
+				</span>
+				<span v-else-if="props.column.field == 'id'">
+					<a @click="edit(props.row)"><i class="fas fa-edit"></i></a>
+					<a @click="confirmDelete(props.row)"><i class="fas fa-trash-alt"></i></a>
+				</span>
+				<span v-else-if="props.column.field == 'toggleName' && props.row.isPermanent">
+					<span>{{props.row.toggleName}}</span> <span class="label label-danger">Permanent</span>
+				</span>
+				<span v-else-if="props.column.field == 'createdDate'">
+					{{props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A')}}
+				</span>
+				<span v-else>
+					{{props.formattedRow[props.column.field]}}
+				</span>
+			</template>
 		</vue-good-table>
-        <modal v-model="showEditModal">
-            <div slot="modal-header" class="modal-header">
-                <h4 class="modal-title">Edit Feature Flags</h4>
-            </div>
-            <div slot="modal-body" class="mocdal-body">
-                <div v-if="rowToEdit" class="form-horizontal">
-                    <div class="col-sm-8">
-                        <div v-for="error in editFeatureToggleErrors" :key="error" class="validationMessage margin-left-15">{{error}}</div>
-                    </div>
-                    <div class="form-group" v-for="col in gridColumns">
-                        <div v-if="col.type == 'boolean'">
-                            <label class="col-sm-4 control-label">{{col.label}}</label>
-                            <div class="col-sm-1 margin-top-8">
-                                <div class="checkbox" @click="environmentEdited(col.field)">
-                                    <checkbox v-if="rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" type="success"></checkbox>
-                                    <checkbox v-if="!rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]"></checkbox>
-                                </div>
+		<modal v-model="showEditModal" title="Edit Feature Flags">
+			<div v-if="rowToEdit" class="form-horizontal">
+				<div class="col-sm-8">
+					<div v-for="error in editFeatureToggleErrors" :key="error" class="text-danger margin-left-15">{{error}}</div>
+				</div>
+				<div class="form-group" v-for="col in gridColumns">
+					<div v-if="col.type == 'boolean'">
+						<label class="col-sm-4 control-label">{{col.label}}</label>
+						<div class="col-sm-1 margin-top-8">
+							<div @click="environmentEdited(col.field)">
+								<p-check class="p-icon p-fill" v-if="rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" color="success">
+									<i slot="extra" class="icon fas fa-check"></i>
+								</p-check>
+								<p-check class="p-icon p-fill" v-if="!rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" color="default">
+									<i slot="extra" class="icon fas fa-check"></i>
+								</p-check>
+							</div>
 
-                            </div>
-                            <div class="col-sm-6 margin-top-8">                      
-                                <div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null"><strong>Deployed:</strong> {{rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('MM/DD/YYYY hh:mm')}}</div>
-                                <div v-if="isEnviroment(col.field)"><strong>Last Updated:</strong> {{rowToEdit[col.field + '_LastUpdated'] | moment('MM/DD/YYYY hh:mm')}}</div>
-                            </div>
-                        </div>
-                        <div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">{{col.label}}</label>
-                                <div class="col-sm-7">
-                                    <input type="text" class="form-control" v-model="rowToEdit[col.field]">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div slot="modal-footer" class="modal-footer">
-                <button type="button" class="btn btn-default" @click="cancelEdit">Cancel</button>
-                <button type="button" class="btn btn-primary" @click="saveToggle">Save</button>
-            </div>
-        </modal>
-		<modal v-model="showDeleteConfirmation" ok-text="Delete" cancel-text="Cancel" :callback="deleteToggle">
-			<div slot="modal-header" class="modal-header">
-				<h4 class="modal-title">You are about to delete a feature toggle</h4>
+						</div>
+						<div class="col-sm-6 margin-top-8">
+							<div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null"><strong>Deployed:</strong> {{rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('MM/DD/YYYY hh:mm')}}</div>
+							<div v-if="isEnviroment(col.field)"><strong>Last Updated:</strong> {{rowToEdit[col.field + '_LastUpdated'] | moment('MM/DD/YYYY hh:mm')}}</div>
+						</div>
+					</div>
+					<div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
+						<div class="form-group">
+							<label class="col-sm-4 control-label">{{col.label}}</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" v-model="rowToEdit[col.field]">
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
-			<div slot="modal-body" class="modal-body">
-				<div v-if="toggleIsDeployed">
-					<strong>{{rowDataToDelete ? rowDataToDelete.toggleName: ""}}</strong> feature toggle is active on at least one environment. Are you sure you want to delete it?
-				</div>
-				<div v-else>
-					Are you sure you want to delete this feature toggle?
-				</div>
+			<div slot="footer">
+				<button type="button" class="btn btn-default" @click="cancelEdit">Cancel</button>
+				<button type="button" class="btn btn-primary" @click="saveToggle">Save</button>
+			</div>
+		</modal>
+		<modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle">
+			<div v-if="toggleIsDeployed">
+				<strong>{{rowDataToDelete ? rowDataToDelete.toggleName: ""}}</strong> feature toggle is active on at least one environment. Are you sure you want to delete it?
+			</div>
+			<div v-else>
+				Are you sure you want to delete this feature toggle?
+			</div>
+			<div slot="footer">
+				<button type="button" class="btn btn-default" @click="showDeleteConfirmation = false">Cancel</button>
+				<button type="button" class="btn btn-primary" @click="deleteToggle">Delete</button>
 			</div>
 		</modal>
 	</div>
 </template>
 <script>
-	import { modal, checkbox, alert, spinner } from 'vue-strap'
+	import PrettyCheck from 'pretty-checkbox-vue/check';
 	import axios from 'axios'
 	import _ from 'lodash'
 	import { Bus } from './event-bus'
 	export default {
 		environmentsList: [],
 		components: {
-			modal,
-			checkbox,
-			alert,
-			spinner
+			'p-check': PrettyCheck
 		},
 		data() {
 			const PAGE_SIZE = 15;
@@ -130,21 +124,19 @@
 				environmentsEdited: [],
 				environmentsToRefresh: [],
 				refreshAlertVisible: false,
-                showSuccessAlert: false,
-                spinner: false,
-                isCacheRefreshEnabled: false,
-                editFeatureToggleErrors: []
+				isCacheRefreshEnabled: false,
+				editFeatureToggleErrors: []
 			}
 		},
 		created() {
-            axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
-                this.isCacheRefreshEnabled = response.data;
-            }).catch(error => window.alert(error));
-            Bus.$on("app-changed", app => {
-                if (app) {
-                    this.selectedApp = app;
-                    this.initializeGrid(app)
-                }
+			axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
+				this.isCacheRefreshEnabled = response.data;
+			}).catch(error => window.alert(error));
+			Bus.$on("app-changed", app => {
+				if (app) {
+					this.selectedApp = app;
+					this.initializeGrid(app)
+				}
 			})
 
 			Bus.$on("env-added", () => {
@@ -156,19 +148,19 @@
 			})
 		},
 		methods: {
-            saveToggle() {
-                this.editFeatureToggleErrors = [];
-                if (this.stringIsNullOrEmpty(this.rowToEdit.toggleName)) {
-                    this.editFeatureToggleErrors.push("Feature toggle name cannot be empty")
-                    return;
-                };
+			saveToggle() {
+				this.editFeatureToggleErrors = [];
+				if (this.stringIsNullOrEmpty(this.rowToEdit.toggleName)) {
+					this.editFeatureToggleErrors.push("Feature toggle name cannot be empty")
+					return;
+				};
 
 				let toggleUpdateModel = {
 					id: this.rowToEdit.id,
 					userAccepted: this.rowToEdit.userAccepted,
-                    notes: this.rowToEdit.notes,
-                    featureToggleName: this.rowToEdit.toggleName,
-                    isPermanent: this.rowToEdit.isPermanent,
+					notes: this.rowToEdit.notes,
+					featureToggleName: this.rowToEdit.toggleName,
+					isPermanent: this.rowToEdit.isPermanent,
 					statuses: []
 				}
 				_.forEach(this.environmentsList, envName => {
@@ -176,7 +168,7 @@
 						environment: envName,
 						enabled: this.rowToEdit[envName]
 					});
-                });
+				});
 				if (this.isCacheRefreshEnabled) {
 					_.forEach(this.environmentsEdited, envName => {
 						this.addEnvironemntToRefreshList(envName);
@@ -207,7 +199,7 @@
 						field: 'toggleName',
 						label: 'Feature Toggle Name',
 						sortable: true,
-                        thClass: 'sortable',
+						thClass: 'sortable',
 						filterOptions: {
 							enabled: true,
 							placeholder: 'Filter Toggle Name'
@@ -222,19 +214,19 @@
 							enabled: true,
 							placeholder: 'Filter Notes'
 						}
-                    },
-                    {
-                        field: 'isPermanent',
-                        label: 'Is Permanent',
-                        type: 'boolean',
-                        sortable: true,
-                        thClass: 'sortable',
-                        filterOptions: {
-                            enabled: true,
-                            placeholder: 'Filter'
-                        },
-                        hidden: true
-                    },
+					},
+					{
+						field: 'isPermanent',
+						label: 'Is Permanent',
+						type: 'boolean',
+						sortable: true,
+						thClass: 'sortable',
+						filterOptions: {
+							enabled: true,
+							placeholder: 'Filter'
+						},
+						hidden: true
+					},
 					{
 						field: 'userAccepted',
 						label: 'Accepted by User',
@@ -279,8 +271,8 @@
 				this.gridColumns = columns
 			},
 			edit(row) {
-				this.rowToEdit = row
-                this.showEditModal = true
+				this.rowToEdit = _.clone(row)
+				this.showEditModal = true
 			},
 			confirmDelete(row) {
 				this.rowDataToDelete = row
@@ -315,8 +307,8 @@
 						let rowModel = {
 							id: toggle.id,
 							toggleName: toggle.toggleName,
-                            userAccepted: toggle.userAccepted,
-                            isPermanent: toggle.isPermanent,
+							userAccepted: toggle.userAccepted,
+							isPermanent: toggle.isPermanent,
 							notes: toggle.notes,
 							createdDate: new Date(toggle.createdDate)
 						}
@@ -324,9 +316,9 @@
 						this.environmentsList.forEach(env => {
 							let envStatus = _.find(toggle.statuses, status => status.environment === env)
 							rowModel[env] = envStatus ? envStatus.enabled : false;
-                            rowModel[env + '_IsDeployed'] = envStatus ? envStatus.isDeployed : false;
-                            rowModel[env + '_FirstTimeDeployDate'] = envStatus ? envStatus.firstTimeDeployDate : "";
-                            rowModel[env + '_LastUpdated'] = envStatus ? envStatus.lastUpdated : "";
+							rowModel[env + '_IsDeployed'] = envStatus ? envStatus.isDeployed : false;
+							rowModel[env + '_FirstTimeDeployDate'] = envStatus ? envStatus.firstTimeDeployDate : "";
+							rowModel[env + '_LastUpdated'] = envStatus ? envStatus.lastUpdated : "";
 						});
 						return rowModel;
 					});
@@ -353,8 +345,8 @@
 					this.loadGridData(app.id);
 					this.$refs['toggleGrid'].reset()
 
-                        Bus.$emit('env-loaded', response.data)
-                    }).catch((e) => { window.alert(e) });
+					Bus.$emit('env-loaded', response.data)
+				}).catch((e) => { window.alert(e) });
 			},
 			environmentEdited(env) {
 				let index = _.indexOf(this.environmentsEdited, env);
@@ -362,99 +354,56 @@
 					this.environmentsEdited.push(env);
 				}
 			},
-			refreshEnvironment(env) {
+			refreshEnvironment(env, index) {
 				if (!this.selectedApp)
-                    return;
+					return;
 
 				let param = {
 					applicationId: this.selectedApp.id,
-                    envName: env
-                };
+					envName: env
+				};
 
-                this.spinner = true;
-                axios.post('api/CacheRefresh', param)
-                    .then((response) => {
-                        this.spinner = false;
-						this.showSuccessAlert = true;
-						_.remove(this.environmentsToRefresh, function (e) {
-							return e == env;
-						});
+				Bus.$emit('block-ui')
+				axios.post('api/CacheRefresh', param)
+					.then((response) => {
+						this.environmentsToRefresh.splice(index, 1);
 						///shouldn't need the below code, but computed value doesn't register the length as 0 without it
 						if (this.environmentsToRefresh.length === 0) {
 							this.environmentsToRefresh = [];
 						}
-                    }).catch((e) => {
-                        window.alert(e);
-                    }).finally(() => {
-                        this.spinner = false;
-                    });
+						this.$notify({
+							type: 'success',
+							content: `${env} Cache Refreshed.`,
+							offsetY: 70,
+							icon: 'fas fa-check-circle'
+						})
+					}).catch((e) => {
+						window.alert(e);
+					}).finally(() => {
+						Bus.$emit('unblock-ui')
+					});
 			},
 			addEnvironemntToRefreshList(env) {
-                let index = _.indexOf(this.environmentsToRefresh, env);
-                if (index === -1 && this.isEnviroment(env)) {
+				let index = _.indexOf(this.environmentsToRefresh, env);
+				if (index === -1 && this.isEnviroment(env)) {
 					this.environmentsToRefresh.push(env);
 					this.refreshAlertVisible = true;
 				}
 			},
 			closeRefreshAlert() {
 				this.refreshAlertVisible = false;
-            },
-            stringIsNullOrEmpty(text) {
-                return !text || /^\s*$/.test(text);
-            },
-            isEnviroment(env) {
-                return this.environmentsList.includes(env);
-            }
+			},
+			stringIsNullOrEmpty(text) {
+				return !text || /^\s*$/.test(text);
+			},
+			isEnviroment(env) {
+				return this.environmentsList.includes(env);
+			}
 		},
 		computed: {
 			showRefreshAlert() {
 				return this.environmentsToRefresh.length > 0 ? this.refreshAlertVisible : false;
-            }
+			}
 		}
 	}
 </script>
-<style>
-	.width-55 {
-		width: 55px !important;
-	}
-
-	th.sortable, a {
-		cursor: pointer;
-	}
-
-	.success > .dropdown-toggle {
-		color: #fff;
-		background-color: lightgreen !important;
-		border-color: #398439 !important;
-	}
-
-		.success > .dropdown-toggle.btn-success {
-			color: #fff;
-			background-color: #449d44 !important;
-			border-color: #398439 !important;
-		}
-
-	label.checkbox > .icon {
-		top: -.5rem !important;
-	}
-
-	.margin-top-8 {
-		margin-top: 8px;
-	}
-
-	.env-button {
-		margin-right: 10px;
-	}
-
-    .margin-left-15 {
-        margin-left: 15px;
-    }
-
-    .permanent-toggle {
-        margin-left: 10px;
-        font-size: small;
-        color: white;
-        background-color: red;
-        padding: 3pt 6pt
-    }
-</style>

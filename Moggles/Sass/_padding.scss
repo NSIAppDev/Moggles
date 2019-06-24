@@ -1,0 +1,61 @@
+﻿@for $i from 0 through 50 {
+	.padding-top-#{$i} {
+		padding-top: 1px * $i !important;
+	}
+
+	.padding-bottom-#{$i} {
+		padding-bottom: 1px * $i !important;
+	}
+
+	.padding-left-#{$i} {
+		padding-left: 1px * $i !important;
+	}
+
+	.padding-right-#{$i} {
+		padding-right: 1px * $i !important;
+	}
+
+	.padding-#{$i} {
+		padding: 1px * $i !important;
+	}
+
+	.padding-x-#{$i} {
+		padding: 0 1px * $i !important;
+	}
+
+	.padding-y-#{$i} {
+		padding: 1px * $i 0 !important;
+	}
+
+	.padding-#{$i}-override {
+		padding: 1px * $i !important;
+	}
+
+	.margin-top-#{$i} {
+		margin-top: 1px * $i !important;
+	}
+
+	.margin-bottom-#{$i} {
+		margin-bottom: 1px * $i !important;
+	}
+
+	.margin-left-#{$i} {
+		margin-left: 1px * $i !important;
+	}
+
+	.margin-right-#{$i} {
+		margin-right: 1px * $i !important;
+	}
+
+	.margin-#{$i} {
+		margin: 1px * $i !important;
+	}
+
+	.margin-x-#{$i} {
+		margin: 0 1px * $i !important;
+	}
+
+	.margin-y-#{$i} {
+		margin: 1px * $i 0 !important;
+	}
+}
