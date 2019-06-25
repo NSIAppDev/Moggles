@@ -98,6 +98,7 @@
   <ItemGroup>
     <Compile Include="MogglesPages\FeatureTogglesPage.cs" />
     <Compile Include="SmokeTests\AddANewFeatureToggle.cs" />
+    <Compile Include="SmokeTests\DeleteAFeatureToggle.cs" />
     <Compile Include="SmokeTests\IsAcceptedByUserFeatureToggle.cs" />
     <Compile Include="SmokeTests\IsPermanentFeatureToggle.cs" />
     <Compile Include="TestFramework\Browser.cs" />

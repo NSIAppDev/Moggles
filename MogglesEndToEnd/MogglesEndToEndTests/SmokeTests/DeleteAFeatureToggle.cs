@@ -1,11 +1,16 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MogglesEndToEndTests.TestFramework;
 
 namespace MogglesEndToEndTests.SmokeTests
 {
     [TestClass]
-    public class AddANewFeatureToggle
+    public class DeleteAFeatureToggle
     {
         [TestInitialize]
         public void Before()
@@ -15,25 +20,24 @@ namespace MogglesEndToEndTests.SmokeTests
         }
 
         [TestMethod]
-        [TestCategory("AddFeatureToggle")]
+        [TestCategory("DeleteFeatureToggle")]
         [TestCategory("SmokeTests")]
 
-        public void AddANewFeatureToggle_TheFeatureToggleIsAdded()
+        public void DeleteAFeatureToggle_TheFeatureToggleIsNoLongerVisible()
         {
             //act
             Pages.FeatureTogglesPage.Navigate();
             Pages.FeatureTogglesPage.SelectASpecificApplication(Constants.SmokeTestsApplication);
             Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
+            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName);
 
             //assert
-            Pages.FeatureTogglesPage.NewAddedFeatureToggleIsVisible(Constants.FeatureToggleName).Should().BeTrue();
-            Pages.FeatureTogglesPage.CreationDateIsCorrectlyDisplayed(Constants.FeatureToggleName).Should().BeTrue();    
+            Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
         }
 
         [TestCleanup]
         public void After()
         {
-            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName);
             Browser.Close();
             ChromeDriverUtils.KillChromeDriverProcesses();
         }
