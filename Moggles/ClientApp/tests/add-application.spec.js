@@ -70,7 +70,9 @@ describe('AddApplication.vue', () => {
         wrapper.find('button').trigger('click');
         await flushPromises();
 
-        expect(spy.calledWithExactly('new-app-added')).toBe(true);
+		expect(spy.calledWithExactly('new-app-added')).toBe(true);
+
+		spy.restore();
     })
 
     it('Calls the right URL passing the appName and environment name', async () => {
@@ -88,7 +90,8 @@ describe('AddApplication.vue', () => {
     })
 
     it('Shows a spinner while request is in process', async () => {
-        const wrapper = shallowMount(AddApplication);
+		const wrapper = shallowMount(AddApplication);
+		let spy = sinon.spy(Bus, '$emit');
 
         const appname = wrapper.find('input[name="appName"]');
         appname.setValue('App');
@@ -99,11 +102,13 @@ describe('AddApplication.vue', () => {
         wrapper.find('button').trigger('click');
         mockAdapter.onPost().reply(200);
 
-        expect(wrapper.vm.spinner).toBe(true);
+		expect(spy.calledWithExactly('block-ui')).toBe(true);
 
         await flushPromises();
 
-        expect(wrapper.vm.spinner).toBe(false);
+		expect(spy.calledWithExactly('unblock-ui')).toBe(true);
+
+		spy.restore();
     })
 
 })

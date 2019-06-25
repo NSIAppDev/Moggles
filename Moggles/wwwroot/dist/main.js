@@ -11735,6 +11735,9 @@ module.exports = (__webpack_require__(3))(227);
                 _this.defaultToggleValue = false;
                 _this.showSuccessAlert = true;
                 __WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* Bus */].$emit("new-app-added");
+                setTimeout(function () {
+                    _this.showSuccessAlert = false;
+                }, _this.alertDuration);
             }).catch(function (e) {
                 window.alert(e);
             }).finally(function (e) {
@@ -12943,183 +12946,182 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    [
-      _vm.showSuccessAlert
-        ? _c(
-            "alert",
-            {
-              attrs: { duration: _vm.alertDuration, type: "success" },
-              on: {
-                dismissed: function($event) {
-                  _vm.showSuccessAlert = false
-                }
+  return _c("div", [
+    _vm.showSuccessAlert
+      ? _c(
+          "div",
+          {
+            staticClass: "alert alert-success",
+            on: {
+              dismissed: function($event) {
+                _vm.showSuccessAlert = false
               }
+            }
+          },
+          [_vm._m(0)]
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "panel-body" },
+      [
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", [_vm._v("Application name:")]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.applicationName,
+                expression: "applicationName"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              name: "appName",
+              placeholder: "Application name...",
+              maxlength: "100"
             },
-            [
-              _c("p", [
-                _c("i", { staticClass: "fas fa-check-circle" }),
-                _vm._v(" Application added succesfully.\n\t\t")
-              ])
-            ]
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "panel-body" },
-        [
+            domProps: { value: _vm.applicationName },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.applicationName = $event.target.value
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", [_vm._v("Add a first environment:")]),
+          _vm._v(" "),
           _c("div", { staticClass: "form-group" }, [
-            _c("label", [_vm._v("Application name:")]),
-            _vm._v(" "),
             _c("input", {
               directives: [
                 {
                   name: "model",
                   rawName: "v-model",
-                  value: _vm.applicationName,
-                  expression: "applicationName"
+                  value: _vm.environmentName,
+                  expression: "environmentName"
                 }
               ],
               staticClass: "form-control",
               attrs: {
                 type: "text",
-                name: "appName",
-                placeholder: "Application name...",
+                name: "envName",
+                placeholder: "Environment name...",
                 maxlength: "100"
               },
-              domProps: { value: _vm.applicationName },
+              domProps: { value: _vm.environmentName },
               on: {
                 input: function($event) {
                   if ($event.target.composing) {
                     return
                   }
-                  _vm.applicationName = $event.target.value
+                  _vm.environmentName = $event.target.value
                 }
               }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "form-group" }, [
-            _c("label", [_vm._v("Add a first environment:")]),
+            }),
             _vm._v(" "),
-            _c("div", { staticClass: "form-group" }, [
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.environmentName,
-                    expression: "environmentName"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  name: "envName",
-                  placeholder: "Environment name...",
-                  maxlength: "100"
-                },
-                domProps: { value: _vm.environmentName },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.environmentName = $event.target.value
-                  }
-                }
-              }),
+            _c("div", [
+              _c("label", [_vm._v("Default toggle value:")]),
               _vm._v(" "),
-              _c("div", [
-                _c("label", [_vm._v("Default toggle value:")]),
+              _c("div", { staticClass: "form-inline" }, [
+                _c("label", { attrs: { for: "d1" } }, [_vm._v("True")]),
                 _vm._v(" "),
-                _c("div", { staticClass: "form-inline" }, [
-                  _c("label", { attrs: { for: "d1" } }, [_vm._v("True")]),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.defaultToggleValue,
-                        expression: "defaultToggleValue"
-                      }
-                    ],
-                    attrs: {
-                      id: "d1",
-                      type: "radio",
-                      name: "defToggleValue",
-                      value: "true",
-                      checked: ""
-                    },
-                    domProps: {
-                      checked: _vm._q(_vm.defaultToggleValue, "true")
-                    },
-                    on: {
-                      change: function($event) {
-                        _vm.defaultToggleValue = "true"
-                      }
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.defaultToggleValue,
+                      expression: "defaultToggleValue"
                     }
-                  }),
-                  _vm._v(" "),
-                  _c("label", { attrs: { for: "d2" } }, [_vm._v("False")]),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.defaultToggleValue,
-                        expression: "defaultToggleValue"
-                      }
-                    ],
-                    attrs: {
-                      id: "d2",
-                      type: "radio",
-                      name: "defToggleValue",
-                      value: "false"
-                    },
-                    domProps: {
-                      checked: _vm._q(_vm.defaultToggleValue, "false")
-                    },
-                    on: {
-                      change: function($event) {
-                        _vm.defaultToggleValue = "false"
-                      }
+                  ],
+                  attrs: {
+                    id: "d1",
+                    type: "radio",
+                    name: "defToggleValue",
+                    value: "true",
+                    checked: ""
+                  },
+                  domProps: { checked: _vm._q(_vm.defaultToggleValue, "true") },
+                  on: {
+                    change: function($event) {
+                      _vm.defaultToggleValue = "true"
                     }
-                  })
-                ])
+                  }
+                }),
+                _vm._v(" "),
+                _c("label", { attrs: { for: "d2" } }, [_vm._v("False")]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.defaultToggleValue,
+                      expression: "defaultToggleValue"
+                    }
+                  ],
+                  attrs: {
+                    id: "d2",
+                    type: "radio",
+                    name: "defToggleValue",
+                    value: "false"
+                  },
+                  domProps: {
+                    checked: _vm._q(_vm.defaultToggleValue, "false")
+                  },
+                  on: {
+                    change: function($event) {
+                      _vm.defaultToggleValue = "false"
+                    }
+                  }
+                })
               ])
             ])
-          ]),
-          _vm._v(" "),
-          _c("div", [
-            _c(
-              "button",
-              {
-                staticClass: "btn btn-default btn-primary",
-                attrs: { type: "button" },
-                on: { click: _vm.addApplication }
-              },
-              [_vm._v("Add")]
-            )
-          ]),
-          _vm._v(" "),
-          _vm._l(_vm.errors, function(error) {
-            return _c("div", { key: error, staticClass: "text-danger" }, [
-              _vm._v(_vm._s(error))
-            ])
-          })
-        ],
-        2
-      )
-    ],
-    1
-  )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", [
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-default btn-primary",
+              attrs: { type: "button" },
+              on: { click: _vm.addApplication }
+            },
+            [_vm._v("Add")]
+          )
+        ]),
+        _vm._v(" "),
+        _vm._l(_vm.errors, function(error) {
+          return _c("div", { key: error, staticClass: "text-danger" }, [
+            _vm._v(_vm._s(error))
+          ])
+        })
+      ],
+      2
+    )
+  ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", [
+      _c("i", { staticClass: "fas fa-check-circle" }),
+      _vm._v(" Application added succesfully.\n\t\t")
+    ])
+  }
+]
 render._withStripped = true
 
 if (false) {

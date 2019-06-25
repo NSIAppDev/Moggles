@@ -1,10 +1,10 @@
 <template>
 	<div>
-		<alert v-if="showSuccessAlert" :duration="alertDuration" type="success" @dismissed="showSuccessAlert = false">
+		<div v-if="showSuccessAlert" class="alert alert-success" @dismissed="showSuccessAlert = false">
 			<p>
 				<i class="fas fa-check-circle"></i> Application added succesfully.
 			</p>
-		</alert>
+		</div>
 		<div class="panel-body">
 			<div class="form-group">
 				<label>Application name:</label>
@@ -76,7 +76,10 @@
                     this.environmentName = '';
                     this.defaultToggleValue = false;
                     this.showSuccessAlert = true;
-                    Bus.$emit("new-app-added");
+					Bus.$emit("new-app-added");
+					setTimeout(() => {
+                        this.showSuccessAlert = false;
+                    }, this.alertDuration)
                 }).catch(e => {
                     window.alert(e)
                 }).finally(e => {
