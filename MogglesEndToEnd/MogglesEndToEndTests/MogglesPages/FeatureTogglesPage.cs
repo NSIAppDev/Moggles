@@ -3,9 +3,7 @@ using NSTestFramework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
-using System.Collections.Generic;
 using System.Threading;
-using OpenQA.Selenium.Support.Extensions;
 using Browser = MogglesEndToEndTests.TestFramework.Browser;
 
 namespace MogglesEndToEndTests.MogglesPages
@@ -28,7 +26,7 @@ namespace MogglesEndToEndTests.MogglesPages
             By.CssSelector("body > div > div.modal.in> div > div> div> div > div> div:nth-child(3)> button"));
 
         public IWebElement CloseModal =>
-            Browser.WebDriver.FindElement(By.CssSelector("body > div > div.modal.in> div > div > div> button"));
+            Browser.WebDriver.FindElement(By.CssSelector("body > div:nth-child(1) > div.modal.fade.in> div > div > div.modal-header > button"));
 
         public IWebElement FeatureTogglesGrid =>
             Browser.WebDriver.FindElement(
@@ -36,11 +34,11 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public IWebElement DeleteFeatureToggleButton =>
             Browser.WebDriver.FindElement(
-                By.CssSelector("body > div > div> div > div > div > div:nth-child(6) > div > div > div> button.btn.btn-primary"));
+                By.CssSelector("body > div:nth-child(1) > div> div > div > div > div.modal.fade.in> div > div > div> div > button.btn.btn-primary"));
 
         public IWebElement IsPermanentCheckbox =>
             Browser.WebDriver.FindElement(
-                By.CssSelector("body > div > div> div > div > div > div> div > div > div> div > div:nth-child(9) > div > div> div > label > span"));
+                By.CssSelector("body > div:nth-child(1) > div> div > div > div > div> div > div > div> div > div:nth-child(9) > div > div> div > div > input[type=checkbox]"));
 
         public IWebElement FilterByACriteria =>
             Browser.WebDriver.FindElement(
@@ -48,17 +46,24 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public IWebElement IsAcceptedByUserCheckbox =>
             Browser.WebDriver.FindElement(
-                By.CssSelector("body > div > div> div > div > div > div> div > div > div> div > div:nth-child(10) > div > div> div > label > span"));
+                By.CssSelector("body > div:nth-child(1) > div> div > div > div > div> div > div > div> div > div:nth-child(10) > div > div> div > div > input[type=checkbox]"));
 
         public IWebElement SaveButton =>
             Browser.WebDriver.FindElement(
-                By.CssSelector("body > div > div> div > div > div > div.modal.in > div > div > div> button.btn.btn-primary"));
+                By.CssSelector("body > div:nth-child(1) > div> div > div > div > div.modal.fade.in> div > div > div> div > button.btn.btn-primary"));
 
-        public IWebElement StatusesDropdpwn =>
-            Browser.WebDriver.FindElement(
-                By.CssSelector("body > div > div> div > div > div > div> div > div> table > thead > tr:nth-child(2) > th:nth-child(6) > div > select"));
+        public IWebElement SelectApplication =>
+            Browser.WebDriver.FindElement(By.CssSelector("#app-sel > div"));
+
+        public IWebElement ApplicationsDropdown =>
+            Browser.WebDriver.FindElement(By.CssSelector("#app-sel > div > ul"));
 
         private readonly By _rowSelector = By.CssSelector(".vgt-responsive>table>tbody>tr");
+        private readonly By _statusesDropdown = By.CssSelector("body > div > div> div > div > div > div> div > div> table > thead > tr:nth-child(2) > th:nth-child(8) > div > select");
+        private readonly By _noFeatureToggleDisplayedText = By.CssSelector("body > div > div> div > div > div > div> div > div> table > tbody > tr > td > div > div");
+        private readonly By _deleteFeatureToggle = By.CssSelector("body > div > div> div > div > div > div> div > div> table > tbody > tr > td:nth-child(1) > span > a:nth-child(2) > i");
+        private readonly By _editFeatureToggle = By.CssSelector("body > div > div> div > div > div > div> div > div> table > tbody > tr > td:nth-child(1) > span > a:nth-child(1) > i");
+        private readonly By _isPermanentFlag = By.CssSelector("body > div > div> div > div > div > div> div > div> table > tbody > tr > td:nth-child(2) > span > span.label.label-danger");
 
         public void Navigate()
         {
@@ -81,22 +86,20 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void SelectASpecificApplication(string applicationName)
         {
-            var element = Browser.Driver.FindElement(By.XPath("//Select"));
-            IList<IWebElement> allDropDownList = element.FindElements(By.XPath("//option"));
-            var dpListCount = allDropDownList.Count;
-            for (var i = 0; i < dpListCount; i++)
+            SelectApplication.Click();
+            var applications = DropdownHelpers.GetDropdownList(ApplicationsDropdown, "li");
+            var applicationsCount = applications.Count;
+            for (var i = 0; i < applicationsCount; i++)
             {
-                if (allDropDownList[i].Text != applicationName) continue;
-                allDropDownList[i].Click();
+                if (applications[i].Text != applicationName) continue;
+                applications[i].Click();
                 break;
             }
         }
 
         public void FilterByAcceptedByUser(string status)
         {
-            var dropdown = Browser.WebDriver.FindElement(
-                By.CssSelector("body > div > div> div > div > div > div> div > div> table > thead > tr:nth-child(2) > th:nth-child(8) > div > select"));
-            
+            var dropdown = Browser.WebDriver.FindElement(_statusesDropdown);
             var statuses = new SelectElement(dropdown);
             statuses.Options[1].Click();
         }
@@ -110,14 +113,14 @@ namespace MogglesEndToEndTests.MogglesPages
             FeatureToggleNameInput.SendKeys(newFeatureToggleName);
             NotesInput.SendKeys("test");
             AddFeatureToggleButton.Click();
+            Thread.Sleep(1000);
             CloseModal.Click();
         }
 
         public bool IsGridEmpty()
         {
             Thread.Sleep(1000);
-            return Utils.IsElementDisplayedOnScreen(By.CssSelector(
-                "body > div > div> div > div > div > div> div > div> table > tbody > tr > td > div > div"));
+            return Utils.IsElementDisplayedOnScreen(_noFeatureToggleDisplayedText);
         }
 
         public bool NewAddedFeatureToggleIsVisible(string newFeatureToggleName)
@@ -157,7 +160,7 @@ namespace MogglesEndToEndTests.MogglesPages
             {
                 var cells = rows[i].FindElements(By.TagName("td"));
                 if (!cells[1].Text.Contains(newFeatureToggleName)) continue;
-                FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector,i,0).FindElement(By.CssSelector("body > div > div> div > div > div > div> div > div> table > tbody > tr > td:nth-child(1) > span > a:nth-child(2) > i")).Click(); 
+                FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector,i,0).FindElement(_deleteFeatureToggle).Click(); 
                 DeleteFeatureToggleButton.Click();
             }
         }
@@ -171,19 +174,21 @@ namespace MogglesEndToEndTests.MogglesPages
                 var cells = rows[i].FindElements(By.TagName("td"));
                 if (cells[1].Text.Equals(newFeatureToggleName))
                 {
-                    FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(By.CssSelector("body > div > div> div > div > div > div> div > div> table > tbody > tr > td:nth-child(1) > span > a:nth-child(1) > i")).Click();
+                    FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_editFeatureToggle).Click();
                 }
             }
         }
 
         public void SetFeatureToggleAsPermanent()
         {
+            Thread.Sleep(1000);
             IsPermanentCheckbox.Click();
             SaveButton.Click();
         }
 
         public void SetFeatureToggleAsAcceptedByUser()
         {
+            Thread.Sleep(1000);
             IsAcceptedByUserCheckbox.Click();
             SaveButton.Click();
         }
@@ -192,8 +197,7 @@ namespace MogglesEndToEndTests.MogglesPages
         {
             Thread.Sleep(1000);
             FilterByACriteria.SendKeys(Constants.FeatureToggleName);
-            return Utils.IsElementDisplayedOnScreen(By.CssSelector(
-                "body > div > div> div > div > div > div> div > div> table > tbody > tr > td:nth-child(2) > span > span.permanent-toggle"));
+            return Utils.IsElementDisplayedOnScreen(_isPermanentFlag);
         }        
     }
 }
