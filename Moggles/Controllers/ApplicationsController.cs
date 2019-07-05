@@ -57,5 +57,83 @@ namespace Moggles.Controllers
 
             return Ok(application.Entity);
         }
+
+        [HttpPut]
+        [Route("update")]
+        public IActionResult UpdateApplication([FromBody]UpdateApplicationModel applicationModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var app = _db.Applications.FirstOrDefault(a => a.Id == applicationModel.Id);
+
+            if (app == null)
+                throw new InvalidOperationException("Application does not exists!");
+
+            app.AppName = applicationModel.ApplicationName;
+
+            _db.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        public IActionResult RemoveApp([FromQuery] int id)
+        {
+            var toggles = _db.FeatureToggles
+                .Where(e => e.ApplicationId == id)
+                .Select(x => new FeatureToggle
+                {
+                    Id = x.Id
+                });
+
+            foreach (var toggle in toggles)
+            {
+                _db.FeatureToggles.Remove(toggle);
+            }
+
+            _db.SaveChanges();
+
+            var environments = _db.DeployEnvironments
+                .Where(e => e.ApplicationId == id)
+                .Select(x => new DeployEnvironment
+                {
+                    Id = x.Id
+                });
+
+            foreach (var env in environments)
+            {
+                var featureToggleStatuses = _db.FeatureToggleStatuses
+                    .Where(e => e.EnvironmentId == env.Id)
+                    .Select(x => new FeatureToggleStatus
+                    {
+                        Id = x.Id
+                    });
+
+                foreach (var status in featureToggleStatuses)
+                {
+                    _db.FeatureToggleStatuses.Remove(status);
+
+                }
+
+                _db.SaveChanges();
+
+                _db.DeployEnvironments.Remove(env);
+
+                _db.SaveChanges();
+            }
+
+            var app = new Application
+            {
+                Id = id
+            };
+
+            _db.Applications.Remove(app);
+
+            _db.SaveChanges();
+
+            return Ok();
+        }
+
     }
 }

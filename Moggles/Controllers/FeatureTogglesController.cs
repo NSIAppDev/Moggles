@@ -52,24 +52,6 @@ namespace Moggles.Controllers
                 }));
         }
 
-        [HttpGet]
-        [Route("environments")]
-        public IActionResult GetEnvironments(int applicationId)
-        {
-            List<DeployEnvironment> envs = GetEnvironmentsPerApp(applicationId);
-
-            return Ok(envs
-                .Select(e => e.EnvName)
-                .Distinct());
-        }
-
-        private List<DeployEnvironment> GetEnvironmentsPerApp(int applicationId)
-        {
-            return _db.DeployEnvironments
-                .Where(e => e.ApplicationId == applicationId)
-                .OrderBy(e => e.SortOrder).ToList();
-        }
-
         [HttpPut]
         [Route("")]
         public IActionResult Update([FromBody] FeatureToggleUpdateModel model)
@@ -158,6 +140,24 @@ namespace Moggles.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        [Route("environments")]
+        public IActionResult GetEnvironments(int applicationId)
+        {
+            List<DeployEnvironment> envs = GetEnvironmentsPerApp(applicationId);
+
+            return Ok(envs
+                .Select(e => new { e.EnvName, e.Id })
+                .Distinct());
+        }
+
+        private List<DeployEnvironment> GetEnvironmentsPerApp(int applicationId)
+        {
+            return _db.DeployEnvironments
+                .Where(e => e.ApplicationId == applicationId)
+                .OrderBy(e => e.SortOrder).ToList();
+        }
+
         [HttpPost]
         [Route("AddEnvironment")]
         public IActionResult AddEnvironment([FromBody] AddEnvironmentModel environmentModel)
@@ -205,6 +205,48 @@ namespace Moggles.Controllers
             }
 
             _db.SaveChanges();
+        }
+
+        [HttpDelete]
+        [Route("environments")]
+        public IActionResult RemoveEnvironment([FromQuery] int id)
+        {
+            var featureToggleStatuses = _db.FeatureToggleStatuses
+                .Where(e => e.EnvironmentId == id)
+                .Select(x => new FeatureToggleStatus
+                {
+                    Id = x.Id
+                });
+
+                _db.FeatureToggleStatuses.RemoveRange(featureToggleStatuses);
+
+            _db.SaveChanges();
+
+            var env = new DeployEnvironment { Id = id };
+
+            _db.DeployEnvironments.Remove(env);
+
+            _db.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("UpdateEnvironment")]
+        public IActionResult UpdateEnvironment([FromBody] UpdateEnvironmentModel environmentModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var env = _db.DeployEnvironments.FirstOrDefault(e => e.Id == environmentModel.Id);
+
+            if (env == null)
+                throw new InvalidOperationException("Environment does not exist!");
+
+            env.EnvName = environmentModel.EnvName;
+            _db.SaveChanges();
+
+            return Ok();
         }
 
         #region public API
