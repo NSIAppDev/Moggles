@@ -212,17 +212,11 @@ namespace Moggles.Controllers
         public IActionResult RemoveEnvironment([FromQuery] int id)
         {
             var featureToggleStatuses = _db.FeatureToggleStatuses
-                .Where(e => e.EnvironmentId == id)
-                .Select(x => new FeatureToggleStatus
-                {
-                    Id = x.Id
-                });
+                .Where(e => e.EnvironmentId == id);
+                    
+           _db.FeatureToggleStatuses.RemoveRange(featureToggleStatuses);
 
-                _db.FeatureToggleStatuses.RemoveRange(featureToggleStatuses);
-
-            _db.SaveChanges();
-
-            var env = new DeployEnvironment { Id = id };
+            var env = _db.DeployEnvironments.FirstOrDefault(x => x.Id == id);
 
             _db.DeployEnvironments.Remove(env);
 

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account.Manage;
 using Microsoft.AspNetCore.Mvc;
 using Moggles.Models;
 using Moggles.Data;
@@ -81,52 +83,20 @@ namespace Moggles.Controllers
         public IActionResult RemoveApp([FromQuery] int id)
         {
             var toggles = _db.FeatureToggles
-                .Where(e => e.ApplicationId == id)
-                .Select(x => new FeatureToggle
-                {
-                    Id = x.Id
-                });
+                .Where(e => e.ApplicationId == id);
 
-            foreach (var toggle in toggles)
-            {
-                _db.FeatureToggles.Remove(toggle);
-            }
-
-            _db.SaveChanges();
+            _db.FeatureToggles.RemoveRange(toggles);
 
             var environments = _db.DeployEnvironments
-                .Where(e => e.ApplicationId == id)
-                .Select(x => new DeployEnvironment
-                {
-                    Id = x.Id
-                });
+                .Where(e => e.ApplicationId == id).ToList();
+            var environmentIds = environments.Select(_ => _.Id);
 
-            foreach (var env in environments)
-            {
-                var featureToggleStatuses = _db.FeatureToggleStatuses
-                    .Where(e => e.EnvironmentId == env.Id)
-                    .Select(x => new FeatureToggleStatus
-                    {
-                        Id = x.Id
-                    });
+            var ftsToDelete = _db.FeatureToggleStatuses.Where(_ => environmentIds.Contains(_.EnvironmentId));
 
-                foreach (var status in featureToggleStatuses)
-                {
-                    _db.FeatureToggleStatuses.Remove(status);
+            _db.FeatureToggleStatuses.RemoveRange(ftsToDelete);
+            _db.DeployEnvironments.RemoveRange(environments);
 
-                }
-
-                _db.SaveChanges();
-
-                _db.DeployEnvironments.Remove(env);
-
-                _db.SaveChanges();
-            }
-
-            var app = new Application
-            {
-                Id = id
-            };
+            var app = _db.Applications.FirstOrDefault(x => x.Id == id);
 
             _db.Applications.Remove(app);
 
