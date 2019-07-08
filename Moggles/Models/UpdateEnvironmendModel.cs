@@ -4,7 +4,13 @@ namespace Moggles.Models
 {
     public class UpdateEnvironmentModel
     {
-        public int Id { get; set; }
-        [Required] [MaxLength(50)] public string EnvName { get; set; }
+        [Required]
+        public int ApplicationId { get; set; }
+
+        [Required] [MaxLength(50)]
+        public string InitialEnvName { get; set; }
+
+        [Required] [MaxLength(50)]
+        public string NewEnvName { get; set; }
     }
 }

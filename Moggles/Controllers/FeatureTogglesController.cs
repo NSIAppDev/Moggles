@@ -52,6 +52,24 @@ namespace Moggles.Controllers
                 }));
         }
 
+        [HttpGet]
+        [Route("environments")]
+        public IActionResult GetEnvironments(int applicationId)
+        {
+            List<DeployEnvironment> envs = GetEnvironmentsPerApp(applicationId);
+
+            return Ok(envs
+                .Select(e => e.EnvName)
+                .Distinct());
+        }
+
+        private List<DeployEnvironment> GetEnvironmentsPerApp(int applicationId)
+        {
+            return _db.DeployEnvironments
+                .Where(e => e.ApplicationId == applicationId)
+                .OrderBy(e => e.SortOrder).ToList();
+        }
+
         [HttpPut]
         [Route("")]
         public IActionResult Update([FromBody] FeatureToggleUpdateModel model)
@@ -140,24 +158,6 @@ namespace Moggles.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        [Route("environments")]
-        public IActionResult GetEnvironments(int applicationId)
-        {
-            List<DeployEnvironment> envs = GetEnvironmentsPerApp(applicationId);
-
-            return Ok(envs
-                .Select(e => new { e.EnvName, e.Id })
-                .Distinct());
-        }
-
-        private List<DeployEnvironment> GetEnvironmentsPerApp(int applicationId)
-        {
-            return _db.DeployEnvironments
-                .Where(e => e.ApplicationId == applicationId)
-                .OrderBy(e => e.SortOrder).ToList();
-        }
-
         [HttpPost]
         [Route("AddEnvironment")]
         public IActionResult AddEnvironment([FromBody] AddEnvironmentModel environmentModel)
@@ -209,14 +209,17 @@ namespace Moggles.Controllers
 
         [HttpDelete]
         [Route("environments")]
-        public IActionResult RemoveEnvironment([FromQuery] int id)
+        public IActionResult RemoveEnvironment([FromBody]DeleteEnvironmentModel environmentModel)
         {
-            var featureToggleStatuses = _db.FeatureToggleStatuses
-                .Where(e => e.EnvironmentId == id);
-                    
-           _db.FeatureToggleStatuses.RemoveRange(featureToggleStatuses);
+            var environmentToDelete = _db.DeployEnvironments.FirstOrDefault(x =>
+                x.ApplicationId == environmentModel.ApplicationId && x.EnvName == environmentModel.EnvName);
 
-            var env = _db.DeployEnvironments.FirstOrDefault(x => x.Id == id);
+            var featureToggleStatuses = _db.FeatureToggleStatuses
+                .Where(e => e.EnvironmentId == environmentToDelete.Id);
+
+            _db.FeatureToggleStatuses.RemoveRange(featureToggleStatuses);
+
+            var env = _db.DeployEnvironments.FirstOrDefault(x => x.Id == environmentToDelete.Id);
 
             _db.DeployEnvironments.Remove(env);
 
@@ -232,12 +235,12 @@ namespace Moggles.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var env = _db.DeployEnvironments.FirstOrDefault(e => e.Id == environmentModel.Id);
+            var env = _db.DeployEnvironments.FirstOrDefault(e => e.ApplicationId == environmentModel.ApplicationId && e.EnvName == environmentModel.InitialEnvName);
 
             if (env == null)
                 throw new InvalidOperationException("Environment does not exist!");
 
-            env.EnvName = environmentModel.EnvName;
+            env.EnvName = environmentModel.NewEnvName;
             _db.SaveChanges();
 
             return Ok();

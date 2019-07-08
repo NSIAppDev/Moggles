@@ -112,7 +112,7 @@
                     <br />
                     <label class="col-sm-4 control-label">Environment name:</label>
                     <div class="col-sm-7">
-                        <input type="text" class="form-control" v-model="environmentToEdit.envName">
+                        <input type="text" class="form-control" v-model="environmentToEdit.newEnvName">
                     </div>
                 </div>
             </div>
@@ -197,15 +197,16 @@
 		},
         methods: {
             saveEnvironment() {
-                this.editEnvErrors = [];
-                if (this.stringIsNullOrEmpty(this.environmentToEdit.envName)) {
+                this.editEnvErrors = []
+                if (this.stringIsNullOrEmpty(this.environmentToEdit.newEnvName)) {
                     this.editEnvErrors.push("Environment name cannot be empty")
                     return;
-                };
+                }
 
                 let envUpdateModel = {
-                    id: this.environmentToEdit.id,
-                    envName: this.environmentToEdit.envName
+                    applicationId: this.selectedApp.id,
+                    initialEnvName: this.environmentToEdit.initialEnvName,
+                    newEnvName: this.environmentToEdit.newEnvName
                 }
 
                 axios.put('/api/FeatureToggles/updateenvironment', envUpdateModel)
@@ -230,12 +231,12 @@
 					isPermanent: this.rowToEdit.isPermanent,
 					statuses: []
 				}
-				_.forEach(this.environmentsList, envName => {
-					toggleUpdateModel.statuses.push({
-						environment: envName,
-						enabled: this.rowToEdit[envName]
-					});
-				});
+                _.forEach(this.environmentsList, envName => {
+                    toggleUpdateModel.statuses.push({
+                        environment: envName,
+                        enabled: this.rowToEdit[envName]
+                    });
+                });
 				if (this.isCacheRefreshEnabled) {
 					_.forEach(this.environmentsEdited, envName => {
 						this.addEnvironemntToRefreshList(envName);
@@ -321,10 +322,10 @@
 				]
 
 				//create the environment columns
-				columns.splice(2, 0, ..._.map(this.environmentsList, env => {
+				columns.splice(2, 0, ..._.map(this.environmentsList, envName => {
 					return {
-                        field: env.envName,
-                        label: env.envName,
+                        field: envName,
+                        label: envName,
 						type: 'boolean',
 						sortable: false,
 						filterOptions: {
@@ -341,15 +342,23 @@
 
 				this.gridColumns = columns
             },
-            editEnvName(column) {             
-                this.environmentToEdit = _.clone( this.environmentsList.find(element => element.envName == column.field))
+            editEnvName(column) {      
+                this.environmentToEdit = {}
+                var environmentFromList = this.environmentsList.find(element => element == column.field)               
+                this.environmentToEdit.newEnvName = environmentFromList
+                this.environmentToEdit.initialEnvName = environmentFromList
                 this.showEditEnvironmentModal = true
             },
             confirmDeleteEnvironment() {
                 this.showDeleteEnvironmentConfirmation = true
             },
             deleteEnvironment() {
-                axios.delete(`/api/FeatureToggles/environments?id=${this.environmentToEdit.id}`).then((result) => {
+                let environmentModel = {
+                    applicationId: this.selectedApp.id,
+                    envName: this.environmentToEdit.initialEnvName
+                }
+
+                axios.delete(`/api/FeatureToggles/environments`, { data: environmentModel }).then((result) => {
                     this.showDeleteEnvironmentConfirmation = false
                     this.showEditEnvironmentModal = false
                     this.environmentToEdit = null
@@ -399,13 +408,13 @@
 							createdDate: new Date(toggle.createdDate)
 						}
 
-						this.environmentsList.forEach(env => {
-							let envStatus = _.find(toggle.statuses, status => status.environment === env)
-							rowModel[env] = envStatus ? envStatus.enabled : false;
-							rowModel[env + '_IsDeployed'] = envStatus ? envStatus.isDeployed : false;
-							rowModel[env + '_FirstTimeDeployDate'] = envStatus ? envStatus.firstTimeDeployDate : "";
-							rowModel[env + '_LastUpdated'] = envStatus ? envStatus.lastUpdated : "";
-						});
+                        this.environmentsList.forEach(env => {
+                            let envStatus = _.find(toggle.statuses, status => status.environment === env)
+                            rowModel[env] = envStatus ? envStatus.enabled : false;
+                            rowModel[env + '_IsDeployed'] = envStatus ? envStatus.isDeployed : false;
+                            rowModel[env + '_FirstTimeDeployDate'] = envStatus ? envStatus.firstTimeDeployDate : "";
+                            rowModel[env + '_LastUpdated'] = envStatus ? envStatus.lastUpdated : "";
+                        });
 						return rowModel;
 					});
 
@@ -424,7 +433,7 @@
 					params: {
 						applicationId: app.id
 					}
-				}).then((response) => {
+                }).then((response) => {
                     this.environmentsList = response.data;
 					this.createGridColumns();
 					this.loadGridData(app.id);
@@ -481,8 +490,8 @@
 			stringIsNullOrEmpty(text) {
 				return !text || /^\s*$/.test(text);
 			},
-			isEnviroment(env) {
-				return this.environmentsList.includes(env);
+            isEnviroment(env) {
+                return this.environmentsList.includes(env);
             },
             isEnvironmentColumn(column) {
                 return (column.type == 'boolean' && column.field != 'userAccepted');
