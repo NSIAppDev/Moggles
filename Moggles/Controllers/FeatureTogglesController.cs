@@ -214,6 +214,9 @@ namespace Moggles.Controllers
             var environmentToDelete = _db.DeployEnvironments.FirstOrDefault(x =>
                 x.ApplicationId == environmentModel.ApplicationId && x.EnvName == environmentModel.EnvName);
 
+            if (environmentToDelete == null)
+                throw new InvalidOperationException("Environment does not exist!");
+
             var featureToggleStatuses = _db.FeatureToggleStatuses
                 .Where(e => e.EnvironmentId == environmentToDelete.Id);
 

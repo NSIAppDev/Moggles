@@ -82,6 +82,11 @@ namespace Moggles.Controllers
         [HttpDelete]
         public IActionResult RemoveApp([FromQuery] int id)
         {
+            var app = _db.Applications.FirstOrDefault(x => x.Id == id);
+
+            if (app == null)
+                throw new InvalidOperationException("Application does not exists!");
+
             var toggles = _db.FeatureToggles
                 .Where(e => e.ApplicationId == id);
 
@@ -95,8 +100,6 @@ namespace Moggles.Controllers
 
             _db.FeatureToggleStatuses.RemoveRange(ftsToDelete);
             _db.DeployEnvironments.RemoveRange(environments);
-
-            var app = _db.Applications.FirstOrDefault(x => x.Id == id);
 
             _db.Applications.Remove(app);
 

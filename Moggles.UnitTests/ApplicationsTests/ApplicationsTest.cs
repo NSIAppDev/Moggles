@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -102,6 +103,114 @@ namespace Moggles.UnitTests.ApplicationsTests
 
             //assert
             result.Value.As<List<Application>>().Should().BeEquivalentTo(new List<Application>{bccApp, cmmApp});
+        }
+
+        [TestMethod]
+        public void EditApp_AppIsBeingModified()
+        {
+            //arrange
+            var app = new Application { Id = 1, AppName = "TestApp" };
+
+            _context.Applications.Add(app);
+            _context.SaveChanges();
+
+            var updatedAppName = "TestAppUpdated";
+
+            var updatedApp = new UpdateApplicationModel
+            {
+                Id = app.Id,
+                ApplicationName = updatedAppName
+            };
+
+            var controller = new ApplicationsController(_context);
+
+            //act
+            var result = controller.UpdateApplication(updatedApp);
+
+            //assert
+            result.Should().BeOfType<OkResult>();
+            _context.Applications.FirstOrDefault(a => a.AppName == updatedAppName).Should().NotBeNull();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void EditApp_WithInvalidID_ThrowsInvalidOperationException()
+        {
+            //arrange
+            var app = new Application { Id = 1, AppName = "TestApp" };
+
+            _context.Applications.Add(app);
+            _context.SaveChanges();
+
+            var updatedAppName = "TestAppUpdated";
+
+            var updatedApp = new UpdateApplicationModel
+            {
+                Id = app.Id++,
+                ApplicationName = updatedAppName
+            };
+
+            var controller = new ApplicationsController(_context);
+
+            //act
+            controller.UpdateApplication(updatedApp);
+
+            //assert
+            //throws InvalidOperationException
+        }
+
+        [TestMethod]
+        public void DeleteApp_AppIsDeleted_EnvironmentsFeatureTogglesAndStatusesAreDeleted()
+        {
+            //arrange
+            var app = new Application { Id = 1, AppName = "TestApp" };
+
+            var environment = new DeployEnvironment { Application = app, ApplicationId = app.Id, EnvName = "TestEnv" };
+            var environment2 = new DeployEnvironment { Application = app, ApplicationId = app.Id, EnvName = "TestEnv2" };
+            var environment3 = new DeployEnvironment { Application = app, ApplicationId = app.Id, EnvName = "TestEnv3" };
+
+            var featureStatus1 = new FeatureToggleStatus { Enabled = false, Id = 1, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
+            var featureStatus2 = new FeatureToggleStatus { Enabled = false, Id = 2, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
+            var featureStatus3 = new FeatureToggleStatus { Enabled = false, Id = 3, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
+
+            var feature = new FeatureToggle { Id = 1, Application = app, ApplicationId = app.Id, FeatureToggleStatuses = new List<FeatureToggleStatus> { featureStatus1, featureStatus2, featureStatus3 }, ToggleName = "Test" };
+
+            _context.FeatureToggleStatuses.AddRange(featureStatus1, featureStatus2, featureStatus3);
+            _context.Applications.Add(app);
+            _context.DeployEnvironments.AddRange(environment, environment2, environment3);
+            _context.FeatureToggles.Add(feature);
+            _context.SaveChanges();
+
+            var controller = new ApplicationsController(_context);
+
+            //act
+            var result = controller.RemoveApp(app.Id);
+
+            //assert
+            result.Should().BeOfType<OkResult>();
+            _context.Applications.Count().Should().Be(0);
+            _context.FeatureToggles.Count().Should().Be(0);
+            _context.DeployEnvironments.Count().Should().Be(0);
+            _context.FeatureToggleStatuses.Count().Should().Be(0);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void DeleteApp_WithInvalidID_ThrowsInvalidOperationException()
+        {
+            //arrange
+            var app = new Application { Id = 1, AppName = "TestApp" };
+
+            _context.Applications.Add(app);
+            _context.SaveChanges();
+
+            var controller = new ApplicationsController(_context);
+
+            //act
+            controller.RemoveApp(app.Id++);
+
+            //assert
+            //throws InvalidOperationException
         }
     }
 }
