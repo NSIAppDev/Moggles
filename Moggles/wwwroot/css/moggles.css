@@ -9347,6 +9347,9 @@ body {
 .width-55 {
   width: 55px !important; }
 
+.margin-left-10 {
+  margin-left: 10px; }
+
 th.sortable, a {
   cursor: pointer; }
 
