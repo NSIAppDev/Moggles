@@ -90,8 +90,6 @@ namespace Moggles.Controllers
             var toggles = _db.FeatureToggles
                 .Where(e => e.ApplicationId == id);
 
-            _db.FeatureToggles.RemoveRange(toggles);
-
             var environments = _db.DeployEnvironments
                 .Where(e => e.ApplicationId == id).ToList();
             var environmentIds = environments.Select(_ => _.Id);
@@ -99,8 +97,8 @@ namespace Moggles.Controllers
             var ftsToDelete = _db.FeatureToggleStatuses.Where(_ => environmentIds.Contains(_.EnvironmentId));
 
             _db.FeatureToggleStatuses.RemoveRange(ftsToDelete);
+            _db.FeatureToggles.RemoveRange(toggles);
             _db.DeployEnvironments.RemoveRange(environments);
-
             _db.Applications.Remove(app);
 
             _db.SaveChanges();

@@ -22,7 +22,7 @@
                             <div class="vertical-align">
                                 <label for="app-sel">Select Application: &nbsp;</label>
                                 <app-selection></app-selection>
-                                <a @click="showEditAppModal(true)" style="margin-left:10px"><i class="fas fa-edit fa-lg"></i></a>
+                                <a @click="showEditAppModal(true)" class="margin-left-10"><i class="fas fa-edit fa-lg"></i></a>
                             </div>
                         </li>
                     </ul>

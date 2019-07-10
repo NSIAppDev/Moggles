@@ -222,9 +222,7 @@ namespace Moggles.Controllers
 
             _db.FeatureToggleStatuses.RemoveRange(featureToggleStatuses);
 
-            var env = _db.DeployEnvironments.FirstOrDefault(x => x.Id == environmentToDelete.Id);
-
-            _db.DeployEnvironments.Remove(env);
+            _db.DeployEnvironments.Remove(environmentToDelete);
 
             _db.SaveChanges();
 

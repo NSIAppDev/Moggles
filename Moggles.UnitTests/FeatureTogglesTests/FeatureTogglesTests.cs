@@ -442,7 +442,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             //assert
             result.Should().BeOfType<OkResult>();
-            _context.DeployEnvironments.FirstOrDefault(e => e.EnvName == updatedEnvironmentName).Should().NotBeNull();
+            environment.EnvName.Should().Be(updatedEnvironmentName);
         }
 
         [TestMethod]
@@ -507,6 +507,49 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             result.Should().BeOfType<OkResult>();
             _context.DeployEnvironments.Count().Should().Be(0);
             _context.FeatureToggleStatuses.Count().Should().Be(0);
+        }
+
+        [TestMethod]
+        public void DeleteEnvironment_EnvironmentIsDeleted_FeatureTogglesAreNotDeleted()
+        {
+            //arrange
+            var app = new Application { Id = 1, AppName = "TestApp" };
+            var environment = new DeployEnvironment
+                { Application = app, ApplicationId = app.Id, EnvName = "TestEnv" };
+
+            var featureToggle = new FeatureToggle { Id = 1 };
+
+            var controller = new FeatureTogglesController(_context);
+
+            var firstFeatureStatus = new FeatureToggleStatus { Enabled = false, Id = 1, FeatureToggle = featureToggle, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
+            var secondFeatureStatus = new FeatureToggleStatus { Enabled = false, Id = 2, FeatureToggle = featureToggle, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
+            var thirdFeatureStatus = new FeatureToggleStatus { Enabled = false, Id = 3, FeatureToggle = featureToggle, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
+
+            featureToggle.FeatureToggleStatuses.AddRange(new List<FeatureToggleStatus>()
+            {
+                firstFeatureStatus, secondFeatureStatus, thirdFeatureStatus
+            });
+
+            _context.FeatureToggles.Add(featureToggle);
+            _context.FeatureToggleStatuses.AddRange(firstFeatureStatus, secondFeatureStatus, thirdFeatureStatus);
+            _context.Applications.Add(app);
+            _context.DeployEnvironments.Add(environment);
+            _context.SaveChanges();
+
+            var environmentToRemove = new DeleteEnvironmentModel
+            {
+                ApplicationId = environment.ApplicationId,
+                EnvName = environment.EnvName
+            };
+            //act
+            var result = controller.RemoveEnvironment(environmentToRemove);
+
+            //assert
+            result.Should().BeOfType<OkResult>();
+            _context.DeployEnvironments.Count().Should().Be(0);
+            _context.FeatureToggleStatuses.Count().Should().Be(0);
+            _context.FeatureToggles.Count().Should().Be(1);
+            _context.FeatureToggles.FirstOrDefault(x => x.Id == 1).FeatureToggleStatuses.Count().Should().Be(0);
         }
 
         [TestMethod]

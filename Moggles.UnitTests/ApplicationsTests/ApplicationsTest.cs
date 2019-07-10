@@ -129,7 +129,7 @@ namespace Moggles.UnitTests.ApplicationsTests
 
             //assert
             result.Should().BeOfType<OkResult>();
-            _context.Applications.FirstOrDefault(a => a.AppName == updatedAppName).Should().NotBeNull();
+            app.AppName.Should().Be(updatedAppName);
         }
 
         [TestMethod]
@@ -170,8 +170,8 @@ namespace Moggles.UnitTests.ApplicationsTests
             var environment3 = new DeployEnvironment { Application = app, ApplicationId = app.Id, EnvName = "TestEnv3" };
 
             var featureStatus1 = new FeatureToggleStatus { Enabled = false, Id = 1, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
-            var featureStatus2 = new FeatureToggleStatus { Enabled = false, Id = 2, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
-            var featureStatus3 = new FeatureToggleStatus { Enabled = false, Id = 3, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
+            var featureStatus2 = new FeatureToggleStatus { Enabled = false, Id = 2, IsDeployed = false, Environment = environment2, EnvironmentId = environment2.Id };
+            var featureStatus3 = new FeatureToggleStatus { Enabled = false, Id = 3, IsDeployed = false, Environment = environment3, EnvironmentId = environment3.Id };
 
             var feature = new FeatureToggle { Id = 1, Application = app, ApplicationId = app.Id, FeatureToggleStatuses = new List<FeatureToggleStatus> { featureStatus1, featureStatus2, featureStatus3 }, ToggleName = "Test" };
 
