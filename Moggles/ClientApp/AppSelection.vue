@@ -37,16 +37,37 @@
 						}
                     })
                     .catch(error => { window.alert(error) })
-			}
+            },
+            refreshApps() {
+                axios.get('/api/applications')
+                    .then((response) => {
+                        this.applicationList = response.data;
+                        this.selectFirstApp();
+                    })
+                    .catch(error => { window.alert(error) })
+            },
+            selectFirstApp() {
+                this.selectedApps = [];
+                this.selectedApps.push(this.applicationList[0].id);
+
+                var app = this.applicationList[0];
+                if (app) {
+                    Bus.$emit('app-changed', app)
+                }
+            }
+
         },
 		created() {
 			this.getApplications()
 			Bus.$on("new-app-added", () => {
-				this.getApplications()
+                this.getApplications();      
 			});
 			Bus.$on("reload-application-toggles", () => {
 				this.changeApp();
-			});
+            });
+            Bus.$on("refresh-apps", () => {               
+                this.refreshApps();   
+            });
 		}
     }
 </script>

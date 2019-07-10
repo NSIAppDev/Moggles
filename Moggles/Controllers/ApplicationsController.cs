@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account.Manage;
 using Microsoft.AspNetCore.Mvc;
 using Moggles.Models;
 using Moggles.Data;
@@ -57,5 +59,52 @@ namespace Moggles.Controllers
 
             return Ok(application.Entity);
         }
+
+        [HttpPut]
+        [Route("update")]
+        public IActionResult UpdateApplication([FromBody]UpdateApplicationModel applicationModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var app = _db.Applications.FirstOrDefault(a => a.Id == applicationModel.Id);
+
+            if (app == null)
+                throw new InvalidOperationException("Application does not exists!");
+
+            app.AppName = applicationModel.ApplicationName;
+
+            _db.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        public IActionResult RemoveApp([FromQuery] int id)
+        {
+            var app = _db.Applications.FirstOrDefault(x => x.Id == id);
+
+            if (app == null)
+                throw new InvalidOperationException("Application does not exists!");
+
+            var toggles = _db.FeatureToggles
+                .Where(e => e.ApplicationId == id);
+
+            var environments = _db.DeployEnvironments
+                .Where(e => e.ApplicationId == id).ToList();
+            var environmentIds = environments.Select(_ => _.Id);
+
+            var ftsToDelete = _db.FeatureToggleStatuses.Where(_ => environmentIds.Contains(_.EnvironmentId));
+
+            _db.FeatureToggleStatuses.RemoveRange(ftsToDelete);
+            _db.FeatureToggles.RemoveRange(toggles);
+            _db.DeployEnvironments.RemoveRange(environments);
+            _db.Applications.Remove(app);
+
+            _db.SaveChanges();
+
+            return Ok();
+        }
+
     }
 }
