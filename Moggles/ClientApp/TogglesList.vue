@@ -30,10 +30,11 @@
                         <i slot="extra" class="icon fas fa-check"></i>
                     </p-check>
                 </span>
-                <span v-else-if="props.column.field == 'id'">
-                    <a @click="edit(props.row)"><i class="fas fa-edit"></i></a>
-                    <a @click="confirmDelete(props.row)"><i class="fas fa-trash-alt"></i></a>
-                </span>
+				<span v-else-if="props.column.field == 'id'">
+					<a @click="edit(props.row)"><i class="fas fa-edit"></i></a>
+					<a @click="confirmDelete(props.row)" v-if="!props.row.isPermanent"><i class="fas fa-trash-alt"></i></a>
+					<span v-if="props.row.isPermanent" title="Permanent flags cannot be deleted!" class="disabled-link"><i class="fas fa-trash-alt"></i></span>
+				</span>
                 <span v-else-if="props.column.field == 'toggleName' && props.row.isPermanent">
                     <span>{{props.row.toggleName}}</span> <span class="label label-danger">Permanent</span>
                 </span>
