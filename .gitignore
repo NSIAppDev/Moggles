@@ -11,8 +11,8 @@
 *.vcxproj.filters
 
 # TypeScript Generated files
-wwwroot/dist/
-wwwroot/css/
+Moggles/Moggles/wwwroot/dist/
+Moggles/Moggles/wwwroot/css/
 
 
 # User-specific files (MonoDevelop/Xamarin Studio)
