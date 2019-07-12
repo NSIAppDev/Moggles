@@ -35,6 +35,8 @@ namespace MogglesEndToEndTests.SmokeTests
         [TestCleanup]
         public void After()
         {
+            Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
+            Pages.FeatureTogglesPage.SetFeatureToggleAsPermanent();
             Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName);
             Browser.Close();
             ChromeDriverUtils.KillChromeDriverProcesses();
