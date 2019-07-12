@@ -106,3 +106,8 @@ label.checkbox > .icon {
 	opacity: 0.6 !important;
 	background: $black;
 }
+
+.disabled-link {
+	color: $gray-lighter;
+	cursor: not-allowed;
+}

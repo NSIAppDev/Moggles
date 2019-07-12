@@ -9415,3 +9415,7 @@ label.checkbox > .icon {
   position: fixed !important;
   opacity: 0.6 !important;
   background: #000000; }
+
+.disabled-link {
+  color: #cccccc;
+  cursor: not-allowed; }
