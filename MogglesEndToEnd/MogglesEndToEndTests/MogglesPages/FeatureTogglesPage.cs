@@ -62,7 +62,7 @@ namespace MogglesEndToEndTests.MogglesPages
         private readonly By _statusesDropdown = By.CssSelector("body > div > div> div > div > div > div> div > div> table > thead > tr:nth-child(2) > th:nth-child(8) > div > select");
         private readonly By _noFeatureToggleDisplayedText = By.CssSelector("body > div > div> div > div > div > div> div > div> table > tbody > tr > td > div > div");
         private readonly By _deleteFeatureToggle = By.CssSelector("body > div > div> div > div > div > div> div > div> table > tbody > tr > td:nth-child(1) > span > a:nth-child(2) > i");
-        private readonly By _editFeatureToggle = By.CssSelector("body > div > div> div > div > div > div> div > div> table > tbody > tr > td:nth-child(1) > span > a:nth-child(1) > i");
+        private readonly By _editFeatureToggle = By.CssSelector("body > div > div> div > div > div > div> div > div> table > tbody > tr > td:nth-child(1) > span > a > i");
         private readonly By _isPermanentFlag = By.CssSelector("body > div > div> div > div > div > div> div > div> table > tbody > tr > td:nth-child(2) > span > span.label.label-danger");
 
         public void Navigate()
@@ -172,7 +172,7 @@ namespace MogglesEndToEndTests.MogglesPages
             for (var i = 0; i <= rows.Count - 1; i++)
             {
                 var cells = rows[i].FindElements(By.TagName("td"));
-                if (cells[1].Text.Equals(newFeatureToggleName))
+                if (cells[1].Text.Contains(newFeatureToggleName))
                 {
                     FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_editFeatureToggle).Click();
                 }
