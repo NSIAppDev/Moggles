@@ -5,6 +5,9 @@ Feature flag management for non development wizards.
 Web application that centralizes feature flags across all applications in an enterprise. Feature flag management application for developers, BAs and everyone involved in the software development lifecycle process.
 
 Visit the [wiki](https://github.com/NSIAppDev/Moggles/wiki) for more details
+![Demo](https://raw.githubusercontent.com/NSIAppDev/Moggles/master/MogglesImages/MogglesDemo.GIF)
+
+
 
 Developed together with [MogglesClient](https://github.com/NSIAppDev/MogglesClient). 
 
