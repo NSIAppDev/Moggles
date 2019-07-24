@@ -410,6 +410,13 @@ namespace MogglesEndToEndTests.TestFramework
             return numberOfItems;
         }
 
+        public static IWebElement GetHeaderSpecifiedByIndex(this IWebElement grid, By gridSelector, int rowIndex, int columnIndex)
+        {
+            var rows = grid.GetAllRowsFromGrid(gridSelector);
+            var cells = rows[rowIndex].FindElements(By.TagName("th"));
+            return cells[columnIndex];
+        }
+
         //Kendo Filtering
 
         public static void OpenFilteringDropdownForSpecifiedHeaderColumn(IWebElement columnDropdown)
