@@ -10,9 +10,9 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-					<a class="navbar-brand" href="/">
-						<img src="/img/Moggles-LogoType.png" alt="Moggles, Toggles for non development wizards" class="d-inline-block align-top" height="30" />
-					</a>
+                    <a class="navbar-brand" href="/">
+                        <img src="/img/Moggles-LogoType.png" alt="Moggles, Toggles for non development wizards" class="d-inline-block align-top" height="30" />
+                    </a>
                 </div>
 
                 <!-- Collect the nav links, forms, and other content for toggling -->
@@ -22,43 +22,50 @@
                             <div class="vertical-align">
                                 <label for="app-sel">Select Application: &nbsp;</label>
                                 <app-selection></app-selection>
+                                <a @click="showEditAppModal(true)" class="margin-left-10"><i class="fas fa-edit fa-lg"></i></a>
                             </div>
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right vertical-align">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tools <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#" @click="() => {this.ReloadCurrentApplicationToggles();}">Reload Application Toggles</a></li>
-                                <li><a href="#" @click="showAddToggle = true">Add Feature Toggle</a></li>
-                                <li><a href="#" @click="showAddApp = true">Add New Application</a></li>
-                                <li><a href="#" @click="showAddEnv = true">Add New Environment</a></li>
-                                <li v-if="isCacheRefreshEnabled"><a href="#" @click="showForceCacheRefresh = true">Force Cache Refresh</a></li>
-                            </ul>
-                        </li>
+                        <dropdown tag="li">
+                            <a class="dropdown-toggle" role="button">Tools <span class="caret"></span></a>
+                            <template slot="dropdown">
+                                <li><a role="button" @click="() => {this.ReloadCurrentApplicationToggles();}">Reload Application Toggles</a></li>
+                                <li><a role="button" @click="showAddToggle = true">Add Feature Toggle</a></li>
+                                <li><a role="button" @click="showAddApp = true">Add New Application</a></li>
+                                <li><a role="button" @click="showAddEnv = true">Add New Environment</a></li>
+                                <li v-if="isCacheRefreshEnabled"><a role="button" @click="showForceCacheRefresh = true">Force Cache Refresh</a></li>
+                            </template>
+                        </dropdown>
                     </ul>
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
         </nav>
 
-        <modal v-model="showAddToggle" title="Add Feature Toggle">
+        <block-ui ref="blockUi"></block-ui>
+
+        <modal v-model="showAddToggle" title="Add Feature Toggle" :footer="false">
             <add-featuretoggle></add-featuretoggle>
-            <div slot="modal-footer" class="modal-footer"></div>
         </modal>
 
-        <modal v-model="showAddApp" title="Add Application">
+        <modal v-model="showAddApp" title="Add Application" :footer="false">
             <add-application></add-application>
-            <div slot="modal-footer" class="modal-footer"></div>
         </modal>
 
-        <modal v-model="showAddEnv" title="Add Environment">
+        <modal v-model="showAddEnv" title="Add Environment" :footer="false">
             <add-env></add-env>
-            <div slot="modal-footer" class="modal-footer"></div>
         </modal>
 
-        <modal v-model="showForceCacheRefresh" title="Force Cache Refresh">
+        <modal v-model="showForceCacheRefresh" title="Force Cache Refresh" :footer="false">
             <force-cache-refresh></force-cache-refresh>
-            <div slot="modal-footer" class="modal-footer"></div>
+        </modal>
+
+        <modal v-model="editAppModalIsActive" title="Edit Application" :footer="false">
+            <edit-application @close-app-edit-modal="showEditAppModal(false)"></edit-application>
+        </modal>
+
+        <modal v-model="showDeleteAppConfirmation" title="You are about to delete an application" :footer="false" >        
+            <delete-application @cancel="showDeleteAppConfirmation = false" @deleteAppCompleted="showEditAppModal(false)"></delete-application>
         </modal>
 
         <div class="container-fluid">
@@ -71,15 +78,16 @@
     </div>
 </template>
 <script>
-    import Vue from 'vue'
 	import TogglesList from "./TogglesList";
     import AppSelection from './AppSelection'
     import AddApplication from './AddApplication'
+    import EditApplication from './EditApplication'
+    import DeleteApplication from './DeleteApplication'
     import AddFeatureToggle from './AddFeatureToggle'
     import AddEnvironment from './AddEnvironment'
     import ForceCacheRefresh from './ForceCacheRefresh'
+    import BlockUi from './BlockUi'
     import { Bus } from './event-bus'
-    import { modal } from 'vue-strap'
     import axios from 'axios'
 	
     export default {
@@ -89,15 +97,26 @@
                 showAddEnv: false,
                 showAddToggle: false,
                 showForceCacheRefresh: false,
-                isCacheRefreshEnabled: false
+                isCacheRefreshEnabled: false,
+                editAppModalIsActive: false,
+                showDeleteAppConfirmation: false            
             }
         },
         methods: {
             ReloadCurrentApplicationToggles(){
                 Bus.$emit("reload-application-toggles");
-            }
+            },
+            showEditAppModal(value) {
+                this.editAppModalIsActive = value;
+            },
+            confirmDeleteApp() {
+                this.showDeleteAppConfirmation = true;
+            },
         },
         created() {
+            Bus.$on("show-app-delete-confirmation", () => {
+                this.showDeleteAppConfirmation = true;
+            })
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
             }).catch(error => { window.alert(error) });
@@ -106,28 +125,12 @@
 			"toggles-list": TogglesList,
             "app-selection": AppSelection,
             "add-application": AddApplication,
+            "edit-application": EditApplication,
+            "delete-application": DeleteApplication,
             "add-featuretoggle": AddFeatureToggle,
             "add-env": AddEnvironment,
-            'force-cache-refresh': ForceCacheRefresh,
-            modal
+			'force-cache-refresh': ForceCacheRefresh,
+			'block-ui': BlockUi
         }
     }
 </script>
-<style lang="scss">
-    $main-bg-color: #ffffff;
-
-    body {
-        padding-top: 70px;
-        background: $main-bg-color;
-    }
-
-    .margin-right-10 {
-        margin-right: 10px;
-    }
-
-    .vertical-align {
-        display: flex;
-        align-items: center;
-        height: 50px;
-    }
-</style>

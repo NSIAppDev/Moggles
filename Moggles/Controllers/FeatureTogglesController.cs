@@ -207,6 +207,46 @@ namespace Moggles.Controllers
             _db.SaveChanges();
         }
 
+        [HttpDelete]
+        [Route("environments")]
+        public IActionResult RemoveEnvironment([FromBody]DeleteEnvironmentModel environmentModel)
+        {
+            var environmentToDelete = _db.DeployEnvironments.FirstOrDefault(x =>
+                x.ApplicationId == environmentModel.ApplicationId && x.EnvName == environmentModel.EnvName);
+
+            if (environmentToDelete == null)
+                throw new InvalidOperationException("Environment does not exist!");
+
+            var featureToggleStatuses = _db.FeatureToggleStatuses
+                .Where(e => e.EnvironmentId == environmentToDelete.Id);
+
+            _db.FeatureToggleStatuses.RemoveRange(featureToggleStatuses);
+
+            _db.DeployEnvironments.Remove(environmentToDelete);
+
+            _db.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("UpdateEnvironment")]
+        public IActionResult UpdateEnvironment([FromBody] UpdateEnvironmentModel environmentModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var env = _db.DeployEnvironments.FirstOrDefault(e => e.ApplicationId == environmentModel.ApplicationId && e.EnvName == environmentModel.InitialEnvName);
+
+            if (env == null)
+                throw new InvalidOperationException("Environment does not exist!");
+
+            env.EnvName = environmentModel.NewEnvName;
+            _db.SaveChanges();
+
+            return Ok();
+        }
+
         #region public API
 
         [HttpGet]

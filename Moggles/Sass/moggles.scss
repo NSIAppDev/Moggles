@@ -1,0 +1,113 @@
+﻿// Variables
+@import "moggles-variables";
+
+// Vendor CSS
+@import '~bootstrap-sass/assets/stylesheets/bootstrap-mincer';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap';
+@import '~vue-good-table/src/styles/style';
+@import "~pretty-checkbox/src/pretty-checkbox";
+
+// Moggles CSS
+@import "padding";
+
+body {
+	padding-top: 70px;
+	background: $white;
+}
+
+.vertical-align {
+	display: flex;
+	align-items: center;
+	height: 50px;
+}
+
+.width-55 {
+	width: 55px !important;
+}
+
+.margin-left-10 {
+    margin-left: 10px;
+}
+
+th.sortable, a {
+	cursor: pointer;
+}
+
+.p-success {
+	color: $white;
+	background-color: $green-light !important;
+	border-color: $green !important;
+}
+
+.p-success > .icon {
+	color: $white;
+	background-color: $green !important;
+	border-color: darken($green, 15%) !important;
+}
+
+.p-default {
+	color: $white;
+	background-color: $gray-lightest !important;
+	border-color: $gray !important;
+}
+
+.p-default > .icon {
+	color: $white;
+	background-color: $gray-lighter !important;
+	border-color: darken($gray-lighter, 15%) !important;
+}
+
+label.checkbox > .icon {
+	top: -.5rem !important;
+}
+
+.env-button {
+	margin-right: 10px;
+}
+
+.page-blocker {
+	color: $blue-lighter;
+	width: 10%;
+	text-align: center;
+}
+
+.block-fade-enter-active, .block-fade-leave-active {
+	transition: opacity .5s;
+}
+
+.block-fade-enter, .block-fade-leave-to {
+	opacity: 0;
+}
+
+.blockElement, .blockMsg, .block-message {
+	top: 40% !important;
+	left: 45% !important;
+	cursor: not-allowed !important;
+	background: none !important;
+	border: none !important;
+	color: $white !important;
+	z-index: 2000000001 !important;
+	font-size: 150% !important;
+	width: 20px !important;
+	position: fixed !important;
+	opacity: 1 !important;
+}
+
+.blockOverlay, .block-backdrop {
+	cursor: not-allowed !important;
+	z-index: 2000000000 !important;
+	margin: 0px !important;
+	padding: 0px !important;
+	width: 110vw !important;
+	height: 110vh !important;
+	top: -10vh !important;
+	left: -10vw !important;
+	position: fixed !important;
+	opacity: 0.6 !important;
+	background: $black;
+}
+
+.disabled-link {
+	color: $gray-lighter;
+	cursor: not-allowed;
+}

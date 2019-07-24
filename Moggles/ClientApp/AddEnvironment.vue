@@ -1,16 +1,15 @@
 <template>
     <div>
-        <spinner ref="spinner" v-model="spinner" size="sm"></spinner>
-
-        <alert v-model="showSuccessAlert" placement="top-right" duration="1500" type="success" width="400px" dismissable>
-            <span class="icon-ok-circled alert-icon-float-left"></span>
-            <p>Environment added.</p>
+        <alert v-if="showSuccessAlert" :duration="alertDuration" type="success" @dismissed="showSuccessAlert = false">
+			<p>
+				<i class="fas fa-check-circle"></i> Environment added.
+			</p>
         </alert>
 
         <div class="panel-body">
             <div class="">
                 <div class="form-group">
-                    <div v-for="error in errors" :key="error" class="validationMessage">{{error}}</div>
+                    <div v-for="error in errors" :key="error" class="text-danger">{{error}}</div>
                     <input class="form-control" v-model="envName" type="text" name="envName" placeholder="Env name..." maxlength="50">
                 </div>
                 <div class="form-group">
@@ -34,7 +33,6 @@
 <script>
     import { Bus } from './event-bus'
     import axios from 'axios'
-    import { spinner, alert } from 'vue-strap'
 
     export default {
         data() {
@@ -45,8 +43,8 @@
                 defaultToggleValue: true,
                 existingEnvs: [],
                 errors: [],
-                spinner: false,
-                showSuccessAlert: false
+				showSuccessAlert: false,
+				alertDuration: 1500
             }
         },
         methods: {
@@ -72,8 +70,8 @@
                     sortOrder: this.sortOrder,
                     defaultToggleValue: this.defaultToggleValue
                 }
-
-                this.spinner = true;
+				
+                Bus.$emit('block-ui')
                 axios.post('api/FeatureToggles/AddEnvironment', param)
                     .then((response) => {
                         this.showSuccessAlert = true;
@@ -82,7 +80,7 @@
                     }).catch((e) => {
                         window.alert(e)
                     }).finally(() => {
-                        this.spinner = false;
+						 Bus.$emit('unblock-ui')
                     });
             }
         },
@@ -96,17 +94,6 @@
             Bus.$on("env-loaded", envs => {
                 this.existingEnvs = envs;
             });
-        },
-        components: {
-            spinner,
-            alert
         }
     }
 </script>
-
-<style>
-
-    .validationMessage {
-        color: red
-    }
-</style>

@@ -11,8 +11,8 @@
 *.vcxproj.filters
 
 # TypeScript Generated files
-**/app/***/*.js
-**/app/***/*.js.map
+Moggles/Moggles/wwwroot/dist/
+Moggles/Moggles/wwwroot/css/
 
 
 # User-specific files (MonoDevelop/Xamarin Studio)

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+
+  <!-- Parameters used by tests at runtime -->
+  <TestRunParameters>
+    <Parameter name="webAppUrl" value="http://moggles.northernsafety-dev.com/" />
+    <Parameter name="cleanDb" value="false" />
+    <Parameter name="disabledHeadless" value="false" />
+  </TestRunParameters>
+
+  </RunSettings>

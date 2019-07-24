@@ -2,48 +2,7 @@
 
 exports[`AddEnvironment.vue matches snapshot 1`] = `
 <div>
-  <div
-    class="spinner spinner-gritcode spinner-sm"
-    style="display: none;"
-  >
-    <div
-      class="spinner-wrapper"
-    >
-      <div
-        class="spinner-circle"
-      />
-       
-      <div
-        class="spinner-text"
-      >
-        
-      </div>
-    </div>
-  </div>
-   
-  <div
-    class="alert alert-success top-right"
-    name="fade"
-    role="alert"
-    style="width: 400px; display: none;"
-  >
-    <button
-      class="close"
-      type="button"
-    >
-      <span>
-        ×
-      </span>
-    </button>
-     
-    <span
-      class="icon-ok-circled alert-icon-float-left"
-    />
-     
-    <p>
-      Environment added.
-    </p>
-  </div>
+  <!---->
    
   <div
     class="panel-body"
@@ -67,8 +26,8 @@ exports[`AddEnvironment.vue matches snapshot 1`] = `
       >
         <div>
           
-                    Default toggle value:
-                
+                        Default toggle value:
+                    
         </div>
          
         <div>
