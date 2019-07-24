@@ -346,14 +346,11 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void EditEnvironment(string environmentName)
         {
+            var element = FeatureTogglesGrid.GetHeaderSpecifiedByIndex(_headerSelector, 0, 3);
             Thread.Sleep(1000);
-            var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_headerSelector);
-            var cells = rows[0].FindElements(By.TagName("th"));
-            if (cells[3].Text.Equals(environmentName))
+            if (element.Text.Equals(environmentName))
                 {
-                 FeatureTogglesGrid.GetHeaderSpecifiedByIndex(_headerSelector, 0, 3)
-                 .FindElement(_editEnvironmentIcon)
-                 .Click();
+                 element.FindElement(_editEnvironmentIcon).Click();
                 }           
         }
 
@@ -367,9 +364,7 @@ namespace MogglesEndToEndTests.MogglesPages
         public bool EnvironmentNameExist(string envName)
         {
             Thread.Sleep(1000);
-            var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_headerSelector);
-            var cells = rows[0].FindElements(By.TagName("th"));
-            return cells[3].Text.Equals(envName);
+            return FeatureTogglesGrid.GetHeaderSpecifiedByIndex(_headerSelector, 0, 3).Text.Equals(envName);
         }
 
         public void DeleteEnvironment(string editedEnvName)
