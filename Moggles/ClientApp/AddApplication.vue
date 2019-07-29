@@ -14,16 +14,18 @@
 				<label>Add a first environment:</label>
 				<div class="form-group">
 					<input class="form-control" v-model="environmentName" type="text" name="envName" placeholder="Environment name..." maxlength="100">
-					<div>
-						<label>Default toggle value:</label>
-						<div class="form-inline">
-							<label for="d1">True</label>
-							<input id="d1" v-model="defaultToggleValue" type="radio" name="defToggleValue" value="true" checked>
+				</div>
+			</div>
+			<div class="form-group">
+				<label>Default toggle value:</label>
+				<div class="form-inline">
+					<label for="d1">
+						<input id="d1" v-model="defaultToggleValue" type="radio" name="defToggleValue" value="true"> True
+					</label>
 
-							<label for="d2">False</label>
-							<input id="d2" v-model="defaultToggleValue" type="radio" name="defToggleValue" value="false">
-						</div>
-					</div>
+					<label for="d2">
+						<input id="d2" v-model="defaultToggleValue" type="radio" name="defToggleValue" value="false"> False
+					</label>
 				</div>
 			</div>
 			<div>
@@ -62,8 +64,8 @@
                     this.errors.push("Environment name cannot be empty")
                 }
 
-                if (this.errors.length > 0) {
-                    this.spinner = false;
+                if (this.errors.length > 0) {                    
+					Bus.$emit('unblock-ui')
                     return;
                 }
 
