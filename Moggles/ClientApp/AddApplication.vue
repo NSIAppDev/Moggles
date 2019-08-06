@@ -6,32 +6,32 @@
 			</p>
 		</div>
 		<div class="panel-body">
+			<div v-for="error in errors" :key="error" class="text-danger">{{error}}</div>
 			<div class="form-group">
-				<label>Application name:</label>
+				<label class="control-label" for="appname">Application name</label>
 				<input class="form-control" v-model="applicationName" type="text" name="appName" placeholder="Application name..." maxlength="100">
 			</div>
 			<div class="form-group">
-				<label>Add a first environment:</label>
+				<label class="control-label" for="envname">Add a first environment</label>
 				<div class="form-group">
 					<input class="form-control" v-model="environmentName" type="text" name="envName" placeholder="Environment name..." maxlength="100">
 				</div>
 			</div>
 			<div class="form-group">
-				<label>Default toggle value:</label>
+				<label class="control-label">Default toggle value</label>
 				<div class="form-inline">
 					<label for="d1">
-						<input id="d1" v-model="defaultToggleValue" type="radio" name="defToggleValue" value="true"> True
+						<input id="d1" v-model="defaultToggleValue" type="radio" :value="true"> True
 					</label>
-
 					<label for="d2">
-						<input id="d2" v-model="defaultToggleValue" type="radio" name="defToggleValue" value="false"> False
+						<input id="d2" v-model="defaultToggleValue" type="radio" :value="false"> False
 					</label>
 				</div>
 			</div>
-			<div>
-				<button class="btn btn-default btn-primary" v-on:click="addApplication" type="button">Add</button>
+			<div class="text-right">
+				<button class="btn btn-default" @click="closeAddApplicationModal">Close</button>
+				<button class="btn btn-primary" v-on:click="addApplication" type="button">Add</button>
 			</div>
-			<div v-for="error in errors" :key="error" class="text-danger">{{error}}</div>
 		</div>
 	</div>
 </template>
@@ -46,7 +46,7 @@
                 applicationName: "",
                 showSuccessAlert: false,
                 environmentName: "",
-                defaultToggleValue: false,
+                defaultToggleValue: true,
                 errors: [],
 				alertDuration: 1500
             }
@@ -87,7 +87,10 @@
                 }).finally(e => {
 					Bus.$emit('unblock-ui')
                 });
-            }
+            },
+			closeAddApplicationModal() {
+				Bus.$emit('close-add-application');
+			}
         }
     }
 </script>

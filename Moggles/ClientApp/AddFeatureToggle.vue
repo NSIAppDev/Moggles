@@ -7,79 +7,102 @@
 		</alert>
 
 		<div class="panel-body">
+			<div v-for="error in errors" :key="error" class="text-danger">{{error}}</div>
 			<div class="form-group">
-				<div v-for="error in errors" :key="error" class="text-danger">{{error}}</div>
+				<label for="ftname">Feature Toggle Name</label>
 				<input class="form-control" v-model="featureToggleName" type="text" name="ftName" placeholder="Feature toggle name..." maxlength="80">
 			</div>
 			<div class="form-group">
+				<label class="control-label" for="ftnotes">Notes</label>
 				<input class="form-control" v-model="notes" type="text" name="ftNotes" placeholder="Notes..." maxlength="500">
 			</div>
 			<div class="form-group">
-				<button :disabled="applicationId > 0? false : true" class="btn btn-default btn-primary" v-on:click="addFeatureToggle" type="button">Add</button>
+				<label class="control-label" for="ftPerm">Is Permanent </label>
+				<span class="padding-left-5">
+					<p-check class="p-icon p-fill" v-model="isPermanent" name="ftPerm" color="default">
+						<i slot="extra" class="icon fas fa-check"></i>
+					</p-check>
+				</span>
+			</div>
+			<div class="form-group">
+				<div class="text-right">
+					<button class="btn btn-default" @click="closeAddToggleModal">Close</button>
+					<button :disabled="applicationId > 0? false : true" class="btn btn-primary" v-on:click="addFeatureToggle" type="button">Add</button>
+				</div>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-    import { Bus } from './event-bus'
-    import axios from 'axios'
+	import PrettyCheck from 'pretty-checkbox-vue/check';
+	import { Bus } from './event-bus'
+	import axios from 'axios'
 
-    export default {
-        data() {
-            return {
-                applicationId: -1,
-                notes: '',
-                featureToggleName: "",
-                errors: [],
-                existingToggles: [],
-                spinner: false,
-                showSuccessAlert: false,
+	export default {
+		components: {
+			'p-check': PrettyCheck
+		},
+		data() {
+			return {
+				applicationId: -1,
+				notes: '',
+				featureToggleName: "",
+				isPermanent: false,
+				errors: [],
+				existingToggles: [],
+				spinner: false,
+				showSuccessAlert: false,
 				alertDuration: 1500
-            }
-        },
-        methods: {
-            addFeatureToggle() {
-                if (this.applicationId === -1)
-                    return;
+			}
+		},
+		methods: {
+			addFeatureToggle() {
+				if (this.applicationId === -1)
+					return;
 
-                this.errors = [];
+				this.errors = [];
 
-                if (this.featureToggleName === "") {
-                    this.errors.push("Feature toggle name cannot be empty")
-                    return;
-                };
+				if (this.featureToggleName === "") {
+					this.errors.push("Feature toggle name cannot be empty")
+					return;
+				};
 
-                let param = {
-                    applicationId: this.applicationId,
-                    featureToggleName: this.featureToggleName,
-                    notes: this.notes
-                }
-				
-                Bus.$emit('block-ui')
-                axios.post('api/FeatureToggles/addFeatureToggle', param)
-                    .then((response) => {
-                        this.showSuccessAlert = true;
-                        this.featureToggleName = '';
-                        this.notes = '';
-                        Bus.$emit("toggle-added")
-                    }).catch((e) => {                
-                        this.errors.push(e.response.data);
-                    }).finally(() => {
+				let param = {
+					applicationId: this.applicationId,
+					featureToggleName: this.featureToggleName,
+					notes: this.notes,
+					isPermanent: this.isPermanent
+				}
+
+				Bus.$emit('block-ui')
+				axios.post('api/FeatureToggles/addFeatureToggle', param)
+					.then((response) => {
+						this.showSuccessAlert = true;
+						this.featureToggleName = '';
+						this.notes = '';
+						this.isPermanent = false;
+						Bus.$emit("toggle-added")
+					}).catch((e) => {
+						this.errors.push(e.response.data);
+					}).finally(() => {
 						Bus.$emit('unblock-ui')
-                    });
-            }
-        },
-        mounted() {
-            Bus.$on("app-changed", app => {
-                if (app) {
-                    this.applicationId = app.id;
-                }
-            });
+					});
+			},
+			closeAddToggleModal() {
+				Bus.$emit('close-add-toggle');
+			}
+		},
+		mounted() {
+			Bus.$on("app-changed", app => {
+				if (app) {
+					this.applicationId = app.id;
+				}
+			});
 
-            Bus.$on("toggles-loaded", toggles => {
-                this.existingToggles = toggles;
-            });
-        }
-    }
+			Bus.$on("toggles-loaded", toggles => {
+				this.existingToggles = toggles;
+			});
+		}
+	}
 </script>

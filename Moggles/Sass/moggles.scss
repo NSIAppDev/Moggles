@@ -111,3 +111,8 @@ label.checkbox > .icon {
 	color: $gray-lighter;
 	cursor: not-allowed;
 }
+
+// override very good table default
+th.vgt-right-align {
+	text-align: left;
+}
