@@ -31,7 +31,7 @@ describe('AddApplication.vue', () => {
         expect(wrapper.vm.applicationName).toBe('');
     })
 
-    it('A success alert is shown on successful add and goes await after a while', async () => {
+    it('A success alert is shown on successful add and goes away after a while', async () => {
 
         let clock = sinon.useFakeTimers();
 
@@ -43,7 +43,7 @@ describe('AddApplication.vue', () => {
         const envname = wrapper.find('input[name="envName"]');
         envname.setValue('Env');
 
-        wrapper.find('button').trigger('click');
+		wrapper.find('button.btn-primary').trigger('click');
 
         mockAdapter.onPost().reply(200);
         await flushPromises();
@@ -67,7 +67,7 @@ describe('AddApplication.vue', () => {
         const envname = wrapper.find('input[name="envName"]');
         envname.setValue('Env');
 
-        wrapper.find('button').trigger('click');
+		wrapper.find('button.btn-primary').trigger('click');
         await flushPromises();
 
 		expect(spy.calledWithExactly('new-app-added')).toBe(true);
@@ -82,7 +82,7 @@ describe('AddApplication.vue', () => {
         const wrapper = shallowMount(AddApplication);
         wrapper.setData({ applicationName: 'testApp', environmentName: "test", defaultToggleValue: true });
 
-        wrapper.find('button').trigger('click');
+		wrapper.find('button.btn-primary').trigger('click');
 
         await flushPromises();
 
@@ -99,7 +99,7 @@ describe('AddApplication.vue', () => {
         const envname = wrapper.find('input[name="envName"]');
         envname.setValue('Env');
 
-        wrapper.find('button').trigger('click');
+		wrapper.find('button.btn-primary').trigger('click');
         mockAdapter.onPost().reply(200);
 
 		expect(spy.calledWithExactly('block-ui')).toBe(true);
