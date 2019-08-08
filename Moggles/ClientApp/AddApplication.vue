@@ -76,7 +76,7 @@
                 }).then((response) => {
                     this.applicationName = '';
                     this.environmentName = '';
-                    this.defaultToggleValue = false;
+                    this.defaultToggleValue = true;
                     this.showSuccessAlert = true;
 					Bus.$emit("new-app-added");
 					setTimeout(() => {
