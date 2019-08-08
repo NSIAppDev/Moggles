@@ -1,7 +1,7 @@
 ![Logo](https://raw.githubusercontent.com/NSIAppDev/Moggles/master/MogglesImages/Logo.png)
 # Feature flag management for non development wizards
 
-Feature flags are awesome, they help us separate the technical process (deploying a feature) from the business process (activating a feature).  What isn't awesome is having to redeploy code to activate a feature or modifying live code or a database value.  These steps are very technical and sometimes go against CI/CD principals.  There has to be a better way!
+Feature flags are awesome, they help us separate the technical process (deploying a feature) from the business process (activating a feature).  What isn't awesome is having to redeploy code to activate a feature or modifying live code or a database value.  These steps are very technical and sometimes go against CI/CD principles.  There has to be a better way!
 
 Imagine you just nailed your client demo. They are all excited about this new feature, and they ask when it can go live.  Do you want to tell them "let me fire the code, do a new release" or "I need to modify a web.config file"?  What if you or your client could just go to a website, click a couple of buttons and instantly your feature was activated? Wouldn't that be better?  
 
