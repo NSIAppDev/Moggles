@@ -18,7 +18,7 @@ namespace MogglesEndToEndTests.SmokeTests
         [TestCategory("EditANewApplication")]
         [TestCategory("SmokeTests")]
 
-        public void AddAndDeleteApplication_TheApplicationIsUpdatedAndAfterThatDeleted()
+        public void EditAndDeleteApplication_TheApplicationIsUpdatedAndAfterThatDeleted()
         {
             //act
             Pages.FeatureTogglesPage.Navigate();
