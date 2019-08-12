@@ -101,6 +101,7 @@
     <Compile Include="SmokeTests\DeleteAFeatureToggle.cs" />
     <Compile Include="SmokeTests\EditAndDeleteApplication.cs" />
     <Compile Include="SmokeTests\EditAndDeleteEnvironment.cs" />
+    <Compile Include="SmokeTests\EnvironmentsLastUpdated.cs" />
     <Compile Include="SmokeTests\IsAcceptedByUserFeatureToggle.cs" />
     <Compile Include="SmokeTests\IsPermanentFeatureToggle.cs" />
     <Compile Include="TestFramework\Browser.cs" />
