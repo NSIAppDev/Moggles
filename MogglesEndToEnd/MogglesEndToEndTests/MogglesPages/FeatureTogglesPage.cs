@@ -4,6 +4,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Threading;
+using OpenQA.Selenium.Internal;
 using Browser = MogglesEndToEndTests.TestFramework.Browser;
 
 namespace MogglesEndToEndTests.MogglesPages
@@ -120,6 +121,10 @@ namespace MogglesEndToEndTests.MogglesPages
             Browser.WebDriver.FindElement(By.CssSelector(
                 "body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div > div > div> div:nth-child(1) > button"));
 
+        public IWebElement CancelEditFeatureFlagsModalButton =>
+            Browser.WebDriver.FindElement(By.CssSelector(
+                "body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div> button.btn.btn-default"));
+
         private readonly By _rowSelector = By.CssSelector(".vgt-responsive>table>tbody>tr");
 
         private readonly By _headerSelector =
@@ -147,6 +152,18 @@ namespace MogglesEndToEndTests.MogglesPages
         private readonly By _editEnvironmentIcon =
             By.CssSelector(
                 "body > div > div> div > div > div > div> div > div> table > thead > tr:nth-child(1) > th:nth-child(4) > a > i");
+
+        private readonly By _devCheckbok =
+            By.CssSelector("body > div:nth-child(1) > div> div > div > div > div> div > div > div> div> div > div:nth-child(4) > div > div> div > div > input[type=checkbox]");
+
+        private readonly By _qaCheckbok =
+            By.CssSelector("body > div:nth-child(1) > div> div > div > div > div> div > div > div> div> div > div:nth-child(5) > div > div> div > div > input[type=checkbox]");
+
+        private readonly By _devLastUpdatedDate =
+            By.CssSelector("body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div> div > div:nth-child(4) > div > div.col-sm-6> div");
+
+        private readonly By _qaLastUpdatedDate =
+            By.CssSelector("body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div> div > div:nth-child(5) > div > div.col-sm-6> div");
 
         public void Navigate()
         {
@@ -380,6 +397,31 @@ namespace MogglesEndToEndTests.MogglesPages
             DeleteEnvironmentButton.Click();
             Thread.Sleep(1000);
             AcceptDeleteEnvironmentButton.Click();
+        }
+
+        public bool IsDevEnvironmentCheckboxChecked()
+        {
+            return Utils.IsCheckboxChecked(_devCheckbok);
+        }
+
+        public bool IsQaEnvironmentCheckboxChecked()
+        {
+            return Utils.IsCheckboxChecked(_qaCheckbok);
+        }
+
+        public bool IsLastUpdatedDateOnDevCorrectlyDisplayed()
+        {
+            return Utils.IsLastUpdatedDateCorrectlyDisplayed(_devLastUpdatedDate);
+        }
+
+        public bool IsLastUpdatedDateOnQaCorrectlyDisplayed()
+        {
+            return Utils.IsLastUpdatedDateCorrectlyDisplayed(_qaLastUpdatedDate);
+        }
+
+        public void CloseEditFeatureFlagsModal()
+        {
+            CancelEditFeatureFlagsModalButton.Click();
         }
     }
 }
