@@ -20,7 +20,7 @@
                     <ul class="nav navbar-nav navbar-left">
                         <li>
                             <div class="vertical-align">
-                                <label for="app-sel">Select Application: &nbsp;</label>
+                                <label for="app-sel" class="margin-top-8">Select Application </label>
                                 <app-selection></app-selection>
                                 <a @click="showEditAppModal(true)" class="margin-left-10"><i class="fas fa-edit fa-lg"></i></a>
                             </div>
@@ -116,7 +116,19 @@
         created() {
             Bus.$on("show-app-delete-confirmation", () => {
                 this.showDeleteAppConfirmation = true;
-            })
+			})
+			Bus.$on('close-add-toggle', () => {
+				this.showAddToggle = false;
+			})
+			Bus.$on('close-add-application', () => {
+				this.showAddApp = false;
+			})
+			Bus.$on('close-add-environment', () => {
+				this.showAddEnv = false;
+			})
+			Bus.$on('close-refresh', () => {
+				this.showForceCacheRefresh = false;
+			})
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
             }).catch(error => { window.alert(error) });

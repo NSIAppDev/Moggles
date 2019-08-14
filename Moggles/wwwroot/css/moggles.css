@@ -9419,3 +9419,6 @@ label.checkbox > .icon {
 .disabled-link {
   color: #cccccc;
   cursor: not-allowed; }
+
+th.vgt-right-align {
+  text-align: left; }

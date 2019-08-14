@@ -51,91 +51,91 @@
             </template>
         </vue-good-table>
 
-        <modal v-model="showEditModal" title="Edit Feature Flags">
+        <modal v-model="showEditModal" title="Edit Feature Flags" :footer="false">
             <div v-if="rowToEdit" class="form-horizontal">
-                <div class="col-sm-8">
-                    <div v-for="error in editFeatureToggleErrors" :key="error" class="text-danger margin-left-15">{{error}}</div>
-                </div>
-                <div class="form-group" v-for="col in gridColumns">
-                    <div v-if="col.type == 'boolean'">
-                        <label class="col-sm-4 control-label">{{col.label}}</label>
-                        <div class="col-sm-1 margin-top-8">
-                            <div @click="environmentEdited(col.field)">
-                                <p-check class="p-icon p-fill" v-if="rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" color="success">
-                                    <i slot="extra" class="icon fas fa-check"></i>
-                                </p-check>
-                                <p-check class="p-icon p-fill" v-if="!rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" color="default">
-                                    <i slot="extra" class="icon fas fa-check"></i>
-                                </p-check>
-                            </div>
+				<div class="row">
+					<div class="col-sm-12">
+						<div v-for="error in editFeatureToggleErrors" :key="error" class="text-danger margin-left-15">{{error}}</div>
+					</div>
+					<div class="form-group" v-for="col in gridColumns">
+						<div v-if="col.type == 'boolean'">
+							<label class="col-sm-4 control-label">{{col.label}}</label>
+							<div class="col-sm-1 margin-top-8">
+								<div @click="environmentEdited(col.field)">
+									<p-check class="p-icon p-fill" v-if="rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" color="success">
+										<i slot="extra" class="icon fas fa-check"></i>
+									</p-check>
+									<p-check class="p-icon p-fill" v-if="!rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" color="default">
+										<i slot="extra" class="icon fas fa-check"></i>
+									</p-check>
+								</div>
 
-                        </div>
-                        <div class="col-sm-6 margin-top-8">
-                            <div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null"><strong>Deployed:</strong> {{rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('MM/DD/YYYY hh:mm')}}</div>
-                            <div v-if="isEnviroment(col.field)"><strong>Last Updated:</strong> {{rowToEdit[col.field + '_LastUpdated'] | moment('MM/DD/YYYY hh:mm')}}</div>
-                        </div>
-                    </div>
-                    <div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">{{col.label}}</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" v-model="rowToEdit[col.field]">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+							</div>
+							<div class="col-sm-6 margin-top-8">
+								<div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null"><strong>Deployed:</strong> {{rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('MM/DD/YYYY hh:mm')}}</div>
+								<div v-if="isEnviroment(col.field)"><strong>Last Updated:</strong> {{rowToEdit[col.field + '_LastUpdated'] | moment('MM/DD/YYYY hh:mm')}}</div>
+							</div>
+						</div>
+						<div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{col.label}}</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control" v-model="rowToEdit[col.field]">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
             </div>
-            <div slot="footer">
+            <div class="text-right">
                 <button type="button" class="btn btn-default" @click="cancelEdit">Cancel</button>
                 <button type="button" class="btn btn-primary" @click="saveToggle">Save</button>
             </div>
         </modal>
-        <modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle">
+        <modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle" :footer="false">
             <div v-if="toggleIsDeployed">
                 <strong>{{rowDataToDelete ? rowDataToDelete.toggleName: ""}}</strong> feature toggle is active on at least one environment. Are you sure you want to delete it?
             </div>
             <div v-else>
                 Are you sure you want to delete this feature toggle?
             </div>
-            <div slot="footer">
+            <div class="text-right">
                 <button type="button" class="btn btn-default" @click="showDeleteConfirmation = false">Cancel</button>
                 <button type="button" class="btn btn-primary" @click="deleteToggle">Delete</button>
             </div>
         </modal>
 
         <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false">
-            <div v-if="environmentToEdit" class="form-horizontal">
-                <div class="col-sm-8">
-                    <div v-for="error in editEnvErrors" :key="error" class="text-danger margin-left-15">{{error}}</div>
-                </div>
-                <br />
-                <div class="form-group">
-                    <br />
-                    <label class="col-sm-4 control-label">Environment name:</label>
-                    <div class="col-sm-7">
-                        <input type="text" class="form-control" v-model="environmentToEdit.newEnvName">
-                    </div>
-                </div>
-            </div>
-            <div>
-                <div class="col-sm-6">
-                    <button type="button" class="btn btn-danger" @click="confirmDeleteEnvironment">Delete</button>
-                </div>
-                <div class="col-sm-6 text-right">
-                    <button type="button" class="btn btn-default" @click="cancelEditEnvName">Cancel</button>
-                    <button type="button" class="btn btn-primary" @click="saveEnvironment">Save</button>
-                </div>
-                <br />
-                <br />
-            </div>
+			<div v-if="environmentToEdit" class="form-horizontal">
+				<div class="row">
+					<div class="col-sm-12">
+						<div v-for="error in editEnvErrors" :key="error" class="text-danger margin-left-15">{{error}}</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label">Environment name</label>
+						<div class="col-sm-7">
+							<input type="text" class="form-control" v-model="environmentToEdit.newEnvName">
+						</div>
+					</div>
+					<div class="clearfix">
+						<div class="col-sm-6">
+							<button type="button" class="btn btn-danger" @click="confirmDeleteEnvironment">Delete</button>
+						</div>
+						<div class="col-sm-6 text-right">
+							<button type="button" class="btn btn-default" @click="cancelEditEnvName">Cancel</button>
+							<button type="button" class="btn btn-primary" @click="saveEnvironment">Save</button>
+						</div>
+					</div>
+				</div>
+			</div>
         </modal>
-        <modal v-model="showDeleteEnvironmentConfirmation" title="You are about to delete an environment">
+        <modal v-model="showDeleteEnvironmentConfirmation" title="You are about to delete an environment" :footer="false">
             <div>
                 Are you sure you want to delete the environment?
                 <br />
                 All associated applications and feature toggles will be removed.
             </div>
-            <div slot="footer">
+            <div class="text-right">
                 <button type="button" class="btn btn-default" @click="showDeleteEnvironmentConfirmation = false">Cancel</button>
                 <button type="button" class="btn btn-primary" @click="deleteEnvironment">Delete</button>
             </div>

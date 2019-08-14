@@ -4,6 +4,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Threading;
+using OpenQA.Selenium.Internal;
 using Browser = MogglesEndToEndTests.TestFramework.Browser;
 
 namespace MogglesEndToEndTests.MogglesPages
@@ -22,8 +23,14 @@ namespace MogglesEndToEndTests.MogglesPages
         public IWebElement NotesInput => Browser.WebDriver.FindElement(
             By.CssSelector("body > div > div.modal.in> div > div> div> div > div> div:nth-child(2)> input"));
 
-        public IWebElement AddButton => Browser.WebDriver.FindElement(
-            By.CssSelector("body > div> div.in> div > div > div> div > div > div > button"));
+        public IWebElement AddFeatureToggleButton => Browser.WebDriver.FindElement(
+            By.CssSelector("body > div:nth-child(1) > div> div > div > div> div > div > div:nth-child(4) > div > button.btn.btn-primary"));
+
+        public IWebElement AddApplicationButton => Browser.WebDriver.FindElement(
+            By.CssSelector("body > div:nth-child(1) > div.in> div > div > div> div > div > div> button.btn.btn-primary"));
+
+        public IWebElement AddEnvironmentButton => Browser.WebDriver.FindElement(
+            By.CssSelector("body > div:nth-child(1) > div.in > div > div > div> div > div > div> button.btn.btn-primary"));
 
         public IWebElement CloseModal =>
             Browser.WebDriver.FindElement(
@@ -41,7 +48,7 @@ namespace MogglesEndToEndTests.MogglesPages
         public IWebElement IsPermanentCheckbox =>
             Browser.WebDriver.FindElement(
                 By.CssSelector(
-                    "body > div:nth-child(1) > div> div > div > div > div> div > div > div> div > div:nth-child(9) > div > div> div > div > input[type=checkbox]"));
+                    "body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div> div > div:nth-child(9) > div > div> div > div > input[type=checkbox]"));
 
         public IWebElement FilterByACriteria =>
             Browser.WebDriver.FindElement(
@@ -68,27 +75,28 @@ namespace MogglesEndToEndTests.MogglesPages
         public IWebElement ApplicationsDropdown =>
             Browser.WebDriver.FindElement(By.CssSelector("#app-sel > div > ul"));
 
-        public IWebElement EnvNameInput =>
+        public IWebElement FirstEnvNameInput =>
             Browser.WebDriver.FindElement(
-                By.CssSelector("body > div> div.in > div > div > div> div > div > div> div > input"));
+                By.CssSelector("body > div:nth-child(1) > div.in > div > div > div> div > div > div:nth-child(2) > div > input"));
 
-        public IWebElement EnvTrueToggle =>
-            Browser.WebDriver.FindElement(By.Id("d1"));
+        public IWebElement SecondEnvNameInput =>
+            Browser.WebDriver.FindElement(
+                By.CssSelector("body > div:nth-child(1) > div.in > div > div > div> div > div > div:nth-child(1) > input"));
 
         public IWebElement EditApplicationIcon =>
             Browser.WebDriver.FindElement(By.CssSelector("#bs-example-navbar-collapse-1 > ul> li > div > a > i"));
 
         public IWebElement EditApplicationNameInput =>
             Browser.WebDriver.FindElement(
-                By.CssSelector("body > div> div.in > div > div > div> div > div> div> div > input"));
+                By.CssSelector("body > div:nth-child(1) > div.in > div > div > div> div > div > div > div> div > input"));
 
         public IWebElement SaveApplicationChangesButton =>
             Browser.WebDriver.FindElement(
-                By.CssSelector("body > div> div.in > div > div > div> div > div> div > div> button.btn.btn-primary"));
+                By.CssSelector("body > div:nth-child(1) > div.in > div > div > div > div > div > div > div> div> button.btn.btn-primary"));
 
         public IWebElement DeleteApplicationButton =>
             Browser.WebDriver.FindElement(
-                By.CssSelector("body > div> div.in > div > div > div> div > div> div > div:nth-child(2)> button"));
+                By.CssSelector("body > div:nth-child(1) > div.in> div > div > div> div > div > div > div> div:nth-child(1) > button"));
 
         public IWebElement AcceptDeleteApplicationButton =>
             Browser.WebDriver.FindElement(
@@ -103,15 +111,19 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public IWebElement EditEnvironmentNameInput =>
             Browser.WebDriver.FindElement(
-                By.CssSelector("body > div> div> div > div > div > div.in > div > div > div> div> div> div > input"));
+                By.CssSelector("body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div > div > div> div > input"));
 
         public IWebElement SaveEnvironmentChangesButton =>
             Browser.WebDriver.FindElement(By.CssSelector(
-                "body > div> div> div > div > div > div.in > div > div > div> div> div> button.btn.btn-primary"));
+                "body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div > div > div> div> button.btn.btn-primary"));
 
         public IWebElement DeleteEnvironmentButton =>
             Browser.WebDriver.FindElement(By.CssSelector(
-                "body > div> div> div > div > div > div.in > div > div > div> div> div:nth-child(1)> button"));
+                "body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div > div > div> div:nth-child(1) > button"));
+
+        public IWebElement CancelEditFeatureFlagsModalButton =>
+            Browser.WebDriver.FindElement(By.CssSelector(
+                "body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div> button.btn.btn-default"));
 
         private readonly By _rowSelector = By.CssSelector(".vgt-responsive>table>tbody>tr");
 
@@ -140,6 +152,18 @@ namespace MogglesEndToEndTests.MogglesPages
         private readonly By _editEnvironmentIcon =
             By.CssSelector(
                 "body > div > div> div > div > div > div> div > div> table > thead > tr:nth-child(1) > th:nth-child(4) > a > i");
+
+        private readonly By _devCheckbok =
+            By.CssSelector("body > div:nth-child(1) > div> div > div > div > div> div > div > div> div> div > div:nth-child(4) > div > div> div > div > input[type=checkbox]");
+
+        private readonly By _qaCheckbok =
+            By.CssSelector("body > div:nth-child(1) > div> div > div > div > div> div > div > div> div> div > div:nth-child(5) > div > div> div > div > input[type=checkbox]");
+
+        private readonly By _devLastUpdatedDate =
+            By.CssSelector("body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div> div > div:nth-child(4) > div > div.col-sm-6> div");
+
+        private readonly By _qaLastUpdatedDate =
+            By.CssSelector("body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div> div > div:nth-child(5) > div > div.col-sm-6> div");
 
         public void Navigate()
         {
@@ -189,7 +213,7 @@ namespace MogglesEndToEndTests.MogglesPages
             options[1].Click();
             FeatureToggleNameInput.SendKeys(newFeatureToggleName);
             NotesInput.SendKeys("test");
-            AddButton.Click();
+            AddFeatureToggleButton.Click();
             Thread.Sleep(1000);
             CloseModal.Click();
         }
@@ -201,9 +225,8 @@ namespace MogglesEndToEndTests.MogglesPages
             Thread.Sleep(1000);
             options[2].Click();
             ApplicationNameInput.SendKeys(newApplicationName);
-            EnvNameInput.SendKeys(firstEnvName);
-            EnvTrueToggle.Click();
-            AddButton.Click();
+            FirstEnvNameInput.SendKeys(firstEnvName);
+            AddApplicationButton.Click();
             Thread.Sleep(1000);
             CloseModal.Click();
         }
@@ -214,8 +237,8 @@ namespace MogglesEndToEndTests.MogglesPages
             var options = DropdownHelpers.GetDropdownList(ToolsMenuDropdown, "li");
             Thread.Sleep(1000);
             options[3].Click();
-            EnvNameInput.SendKeys(newEnvironmentName);
-            AddButton.Click();
+            SecondEnvNameInput.SendKeys(newEnvironmentName);
+            AddEnvironmentButton.Click();
             Thread.Sleep(1000);
             CloseModal.Click();
         }
@@ -374,6 +397,31 @@ namespace MogglesEndToEndTests.MogglesPages
             DeleteEnvironmentButton.Click();
             Thread.Sleep(1000);
             AcceptDeleteEnvironmentButton.Click();
+        }
+
+        public bool IsDevEnvironmentCheckboxChecked()
+        {
+            return Utils.IsCheckboxChecked(_devCheckbok);
+        }
+
+        public bool IsQaEnvironmentCheckboxChecked()
+        {
+            return Utils.IsCheckboxChecked(_qaCheckbok);
+        }
+
+        public bool IsLastUpdatedDateOnDevCorrectlyDisplayed()
+        {
+            return Utils.IsLastUpdatedDateCorrectlyDisplayed(_devLastUpdatedDate);
+        }
+
+        public bool IsLastUpdatedDateOnQaCorrectlyDisplayed()
+        {
+            return Utils.IsLastUpdatedDateCorrectlyDisplayed(_qaLastUpdatedDate);
+        }
+
+        public void CloseEditFeatureFlagsModal()
+        {
+            CancelEditFeatureFlagsModalButton.Click();
         }
     }
 }

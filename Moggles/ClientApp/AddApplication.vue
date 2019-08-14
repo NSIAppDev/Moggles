@@ -6,30 +6,32 @@
 			</p>
 		</div>
 		<div class="panel-body">
+			<div v-for="error in errors" :key="error" class="text-danger">{{error}}</div>
 			<div class="form-group">
-				<label>Application name:</label>
+				<label class="control-label" for="appname">Application name</label>
 				<input class="form-control" v-model="applicationName" type="text" name="appName" placeholder="Application name..." maxlength="100">
 			</div>
 			<div class="form-group">
-				<label>Add a first environment:</label>
+				<label class="control-label" for="envname">Add a first environment</label>
 				<div class="form-group">
 					<input class="form-control" v-model="environmentName" type="text" name="envName" placeholder="Environment name..." maxlength="100">
-					<div>
-						<label>Default toggle value:</label>
-						<div class="form-inline">
-							<label for="d1">True</label>
-							<input id="d1" v-model="defaultToggleValue" type="radio" name="defToggleValue" value="true" checked>
-
-							<label for="d2">False</label>
-							<input id="d2" v-model="defaultToggleValue" type="radio" name="defToggleValue" value="false">
-						</div>
-					</div>
 				</div>
 			</div>
-			<div>
-				<button class="btn btn-default btn-primary" v-on:click="addApplication" type="button">Add</button>
+			<div class="form-group">
+				<label class="control-label">Default toggle value</label>
+				<div class="form-inline">
+					<label for="d1">
+						<input id="d1" v-model="defaultToggleValue" type="radio" :value="true"> True
+					</label>
+					<label for="d2">
+						<input id="d2" v-model="defaultToggleValue" type="radio" :value="false"> False
+					</label>
+				</div>
 			</div>
-			<div v-for="error in errors" :key="error" class="text-danger">{{error}}</div>
+			<div class="text-right">
+				<button class="btn btn-default" @click="closeAddApplicationModal">Close</button>
+				<button class="btn btn-primary" v-on:click="addApplication" type="button">Add</button>
+			</div>
 		</div>
 	</div>
 </template>
@@ -44,7 +46,7 @@
                 applicationName: "",
                 showSuccessAlert: false,
                 environmentName: "",
-                defaultToggleValue: false,
+                defaultToggleValue: true,
                 errors: [],
 				alertDuration: 1500
             }
@@ -62,8 +64,8 @@
                     this.errors.push("Environment name cannot be empty")
                 }
 
-                if (this.errors.length > 0) {
-                    this.spinner = false;
+                if (this.errors.length > 0) {                    
+					Bus.$emit('unblock-ui')
                     return;
                 }
 
@@ -74,7 +76,7 @@
                 }).then((response) => {
                     this.applicationName = '';
                     this.environmentName = '';
-                    this.defaultToggleValue = false;
+                    this.defaultToggleValue = true;
                     this.showSuccessAlert = true;
 					Bus.$emit("new-app-added");
 					setTimeout(() => {
@@ -85,7 +87,10 @@
                 }).finally(e => {
 					Bus.$emit('unblock-ui')
                 });
-            }
+            },
+			closeAddApplicationModal() {
+				Bus.$emit('close-add-application');
+			}
         }
     }
 </script>

@@ -126,7 +126,8 @@ namespace Moggles.Controllers
             {
                 ToggleName = featureToggleModel.FeatureToggleName,
                 ApplicationId = featureToggleModel.ApplicationId,
-                Notes = featureToggleModel.Notes
+                Notes = featureToggleModel.Notes,
+                IsPermanent = featureToggleModel.IsPermanent
             });
 
             _db.SaveChanges();
