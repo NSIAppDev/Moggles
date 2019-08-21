@@ -185,6 +185,8 @@
 				if (app) {
                     this.selectedApp = app;
 					this.initializeGrid(app)
+					this.environmentsToRefresh = []
+					this.closeRefreshAlert()
 				}
 			})
 
