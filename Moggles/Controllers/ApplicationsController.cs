@@ -35,10 +35,10 @@ namespace Moggles.Controllers
                 return BadRequest(ModelState);
 
             var app = _db.Applications.FirstOrDefault(a => a.AppName == applicationModel.ApplicationName);
-            
-            if (app != null)
-                throw new InvalidOperationException("Application already exists!");
 
+            if (app != null)
+                return BadRequest("Application already exists!");
+                
             var application = _db.Applications.Add(new Application
             {
                 AppName = applicationModel.ApplicationName
