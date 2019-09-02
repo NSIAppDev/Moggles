@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moggles.Consumers;
 using Moggles.Data;
+using NoDb;
+using Moggles.Domain;
+using Moggles.Repository;
 
 namespace Moggles
 {
@@ -30,12 +33,21 @@ namespace Moggles
 
             services.AddMvc();
 
-            ConfigureDatabaseServices(services);
+            //ConfigureDatabaseServices(services);
 
             if (Boolean.TryParse(Configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
             {
                 ConfigureMassTransitAndMessageBus(services);
             }
+
+            services.AddNoDb<Application>();
+            services.AddNoDb<DeployEnvironment>();
+            services.AddNoDb<FeatureToggle>();
+            services.AddNoDb<FeatureToggleStatus>();
+            services.AddScoped<IRepository<Application>, ApplicationsRepository>();
+            services.AddScoped<IRepository<DeployEnvironment>, DeployEnvironmentRepository>();
+            services.AddScoped<IRepository<FeatureToggle>, FeatureToggleRepository>();
+            services.AddScoped<IRepository<FeatureToggleStatus>, FeatureToggleStatusRepository>();
         }
 
         public virtual void ConfigureDatabaseServices(IServiceCollection services)

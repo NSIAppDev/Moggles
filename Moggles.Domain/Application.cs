@@ -1,8 +1,11 @@
-﻿namespace Moggles.Domain
+﻿using System;
+using Moggles.Repository;
+
+namespace Moggles.Domain
 {
-    public class Application
+    public class Application : IEntity
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string AppName { get; set; }
     }
 }

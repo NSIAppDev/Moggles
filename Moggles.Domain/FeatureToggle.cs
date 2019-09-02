@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Moggles.Repository;
 
 namespace Moggles.Domain
 {
-    public class FeatureToggle
+    public class FeatureToggle : IEntity
     {
         public FeatureToggle()
         {
             FeatureToggleStatuses = new List<FeatureToggleStatus>();
         }
 
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string ToggleName { get; set; }
         public bool UserAccepted { get; set; }
         public string Notes { get; set; }
@@ -19,7 +20,7 @@ namespace Moggles.Domain
         public bool IsPermanent { get; set; }
 
         public Application Application { get; set; }
-        public int ApplicationId { get; set; }
+        public Guid ApplicationId { get; set; }
 
         public List<FeatureToggleStatus> FeatureToggleStatuses { get; set; }
 

@@ -1,20 +1,21 @@
 ﻿using System;
+using Moggles.Repository;
 
 namespace Moggles.Domain
 {
-    public class FeatureToggleStatus
+    public class FeatureToggleStatus : IEntity
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public bool Enabled { get; set; }
         public bool IsDeployed { get; set; }
         public DateTime? FirstTimeDeployDate { get; set; }
         public DateTime? LastDeployStatusUpdate { get; set; }
 
         public DeployEnvironment Environment { get; set; }
-        public int EnvironmentId { get; set; }
+        public Guid EnvironmentId { get; set; }
 
         public FeatureToggle FeatureToggle { get; set; }
-        public int FeatureToggleId { get; set; }
+        public Guid FeatureToggleId { get; set; }
 
         public DateTime LastUpdated { get; set; }
 

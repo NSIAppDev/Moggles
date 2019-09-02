@@ -15,7 +15,7 @@
 			</div>
 			<div class="text-right">
 				<button class="btn btn-default" @click="closeRefreshModal">Close</button>
-				<button id="refreshBtn" :disabled="applicationId > 0 && envName ? false : true" class="btn btn-primary" v-on:click="refresh" type="button">Refresh</button>
+				<button id="refreshBtn" :disabled="applicationId != '' && envName ? false : true" class="btn btn-primary" v-on:click="refresh" type="button">Refresh</button>
 			</div>
 		</div>
 	</div>

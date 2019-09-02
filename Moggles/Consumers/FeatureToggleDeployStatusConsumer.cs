@@ -4,16 +4,18 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using MogglesContracts;
 using Moggles.Data;
+using Moggles.Domain;
+using Moggles.Repository;
 
 namespace Moggles.Consumers
 {
     public class FeatureToggleDeployStatusConsumer : IConsumer<RegisteredTogglesUpdate>
     {
-        private readonly TogglesContext _db;
+        private IRepository<FeatureToggle> _featureToggleRepository;
 
-        public FeatureToggleDeployStatusConsumer(TogglesContext db)
+        public FeatureToggleDeployStatusConsumer(IRepository<FeatureToggle> featureToggleRepository)
         {
-            _db = db;
+            _featureToggleRepository = featureToggleRepository;
         }
 
         public async Task Consume(ConsumeContext<RegisteredTogglesUpdate> context)
@@ -22,7 +24,7 @@ namespace Moggles.Consumers
             string envName = context.Message.Environment;
             string[] clientToggles = context.Message.FeatureToggles;
 
-            var featureToggles = _db.FeatureToggles.Include(ft => ft.Application).Include(ft => ft.FeatureToggleStatuses).ThenInclude(fts => fts.Environment)
+            var featureToggles = _featureToggleRepository.GetAll().Result.AsQueryable().Include(ft => ft.Application).Include(ft => ft.FeatureToggleStatuses).ThenInclude(fts => fts.Environment)
                 .Where(ft => ft.Application.AppName == appName)
                 .ToList();
 
@@ -30,14 +32,15 @@ namespace Moggles.Consumers
             foreach (var featureToggle in deployedToggles)
             {
                 featureToggle.MarkAsDeployed(envName);
+                _featureToggleRepository.Update(featureToggle);
             }
 
             var removedToggles = featureToggles.Where(ft => !clientToggles.Contains(ft.ToggleName)).ToList();
             foreach (var featureToggle in removedToggles)
             {
                 featureToggle.MarkAsNotDeployed(envName);
+                _featureToggleRepository.Update(featureToggle);
             }
-            await _db.SaveChangesAsync();
         }
     }
 }

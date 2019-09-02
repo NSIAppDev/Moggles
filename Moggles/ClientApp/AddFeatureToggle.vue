@@ -27,7 +27,7 @@
 			<div class="form-group">
 				<div class="text-right">
 					<button class="btn btn-default" @click="closeAddToggleModal">Close</button>
-					<button :disabled="applicationId > 0? false : true" class="btn btn-primary" v-on:click="addFeatureToggle" type="button">Add</button>
+					<button :disabled="applicationId != ''? false : true" class="btn btn-primary" v-on:click="addFeatureToggle" type="button">Add</button>
 				</div>
 			</div>
 		</div>

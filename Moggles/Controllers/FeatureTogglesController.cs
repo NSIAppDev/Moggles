@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Moggles.Models;
 using Moggles.Data;
 using Moggles.Domain;
+using Moggles.Repository;
 
 namespace Moggles.Controllers
 {
@@ -15,19 +16,26 @@ namespace Moggles.Controllers
     [Route("api/FeatureToggles")]
     public class FeatureTogglesController : Controller
     {
-        private readonly TogglesContext _db;
         private readonly TelemetryClient _telemetry = new TelemetryClient();
+        private IRepository<Application> _applicationsRepository;
+        private IRepository<DeployEnvironment> _deployEnvironmentRepository;
+        private IRepository<FeatureToggle> _featureToggleRepository;
+        private IRepository<FeatureToggleStatus> _featureToggleStatusRepository;
 
-        public FeatureTogglesController(TogglesContext db)
+        public FeatureTogglesController(IRepository<Application> applicationsRepository, IRepository<DeployEnvironment> deployEnvironmentRepository, IRepository<FeatureToggle> featureToggleRepository, IRepository<FeatureToggleStatus> featureToggleStatusRepository)
         {
-            _db = db;
+            _applicationsRepository = applicationsRepository;
+            _deployEnvironmentRepository = deployEnvironmentRepository;
+            _featureToggleRepository = featureToggleRepository;
+            _featureToggleStatusRepository = featureToggleStatusRepository;
         }
 
         [HttpGet]
         [Route("")]
-        public IActionResult GetToggles(int applicationId)
+        public IActionResult GetToggles(Guid applicationId)
         {
-            return Ok(_db.FeatureToggles
+
+            return Ok(_featureToggleRepository.GetAll().Result.AsQueryable()
                 .Where(ft => ft.ApplicationId == applicationId)
                 .Include(ft => ft.FeatureToggleStatuses)
                 .ThenInclude(fts => fts.Environment)
@@ -54,7 +62,7 @@ namespace Moggles.Controllers
 
         [HttpGet]
         [Route("environments")]
-        public IActionResult GetEnvironments(int applicationId)
+        public IActionResult GetEnvironments(Guid applicationId)
         {
             List<DeployEnvironment> envs = GetEnvironmentsPerApp(applicationId);
 
@@ -63,9 +71,10 @@ namespace Moggles.Controllers
                 .Distinct());
         }
 
-        private List<DeployEnvironment> GetEnvironmentsPerApp(int applicationId)
+        private List<DeployEnvironment> GetEnvironmentsPerApp(Guid applicationId)
         {
-            return _db.DeployEnvironments
+
+            return _deployEnvironmentRepository.GetAll().Result
                 .Where(e => e.ApplicationId == applicationId)
                 .OrderBy(e => e.SortOrder).ToList();
         }
@@ -74,7 +83,7 @@ namespace Moggles.Controllers
         [Route("")]
         public IActionResult Update([FromBody] FeatureToggleUpdateModel model)
         {
-            var featureToggle = _db.FeatureToggles.Where(ft => ft.Id == model.Id)
+            var featureToggle = _featureToggleRepository.GetAll().Result.AsQueryable().Where(ft => ft.Id == model.Id)
                 .Include(ft => ft.FeatureToggleStatuses).ThenInclude(fts => fts.Environment).FirstOrDefault();
             if (featureToggle is null)
                 throw new InvalidOperationException("Feature toggle not found!");
@@ -93,7 +102,7 @@ namespace Moggles.Controllers
                 }
             }
 
-            _db.SaveChanges();
+            _featureToggleRepository.Update(featureToggle);
 
             return Ok(model);
 
@@ -111,10 +120,10 @@ namespace Moggles.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (featureToggleModel.ApplicationId <= 0)
+            if (String.IsNullOrEmpty(featureToggleModel.ApplicationId.ToString()))
                 return BadRequest("Application not speficied!");
 
-            var toggle = _db.FeatureToggles.FirstOrDefault(ft =>
+            var toggle = _featureToggleRepository.GetAll().Result.FirstOrDefault(ft =>
                 ft.ToggleName == featureToggleModel.FeatureToggleName &&
                 ft.ApplicationId == featureToggleModel.ApplicationId);
             if (toggle != null)
@@ -122,39 +131,40 @@ namespace Moggles.Controllers
 
             var environments = GetEnvironmentsPerApp(featureToggleModel.ApplicationId);
 
-            var featureToggle = _db.Add(new FeatureToggle
+            var featureToggle = new FeatureToggle
             {
+                Id = Guid.NewGuid(),
                 ToggleName = featureToggleModel.FeatureToggleName,
                 ApplicationId = featureToggleModel.ApplicationId,
                 Notes = featureToggleModel.Notes,
                 IsPermanent = featureToggleModel.IsPermanent
-            });
+            };
 
-            _db.SaveChanges();
+            _featureToggleRepository.Add(featureToggle);
 
+            var featureToggleStatus = new FeatureToggleStatus();
             foreach (var env in environments)
             {
-                _db.Add(new FeatureToggleStatus
+                featureToggleStatus = new FeatureToggleStatus
                 {
+                    Id = Guid.NewGuid(),
                     Enabled = env.DefaultToggleValue,
                     EnvironmentId = env.Id,
-                    FeatureToggleId = featureToggle.Entity.Id
-                });
+                    FeatureToggleId = featureToggle.Id
+                };
+                _featureToggleStatusRepository.Add(featureToggleStatus);
+                
             }
-
-            _db.SaveChanges();
 
             return Ok();
         }
 
         [HttpDelete]
-        public IActionResult RemoveFeatureToggle([FromQuery] int id)
+        public IActionResult RemoveFeatureToggle([FromQuery] Guid id)
         {
             var toggleToDelete = new FeatureToggle { Id = id };
 
-            _db.FeatureToggles.Attach(toggleToDelete);
-            _db.FeatureToggles.Remove(toggleToDelete);
-            _db.SaveChanges();
+            _featureToggleRepository.Delete(toggleToDelete);
 
             return Ok();
         }
@@ -166,10 +176,10 @@ namespace Moggles.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (environmentModel.ApplicationId <= 0)
-                throw new InvalidOperationException("Application not specified!");
+            if (String.IsNullOrEmpty(environmentModel.ApplicationId.ToString()))
+                    throw new InvalidOperationException("Application not specified!");
 
-            var env = _db.DeployEnvironments.FirstOrDefault(e => e.EnvName == environmentModel.EnvName &&
+            var env = _deployEnvironmentRepository.GetAll().Result.FirstOrDefault(e => e.EnvName == environmentModel.EnvName &&
                                                                  e.ApplicationId == environmentModel.ApplicationId);
             if (env != null)
                 throw new InvalidOperationException("Environment with the same name already exists for this application!");
@@ -181,51 +191,54 @@ namespace Moggles.Controllers
 
         private void CreateEnvironment(AddEnvironmentModel environmentModel)
         {
-            var environment = _db.Add(new DeployEnvironment
+            var environment = new DeployEnvironment
             {
+                Id = Guid.NewGuid(),
                 ApplicationId = environmentModel.ApplicationId,
                 DefaultToggleValue = environmentModel.DefaultToggleValue,
                 EnvName = environmentModel.EnvName,
                 SortOrder = environmentModel.SortOrder
-            });
+            };
 
-            _db.SaveChanges();
+            _deployEnvironmentRepository.Add(environment);
 
-            var featureToggles = _db.FeatureToggles
+            var featureToggles = _featureToggleRepository.GetAll().Result
                 .Where(x => x.ApplicationId == environmentModel.ApplicationId)
                 .ToList();
 
+            var featureToggleStatus = new FeatureToggleStatus();
             foreach (var ft in featureToggles)
             {
-                _db.Add(new FeatureToggleStatus
+                featureToggleStatus = new FeatureToggleStatus
                 {
+                    Id = Guid.NewGuid(),
                     FeatureToggleId = ft.Id,
                     Enabled = environmentModel.DefaultToggleValue,
-                    EnvironmentId = environment.Entity.Id,
-                });
+                    EnvironmentId = environment.Id,
+                };
+                _featureToggleStatusRepository.Add(featureToggleStatus);
             }
 
-            _db.SaveChanges();
         }
 
         [HttpDelete]
         [Route("environments")]
         public IActionResult RemoveEnvironment([FromBody]DeleteEnvironmentModel environmentModel)
         {
-            var environmentToDelete = _db.DeployEnvironments.FirstOrDefault(x =>
+            var environmentToDelete = _deployEnvironmentRepository.GetAll().Result.FirstOrDefault(x =>
                 x.ApplicationId == environmentModel.ApplicationId && x.EnvName == environmentModel.EnvName);
 
             if (environmentToDelete == null)
                 throw new InvalidOperationException("Environment does not exist!");
 
-            var featureToggleStatuses = _db.FeatureToggleStatuses
+            var featureToggleStatuses = _featureToggleStatusRepository.GetAll().Result
                 .Where(e => e.EnvironmentId == environmentToDelete.Id);
 
-            _db.FeatureToggleStatuses.RemoveRange(featureToggleStatuses);
-
-            _db.DeployEnvironments.Remove(environmentToDelete);
-
-            _db.SaveChanges();
+            foreach (var featureToggleStatus in featureToggleStatuses)
+            {
+                _featureToggleStatusRepository.Delete(featureToggleStatus);
+            }
+            _deployEnvironmentRepository.Delete(environmentToDelete);
 
             return Ok();
         }
@@ -237,13 +250,13 @@ namespace Moggles.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var env = _db.DeployEnvironments.FirstOrDefault(e => e.ApplicationId == environmentModel.ApplicationId && e.EnvName == environmentModel.InitialEnvName);
+            var env = _deployEnvironmentRepository.GetAll().Result.FirstOrDefault(e => e.ApplicationId == environmentModel.ApplicationId && e.EnvName == environmentModel.InitialEnvName);
 
             if (env == null)
                 throw new InvalidOperationException("Environment does not exist!");
 
             env.EnvName = environmentModel.NewEnvName;
-            _db.SaveChanges();
+            _deployEnvironmentRepository.Update(env);
 
             return Ok();
         }
@@ -257,7 +270,7 @@ namespace Moggles.Controllers
         {
             _telemetry.TrackEvent("OnGetAllToggles");
 
-            var featureToggles = _db.FeatureToggleStatuses
+            var featureToggles = _featureToggleStatusRepository.GetAll().Result
                 .Where(x => x.FeatureToggle.Application.AppName == applicationName)
                 .Where(x => x.Environment.EnvName == environment)
                 .Select(x => new ApplicationFeatureToggleViewModel
@@ -276,7 +289,7 @@ namespace Moggles.Controllers
         {
             _telemetry.TrackEvent("OnGetSpecificToggle");
 
-            var featureToggle = _db.FeatureToggleStatuses
+            var featureToggle = _featureToggleStatusRepository.GetAll().Result
                 .Where(x => x.FeatureToggle.ToggleName == featureToggleName)
                 .Where(x => x.FeatureToggle.Application.AppName == applicationName)
                 .Where(x => x.Environment.EnvName == environment)
@@ -301,7 +314,7 @@ namespace Moggles.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var app = _db.Applications.FirstOrDefault(a => a.AppName == model.AppName);
+            var app = _applicationsRepository.GetAll().Result.FirstOrDefault(a => a.AppName == model.AppName);
             if (app == null)
                 throw new InvalidOperationException("Application does not exist");
 

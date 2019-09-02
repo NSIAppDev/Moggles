@@ -26,7 +26,7 @@
 			</div>
 			<div class="text-right">
 				<button class="btn btn-default" @click="closeAddEnvironmentModal">Close</button>
-				<button :disabled="applicationId > 0? false : true" class="btn btn-primary" v-on:click="addEnv" type="button">Add</button>
+				<button :disabled="applicationId != ''? false : true" class="btn btn-primary" v-on:click="addEnv" type="button">Add</button>
 			</div>
 		</div>
 	</div>

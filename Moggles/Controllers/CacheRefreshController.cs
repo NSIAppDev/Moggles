@@ -5,6 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Moggles.Models;
 using Moggles.Data;
 using MogglesContracts;
+using NoDb;
+using Moggles.Domain;
+using System.Linq;
+using Moggles.Repository;
 
 namespace Moggles.Controllers
 {
@@ -13,12 +17,12 @@ namespace Moggles.Controllers
     public class CacheRefreshController : Controller
     {
         private readonly IBus _bus;
-        private readonly TogglesContext _db;
         private readonly IConfiguration _configuration;
+        private IRepository<Application> _applicationsRepository;
 
-        public CacheRefreshController(TogglesContext db, IConfiguration configuration, IServiceProvider serviceProvider)
+        public CacheRefreshController(IRepository<Application> applicationsRepository, IConfiguration configuration, IServiceProvider serviceProvider)
         {
-            _db = db;
+            _applicationsRepository = applicationsRepository;
             _configuration = configuration;
             _bus = (IBus)serviceProvider.GetService(typeof(IBus));
         }
@@ -30,7 +34,8 @@ namespace Moggles.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var app = _db.Applications.Find(refreshCacheModel.ApplicationId);
+            var app = _applicationsRepository.FindById(refreshCacheModel.ApplicationId).Result;
+
             if (app == null)
                 throw new InvalidOperationException("Application ID is invalid");
 
