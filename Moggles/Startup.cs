@@ -33,7 +33,7 @@ namespace Moggles
 
             services.AddMvc();
 
-            //ConfigureDatabaseServices(services);
+            ConfigureDatabaseServices(services);
 
             if (Boolean.TryParse(Configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
             {
