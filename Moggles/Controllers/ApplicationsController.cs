@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account.Manage;
 using Microsoft.AspNetCore.Mvc;
 using Moggles.Models;
+using Moggles.Data;
 using Moggles.Domain;
 using Moggles.Repository;
 

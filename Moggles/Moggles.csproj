@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Moggles.Data\Moggles.Data.csproj" />
     <ProjectReference Include="..\Moggles.Domain\Moggles.Domain.csproj" />
     <ProjectReference Include="..\MogglesContracts\MogglesContracts.csproj" />
   </ItemGroup>

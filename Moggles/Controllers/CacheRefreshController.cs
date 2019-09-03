@@ -3,6 +3,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Moggles.Models;
+using Moggles.Data;
 using MogglesContracts;
 using NoDb;
 using Moggles.Domain;

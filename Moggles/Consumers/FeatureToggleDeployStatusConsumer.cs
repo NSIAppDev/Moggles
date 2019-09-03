@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using MogglesContracts;
+using Moggles.Data;
 using Moggles.Domain;
 using Moggles.Repository;
 

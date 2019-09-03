@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moggles.Models;
+using Moggles.Data;
 using Moggles.Domain;
 using Moggles.Repository;
 
