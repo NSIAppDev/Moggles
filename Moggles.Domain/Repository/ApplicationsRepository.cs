@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NoDb;
-using Moggles.Domain;
-using Moggles.Domain.Repository;
-using Moggles.Repository;
 
-namespace Moggles.Repository
+namespace Moggles.Domain.Repository
 {
     public class ApplicationsRepository : IRepository<Application>
     {
-        private IBasicQueries<Application> _applicationQueries;
-        private IBasicCommands<Application> _applicationCommands;
-        private const string projectId = "moggles";
+        private readonly IBasicQueries<Application> _applicationQueries;
+        private readonly IBasicCommands<Application> _applicationCommands;
 
         public ApplicationsRepository(IBasicQueries<Application> applicationQueries, IBasicCommands<Application> applicationCommands)
         {
@@ -20,29 +16,29 @@ namespace Moggles.Repository
             _applicationCommands = applicationCommands;
         }
 
-        async Task<IEnumerable<Application>> IRepository<Application>.GetAll()
+        public async Task<IEnumerable<Application>> GetAll()
         {
-            return await _applicationQueries.GetAllAsync(projectId).ConfigureAwait(false);
+            return await _applicationQueries.GetAllAsync(Constants.ProjectId).ConfigureAwait(false);
         }
 
-        void IRepository<Application>.Add(Application entity)
+        public void Add(Application entity)
         {
-            _applicationCommands.CreateAsync(projectId, entity.Id.ToString(), entity);
+            _applicationCommands.CreateAsync(Constants.ProjectId, entity.Id.ToString(), entity);
         }
 
-        void IRepository<Application>.Delete(Application entity)
+        public void Delete(Application entity)
         {
-            _applicationCommands.DeleteAsync(projectId, entity.Id.ToString());
+            _applicationCommands.DeleteAsync(Constants.ProjectId, entity.Id.ToString());
         }
 
-        void IRepository<Application>.Update(Application entity)
+        public void Update(Application entity)
         {
-            _applicationCommands.UpdateAsync(projectId, entity.Id.ToString(), entity);
+            _applicationCommands.UpdateAsync(Constants.ProjectId, entity.Id.ToString(), entity);
         }
 
-        async Task<Application> IRepository<Application>.FindById(Guid Id)
+        public async Task<Application> FindById(Guid id)
         {
-            return await _applicationQueries.FetchAsync(projectId, Id.ToString());
+            return await _applicationQueries.FetchAsync(Constants.ProjectId, id.ToString());
         }
     }
 }

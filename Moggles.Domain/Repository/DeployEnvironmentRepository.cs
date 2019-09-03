@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NoDb;
-using Moggles.Domain;
-using Moggles.Domain.Repository;
 
-namespace Moggles.Repository
+namespace Moggles.Domain.Repository
 {
     public class DeployEnvironmentRepository : IRepository<DeployEnvironment>
     {
-        private IBasicQueries<DeployEnvironment> _deployEnvironmentQueries;
-        private IBasicCommands<DeployEnvironment> _deployEnvironmentCommands;
-        private const string projectId = "moggles";
+        private readonly IBasicQueries<DeployEnvironment> _deployEnvironmentQueries;
+        private readonly IBasicCommands<DeployEnvironment> _deployEnvironmentCommands;
 
         public DeployEnvironmentRepository(IBasicQueries<DeployEnvironment> deployEnvironmentQueries, IBasicCommands<DeployEnvironment> deployEnvironmentCommands)
         {
@@ -19,29 +16,29 @@ namespace Moggles.Repository
             _deployEnvironmentCommands = deployEnvironmentCommands;
         }
 
-        async Task<IEnumerable<DeployEnvironment>> IRepository<DeployEnvironment>.GetAll()
+        public async Task<IEnumerable<DeployEnvironment>> GetAll()
         {
-            return await _deployEnvironmentQueries.GetAllAsync(projectId).ConfigureAwait(false);
+            return await _deployEnvironmentQueries.GetAllAsync(Constants.ProjectId).ConfigureAwait(false);
         }
 
-        void IRepository<DeployEnvironment>.Add(DeployEnvironment entity)
+        public void Add(DeployEnvironment entity)
         {
-            _deployEnvironmentCommands.CreateAsync(projectId, entity.Id.ToString(), entity);
+            _deployEnvironmentCommands.CreateAsync(Constants.ProjectId, entity.Id.ToString(), entity);
         }
 
-        void IRepository<DeployEnvironment>.Delete(DeployEnvironment entity)
+        public void Delete(DeployEnvironment entity)
         {
-            _deployEnvironmentCommands.DeleteAsync(projectId, entity.Id.ToString());
+            _deployEnvironmentCommands.DeleteAsync(Constants.ProjectId, entity.Id.ToString());
         }
 
-        void IRepository<DeployEnvironment>.Update(DeployEnvironment entity)
+        public void Update(DeployEnvironment entity)
         {
-            _deployEnvironmentCommands.UpdateAsync(projectId, entity.Id.ToString(), entity);
+            _deployEnvironmentCommands.UpdateAsync(Constants.ProjectId, entity.Id.ToString(), entity);
         }
 
-        async Task<DeployEnvironment> IRepository<DeployEnvironment>.FindById(Guid Id)
+        public async Task<DeployEnvironment> FindById(Guid id)
         {
-            return await _deployEnvironmentQueries.FetchAsync(projectId, Id.ToString());
+            return await _deployEnvironmentQueries.FetchAsync(Constants.ProjectId, id.ToString());
         }
     }
 }

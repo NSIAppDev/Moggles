@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moggles.Models;
 using Moggles.Domain;
 using Moggles.Domain.Repository;
-using Moggles.Repository;
 
 namespace Moggles.Controllers
 {
