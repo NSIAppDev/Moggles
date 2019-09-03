@@ -7,6 +7,7 @@ using MogglesContracts;
 using NoDb;
 using Moggles.Domain;
 using System.Linq;
+using Moggles.Domain.Repository;
 using Moggles.Repository;
 
 namespace Moggles.Controllers

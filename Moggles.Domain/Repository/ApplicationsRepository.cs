@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NoDb;
 using Moggles.Domain;
+using Moggles.Domain.Repository;
 using Moggles.Repository;
 
 namespace Moggles.Repository

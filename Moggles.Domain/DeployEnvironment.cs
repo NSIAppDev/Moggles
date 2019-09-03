@@ -1,5 +1,5 @@
 ﻿using System;
-using Moggles.Repository;
+using Moggles.Domain.Repository;
 
 namespace Moggles.Domain
 {

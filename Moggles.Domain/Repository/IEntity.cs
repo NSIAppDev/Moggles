@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Moggles.Repository
+namespace Moggles.Domain.Repository
 {
-    public class IEntity
+    public interface IEntity
     {
-        public string Id;
+        Guid Id { get; set; }
     }
 }

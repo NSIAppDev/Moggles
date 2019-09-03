@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Moggles.Consumers;
 using NoDb;
 using Moggles.Domain;
+using Moggles.Domain.Repository;
 using Moggles.Repository;
 
 namespace Moggles

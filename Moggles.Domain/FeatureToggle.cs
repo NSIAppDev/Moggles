@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Moggles.Repository;
+using Moggles.Domain.Repository;
 
 namespace Moggles.Domain
 {
