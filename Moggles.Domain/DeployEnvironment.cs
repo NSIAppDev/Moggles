@@ -9,7 +9,6 @@ namespace Moggles.Domain
         public string EnvName { get; set; }
         public bool DefaultToggleValue { get; set; }
         public Guid ApplicationId { get; set; }
-        public Application Application { get; set; }
         public int SortOrder { get; set; }
     }
 }

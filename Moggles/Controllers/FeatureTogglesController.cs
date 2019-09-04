@@ -277,13 +277,15 @@ namespace Moggles.Controllers
         {
             _telemetry.TrackEvent("OnGetAllToggles");
 
-            var featureToggles = _featureToggleStatusRepository.GetAll().Result
-                .Where(x => x.FeatureToggle.Application.AppName == applicationName)
-                .Where(x => x.Environment.EnvName == environment)
+            var applicationId = _applicationsRepository.GetAll().Result.Where(app => app.AppName == applicationName).Select(app => app.Id).FirstOrDefault();
+            var environmentId = _deployEnvironmentRepository.GetAll().Result.Where(env => env.EnvName == environment).Where(env => env.ApplicationId == applicationId).Select(env => env.Id).FirstOrDefault();
+
+            var featureToggles = _featureToggleRepository.GetAll().Result
+                .Join(_featureToggleStatusRepository.GetAll().Result.Where(x => x.EnvironmentId == environmentId), ft => ft.Id, fts => fts.FeatureToggleId, (ft, fts) => new { FeatureToggle = ft, FeatureToggleStatus = fts })
                 .Select(x => new ApplicationFeatureToggleViewModel
                 {
                     FeatureToggleName = x.FeatureToggle.ToggleName,
-                    IsEnabled = x.Enabled
+                    IsEnabled = x.FeatureToggleStatus.Enabled
                 });
 
             return Ok(featureToggles);
@@ -296,14 +298,16 @@ namespace Moggles.Controllers
         {
             _telemetry.TrackEvent("OnGetSpecificToggle");
 
-            var featureToggle = _featureToggleStatusRepository.GetAll().Result
-                .Where(x => x.FeatureToggle.ToggleName == featureToggleName)
-                .Where(x => x.FeatureToggle.Application.AppName == applicationName)
-                .Where(x => x.Environment.EnvName == environment)
+            var applicationId = _applicationsRepository.GetAll().Result.Where(app => app.AppName == applicationName).Select(app => app.Id).FirstOrDefault();
+            var environmentId = _deployEnvironmentRepository.GetAll().Result.Where(env => env.EnvName == environment).Where(env => env.ApplicationId == applicationId).Select(env => env.Id).FirstOrDefault();
+
+            var featureToggle = _featureToggleRepository.GetAll().Result
+                .Join(_featureToggleStatusRepository.GetAll().Result.Where(x => x.EnvironmentId == environmentId), ft => ft.Id, fts => fts.FeatureToggleId, (ft, fts) => new { FeatureToggle = ft, FeatureToggleStatus = fts })
+                .Where(ft => ft.FeatureToggle.ToggleName == featureToggleName)
                 .Select(x => new ApplicationFeatureToggleViewModel
                 {
                     FeatureToggleName = x.FeatureToggle.ToggleName,
-                    IsEnabled = x.Enabled
+                    IsEnabled = x.FeatureToggleStatus.Enabled
                 })
                 .FirstOrDefault();
 
