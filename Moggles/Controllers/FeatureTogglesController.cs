@@ -96,7 +96,7 @@ namespace Moggles.Controllers
             {
                 var status = featureToggleStatus.FirstOrDefault(fts =>
                     fts.FeatureToggleId == model.Id && fts.EnvironmentId ==
-                        environments.FirstOrDefault(env => env.EnvName == toggleStatus.Environment).Id);
+                        environments.FirstOrDefault(env => env.EnvName == toggleStatus.Environment && env.ApplicationId==featureToggle.ApplicationId).Id);
                 if (status != null)
                 {
                     UpdateTimestampOnChange(status, toggleStatus);
