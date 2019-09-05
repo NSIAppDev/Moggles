@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "af5487a3fce4c9dd9e20"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "6e41b2e4f770394a9c1d"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -12537,6 +12537,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 			var toggleUpdateModel = {
 				id: this.rowToEdit.id,
+				applicationid: this.selectedApp.id,
 				userAccepted: this.rowToEdit.userAccepted,
 				notes: this.rowToEdit.notes,
 				featureToggleName: this.rowToEdit.toggleName,
@@ -12682,7 +12683,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 		deleteToggle: function deleteToggle() {
 			var _this5 = this;
 
-			__WEBPACK_IMPORTED_MODULE_1_axios___default.a.delete('/api/FeatureToggles?id=' + this.rowDataToDelete.id).then(function (result) {
+			__WEBPACK_IMPORTED_MODULE_1_axios___default.a.delete('/api/FeatureToggles?id=' + this.rowDataToDelete.id + '&applicationid=' + this.selectedApp.id).then(function (result) {
 				_this5.showDeleteConfirmation = false;
 				_this5.rowDataToDelete = null;
 				_this5.toggleIsDeployed = false;

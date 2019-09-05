@@ -12,16 +12,10 @@ namespace Moggles.Consumers
     public class FeatureToggleDeployStatusConsumer : IConsumer<RegisteredTogglesUpdate>
     {
         private IRepository<Application> _applicationsRepository;
-        private IRepository<DeployEnvironment> _deployEnvironmentRepository;
-        private IRepository<FeatureToggle> _featureToggleRepository;
-        private IRepository<FeatureToggleStatus> _featureToggleStatusRepository;
 
-        public FeatureToggleDeployStatusConsumer(IRepository<Application> applicationsRepository, IRepository<DeployEnvironment> deployEnvironmentRepository, IRepository<FeatureToggle> featureToggleRepository, IRepository<FeatureToggleStatus> featureToggleStatusRepository)
+        public FeatureToggleDeployStatusConsumer(IRepository<Application> applicationsRepository)
         {
             _applicationsRepository = applicationsRepository;
-            _deployEnvironmentRepository = deployEnvironmentRepository;
-            _featureToggleRepository = featureToggleRepository;
-            _featureToggleStatusRepository = featureToggleStatusRepository;
         }
 
         public async Task Consume(ConsumeContext<RegisteredTogglesUpdate> context)
@@ -30,27 +24,28 @@ namespace Moggles.Consumers
             string envName = context.Message.Environment;
             string[] clientToggles = context.Message.FeatureToggles;
 
-            var applicationId = _applicationsRepository.GetAll().Result.Where(app => app.AppName == appName).Select(app => app.Id).FirstOrDefault();
-            var environmentId = _deployEnvironmentRepository.GetAll().Result.Where(env => env.EnvName == envName).Where(env => env.ApplicationId == applicationId).Select(env => env.Id).FirstOrDefault();
+            var app = _applicationsRepository.GetAll().Result.Where(a => a.AppName == appName).FirstOrDefault();
 
-            var featureToggleStatuses = _featureToggleStatusRepository.GetAll().Result
-                .Join(_featureToggleRepository.GetAll().Result.Where(x => x.ApplicationId == applicationId), fts => fts.FeatureToggleId, ft => ft.Id, (fts, ft) => new { FeatureToggleStatus = fts, FeatureToggle = ft })
-                .Where(fts => fts.FeatureToggleStatus.EnvironmentId==environmentId);
+            var deployedToggles = app.FeatureToggles
+                .Where(ft=> clientToggles.Contains(ft.ToggleName))
+                .SelectMany(ft => ft.FeatureToggleStatuses)
+                .Where(fts => fts.EnvironmentId == app.DeploymentEnvironments.FirstOrDefault(env=>env.EnvName == envName).Id).ToList();
 
-
-            var deployedToggles = featureToggleStatuses.Where(ft => clientToggles.Contains(ft.FeatureToggle.ToggleName)).ToList();
             foreach (var featureToggle in deployedToggles)
             {
-                featureToggle.FeatureToggleStatus.MarkAsDeployed();
-                _featureToggleStatusRepository.Update(featureToggle.FeatureToggleStatus);
+                featureToggle.MarkAsDeployed();
             }
 
-            var removedToggles = featureToggleStatuses.Where(ft => !clientToggles.Contains(ft.FeatureToggle.ToggleName)).ToList();
+            var removedToggles = app.FeatureToggles
+                .Where(ft => !clientToggles.Contains(ft.ToggleName))
+                .SelectMany(ft => ft.FeatureToggleStatuses)
+                .Where(fts => fts.EnvironmentId == app.DeploymentEnvironments.FirstOrDefault(env => env.EnvName == envName).Id).ToList();
             foreach (var featureToggle in removedToggles)
             {
-                featureToggle.FeatureToggleStatus.MarkAsNotDeployed();
-                _featureToggleStatusRepository.Update(featureToggle.FeatureToggleStatus);
+                featureToggle.MarkAsNotDeployed();
             }
+
+            _applicationsRepository.Update(app);
         }
     }
 }

@@ -41,13 +41,8 @@ namespace Moggles
             }
 
             services.AddNoDb<Application>();
-            services.AddNoDb<DeployEnvironment>();
-            services.AddNoDb<FeatureToggle>();
-            services.AddNoDb<FeatureToggleStatus>();
             services.AddScoped<IRepository<Application>, ApplicationsRepository>();
-            services.AddScoped<IRepository<DeployEnvironment>, DeployEnvironmentRepository>();
-            services.AddScoped<IRepository<FeatureToggle>, FeatureToggleRepository>();
-            services.AddScoped<IRepository<FeatureToggleStatus>, FeatureToggleStatusRepository>();
+
         }
 
         public virtual void ConfigureDatabaseServices(IServiceCollection services)

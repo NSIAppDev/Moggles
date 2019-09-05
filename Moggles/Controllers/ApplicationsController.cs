@@ -15,23 +15,17 @@ namespace Moggles.Controllers
     public class ApplicationsController : Controller
     {
         private IRepository<Application> _applicationsRepository;
-        private IRepository<DeployEnvironment> _deployEnvironmentRepository;
-        private IRepository<FeatureToggle> _featureToggleRepository;
-        private IRepository<FeatureToggleStatus> _featureToggleStatusRepository;
 
-        public ApplicationsController(IRepository<Application> applicationsRepository, IRepository<DeployEnvironment> deployEnvironmentRepository, IRepository<FeatureToggle> featureToggleRepository, IRepository<FeatureToggleStatus> featureToggleStatusRepository)
+        public ApplicationsController(IRepository<Application> applicationsRepository)
         {
             _applicationsRepository = applicationsRepository;
-            _deployEnvironmentRepository = deployEnvironmentRepository;
-            _featureToggleRepository = featureToggleRepository;
-            _featureToggleStatusRepository = featureToggleStatusRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllApplications()
 
         {
-            return Ok(_applicationsRepository.GetAll().Result.ToList());
+            return Ok(_applicationsRepository.GetAll().Result.ToList().OrderBy(a=>a.AppName));
         }
 
 
@@ -50,21 +44,20 @@ namespace Moggles.Controllers
             var application = new Application
             {
                 Id = Guid.NewGuid(),
-                AppName = applicationModel.ApplicationName
+                AppName = applicationModel.ApplicationName,
+                DeploymentEnvironments = new List<DeployEnvironment>() {
+                    new DeployEnvironment()
+                    {
+                        Id = Guid.NewGuid(),
+                        EnvName = applicationModel.EnvironmentName,
+                        DefaultToggleValue = applicationModel.DefaultToggleValue,
+                        SortOrder = 1
+                    }
+                }
             };
+
 
             _applicationsRepository.Add(application);
-
-            var deployenv = new DeployEnvironment
-            {
-                Id = Guid.NewGuid(),
-                EnvName = applicationModel.EnvironmentName,
-                ApplicationId = application.Id,
-                DefaultToggleValue = applicationModel.DefaultToggleValue,
-                SortOrder = 1
-            };
-
-            _deployEnvironmentRepository.Add(deployenv);
 
             return Ok(application);
         }
@@ -94,27 +87,6 @@ namespace Moggles.Controllers
 
             if (app == null)
                 throw new InvalidOperationException("Application does not exists!");
-
-            var allDeployEnvironments = _deployEnvironmentRepository.GetAll().Result;
-            var appSpecificDeployEnvironments = allDeployEnvironments.Where(e => e.ApplicationId == id).ToList();
-            var appSpecificDeployEnvironmentIds = appSpecificDeployEnvironments.Select(_ => _.Id);
-            foreach (var deployEnvironment in appSpecificDeployEnvironments)
-            {
-                _deployEnvironmentRepository.Delete(deployEnvironment);
-            }
-            var allFeatureToggles = _featureToggleRepository.GetAll().Result;
-            var appSpecificFeatureToggles = allFeatureToggles.Where(e => e.ApplicationId == id).ToList();
-            foreach (var featureToggle in appSpecificFeatureToggles)
-            {
-                _featureToggleRepository.Delete(featureToggle);
-            }
-
-            var allFeatureToggleStatus = _featureToggleStatusRepository.GetAll().Result;
-            var appSpecificFeatureToggleStatus = allFeatureToggleStatus.Where(_ => appSpecificDeployEnvironmentIds.Contains(_.EnvironmentId));
-            foreach (var featureToggleStatus in appSpecificFeatureToggleStatus)
-            {
-                _featureToggleStatusRepository.Delete(featureToggleStatus);
-            }
 
             _applicationsRepository.Delete(app);
 
