@@ -57,6 +57,10 @@ th.sortable, a {
 	border-color: darken($gray-lighter, 15%) !important;
 }
 
+.pretty .state label {
+	text-indent: 1em;
+}
+
 label.checkbox > .icon {
 	top: -.5rem !important;
 }
