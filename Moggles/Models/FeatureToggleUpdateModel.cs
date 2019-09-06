@@ -7,6 +7,7 @@ namespace Moggles.Models
     public class FeatureToggleUpdateModel
     {
         public Guid Id { get; set; }
+        public Guid ApplicationId { get; set; }
         [Required]
         public string FeatureToggleName { get; set; }
         public bool UserAccepted { get; set; }

@@ -19,17 +19,11 @@ namespace Moggles.Controllers
     {
         private readonly TogglesContext _db;
         private IRepository<Application> _applicationsRepository;
-        private IRepository<DeployEnvironment> _deployEnvironmentRepository;
-        private IRepository<FeatureToggle> _featureToggleRepository;
-        private IRepository<FeatureToggleStatus> _featureToggleStatusRepository;
 
-        public ConvertDbController(TogglesContext db, IRepository<Application> applicationsRepository, IRepository<DeployEnvironment> deployEnvironmentRepository, IRepository<FeatureToggle> featureToggleRepository, IRepository<FeatureToggleStatus> featureToggleStatusRepository)
+        public ConvertDbController(TogglesContext db, IRepository<Application> applicationsRepository)
         {
             _db = db;
             _applicationsRepository = applicationsRepository;
-            _deployEnvironmentRepository = deployEnvironmentRepository;
-            _featureToggleRepository = featureToggleRepository;
-            _featureToggleStatusRepository = featureToggleStatusRepository;
         }
 
         [HttpGet]
@@ -38,44 +32,47 @@ namespace Moggles.Controllers
             // This query will only grab the details where an app has a feature toggle
             var all = _db.FeatureToggles.Include(ft => ft.FeatureToggleStatuses).ThenInclude(fts => fts.Environment).ThenInclude(env=> env.Application).ToImmutableList();
 
-            var allFeatureToggles = all.Select(ft => new FeatureToggle
-            {
-                Id = ft.NewId,
-                CreatedDate = ft.CreatedDate,
-                ApplicationId = ft.Application.NewId,
-                IsPermanent = ft.IsPermanent,
-                Notes = ft.Notes,
-                ToggleName = ft.ToggleName,
-                UserAccepted = ft.UserAccepted
-            }).GroupBy(ft => ft.Id).Select(x => x.FirstOrDefault());
-
-            var allFeatureToggleStatus = all.SelectMany(ft => ft.FeatureToggleStatuses.Select(fts => new FeatureToggleStatus
-            {
-                Id = fts.NewId,
-                FeatureToggleId = fts.FeatureToggle.NewId,
-                EnvironmentId = fts.Environment.NewId,
-                Enabled = fts.Enabled,
-                FirstTimeDeployDate = fts.FirstTimeDeployDate,
-                IsDeployed = fts.IsDeployed,
-                LastDeployStatusUpdate = fts.LastDeployStatusUpdate,
-                LastUpdated = fts.LastUpdated
-            })).GroupBy(fts=>fts.Id).Select(x => x.FirstOrDefault());
 
             var allApplications = all.SelectMany(ft => ft.FeatureToggleStatuses.Select(fts => fts.Environment)
                 .Select(env => env.Application).Select(app => new Application
                 {
                     Id = app.NewId,
-                    AppName = app.AppName
+                    AppName = app.AppName,
+                    DeploymentEnvironments = all
+                                            .SelectMany(ft1 => ft1.FeatureToggleStatuses
+                                            .Select(fts1 => fts1.Environment)
+                                            .Where(env=> env.ApplicationId==app.Id)
+                                            .Select(env => new DeployEnvironment
+                                            {
+                                                Id = env.NewId,
+                                                EnvName = env.EnvName,
+                                                DefaultToggleValue = env.DefaultToggleValue,
+                                                SortOrder = env.SortOrder
+                                            })).GroupBy(env => env.Id).Select(x => x.FirstOrDefault()).ToList(),
+                    FeatureToggles = all
+                                    .Where(ft2 => ft2.ApplicationId == app.Id)
+                                    .Select(ft2 => new FeatureToggle
+                                    {
+                                        Id = ft2.NewId,
+                                        CreatedDate = ft2.CreatedDate,
+                                        IsPermanent = ft2.IsPermanent,
+                                        Notes = ft2.Notes,
+                                        ToggleName = ft2.ToggleName,
+                                        UserAccepted = ft2.UserAccepted,
+                                        FeatureToggleStatuses = ft2.FeatureToggleStatuses
+                                                                    .Select(fts2 => new FeatureToggleStatus
+                                                                    {
+                                                                        EnvironmentId = fts2.Environment.NewId,
+                                                                        Enabled = fts2.Enabled,
+                                                                        FirstTimeDeployDate = fts2.FirstTimeDeployDate,
+                                                                        IsDeployed = fts2.IsDeployed,
+                                                                        LastDeployStatusUpdate = fts2.LastDeployStatusUpdate,
+                                                                        LastUpdated = fts2.LastUpdated
+                                                                    }).ToList()
+                                    }).GroupBy(ft2 => ft2.Id).Select(x => x.FirstOrDefault()).ToList(),
                 })).GroupBy(app=>app.Id).Select(x=>x.FirstOrDefault());
 
-            var allDeploymentEnvironments = all.SelectMany(ft => ft.FeatureToggleStatuses.Select(fts => fts.Environment).Select(env => new DeployEnvironment
-            {
-                Id = env.NewId,
-                EnvName = env.EnvName,
-                DefaultToggleValue = env.DefaultToggleValue,
-                ApplicationId = env.Application.NewId,
-                SortOrder = env.SortOrder
-            })).GroupBy(env => env.Id).Select(x => x.FirstOrDefault());
+
 
             // in order to get apps/envs without feature toggles, we need to do something else
             var allApplicationIds = all.SelectMany(ft => ft.FeatureToggleStatuses.Select(fts => fts.Environment)
@@ -86,25 +83,25 @@ namespace Moggles.Controllers
             var missingApplications = missingData.Select(env=>env.Application).Select(app => new Application
             {
                 Id=app.NewId,
-                AppName = app.AppName
+                AppName = app.AppName,
+                DeploymentEnvironments = missingData
+                    .Where(env=>env.ApplicationId==app.Id)
+                    .Select(env => new DeployEnvironment
+                {
+                    Id = env.NewId,
+                    EnvName = env.EnvName,
+                    DefaultToggleValue = env.DefaultToggleValue,
+                    SortOrder = env.SortOrder
+                }).GroupBy(env => env.Id).Select(x => x.FirstOrDefault()).ToList()
             }).GroupBy(app => app.Id).Select(x => x.FirstOrDefault());
 
-            var missingDeploymentEnvironments = missingData.Select(env => new DeployEnvironment
-            {
-                Id = env.NewId,
-                EnvName = env.EnvName,
-                DefaultToggleValue = env.DefaultToggleValue,
-                ApplicationId = env.Application.NewId,
-                SortOrder = env.SortOrder
-            }).GroupBy(env => env.Id).Select(x => x.FirstOrDefault());
 
-            allApplications = allApplications.Union(missingApplications);
-            allDeploymentEnvironments = allDeploymentEnvironments.Union(missingDeploymentEnvironments);
+
+
+
 
             allApplications.ToList().ForEach(a => _applicationsRepository.Add(a));
-            allDeploymentEnvironments.ToList().ForEach(d => _deployEnvironmentRepository.Add(d));
-            allFeatureToggles.ToList().ForEach(ft => _featureToggleRepository.Add(ft));
-            allFeatureToggleStatus.ToList().ForEach(fts => _featureToggleStatusRepository.Add(fts));
+            missingApplications.ToList().ForEach(a => _applicationsRepository.Add(a));
 
             return RedirectToAction("index", "home");
         }
