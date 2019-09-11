@@ -25,7 +25,7 @@ namespace Moggles
             //}
             var result = new ViewResult { ViewName = "Error" };
             //result.ViewData = new ViewDataDictionary(_modelMetadataProvider, context.ModelState);
-            //result.ViewData.Add("Exception", context.Exception);
+            //result.ViewData.AddAsync("Exception", context.Exception);
             //// TODO: Pass additional detailed data via ViewData
             context.Result = result;
         }

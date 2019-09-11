@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Moggles.Domain;
 using Moggles.Models;
 using MogglesContracts;
-using Moggles.Domain;
-using Moggles.Repository;
 
 namespace Moggles.Controllers
 {
@@ -15,7 +15,7 @@ namespace Moggles.Controllers
     {
         private readonly IBus _bus;
         private readonly IConfiguration _configuration;
-        private IRepository<Application> _applicationsRepository;
+        private readonly IRepository<Application> _applicationsRepository;
 
         public CacheRefreshController(IRepository<Application> applicationsRepository, IConfiguration configuration, IServiceProvider serviceProvider)
         {
@@ -26,23 +26,23 @@ namespace Moggles.Controllers
 
         [HttpPost]
         [Route("")]
-        public IActionResult RefreshCache([FromBody]RefreshCacheModel refreshCacheModel)
+        public async Task<IActionResult> RefreshCache([FromBody]RefreshCacheModel refreshCacheModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var app = _applicationsRepository.FindById(refreshCacheModel.ApplicationId).Result;
+            var app = await _applicationsRepository.FindByIdAsync(refreshCacheModel.ApplicationId);
 
             if (app == null)
                 throw new InvalidOperationException("Application ID is invalid");
 
-            _bus.Publish(new RefreshTogglesCache
+            await _bus.Publish(new RefreshTogglesCache
             {
                 Environment = refreshCacheModel.EnvName,
                 ApplicationName = app.AppName
             });
 
-            _bus.Publish(new NSTogglesContracts.RefreshTogglesCache
+            await _bus.Publish(new NSTogglesContracts.RefreshTogglesCache
             {
                 Environment = refreshCacheModel.EnvName,
                 ApplicationName = app.AppName
@@ -55,7 +55,7 @@ namespace Moggles.Controllers
         [Route("getCacheRefreshAvailability")]
         public IActionResult GetCacheRefreshAvailability()
         {
-            return Ok(Boolean.TryParse(_configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging);
+            return Ok(bool.TryParse(_configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging);
         }
     }
 }

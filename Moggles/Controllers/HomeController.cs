@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Moggles.Models;
-using Moggles;
 
 namespace Moggles.Controllers
 {

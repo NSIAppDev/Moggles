@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Moggles.Data;
 using Moggles.Domain;
-using Moggles.Repository;
 
 namespace Moggles.Controllers
 {
@@ -69,7 +64,7 @@ namespace Moggles.Controllers
                                                                         LastDeployStatusUpdate = fts2.LastDeployStatusUpdate,
                                                                         LastUpdated = fts2.LastUpdated
                                                                     }).ToList()
-                                    }).GroupBy(ft2 => ft2.Id).Select(x => x.FirstOrDefault()).ToList(),
+                                    }).GroupBy(ft2 => ft2.Id).Select(x => x.FirstOrDefault()).ToList()
                 })).GroupBy(app=>app.Id).Select(x=>x.FirstOrDefault());
 
 
@@ -100,8 +95,8 @@ namespace Moggles.Controllers
 
 
 
-            allApplications.ToList().ForEach(a => _applicationsRepository.Add(a));
-            missingApplications.ToList().ForEach(a => _applicationsRepository.Add(a));
+            allApplications.ToList().ForEach(a => _applicationsRepository.AddAsync(a));
+            missingApplications.ToList().ForEach(a => _applicationsRepository.AddAsync(a));
 
             return RedirectToAction("index", "home");
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -18,6 +19,7 @@ namespace Moggles.Tests
         [TestInitialize]
         public void BeforeEach()
         {
+            Utils.ClearStorage();
             _factory = new MogglesApplicationFactory<TestStartup>();
             _client = _factory.CreateClient();
         }
@@ -64,7 +66,7 @@ namespace Moggles.Tests
             //assert
             var app = apps.FirstOrDefault(a => a.AppName == "test");
             app.Should().NotBeNull();
-            app.Id.Should().NotBe(0);
+            app.Id.Should().NotBe(Guid.Empty);
         }
 
         [TestMethod]

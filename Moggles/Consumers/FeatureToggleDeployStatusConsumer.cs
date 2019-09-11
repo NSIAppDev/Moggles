@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using MogglesContracts;
 using Moggles.Data;
 using Moggles.Domain;
-using Moggles.Repository;
 
 namespace Moggles.Consumers
 {
@@ -24,7 +23,7 @@ namespace Moggles.Consumers
             string envName = context.Message.Environment;
             string[] clientToggles = context.Message.FeatureToggles;
 
-            var app = _applicationsRepository.GetAll().Result.Where(a => a.AppName == appName).FirstOrDefault();
+            var app = _applicationsRepository.GetAllAsync().Result.Where(a => a.AppName == appName).FirstOrDefault();
 
             var deployedToggles = app.FeatureToggles
                 .Where(ft=> clientToggles.Contains(ft.ToggleName))
@@ -45,7 +44,7 @@ namespace Moggles.Consumers
                 featureToggle.MarkAsNotDeployed();
             }
 
-            _applicationsRepository.Update(app);
+            _applicationsRepository.UpdateAsync(app);
         }
     }
 }

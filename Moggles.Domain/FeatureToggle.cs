@@ -4,9 +4,8 @@ using System.Collections.Generic;
 
 namespace Moggles.Domain
 {
-    public class FeatureToggle
+    public class FeatureToggle: Entity
     {
-        public Guid Id { get; set; }
         public string ToggleName { get; set; }
         public bool UserAccepted { get; set; }
         public string Notes { get; set; }

@@ -2,7 +2,7 @@
 
 namespace Moggles.Domain
 {
-    public class FeatureToggleStatus 
+    public class FeatureToggleStatus : Entity
     {
         public Guid EnvironmentId { get; set; }
         public bool Enabled { get; set; }

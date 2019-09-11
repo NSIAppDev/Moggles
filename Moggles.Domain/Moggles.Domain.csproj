@@ -7,8 +7,4 @@
     <RootNamespace>Moggles.Domain</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NoDb" Version="1.2.2" />
-  </ItemGroup>
-
 </Project>

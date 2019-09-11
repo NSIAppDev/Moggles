@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account.Manage;
 using Microsoft.AspNetCore.Mvc;
-using Moggles.Models;
 using Moggles.Domain;
-using Moggles.Repository;
+using Moggles.Models;
 
 namespace Moggles.Controllers
 {
@@ -14,7 +12,7 @@ namespace Moggles.Controllers
     [Route("api/Applications")]
     public class ApplicationsController : Controller
     {
-        private IRepository<Application> _applicationsRepository;
+        private readonly IRepository<Application> _applicationsRepository;
 
         public ApplicationsController(IRepository<Application> applicationsRepository)
         {
@@ -23,19 +21,19 @@ namespace Moggles.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAllApplications()
-
         {
-            return Ok(_applicationsRepository.GetAll().Result.ToList().OrderBy(a=>a.AppName));
+            var allApps = await _applicationsRepository.GetAllAsync();
+            return Ok(allApps.OrderBy(a => a.AppName).ToList());
         }
-
 
         [HttpPost]
         [Route("add")]
-        public IActionResult AddApplication([FromBody]AddApplicationModel applicationModel)
+        public async Task<IActionResult> AddApplication([FromBody]AddApplicationModel applicationModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var apps = _applicationsRepository.GetAll().Result.ToList();
+
+            var apps = await _applicationsRepository.GetAllAsync();
             var app = apps.FirstOrDefault(a => a.AppName == applicationModel.ApplicationName);
             
             if (app != null)
@@ -45,8 +43,9 @@ namespace Moggles.Controllers
             {
                 Id = Guid.NewGuid(),
                 AppName = applicationModel.ApplicationName,
-                DeploymentEnvironments = new List<DeployEnvironment>() {
-                    new DeployEnvironment()
+                DeploymentEnvironments = new List<DeployEnvironment>
+                {
+                    new DeployEnvironment
                     {
                         Id = Guid.NewGuid(),
                         EnvName = applicationModel.EnvironmentName,
@@ -56,40 +55,38 @@ namespace Moggles.Controllers
                 }
             };
 
-
-            _applicationsRepository.Add(application);
+            await _applicationsRepository.AddAsync(application);
 
             return Ok(application);
         }
 
         [HttpPut]
         [Route("update")]
-        public IActionResult UpdateApplication([FromBody]UpdateApplicationModel applicationModel)
+        public async Task<IActionResult> UpdateApplication([FromBody]UpdateApplicationModel applicationModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var app = _applicationsRepository.FindById(applicationModel.Id).Result;
-
+            var app = await _applicationsRepository.FindByIdAsync(applicationModel.Id);
 
             if (app == null)
                 throw new InvalidOperationException("Application does not exists!");
-            app.AppName = applicationModel.ApplicationName; // Make the change
-            _applicationsRepository.Update(app);
+
+            app.AppName = applicationModel.ApplicationName; 
+            await _applicationsRepository.UpdateAsync(app);
 
             return Ok();
         }
 
         [HttpDelete]
-        public IActionResult RemoveApp([FromQuery] Guid id)
+        public async Task<IActionResult> RemoveApp([FromQuery] Guid id)
         {
-            var app = _applicationsRepository.FindById(id).Result;
+            var app = await _applicationsRepository.FindByIdAsync(id);
 
             if (app == null)
                 throw new InvalidOperationException("Application does not exists!");
 
-            _applicationsRepository.Delete(app);
-
+            await _applicationsRepository.DeleteAsync(app);
 
             return Ok();
         }
