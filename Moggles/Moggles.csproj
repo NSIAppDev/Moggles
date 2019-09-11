@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Moggles.Data.NoDb\Moggles.Data.NoDb.csproj" />
-    <ProjectReference Include="..\Moggles.Data\Moggles.Data.SQL.csproj" />
+    <ProjectReference Include="..\Moggles.Data.SQL\Moggles.Data.SQL.csproj" />
     <ProjectReference Include="..\Moggles.Domain\Moggles.Domain.csproj" />
     <ProjectReference Include="..\MogglesContracts\MogglesContracts.csproj" />
   </ItemGroup>
