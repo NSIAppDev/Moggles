@@ -3,7 +3,6 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Moggles.Data.SQL;
 
 namespace Moggles.Tests
 {
@@ -16,8 +15,7 @@ namespace Moggles.Tests
 
         public override void ConfigureDatabaseServices(IServiceCollection services)
         {
-            services.AddDbContext<TogglesContext>(options =>
-                options.UseInMemoryDatabase("Moggles_TestDB"));
+            // Do nothing
         }
 
         public override void ConfigureAuthServices(IServiceCollection services)
