@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Moggles.Data;
+using Moggles.Data.SQL;
 
 namespace Moggles.UnitTests
 {

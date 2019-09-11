@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Moggles.Domain;
 
-namespace Moggles.Data
+namespace Moggles.Data.SQL
 {
     public class TogglesContext : DbContext
     {

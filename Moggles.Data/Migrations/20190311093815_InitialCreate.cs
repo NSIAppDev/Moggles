@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Moggles.Data.Migrations
+namespace Moggles.Data.SQL.Migrations
 {
     public partial class InitialCreate : Migration
     {

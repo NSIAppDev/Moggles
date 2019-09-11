@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Moggles.Data.Migrations
+namespace Moggles.Data.SQL.Migrations
 {
     [DbContext(typeof(TogglesContext))]
     [Migration("20190311093815_InitialCreate")]

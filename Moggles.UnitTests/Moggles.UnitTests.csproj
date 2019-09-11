@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Moggles.Data\Moggles.Data.csproj" />
+    <ProjectReference Include="..\Moggles.Data\Moggles.Data.SQL.csproj" />
     <ProjectReference Include="..\Moggles\Moggles.csproj" />
   </ItemGroup>
 

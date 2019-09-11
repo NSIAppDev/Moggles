@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Moggles.Data;
+using Moggles.Data.SQL;
 using Moggles.Domain;
 
 namespace Moggles.Controllers

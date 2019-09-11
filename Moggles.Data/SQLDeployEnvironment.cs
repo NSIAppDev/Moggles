@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Moggles.Data
+namespace Moggles.Data.SQL
 {
     public class SQLDeployEnvironment
     {

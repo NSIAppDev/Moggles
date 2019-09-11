@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Moggles.Data
+namespace Moggles.Data.SQL
 {
     public class SQLFeatureToggle
     {
