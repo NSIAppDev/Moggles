@@ -11,6 +11,6 @@ namespace Moggles.Domain
         public string Notes { get; set; }
         public DateTime CreatedDate { get; set; }
         public bool IsPermanent { get; set; }
-        public List<FeatureToggleStatus> FeatureToggleStatuses { get; set; }
+        public List<FeatureToggleStatus> FeatureToggleStatuses { get; set; } = new List<FeatureToggleStatus>();
     }
 }

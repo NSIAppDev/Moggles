@@ -71,7 +71,7 @@ namespace Moggles.Controllers
         public async Task<IActionResult> Update([FromBody] FeatureToggleUpdateModel model)
         {
             var app = await _applicationsRepository.FindByIdAsync(model.ApplicationId);
-            var featureToggle = app.FeatureToggles.Where(ft => ft.Id == model.Id).FirstOrDefault();
+            var featureToggle = app.FeatureToggles.FirstOrDefault(ft => ft.Id == model.Id);
 
             if (featureToggle is null)
                 throw new InvalidOperationException("Feature toggle not found!");
@@ -83,8 +83,7 @@ namespace Moggles.Controllers
             foreach (var toggleStatus in model.Statuses)
             {
                 var status = featureToggle.FeatureToggleStatuses.FirstOrDefault(fts =>
-                    fts.EnvironmentId == app.DeploymentEnvironments
-                        .Where(env => env.EnvName == toggleStatus.Environment).FirstOrDefault().Id);
+                    fts.EnvironmentId == app.DeploymentEnvironments.FirstOrDefault(env => env.EnvName == toggleStatus.Environment).Id);
                 if (status != null)
                 {
                     UpdateTimestampOnChange(status, toggleStatus);

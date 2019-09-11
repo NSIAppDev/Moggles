@@ -7,5 +7,16 @@ namespace Moggles.Domain
         public string EnvName { get; set; }
         public bool DefaultToggleValue { get; set; }
         public int SortOrder { get; set; }
+
+        public static DeployEnvironment Create(string name, bool defaultToggleValue, int sortOrder = 1)
+        {
+            return new DeployEnvironment
+            {
+                DefaultToggleValue = defaultToggleValue,
+                EnvName = name,
+                SortOrder = sortOrder,
+                Id = Guid.NewGuid()
+            };
+        }
     }
 }

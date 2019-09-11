@@ -39,21 +39,7 @@ namespace Moggles.Controllers
             if (app != null)
                 throw new InvalidOperationException("Application already exists!");
 
-            var application = new Application
-            {
-                Id = Guid.NewGuid(),
-                AppName = applicationModel.ApplicationName,
-                DeploymentEnvironments = new List<DeployEnvironment>
-                {
-                    new DeployEnvironment
-                    {
-                        Id = Guid.NewGuid(),
-                        EnvName = applicationModel.EnvironmentName,
-                        DefaultToggleValue = applicationModel.DefaultToggleValue,
-                        SortOrder = 1
-                    }
-                }
-            };
+            var application = Application.Create(applicationModel.ApplicationName, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue);
 
             await _applicationsRepository.AddAsync(application);
 
