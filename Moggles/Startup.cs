@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moggles.Consumers;
-using Moggles.Data;
+using Moggles.Data.SQL;
 using Moggles.Data.NoDb;
 using NoDb;
 using Moggles.Domain;

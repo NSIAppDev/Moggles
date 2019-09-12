@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <Configurations>Debug;Release;Staging</Configurations>
-    <AssemblyName>Moggles.Data</AssemblyName>
-    <RootNamespace>Moggles.Data</RootNamespace>
+    <AssemblyName>Moggles.Data.SQL</AssemblyName>
+    <RootNamespace>Moggles.Data.SQL</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

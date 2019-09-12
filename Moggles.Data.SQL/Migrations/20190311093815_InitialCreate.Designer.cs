@@ -5,17 +5,17 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Moggles.Data.Migrations
+namespace Moggles.Data.SQL.Migrations
 {
     [DbContext(typeof(TogglesContext))]
-    [Migration("20190531082344_AddedIsPermanentFlag")]
-    partial class AddedIsPermanentFlag
+    [Migration("20190311093815_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
+                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -72,8 +72,6 @@ namespace Moggles.Data.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<bool>("IsPermanent");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500);

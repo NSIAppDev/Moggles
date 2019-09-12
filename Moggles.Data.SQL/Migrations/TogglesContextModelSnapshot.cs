@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace Moggles.Data.Migrations
+namespace Moggles.Data.SQL.Migrations
 {
     [DbContext(typeof(TogglesContext))]
     partial class TogglesContextModelSnapshot : ModelSnapshot

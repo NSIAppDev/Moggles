@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles", "Moggles\Moggles.csproj", "{3A22C921-C180-4DCF-983A-7A0CE920AFE9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles.Data", "Moggles.Data\Moggles.Data.csproj", "{006CB3A8-EDD6-40F9-B357-D0BA7426E33E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles.Data.SQL", "Moggles.Data.SQL\Moggles.Data.SQL.csproj", "{006CB3A8-EDD6-40F9-B357-D0BA7426E33E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles.Domain", "Moggles.Domain\Moggles.Domain.csproj", "{1817D7EF-63DD-4749-9422-0AEC1A2559B7}"
 EndProject
@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MogglesContracts", "Moggles
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles.UnitTests", "Moggles.UnitTests\Moggles.UnitTests.csproj", "{22F4174B-F892-4ECB-8DA5-B989E85324EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moggles.Data.NoDb", "Moggles.Data.NoDb\Moggles.Data.NoDb.csproj", "{6AB5B659-582E-4C4C-86B8-19C1100118F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles.Data.NoDb", "Moggles.Data.NoDb\Moggles.Data.NoDb.csproj", "{6AB5B659-582E-4C4C-86B8-19C1100118F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
