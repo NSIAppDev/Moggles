@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "6e41b2e4f770394a9c1d"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "1653b0dca0273b508632"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -12490,6 +12490,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 			if (app) {
 				_this.selectedApp = app;
 				_this.initializeGrid(app);
+				_this.environmentsToRefresh = [];
+				_this.closeRefreshAlert();
 			}
 		});
 
@@ -13017,7 +13019,7 @@ module.exports = (__webpack_require__(5))(227);
                     _this.showSuccessAlert = false;
                 }, _this.alertDuration);
             }).catch(function (e) {
-                window.alert(e);
+                _this.errors.push(e.response.data);
             }).finally(function (e) {
                 __WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* Bus */].$emit('unblock-ui');
             });
@@ -15915,9 +15917,11 @@ var render = function() {
       { staticClass: "panel-body" },
       [
         _vm._l(_vm.errors, function(error) {
-          return _c("div", { key: error, staticClass: "text-danger" }, [
-            _vm._v(_vm._s(error))
-          ])
+          return _c(
+            "div",
+            { key: error, staticClass: "text-danger margin-bottom-10" },
+            [_vm._v(_vm._s(error))]
+          )
         }),
         _vm._v(" "),
         _c("div", { staticClass: "form-group" }, [
