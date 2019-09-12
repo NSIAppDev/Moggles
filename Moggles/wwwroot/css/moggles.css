@@ -9373,6 +9373,9 @@ th.sortable, a {
   background-color: #cccccc !important;
   border-color: #a6a6a6 !important; }
 
+.pretty .state label {
+  text-indent: 1em; }
+
 label.checkbox > .icon {
   top: -.5rem !important; }
 
