@@ -35,9 +35,9 @@ namespace Moggles.Controllers
 
             var apps = await _applicationsRepository.GetAllAsync();
             var app = apps.FirstOrDefault(a => a.AppName == applicationModel.ApplicationName);
-            
+
             if (app != null)
-                throw new InvalidOperationException("Application already exists!");
+                return BadRequest("Application already exists!");
 
             var application = Application.Create(applicationModel.ApplicationName, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue);
 
@@ -56,7 +56,7 @@ namespace Moggles.Controllers
             var app = await _applicationsRepository.FindByIdAsync(applicationModel.Id);
 
             if (app == null)
-                throw new InvalidOperationException("Application does not exists!");
+                return BadRequest("Application does not exist!");
 
             app.AppName = applicationModel.ApplicationName; 
             await _applicationsRepository.UpdateAsync(app);
@@ -70,7 +70,7 @@ namespace Moggles.Controllers
             var app = await _applicationsRepository.FindByIdAsync(id);
 
             if (app == null)
-                throw new InvalidOperationException("Application does not exists!");
+                return BadRequest("Application does not exist!");
 
             await _applicationsRepository.DeleteAsync(app);
 
