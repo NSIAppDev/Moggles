@@ -1,16 +1,13 @@
-﻿using System;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moggles.Controllers;
+using Moggles.Domain;
+using Moggles.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moggles.Controllers;
-using Moggles.Data;
-using Moggles.Domain;
-using Moggles.Models;
-using Moq;
 
 namespace Moggles.UnitTests.FeatureTogglesTests
 {
@@ -29,10 +26,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task GetToggles_ReturnsAList_WithAllTheToggles_ForTheGivenApplication()
         {
             //arrange
-            var app = Application.Create("BCC","dev",false);
-           // app.AddDeployEnvironment("dev", false);
-           app.AddFeatureToggle("TestToggle","TestNotes",true);
-           app.AddFeatureToggle("TestToggle2", "TestNotes2");
+            var app = Application.Create("BCC", "dev", false);
+            app.AddFeatureToggle("TestToggle", "TestNotes", true);
+            app.AddFeatureToggle("TestToggle2", "TestNotes2");
 
             await _appRepository.AddAsync(app);
 
@@ -46,7 +42,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             list.Count().Should().Be(2);
             var toggle = list.FirstOrDefault(t => t.ToggleName == "TestToggle");
             toggle.Notes.Should().Be("TestNotes");
-            toggle.CreatedDate.Should().BeCloseTo(DateTime.Now,200);
+            toggle.CreatedDate.Should().BeCloseTo(DateTime.Now, 200);
             toggle.UserAccepted.Should().Be(false);
             toggle.IsPermanent.Should().Be(true);
         }
@@ -111,104 +107,105 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             results.Value.Should().BeEquivalentTo(expectedEnvNames);
         }
 
-        //[TestMethod]
-        //public async Task GetEnvironments_ReturnsAList_WithAllTheDistinctEnvironments_ForTheGivenApplication()
-        //{
-        //    //arrange
-        //    var app = new Application { Id = 1, AppName = "TestApp" };
-        //    var dev = new DeployEnvironment { Application = app, ApplicationId = app.Id, Id = 10, EnvName = "DEV" };
-        //    var qa = new DeployEnvironment { Application = app, ApplicationId = app.Id, Id = 11, EnvName = "QA" };
-        //    var duplicateQa = new DeployEnvironment { Application = app, ApplicationId = app.Id, Id = 12, EnvName = "QA" };
+        [TestMethod]
+        public async Task GetEnvironments_ReturnsAList_WithAllTheDistinctEnvironments_ForTheGivenApplication()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "DEV", false);
 
-        //    var expectedEnvNames = new List<string> { dev.EnvName, qa.EnvName };
+            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", false);
 
-        //    _context.DeployEnvironments.AddRange(dev, qa, duplicateQa);
-        //    _context.SaveChanges();
-        //    var controller = new FeatureTogglesController(_context);
+            var expectedEnvNames = new List<string> { "DEV", "QA" };
 
-        //    //act
-        //    var results = controller.GetEnvironments(app.Id) as OkObjectResult;
+            await _appRepository.AddAsync(app);
+            var controller = new FeatureTogglesController(_appRepository);
 
-        //    //assert
-        //    results.Value.Should().BeEquivalentTo(expectedEnvNames);
-        //}
+            //act
+            var results = await controller.GetEnvironments(app.Id) as OkObjectResult;
 
-        //[TestMethod]
-        //public async Task Updates_CanBeMade_ToExistingFeatureToggle()
-        //{
-        //    //arrange
-        //    var app = new Application { Id = 1, AppName = "TestApp" };
-        //    var existingValue = new FeatureToggle { Id = 1, Application = app, ApplicationId = app.Id, ToggleName = "TestToggle", FeatureToggleStatuses = new List<FeatureToggleStatus>(), Notes = "FirstNote", IsPermanent = false };
-        //    var updatedValue = new FeatureToggleUpdateModel { Id = 1, FeatureToggleName = "UpdatedFeatureToggleName", Notes = "Update", UserAccepted = true, Statuses = new List<FeatureToggleStatusUpdateModel>(), IsPermanent = true };
+            //assert
+            results.Value.Should().BeEquivalentTo(expectedEnvNames);
+        }
 
-        //    _context.FeatureToggles.Add(existingValue);
-        //    _context.SaveChanges();
-        //    var controller = new FeatureTogglesController(_context);
+        [TestMethod]
+        public async Task Updates_CanBeMade_ToExistingFeatureToggle()
+        {
+            //arrange
+            var app = Application.Create("test", "DEV", false);
+            app.AddFeatureToggle("TestToggle", "FirstNote", false);
+            await _appRepository.AddAsync(app);
 
-        //    //act
-        //    var result = controller.Update(updatedValue) as OkObjectResult;
+            var toggle = app.FeatureToggles.Single();
+            var updatedValue = new FeatureToggleUpdateModel { ApplicationId = app.Id, Id = toggle.Id, FeatureToggleName = "UpdatedFeatureToggleName", Notes = "Update", UserAccepted = true, Statuses = new List<FeatureToggleStatusUpdateModel>(), IsPermanent = true };
 
-        //    //assert
-        //    _context.FeatureToggles.FirstOrDefault().ToggleName.Should().Be("UpdatedFeatureToggleName");
-        //    _context.FeatureToggles.FirstOrDefault().Notes.Should().Be(updatedValue.Notes);
-        //    _context.FeatureToggles.FirstOrDefault().UserAccepted.Should().BeTrue();
-        //    _context.FeatureToggles.FirstOrDefault().IsPermanent.Should().BeTrue();
-        //}
+            var controller = new FeatureTogglesController(_appRepository);
 
-        //[TestMethod]
-        //public async Task AddFeatureToggle_ReturnBadRequestResult_WhenModelStateIsInvalid()
-        //{
-        //    //arrange
-        //    var controller = new FeatureTogglesController(_context);
-        //    controller.ModelState.AddModelError("error", "some error");
+            //act
+            await controller.Update(updatedValue);
 
-        //    //act
-        //    var result = controller.AddFeatureToggle(new AddFeatureToggleModel());
+            //assert
+            var savedApp = await _appRepository.FindByIdAsync(app.Id);
+            savedApp.FeatureToggles.FirstOrDefault().ToggleName.Should().Be("UpdatedFeatureToggleName");
+            savedApp.FeatureToggles.FirstOrDefault().Notes.Should().Be("Update");
+            savedApp.FeatureToggles.FirstOrDefault().UserAccepted.Should().BeTrue();
+            savedApp.FeatureToggles.FirstOrDefault().IsPermanent.Should().BeTrue();
+        }
 
-        //    //assert
-        //    result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
-        //}
+        [TestMethod]
+        public async Task AddFeatureToggle_ReturnBadRequestResult_WhenModelStateIsInvalid()
+        {
+            //arrange
+            var controller = new FeatureTogglesController(_appRepository);
+            controller.ModelState.AddModelError("error", "some error");
 
-        //[TestMethod]
-        //public async Task AddFeatureToggle_ReturnBadRequestResult_WhenFeatureAlreadyExists()
-        //{
-        //    //arrange
-        //    var app = new Application { Id = 1, AppName = "BCC" };
-        //    var existingFeatureToggle = new FeatureToggle { Application = app, Id = 2, ApplicationId = app.Id, ToggleName = "TestToggle" };
-        //    var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
+            //act
+            var result = await controller.AddFeatureToggle(new AddFeatureToggleModel());
 
-        //    _context.FeatureToggles.Add(existingFeatureToggle);
-        //    _context.SaveChanges();
+            //assert
+            result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
+        }
 
-        //    var controller = new FeatureTogglesController(_context);
+        [TestMethod]
+        public async Task AddFeatureToggle_ReturnBadRequestResult_WhenFeatureAlreadyExists()
+        {
+            //arrange
+            var app = Application.Create("bcc", "dev", false);
+            app.AddFeatureToggle("TestToggle", string.Empty);
 
-        //    //act
-        //    var result = controller.AddFeatureToggle(newFeatureToggle);
+            var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
 
-        //    //assert
-        //    result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
-        //}
+            await _appRepository.AddAsync(app);
 
-        //[TestMethod]
-        //public async Task AddFeatureToggle_ReturnBadRequestResult_WhenApplicationNotSpecified()
-        //{
-        //    //arrange
-        //    var newFeatureToggle = new AddFeatureToggleModel { FeatureToggleName = "TestToggle" };
+            var controller = new FeatureTogglesController(_appRepository);
 
-        //    var controller = new FeatureTogglesController(_context);
+            //act
+            var result = await controller.AddFeatureToggle(newFeatureToggle);
 
-        //    //act
-        //    var result = controller.AddFeatureToggle(newFeatureToggle);
+            //assert
+            result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
+        }
 
-        //    //assert
-        //    result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
-        //}
+        [TestMethod]
+        public async Task AddFeatureToggle_ReturnBadRequestResult_WhenApplicationNotSpecified()
+        {
+            //arrange
+            var newFeatureToggle = new AddFeatureToggleModel { FeatureToggleName = "TestToggle" };
+
+            var controller = new FeatureTogglesController(_appRepository);
+
+            //act
+            var result = await controller.AddFeatureToggle(newFeatureToggle);
+
+            //assert
+            result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
+        }
 
         [TestMethod]
         public async Task AddFeatureToggle_FeatureToggleIsCreated()
         {
             //arrange
-            var app = new Application { Id = Guid.NewGuid(), AppName = "BCC" };
+            var app = Application.Create("tst", "dev", false);
             await _appRepository.AddAsync(app);
             var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
 
@@ -224,111 +221,138 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             toggle.ToggleName.Should().Be("TestToggle");
         }
 
-        //[TestMethod]
-        //public async Task AddFeatureToggle_FeatureToggleStatus_IsCreated_ForEveryEnvironment()
-        //{
-        //    //arrange
-        //    var app = new Application { Id = 1, AppName = "BCC" };
-        //    var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
-        //    var devEnv = new DeployEnvironment { Application = app, Id = 1, ApplicationId = app.Id, EnvName = "DEV" };
-        //    var qaEnv = new DeployEnvironment { Application = app, Id = 2, ApplicationId = app.Id, EnvName = "QA" };
+        [TestMethod]
+        public async Task AddFeatureToggle_FeatureToggleStatus_IsCreated_ForEveryEnvironment()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
 
+            var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
 
-        //    _context.DeployEnvironments.AddRange(devEnv, qaEnv);
-        //    _context.Applications.Add(app);
-        //    _context.SaveChanges();
+            await _appRepository.AddAsync(app);
 
-        //    var controller = new FeatureTogglesController(_context);
+            var controller = new FeatureTogglesController(_appRepository);
 
-        //    //act
-        //    var result = controller.AddFeatureToggle(newFeatureToggle);
+            //act
+            var result = await controller.AddFeatureToggle(newFeatureToggle);
 
-        //    //assert
-        //    result.Should().BeOfType<OkResult>();
-        //    _context.FeatureToggleStatuses.Count().Should().Be(2);
-        //}
+            //assert
+            result.Should().BeOfType<OkResult>();
+            (await _appRepository.FindByIdAsync(app.Id)).FeatureToggles.FirstOrDefault().FeatureToggleStatuses.Count.Should().Be(2);
+        }
 
-        //[TestMethod]
-        //public async Task RemoveFeatureToggle_FeatureToggleIsDeleted()
-        //{
-        //    //arrange
-        //    var data = new List<FeatureToggle>
-        //    {
-        //        new FeatureToggle{Id = 1, ToggleName = "Test1"},
-        //        new FeatureToggle{ Id = 2, ToggleName = "Test2"}
-        //    };
+        [TestMethod]
+        public async Task RemoveFeatureToggle_FeatureToggleIsDeleted()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "DEV", false);
+            app.AddFeatureToggle("t1", "");
+            var theToggle = app.FeatureToggles.Single();
+            await _appRepository.AddAsync(app);
 
-        //    var mockSet = new Mock<DbSet<FeatureToggle>>();
-        //    mockSet.As<IQueryable<FeatureToggle>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
+            var controller = new FeatureTogglesController(_appRepository);
 
-        //    var options = new DbContextOptionsBuilder<TogglesContext>()
-        //        .Options;
+            //act
+            var result = await controller.RemoveFeatureToggle(theToggle.Id, app.Id);
 
-        //    var mockContext = new Mock<TogglesContext>(options);
-        //    mockContext
-        //        .Setup(m => m.FeatureToggles.Remove(It.IsAny<FeatureToggle>())).Callback<FeatureToggle>((entity) => data.Remove(entity));
-        //    var controller = new FeatureTogglesController(mockContext.Object);
+            //assert
+            result.Should().BeOfType<OkResult>();
+            (await _appRepository.FindByIdAsync(app.Id)).FeatureToggles.Count.Should().Be(0);
+        }
 
-        //    //act
-        //    var result = controller.RemoveFeatureToggle(1);
+        [TestMethod]
+        public async Task AddEnvironment_EnvironmentIsBeingCreated()
+        {
+            //arrange
+            var app = Application.Create("tst", "DEV", false);
+            await _appRepository.AddAsync(app);
+            var newEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "QA" };
 
-        //    //assert
-        //    result.Should().BeOfType<OkResult>();
-        //    mockContext.Verify(s => s.FeatureToggles.Remove(It.IsAny<FeatureToggle>()), Times.Once);
-        //    mockContext.Verify(s => s.SaveChanges(), Times.Once);
-        //}
+            var controller = new FeatureTogglesController(_appRepository);
 
-        //[TestMethod]
-        //public async Task AddEnvironment_EnvironmentIsBeingCreated()
-        //{
-        //    //arrange
-        //    var newEnvironment = new AddEnvironmentModel { ApplicationId = 1, EnvName = "DEV" };
+            //act
+            var result = await controller.AddEnvironment(newEnvironment);
 
-        //    var controller = new FeatureTogglesController(_context);
+            //assert
+            result.Should().BeOfType<OkResult>();
+            (await _appRepository.FindByIdAsync(app.Id)).DeploymentEnvironments.Count().Should().Be(2);
+        }
 
-        //    //act
-        //    var result = controller.AddEnvironment(newEnvironment);
+        [TestMethod]
+        public async Task AddEnvironment_ReturnBadRequestResult_WhenModelStateIsInvalid()
+        {
+            //arrange
+            var controller = new FeatureTogglesController(_appRepository);
+            controller.ModelState.AddModelError("error", "some error");
 
-        //    //assert
-        //    result.Should().BeOfType<OkResult>();
-        //    _context.DeployEnvironments.Count().Should().Be(1);
-        //}
+            //act
+            var result = await controller.AddEnvironment(new AddEnvironmentModel());
 
-        //[TestMethod]
-        //public async Task AddEnvironment_ReturnBadRequestResult_WhenModelStateIsInvalid()
-        //{
-        //    //arrange
-        //    var controller = new FeatureTogglesController(_context);
-        //    controller.ModelState.AddModelError("error", "some error");
+            //assert
+            result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
+        }
 
-        //    //act
-        //    var result = controller.AddEnvironment(new AddEnvironmentModel());
+        [TestMethod]
+        public async Task AddEnvironment_ReturnBadRequestResult_WhenEnvironmentAlreadyExists()
+        {
+            //arrange
+            var app = Application.Create("tst", "dev", false);
+            await _appRepository.AddAsync(app);
 
-        //    //assert
-        //    result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
-        //}
+            var controller = new FeatureTogglesController(_appRepository);
 
-        //[TestMethod]
-        //public async Task AddEnvironment_FeatureToggleStatus_IsCreated_ForEveryFeatureToggle()
-        //{
-        //    //arrange
-        //    var app = new Application { Id = 1, AppName = "TestApp" };
-        //    var newEnvironment = new AddEnvironmentModel { ApplicationId = 1, EnvName = "DEV" };
-        //    var featureOne = new FeatureToggle { Application = app, Id = 1, ApplicationId = app.Id, ToggleName = "TestToggle" };
-        //    var featureTwo = new FeatureToggle { Application = app, Id = 2, ApplicationId = app.Id, ToggleName = "OtherTestToggle" };
+            //act
+            var result = await controller.AddEnvironment(new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "dev" });
 
-        //    _context.Applications.Add(app);
-        //    _context.FeatureToggles.AddRange(featureOne, featureTwo);
-        //    _context.SaveChanges();
-        //    var controller = new FeatureTogglesController(_context);
+            //assert
+            result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
+        }
 
-        //    //act
-        //    var result = controller.AddEnvironment(newEnvironment);
+        [TestMethod]
+        public async Task AddEnvironment_EveryExistingFeatureToggle_IsMarkedAs_Off_ForTheNewEnvironment()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "DEV", false);
+            app.AddFeatureToggle("t1", string.Empty);
+            app.AddFeatureToggle("t2", string.Empty);
+            await _appRepository.AddAsync(app);
 
-        //    //assert
-        //    result.Should().BeOfType<OkResult>();
-        //    _context.FeatureToggleStatuses.Count().Should().Be(2);
-        //}
+            var newEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "QA" };
+
+            var controller = new FeatureTogglesController(_appRepository);
+
+            //act
+            var result = await controller.AddEnvironment(newEnvironment);
+
+            //assert
+            result.Should().BeOfType<OkResult>();
+            var savedApp = await _appRepository.FindByIdAsync(app.Id);
+            savedApp.GetFeatureToggleStatus("t1", "QA").Enabled.Should().BeFalse();
+            savedApp.GetFeatureToggleStatus("t2", "QA").Enabled.Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task AddEnvironment_EveryExistingFeatureToggle_IsMarkedAs_On_ForTheNewEnvironment_WhenTheDefaultValueForTheToggleIsTrue()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "DEV", false);
+            var newEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "QA", DefaultToggleValue = true };
+            app.AddFeatureToggle("t1", string.Empty);
+            app.AddFeatureToggle("t2", string.Empty);
+
+            await _appRepository.AddAsync(app);
+            var controller = new FeatureTogglesController(_appRepository);
+
+            //act
+            var result = await controller.AddEnvironment(newEnvironment);
+
+            //assert
+            result.Should().BeOfType<OkResult>();
+            var savedApp = await _appRepository.FindByIdAsync(app.Id);
+            savedApp.GetFeatureToggleStatus("t1", "QA").Enabled.Should().BeTrue();
+            savedApp.GetFeatureToggleStatus("t2", "QA").Enabled.Should().BeTrue();
+        }
 
         //[TestMethod]
         //public async Task GetApplicationFeatureToggles_ReturnsExistingFeaturesStatuses_ForTheGivenApplicationNameAndEnvironmentName()
@@ -389,186 +413,170 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         //    okObjectResult.IsEnabled.Should().BeTrue();
         //}
 
-        //[TestMethod]
-        //public async Task CreateEnvironment_A_NewEnvironmentIsBeingStoredInDB()
-        //{
-        //    //arrange
-        //    var app = new Application { Id = 1, AppName = "TestApp" };
-        //    var createdEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "DEV" };
-        //    var controller = new FeatureTogglesController(_context);
+        [TestMethod]
+        public async Task CreateEnvironment_A_NewEnvironmentIsBeingStoredInDB()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "DEV", false);
+            await _appRepository.AddAsync(app);
+            var createdEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "QA" };
+            var controller = new FeatureTogglesController(_appRepository);
 
-        //    //act
-        //    var result = controller.AddEnvironment(createdEnvironment);
+            //act
+            var result = await controller.AddEnvironment(createdEnvironment);
 
-        //    //assert
-        //    result.Should().BeOfType<OkResult>();
-        //    _context.DeployEnvironments.FirstOrDefault(x => x.EnvName.Equals(createdEnvironment.EnvName)).Should()
-        //        .NotBeNull();
-        //    _context.DeployEnvironments.FirstOrDefault(x => x.DefaultToggleValue == false).Should().NotBeNull();
-        //}
+            //assert
+            result.Should().BeOfType<OkResult>();
+            var savedApp = await _appRepository.FindByIdAsync(app.Id);
+            savedApp.DeploymentEnvironments.FirstOrDefault(x => x.EnvName.Equals(createdEnvironment.EnvName)).Should().NotBeNull();
+            savedApp.DeploymentEnvironments.FirstOrDefault(x => x.DefaultToggleValue == false).Should().NotBeNull();
+        }
 
-        //[TestMethod]
-        //public async Task EditEnvironment_EnvironmentIsBeingModified()
-        //{
-        //    //arrange
-        //    var app = new Application { Id = 1, AppName = "TestApp" };
-        //    var environment = new DeployEnvironment
-        //    { Application = app, ApplicationId = app.Id, EnvName = "DEV" };
+        [TestMethod]
+        public async Task EditEnvironment_EnvironmentIsBeingModified()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "DEV", false);
+            await _appRepository.AddAsync(app);
 
-        //    _context.DeployEnvironments.Add(environment);
-        //    _context.SaveChanges();
+            var controller = new FeatureTogglesController(_appRepository);
 
-        //    var controller = new FeatureTogglesController(_context);
+            var updatedEnvironmentName = "QA";
 
-        //    var updatedEnvironmentName = "QA";
+            var updatedEnvironment = new UpdateEnvironmentModel
+            {
+                ApplicationId = app.Id,
+                InitialEnvName = "DEV",
+                NewEnvName = updatedEnvironmentName
+            };
 
-        //    var updatedEnvironment = new UpdateEnvironmentModel
-        //    {
-        //        ApplicationId = environment.ApplicationId,
-        //        InitialEnvName = environment.EnvName,
-        //        NewEnvName = updatedEnvironmentName
-        //    };
+            //act
+            var result = await controller.UpdateEnvironment(updatedEnvironment);
 
-        //    //act
-        //    var result = controller.UpdateEnvironment(updatedEnvironment);
+            //assert
+            result.Should().BeOfType<OkResult>();
+            (await _appRepository.FindByIdAsync(app.Id)).DeploymentEnvironments.First().EnvName.Should().Be(updatedEnvironmentName);
+        }
 
-        //    //assert
-        //    result.Should().BeOfType<OkResult>();
-        //    environment.EnvName.Should().Be(updatedEnvironmentName);
-        //}
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException), "Environment does not exist!")]
+        public async Task EditEnvironment_EnvironmentIsModifiedWithInvalidID_ThrowsInvalidOperationException()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "DEV", false);
+            await _appRepository.AddAsync(app);
 
-        //[TestMethod]
-        //[ExpectedException(typeof(InvalidOperationException), "Environment does not exist!")]
-        //public async Task EditEnvironment_EnvironmentIsModifiedWithInvalidID_ThrowsInvalidOperationException()
-        //{
-        //    //arrange
-        //    var app = new Application { Id = 1, AppName = "TestApp" };
-        //    var environment = new DeployEnvironment
-        //    { Application = app, ApplicationId = app.Id, EnvName = "DEV" };
+            var controller = new FeatureTogglesController(_appRepository);
 
-        //    _context.DeployEnvironments.Add(environment);
-        //    _context.SaveChanges();
+            var updatedEnvironmentName = "QA";
 
-        //    var controller = new FeatureTogglesController(_context);
+            var updatedEnvironment = new UpdateEnvironmentModel
+            {
+                ApplicationId = app.Id,
+                InitialEnvName = "BLA",
+                NewEnvName = updatedEnvironmentName
+            };
 
-        //    var updatedEnvironmentName = "QA";
+            //act
+            await controller.UpdateEnvironment(updatedEnvironment);
 
-        //    var updatedEnvironment = new UpdateEnvironmentModel
-        //    {
-        //        ApplicationId = environment.ApplicationId + 1,
-        //        InitialEnvName = environment.EnvName,
-        //        NewEnvName = updatedEnvironmentName
-        //    };
+            //assert
+            //throws InvalidOperationException
+        }
 
-        //    //act
-        //    controller.UpdateEnvironment(updatedEnvironment);
+        [TestMethod]
+        public async Task DeleteEnvironment_EnvironmentIsDeleted_FeatureToggleStatusForThatEnvironmentIsDeletedForAllToggles()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "TestEnv", false);
+            app.AddFeatureToggle("t1", "");
+            app.AddFeatureToggle("t2", "");
+            app.AddFeatureToggle("t3", "");
+            await _appRepository.AddAsync(app);
 
-        //    //assert
-        //    //throws InvalidOperationException
-        //}
+            var controller = new FeatureTogglesController(_appRepository);
 
-        //[TestMethod]
-        //public async Task DeleteEnvironment_EnvironmentIsDeleted_FeatureToggleStatusesAreDeleted()
-        //{
-        //    //arrange
-        //    var app = new Application { Id = 1, AppName = "TestApp" };
-        //    var environment = new DeployEnvironment
-        //    { Application = app, ApplicationId = app.Id, EnvName = "TestEnv" };
+            var environmentToRemove = new DeleteEnvironmentModel
+            {
+                ApplicationId = app.Id,
+                EnvName = "TestEnv"
+            };
 
-        //    var controller = new FeatureTogglesController(_context);
+            //act
+            var result = await controller.RemoveEnvironment(environmentToRemove);
 
-        //    var firstFeatureStatus = new FeatureToggleStatus { Enabled = false, Id = 1, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
-        //    var secondFeatureStatus = new FeatureToggleStatus { Enabled = false, Id = 2, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
-        //    var thirdFeatureStatus = new FeatureToggleStatus { Enabled = false, Id = 3, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
+            //assert
+            result.Should().BeOfType<OkResult>();
+            var savedApp = await _appRepository.FindByIdAsync(app.Id);
+            savedApp.DeploymentEnvironments.Count().Should().Be(0);
+            savedApp.FeatureToggles.Count(ft => ft.FeatureToggleStatuses.Count > 0).Should().Be(0);
+        }
 
-        //    _context.FeatureToggleStatuses.AddRange(firstFeatureStatus, secondFeatureStatus, thirdFeatureStatus);
-        //    _context.Applications.Add(app);
-        //    _context.DeployEnvironments.Add(environment);
-        //    _context.SaveChanges();
+        [TestMethod]
+        public async Task DeleteEnvironment_EnvironmentIsDeleted_FeatureTogglesAreNotDeleted()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "TestEnv", false);
+            app.AddFeatureToggle("t1", "");
+            app.AddFeatureToggle("t2", "");
+            app.AddFeatureToggle("t3", "");
+            await _appRepository.AddAsync(app);
 
-        //    var environmentToRemove = new DeleteEnvironmentModel
-        //    {
-        //        ApplicationId = environment.ApplicationId,
-        //        EnvName = environment.EnvName
-        //    };
+            //  var featureToggle = new FeatureToggle { Id = 1 };
 
-        //    //act
-        //    var result = controller.RemoveEnvironment(environmentToRemove);
+            var controller = new FeatureTogglesController(_appRepository);
 
-        //    //assert
-        //    result.Should().BeOfType<OkResult>();
-        //    _context.DeployEnvironments.Count().Should().Be(0);
-        //    _context.FeatureToggleStatuses.Count().Should().Be(0);
-        //}
+            //var firstFeatureStatus = new FeatureToggleStatus { Enabled = false, Id = 1, FeatureToggle = featureToggle, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
+            //var secondFeatureStatus = new FeatureToggleStatus { Enabled = false, Id = 2, FeatureToggle = featureToggle, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
+            //var thirdFeatureStatus = new FeatureToggleStatus { Enabled = false, Id = 3, FeatureToggle = featureToggle, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
 
-        //[TestMethod]
-        //public async Task DeleteEnvironment_EnvironmentIsDeleted_FeatureTogglesAreNotDeleted()
-        //{
-        //    //arrange
-        //    var app = new Application { Id = 1, AppName = "TestApp" };
-        //    var environment = new DeployEnvironment
-        //    { Application = app, ApplicationId = app.Id, EnvName = "TestEnv" };
+            //featureToggle.FeatureToggleStatuses.AddRange(new List<FeatureToggleStatus>()
+            //{
+            //    firstFeatureStatus, secondFeatureStatus, thirdFeatureStatus
+            //});
 
-        //    var featureToggle = new FeatureToggle { Id = 1 };
+            //_context.FeatureToggles.Add(featureToggle);
+            //_context.FeatureToggleStatuses.AddRange(firstFeatureStatus, secondFeatureStatus, thirdFeatureStatus);
+            //_context.Applications.Add(app);
+            //_context.DeployEnvironments.Add(environment);
+            //_context.SaveChanges();
 
-        //    var controller = new FeatureTogglesController(_context);
+            var environmentToRemove = new DeleteEnvironmentModel
+            {
+                ApplicationId = app.Id,
+                EnvName = "TestEnv"
+            };
+            //act
+            var result = await controller.RemoveEnvironment(environmentToRemove);
 
-        //    var firstFeatureStatus = new FeatureToggleStatus { Enabled = false, Id = 1, FeatureToggle = featureToggle, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
-        //    var secondFeatureStatus = new FeatureToggleStatus { Enabled = false, Id = 2, FeatureToggle = featureToggle, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
-        //    var thirdFeatureStatus = new FeatureToggleStatus { Enabled = false, Id = 3, FeatureToggle = featureToggle, IsDeployed = false, Environment = environment, EnvironmentId = environment.Id };
+            //assert
+            result.Should().BeOfType<OkResult>();
+            var savedApp = await _appRepository.FindByIdAsync(app.Id);
+            savedApp.DeploymentEnvironments.Count().Should().Be(0);
+            savedApp.FeatureToggles.Count().Should().Be(3);
+        }
 
-        //    featureToggle.FeatureToggleStatuses.AddRange(new List<FeatureToggleStatus>()
-        //    {
-        //        firstFeatureStatus, secondFeatureStatus, thirdFeatureStatus
-        //    });
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException), "Environment does not exist!")]
+        public async Task DeleteEnvironment_EnvironmentIsDeletedWithInvalidID_ThrowsInvalidOperationException()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "DEV", false);
+            await _appRepository.AddAsync(app);
 
-        //    _context.FeatureToggles.Add(featureToggle);
-        //    _context.FeatureToggleStatuses.AddRange(firstFeatureStatus, secondFeatureStatus, thirdFeatureStatus);
-        //    _context.Applications.Add(app);
-        //    _context.DeployEnvironments.Add(environment);
-        //    _context.SaveChanges();
+            var controller = new FeatureTogglesController(_appRepository);
 
-        //    var environmentToRemove = new DeleteEnvironmentModel
-        //    {
-        //        ApplicationId = environment.ApplicationId,
-        //        EnvName = environment.EnvName
-        //    };
-        //    //act
-        //    var result = controller.RemoveEnvironment(environmentToRemove);
+            var environmentToRemove = new DeleteEnvironmentModel
+            {
+                ApplicationId = app.Id,
+                EnvName = "BLA"
+            };
 
-        //    //assert
-        //    result.Should().BeOfType<OkResult>();
-        //    _context.DeployEnvironments.Count().Should().Be(0);
-        //    _context.FeatureToggleStatuses.Count().Should().Be(0);
-        //    _context.FeatureToggles.Count().Should().Be(1);
-        //    _context.FeatureToggles.FirstOrDefault(x => x.Id == 1).FeatureToggleStatuses.Count().Should().Be(0);
-        //}
+            //act
+            await controller.RemoveEnvironment(environmentToRemove);
 
-        //[TestMethod]
-        //[ExpectedException(typeof(InvalidOperationException), "Environment does not exist!")]
-        //public async Task DeleteEnvironment_EnvironmentIsDeletedWithInvalidID_ThrowsInvalidOperationException()
-        //{
-        //    //arrange
-        //    var app = new Application { Id = 1, AppName = "TestApp" };
-        //    var environment = new DeployEnvironment
-        //    { Application = app, ApplicationId = app.Id, EnvName = "TestEnv" };
-
-        //    _context.DeployEnvironments.Add(environment);
-        //    _context.SaveChanges();
-
-        //    var controller = new FeatureTogglesController(_context);
-
-        //    var environmentToRemove = new DeleteEnvironmentModel
-        //    {
-        //        ApplicationId = environment.ApplicationId + 1,
-        //        EnvName = environment.EnvName
-        //    };
-
-        //    //act
-        //    controller.RemoveEnvironment(environmentToRemove);
-
-        //    //assert
-        //    //throws InvalidOperationException
-        //}
+            //assert
+            //throws InvalidOperationException
+        }
     }
 }

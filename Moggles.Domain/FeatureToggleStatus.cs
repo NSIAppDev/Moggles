@@ -5,6 +5,7 @@ namespace Moggles.Domain
     public class FeatureToggleStatus : Entity
     {
         public Guid EnvironmentId { get; set; }
+        public string EnvironmentName { get; set; }
         public bool Enabled { get; set; }
         public bool IsDeployed { get; set; }
         public DateTime? FirstTimeDeployDate { get; set; }
@@ -26,6 +27,18 @@ namespace Moggles.Domain
         {
             IsDeployed = false;
             LastDeployStatusUpdate = DateTime.UtcNow;
+        }
+
+        public void ToggleStatus(bool isEnabled)
+        {
+            UpdateTimestampOnChange(isEnabled);
+            Enabled = isEnabled;
+        }
+
+        private void UpdateTimestampOnChange(bool isEnabled)
+        {
+            if (Enabled != isEnabled)
+                LastUpdated = DateTime.UtcNow;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Moggles.Models
 {
     public class AddFeatureToggleModel
     {
-        public Guid ApplicationId { get; set; }
+        public Guid? ApplicationId { get; set; }
 
         [Required]
         [MaxLength(80)]
