@@ -8,7 +8,6 @@ namespace Moggles.Domain
     {
         public string AppName { get; set; }
 
-        //private readonly List<DeployEnvironment> _deploymentEnvironments = new List<DeployEnvironment>();
         public List<DeployEnvironment> DeploymentEnvironments { get; set; } = new List<DeployEnvironment>();
         public List<FeatureToggle> FeatureToggles { get; set; } = new List<FeatureToggle>();
 
@@ -49,10 +48,14 @@ namespace Moggles.Domain
             FeatureToggles.Add(ft);
         }
 
-        public FeatureToggleStatus GetFeatureToggleStatus(string toggleName, string environment)
+        public FeatureToggleStatusData GetFeatureToggleStatus(string toggleName, string environment)
         {
             var toggle = FeatureToggles.FirstOrDefault(f => f.ToggleName == toggleName);
-            return toggle.FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName == environment);
+            return toggle.FeatureToggleStatuses.Where(fts => fts.EnvironmentName == environment).Select(x => new FeatureToggleStatusData
+            {
+                EnvironmentName = x.EnvironmentName,
+                Enabled = x.Enabled
+            }).FirstOrDefault();
         }
 
         public void DeleteDeployEnvironment(string environment)
@@ -84,5 +87,111 @@ namespace Moggles.Domain
         {
             FeatureToggles.RemoveAll(t => t.Id == id);
         }
+
+        public ToggleData GetFeatureToggleBasicData(Guid toggleId)
+        {
+            var toggle = GuardToggleExists(toggleId);
+
+            return new ToggleData
+            {
+                ToggleName = toggle.ToggleName,
+                IsPermanent = toggle.IsPermanent,
+                Notes = toggle.Notes,
+                UserAccepted = toggle.UserAccepted
+            };
+        }
+
+        public void UpdateFeatureTogglePermanentStatus(Guid toggleId, bool isPermanent)
+        {
+            var toggle = FeatureToggles.Find(f => f.Id == toggleId);
+            toggle.SetPermanentStatus(isPermanent);
+        }
+
+        public void UpdateFeatureToggleNotes(Guid toggleId, string notes)
+        {
+            var toggle = FeatureToggles.Find(f => f.Id == toggleId);
+            toggle.SetNotes(notes);
+        }
+
+        public void FeatureAcceptedByUser(Guid toggleId)
+        {
+            var toggle = FeatureToggles.Find(f => f.Id == toggleId);
+            toggle.MarkAsAccepted();
+        }
+
+        public void FeatureRejectedByUser(Guid toggleId)
+        {
+            var toggle = FeatureToggles.Find(f => f.Id == toggleId);
+            toggle.MarkUserRejected();
+        }
+
+        public void ChangeFeatureToggleName(Guid toggleId, string newName)
+        {
+            if (FeatureToggles.Exists(t => t.ToggleName == newName && t.Id != toggleId))
+            {
+                throw new BusinessRuleValidationException($"There is already a feature toggle with the name {newName}");
+            }
+
+            var toggle = FeatureToggles.Find(f => f.Id == toggleId);
+            toggle.ChangeName(newName);
+        }
+
+        public List<FeatureToggleStatusData> GetFeatureToggleStatuses(Guid toggleId)
+        {
+            var toggle = GuardToggleExists(toggleId);
+
+            return toggle.FeatureToggleStatuses.Select(x => new FeatureToggleStatusData
+            {
+                EnvironmentName = x.EnvironmentName,
+                Enabled = x.Enabled
+            }).ToList();
+        }
+
+        public void SetToggle(Guid toggleId, string environment, bool isEnabled)
+        {
+            var toggle = GuardToggleExists(toggleId);
+            toggle.Toggle(environment, isEnabled);
+        }
+
+        private FeatureToggle GuardToggleExists(Guid toggleId)
+        {
+            var toggle = FeatureToggles.FirstOrDefault(f => f.Id == toggleId);
+            if (toggle is null)
+                throw new InvalidOperationException("Feature toggle not found!");
+            return toggle;
+        }
+
+        public void MarkDeployedFeatureToggles(string[] clientToggles, string envName)
+        {
+            List<FeatureToggle> deployedToggles = FeatureToggles.Where(ft => clientToggles.Contains(ft.ToggleName)).ToList();
+
+            foreach (var featureToggle in deployedToggles)
+            {
+                featureToggle.MarkAsDeployed(envName);
+            }
+
+            List<FeatureToggle> removedToggles = FeatureToggles.Where(ft => !clientToggles.Contains(ft.ToggleName)).ToList();
+            foreach (var featureToggle in removedToggles)
+            {
+                featureToggle.MarkAsNotDeployed(envName);
+            }
+        }
+
+        #region DTOs
+
+        public struct ToggleData
+        {
+            public string ToggleName { get; set; }
+            public bool UserAccepted { get; set; }
+            public string Notes { get; set; }
+            public bool IsPermanent { get; set; }
+        }
+
+        public struct FeatureToggleStatusData
+        {
+            public bool Enabled { get; set; }
+            public string EnvironmentName { get; set; }
+        }
+        #endregion
     }
 }

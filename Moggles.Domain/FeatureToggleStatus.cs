@@ -40,5 +40,16 @@ namespace Moggles.Domain
             if (Enabled != isEnabled)
                 LastUpdated = DateTime.UtcNow;
         }
+
+        public static FeatureToggleStatus Create(string envName, bool enabled)
+        {
+            return new FeatureToggleStatus
+            {
+                Id = Guid.NewGuid(),
+                Enabled = enabled,
+                EnvironmentName = envName,
+                LastUpdated = DateTime.UtcNow
+            };
+        }
     }
 }

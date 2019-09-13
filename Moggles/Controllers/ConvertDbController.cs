@@ -57,7 +57,7 @@ namespace Moggles.Controllers
                                         FeatureToggleStatuses = ft2.FeatureToggleStatuses
                                                                     .Select(fts2 => new FeatureToggleStatus
                                                                     {
-                                                                        EnvironmentId = fts2.Environment.NewId,
+                                                                        EnvironmentName = fts2.Environment.EnvName,
                                                                         Enabled = fts2.Enabled,
                                                                         FirstTimeDeployDate = fts2.FirstTimeDeployDate,
                                                                         IsDeployed = fts2.IsDeployed,
@@ -89,11 +89,6 @@ namespace Moggles.Controllers
                     SortOrder = env.SortOrder
                 }).GroupBy(env => env.Id).Select(x => x.FirstOrDefault()).ToList()
             }).GroupBy(app => app.Id).Select(x => x.FirstOrDefault());
-
-
-
-
-
 
             allApplications.ToList().ForEach(a => _applicationsRepository.AddAsync(a));
             missingApplications.ToList().ForEach(a => _applicationsRepository.AddAsync(a));

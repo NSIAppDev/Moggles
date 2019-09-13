@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Moggles.Domain
 {
@@ -38,18 +39,54 @@ namespace Moggles.Domain
 
         public void AddStatus(bool enabled, string envName)
         {
-            FeatureToggleStatuses.Add(new FeatureToggleStatus
-            {
-                Id = Guid.NewGuid(),
-                Enabled = enabled,
-                EnvironmentName = envName,
-                LastUpdated = DateTime.UtcNow
-            });
+            FeatureToggleStatuses.Add(FeatureToggleStatus.Create(envName, enabled));
+          
         }
 
         public void RemoveStatus(string environment)
         {
             FeatureToggleStatuses.RemoveAll(s => s.EnvironmentName == environment);
+        }
+
+        public void SetPermanentStatus(bool isPermanent)
+        {
+            IsPermanent = isPermanent;
+        }
+
+        public void SetNotes(string notes)
+        {
+            Notes = notes;
+        }
+
+        public void MarkAsAccepted()
+        {
+            UserAccepted = true;
+        }
+
+        public void MarkUserRejected()
+        {
+            UserAccepted = false;
+        }
+
+        public void ChangeName(string newName)
+        {
+            ToggleName = newName;
+        }
+
+        public void Toggle(string environment, bool isEnabled)
+        {
+            var status = FeatureToggleStatuses.FirstOrDefault(s => s.EnvironmentName == environment);
+            status.ToggleStatus(isEnabled);
+        }
+
+        public void MarkAsDeployed(string envName)
+        {
+            FeatureToggleStatuses.FirstOrDefault(fts=>fts.EnvironmentName==envName)?.MarkAsDeployed();
+        }
+
+        public void MarkAsNotDeployed(string envName)
+        {
+            FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName == envName)?.MarkAsNotDeployed();
         }
     }
 }

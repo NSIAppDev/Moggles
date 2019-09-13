@@ -1,16 +1,14 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
-using MogglesContracts;
-using Moggles.Data;
+﻿using MassTransit;
 using Moggles.Domain;
+using MogglesContracts;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Moggles.Consumers
 {
     public class FeatureToggleDeployStatusConsumer : IConsumer<RegisteredTogglesUpdate>
     {
-        private IRepository<Application> _applicationsRepository;
+        private readonly IRepository<Application> _applicationsRepository;
 
         public FeatureToggleDeployStatusConsumer(IRepository<Application> applicationsRepository)
         {
@@ -23,28 +21,14 @@ namespace Moggles.Consumers
             string envName = context.Message.Environment;
             string[] clientToggles = context.Message.FeatureToggles;
 
-            var app = _applicationsRepository.GetAllAsync().Result.Where(a => a.AppName == appName).FirstOrDefault();
+            var app = (await _applicationsRepository.GetAllAsync()).FirstOrDefault(a => a.AppName == appName);
 
-            var deployedToggles = app.FeatureToggles
-                .Where(ft=> clientToggles.Contains(ft.ToggleName))
-                .SelectMany(ft => ft.FeatureToggleStatuses)
-                .Where(fts => fts.EnvironmentId == app.DeploymentEnvironments.FirstOrDefault(env=>env.EnvName == envName).Id).ToList();
-
-            foreach (var featureToggle in deployedToggles)
+            if (app != null)
             {
-                featureToggle.MarkAsDeployed();
-            }
+                app.MarkDeployedFeatureToggles(clientToggles, envName);
 
-            var removedToggles = app.FeatureToggles
-                .Where(ft => !clientToggles.Contains(ft.ToggleName))
-                .SelectMany(ft => ft.FeatureToggleStatuses)
-                .Where(fts => fts.EnvironmentId == app.DeploymentEnvironments.FirstOrDefault(env => env.EnvName == envName).Id).ToList();
-            foreach (var featureToggle in removedToggles)
-            {
-                featureToggle.MarkAsNotDeployed();
+                await _applicationsRepository.UpdateAsync(app);
             }
-
-            _applicationsRepository.UpdateAsync(app);
         }
     }
 }

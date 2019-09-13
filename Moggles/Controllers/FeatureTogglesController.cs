@@ -41,7 +41,7 @@ namespace Moggles.Controllers
                             .Select(fts =>
                                 new FeatureToggleStatusViewModel
                                 {
-                                    Environment = app.DeploymentEnvironments.FirstOrDefault(env => env.Id == fts.EnvironmentId)?.EnvName,
+                                    Environment = fts.EnvironmentName,
                                     Enabled = fts.Enabled,
                                     IsDeployed = fts.IsDeployed,
                                     LastUpdated = fts.LastUpdated,
@@ -56,39 +56,57 @@ namespace Moggles.Controllers
         public async Task<IActionResult> GetEnvironments(Guid applicationId)
         {
             var app = await _applicationsRepository.FindByIdAsync(applicationId);
-            var envs = app.DeploymentEnvironments
-                .OrderBy(e => e.SortOrder).ToList();
+            var envs = app.DeploymentEnvironments.OrderBy(e => e.SortOrder).ToList();
 
             return Ok(envs
                 .Select(e => e.EnvName)
                 .Distinct());
         }
 
-
-
         [HttpPut]
         [Route("")]
         public async Task<IActionResult> Update([FromBody] FeatureToggleUpdateModel model)
         {
             var app = await _applicationsRepository.FindByIdAsync(model.ApplicationId);
-            var featureToggle = app.FeatureToggles.FirstOrDefault(ft => ft.Id == model.Id);
+            var toggleData = app.GetFeatureToggleBasicData(model.Id);
 
-            if (featureToggle is null)
-                throw new InvalidOperationException("Feature toggle not found!");
-
-            featureToggle.ToggleName = model.FeatureToggleName;
-            featureToggle.UserAccepted = model.UserAccepted;
-            featureToggle.Notes = model.Notes;
-            featureToggle.IsPermanent = model.IsPermanent;
-
-            foreach (var toggleStatus in model.Statuses)
+            if (model.IsPermanent != toggleData.IsPermanent)
             {
-                var status = featureToggle.FeatureToggleStatuses.FirstOrDefault(fts =>
-                    fts.EnvironmentId == app.DeploymentEnvironments.FirstOrDefault(env => env.EnvName == toggleStatus.Environment).Id);
-                if (status != null)
+                app.UpdateFeatureTogglePermanentStatus(model.Id, model.IsPermanent);
+            }
+
+            if (model.Notes != toggleData.Notes)
+            {
+                app.UpdateFeatureToggleNotes(model.Id, model.Notes);
+            }
+
+            if (model.UserAccepted != toggleData.UserAccepted)
+            {
+                if (model.UserAccepted)
                 {
-                    status.ToggleStatus(toggleStatus.Enabled);
+                    app.FeatureAcceptedByUser(model.Id);
                 }
+                else
+                {
+                    app.FeatureRejectedByUser(model.Id);
+                }
+            }
+
+            if (model.FeatureToggleName != toggleData.ToggleName)
+            {
+                try
+                {
+                    app.ChangeFeatureToggleName(model.Id, model.FeatureToggleName);
+                }
+                catch (BusinessRuleValidationException ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            }
+
+            foreach (var newStatus in model.Statuses)
+            {
+                app.SetToggle(model.Id, newStatus.Environment, newStatus.Enabled);
             }
 
             await _applicationsRepository.UpdateAsync(app);
@@ -180,7 +198,7 @@ namespace Moggles.Controllers
             var app = await _applicationsRepository.FindByIdAsync(environmentModel.ApplicationId);
 
             app.ChangeDeployEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
-           
+
             await _applicationsRepository.UpdateAsync(app);
             return Ok();
         }
@@ -200,9 +218,8 @@ namespace Moggles.Controllers
                 .Select(x => new ApplicationFeatureToggleViewModel
                 {
                     FeatureToggleName = x.ToggleName,
-                    IsEnabled = x.FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentId == app.DeploymentEnvironments.FirstOrDefault(env => env.EnvName == environment).Id).Enabled
+                    IsEnabled = x.FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName == environment).Enabled
                 });
-
 
             return Ok(featureToggles);
         }
@@ -221,7 +238,7 @@ namespace Moggles.Controllers
                 .Select(x => new ApplicationFeatureToggleViewModel
                 {
                     FeatureToggleName = x.ToggleName,
-                    IsEnabled = x.FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentId == app.DeploymentEnvironments.FirstOrDefault(env => env.EnvName == environment).Id).Enabled
+                    IsEnabled = x.FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName ==  environment).Enabled
                 })
                 .FirstOrDefault();
 
@@ -243,7 +260,7 @@ namespace Moggles.Controllers
             if (app == null)
                 throw new InvalidOperationException("Application does not exist");
 
-            app.AddDeployEnvironment(model.EnvName,false,500);
+            app.AddDeployEnvironment(model.EnvName, false, 500);
 
             await _applicationsRepository.UpdateAsync(app);
             return Ok();

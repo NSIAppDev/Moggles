@@ -78,8 +78,8 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task GetApplications_ReturnsAllExistingApplications()
         {
             //arrange
-            var bccApp = new Application { AppName = "BCC" };
-            var cmmApp = new Application { AppName = "CMM" };
+            var bccApp = Application.Create("BCC", "dev", false);
+            var cmmApp = Application.Create("CMM", "dev", false);
 
             await _appRepository.AddAsync(bccApp);
             await _appRepository.AddAsync(cmmApp);
@@ -98,7 +98,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task EditApp_AppIsBeingModified()
         {
             //arrange
-            var app = new Application { Id = Guid.NewGuid(), AppName = "TestApp" };
+            var app = Application.Create("TestApp", "dev", false);
 
             await _appRepository.AddAsync(app);
 
@@ -125,7 +125,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task EditApp_WithInvalidID_ThrowsInvalidOperationException()
         {
             //arrange
-            var app = new Application { Id = Guid.NewGuid(), AppName = "TestApp" };
+            var app = Application.Create("TestApp", "dev", false);
 
             await _appRepository.AddAsync(app);
 
@@ -150,26 +150,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task DeleteApp_AppIsDeleted()
         {
             //arrange
-            var app = new Application { Id = Guid.NewGuid(), AppName = "TestApp" };
-
-            var environment = new DeployEnvironment { Id = Guid.NewGuid(), EnvName = "TestEnv" };
-            var environment2 = new DeployEnvironment { Id = Guid.NewGuid(), EnvName = "TestEnv2" };
-            var environment3 = new DeployEnvironment { Id = Guid.NewGuid(), EnvName = "TestEnv3" };
-
-            app.DeploymentEnvironments.AddRange(new[] { environment, environment2, environment3 });
-
-            var featureStatus1 = new FeatureToggleStatus { Enabled = false, Id = Guid.NewGuid(), IsDeployed = false, EnvironmentId = environment.Id };
-            var featureStatus2 = new FeatureToggleStatus { Enabled = false, Id = Guid.NewGuid(), IsDeployed = false, EnvironmentId = environment2.Id };
-            var featureStatus3 = new FeatureToggleStatus { Enabled = false, Id = Guid.NewGuid(), IsDeployed = false, EnvironmentId = environment3.Id };
-
-            var feature = new FeatureToggle
-            {
-                Id = Guid.NewGuid(),
-                FeatureToggleStatuses = new List<FeatureToggleStatus> {featureStatus1, featureStatus2, featureStatus3},
-                ToggleName = "Test"
-            };
-
-            app.FeatureToggles.Add(feature);
+            var app = Application.Create("test", "dev", false);
 
             await _appRepository.AddAsync(app);
 
@@ -181,7 +162,7 @@ namespace Moggles.UnitTests.ApplicationsTests
             //assert
             result.Should().BeOfType<OkResult>();
             _appRepository.Applications.Count().Should().Be(0);
-          
+
         }
 
         [TestMethod]
@@ -189,7 +170,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task DeleteApp_WithInvalidID_ThrowsInvalidOperationException()
         {
             //arrange
-            var app = new Application { Id = Guid.NewGuid(), AppName = "TestApp" };
+            var app = Application.Create("TestApp", "dev", false);
 
             await _appRepository.AddAsync(app);
 
