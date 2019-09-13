@@ -6,7 +6,7 @@
 			</p>
 		</div>
 		<div class="panel-body">
-			<div v-for="error in errors" :key="error" class="text-danger">{{error}}</div>
+			<div v-for="error in errors" :key="error" class="text-danger margin-bottom-10">{{error}}</div>
 			<div class="form-group">
 				<label class="control-label" for="appname">Application name</label>
 				<input class="form-control" v-model="applicationName" type="text" name="appName" placeholder="Application name..." maxlength="100">
@@ -83,7 +83,7 @@
                         this.showSuccessAlert = false;
                     }, this.alertDuration)
                 }).catch(e => {
-                    window.alert(e)
+					this.errors.push(e.response.data);
                 }).finally(e => {
 					Bus.$emit('unblock-ui')
                 });
