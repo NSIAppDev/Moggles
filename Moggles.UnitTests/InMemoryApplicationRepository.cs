@@ -6,7 +6,7 @@ using Moggles.Domain;
 
 namespace Moggles.UnitTests
 {
-    public class InMemoryRepository: IRepository<Application>
+    public class InMemoryApplicationRepository: IRepository<Application>
     {
         private readonly List<Application> _apps = new List<Application>();
         public IEnumerable<Application> Applications => _apps.ToList();

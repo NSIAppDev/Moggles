@@ -18,7 +18,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         [TestInitialize]
         public void BeforeTest()
         {
-            _appRepository = new InMemoryRepository();
+            _appRepository = new InMemoryApplicationRepository();
         }
 
         [TestMethod]
@@ -45,6 +45,30 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //assert
             result.Should().BeOfType<OkResult>();
             (await _appRepository.FindByIdAsync(app.Id)).DeploymentEnvironments.First().EnvName.Should().Be(updatedEnvironmentName);
+        }
+
+        [TestMethod]
+        public async Task WhenNewInvironmentName_MatchesAnExistingEnvrionment_TheChangeIsRejected()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "DEV", false);
+            await _appRepository.AddAsync(app);
+
+            var controller = new FeatureTogglesController(_appRepository);
+
+            var updatedEnvironment = new UpdateEnvironmentModel
+            {
+                ApplicationId = app.Id,
+                InitialEnvName = "DEV",
+                NewEnvName = "dev"
+            };
+
+            //act
+            var result = await controller.UpdateEnvironment(updatedEnvironment);
+
+            //assert
+            result.Should().BeOfType<BadRequestObjectResult>();
+            (await _appRepository.FindByIdAsync(app.Id)).DeploymentEnvironments.First().EnvName.Should().Be("DEV");
         }
 
         [TestMethod]

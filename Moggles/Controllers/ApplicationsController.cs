@@ -27,16 +27,16 @@ namespace Moggles.Controllers
 
         [HttpPost]
         [Route("add")]
-        public async Task<IActionResult> AddApplication([FromBody]AddApplicationModel applicationModel)
+        public async Task<IActionResult> AddApplication([FromBody] AddApplicationModel applicationModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var apps = await _applicationsRepository.GetAllAsync();
-            var app = apps.FirstOrDefault(a => a.AppName == applicationModel.ApplicationName);
+            var app = apps.FirstOrDefault(a => string.Compare(a.AppName, applicationModel.ApplicationName, StringComparison.OrdinalIgnoreCase) == 0);
 
             if (app != null)
-                return BadRequest("Application already exists!");
+                return BadRequest("Application with same name already exists!");
 
             var application = Application.Create(applicationModel.ApplicationName, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue);
 
@@ -47,17 +47,24 @@ namespace Moggles.Controllers
 
         [HttpPut]
         [Route("update")]
-        public async Task<IActionResult> UpdateApplication([FromBody]UpdateApplicationModel applicationModel)
+        public async Task<IActionResult> UpdateApplication([FromBody] UpdateApplicationModel applicationModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var app = await _applicationsRepository.FindByIdAsync(applicationModel.Id);
-
             if (app == null)
-                return BadRequest("Application does not exist!");
+                throw new InvalidOperationException("Application does not exist!");
 
-            app.AppName = applicationModel.ApplicationName; 
+            var apps = await _applicationsRepository.GetAllAsync();
+            var existingApp = apps.FirstOrDefault(a =>
+                string.Compare(a.AppName, applicationModel.ApplicationName, StringComparison.OrdinalIgnoreCase) == 0 && a.Id != applicationModel.Id);
+
+            if (existingApp != null)
+                return BadRequest("Application with same name already exists!");
+
+
+            app.UpdateName(applicationModel.ApplicationName);
             await _applicationsRepository.UpdateAsync(app);
 
             return Ok();
@@ -69,7 +76,7 @@ namespace Moggles.Controllers
             var app = await _applicationsRepository.FindByIdAsync(id);
 
             if (app == null)
-                return BadRequest("Application does not exist!");
+                throw  new InvalidOperationException("Application does not exist!");
 
             await _applicationsRepository.DeleteAsync(app);
 

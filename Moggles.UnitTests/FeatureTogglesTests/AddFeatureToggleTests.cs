@@ -17,7 +17,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         [TestInitialize]
         public void BeforeTest()
         {
-            _appRepository = new InMemoryRepository();
+            _appRepository = new InMemoryApplicationRepository();
         }
 
         [TestMethod]

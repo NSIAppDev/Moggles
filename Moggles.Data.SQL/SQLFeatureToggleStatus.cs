@@ -11,11 +11,10 @@ namespace Moggles.Data.SQL
         public DateTime? LastDeployStatusUpdate { get; set; }
 
         public SQLDeployEnvironment Environment { get; set; }
-        public int EnvironmentId { get; set; }
+       
 
         public SQLFeatureToggle FeatureToggle { get; set; }
         public int FeatureToggleId { get; set; }
-        public Guid NewId { get; set; } = Guid.NewGuid();
 
         public DateTime LastUpdated { get; set; }
 

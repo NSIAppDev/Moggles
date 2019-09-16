@@ -17,7 +17,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         [TestInitialize]
         public void BeforeTest()
         {
-            _appRepository = new InMemoryRepository();
+            _appRepository = new InMemoryApplicationRepository();
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var controller = new FeatureTogglesController(_appRepository);
 
             //act
-            var result = await controller.AddEnvironment(new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "dev" });
+            var result = await controller.AddEnvironment(new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "DEV" });
 
             //assert
             result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();

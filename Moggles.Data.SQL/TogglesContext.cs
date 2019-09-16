@@ -41,7 +41,6 @@ namespace Moggles.Data.SQL
             modelBuilder.Entity<SQLApplication>().Ignore(a => a.NewId);
             modelBuilder.Entity<SQLDeployEnvironment>().Ignore(a => a.NewId);
             modelBuilder.Entity<SQLFeatureToggle>().Ignore(a => a.NewId);
-            modelBuilder.Entity<SQLFeatureToggleStatus>().Ignore(a => a.NewId);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Moggles.Controllers
     public class ConvertDbController : Controller
     {
         private readonly TogglesContext _db;
-        private IRepository<Application> _applicationsRepository;
+        private readonly IRepository<Application> _applicationsRepository;
 
         public ConvertDbController(TogglesContext db, IRepository<Application> applicationsRepository)
         {

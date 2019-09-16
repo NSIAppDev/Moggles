@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Moggles.Domain.DTO;
 
 namespace Moggles.Domain
 {
@@ -11,10 +12,14 @@ namespace Moggles.Domain
         public List<DeployEnvironment> DeploymentEnvironments { get; set; } = new List<DeployEnvironment>();
         public List<FeatureToggle> FeatureToggles { get; set; } = new List<FeatureToggle>();
 
+        public void UpdateName(string newName)
+        {
+            AppName = newName;
+        }
+
         public void AddDeployEnvironment(string name, bool defaultToggleValue, int sortOrder = 1)
         {
-            //TODO: do some checks here for parameters
-            if (DeploymentEnvironments.Exists(e => e.EnvName == name))
+            if (DeployEnvExists(name))
                 throw new BusinessRuleValidationException("Environment with the same name already exists for this application!");
 
             DeploymentEnvironments.Add(DeployEnvironment.Create(name, defaultToggleValue, sortOrder));
@@ -25,9 +30,13 @@ namespace Moggles.Domain
             }
         }
 
+        private bool DeployEnvExists(string name)
+        {
+            return DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, name, StringComparison.OrdinalIgnoreCase) == 0);
+        }
+
         public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment)
         {
-            //TODO: do some checks here for parameters
             var app = new Application
             {
                 Id = Guid.NewGuid(),
@@ -39,7 +48,7 @@ namespace Moggles.Domain
 
         public void AddFeatureToggle(string toggleName, string notes, bool isPermanent = false)
         {
-            if (FeatureToggles.Exists(f => f.ToggleName == toggleName))
+            if (FeatureToggles.Exists(f => string.Compare(f.ToggleName, toggleName, StringComparison.OrdinalIgnoreCase) == 0))
             {
                 throw new BusinessRuleValidationException("Feature toggle with the same name already exists for this application!");
             }
@@ -50,7 +59,7 @@ namespace Moggles.Domain
 
         public FeatureToggleStatusData GetFeatureToggleStatus(string toggleName, string environment)
         {
-            var toggle = FeatureToggles.FirstOrDefault(f => f.ToggleName == toggleName);
+            var toggle = FeatureToggles.FirstOrDefault(f => string.Compare(f.ToggleName, toggleName, StringComparison.OrdinalIgnoreCase) == 0);
             return toggle.FeatureToggleStatuses.Where(fts => fts.EnvironmentName == environment).Select(x => new FeatureToggleStatusData
             {
                 EnvironmentName = x.EnvironmentName,
@@ -60,7 +69,7 @@ namespace Moggles.Domain
 
         public void DeleteDeployEnvironment(string environment)
         {
-            if (!DeploymentEnvironments.Exists(e => e.EnvName == environment))
+            if (!DeployEnvExists(environment))
             {
                 throw new InvalidOperationException("Environment does not exist!");
             }
@@ -75,10 +84,15 @@ namespace Moggles.Domain
 
         public void ChangeDeployEnvironmentName(string oldName, string newName)
         {
-            var env = DeploymentEnvironments.FirstOrDefault(e => e.EnvName == oldName);
+            var env = DeploymentEnvironments.FirstOrDefault(e => string.Compare(e.EnvName, oldName, StringComparison.OrdinalIgnoreCase) == 0);
 
             if (env == null)
                 throw new InvalidOperationException("Environment does not exist!");
+
+            if (DeployEnvExists(newName))
+            {
+                throw new BusinessRuleValidationException("An environment with the same name already exists!");
+            }
 
             env.EnvName = newName;
         }
@@ -127,7 +141,7 @@ namespace Moggles.Domain
 
         public void ChangeFeatureToggleName(Guid toggleId, string newName)
         {
-            if (FeatureToggles.Exists(t => t.ToggleName == newName && t.Id != toggleId))
+            if (FeatureToggles.Exists(t => string.Compare(t.ToggleName, newName, StringComparison.OrdinalIgnoreCase) == 0 && t.Id != toggleId))
             {
                 throw new BusinessRuleValidationException($"There is already a feature toggle with the name {newName}");
             }
@@ -176,22 +190,5 @@ namespace Moggles.Domain
                 featureToggle.MarkAsNotDeployed(envName);
             }
         }
-
-        #region DTOs
-
-        public struct ToggleData
-        {
-            public string ToggleName { get; set; }
-            public bool UserAccepted { get; set; }
-            public string Notes { get; set; }
-            public bool IsPermanent { get; set; }
-        }
-
-        public struct FeatureToggleStatusData
-        {
-            public bool Enabled { get; set; }
-            public string EnvironmentName { get; set; }
-        }
-        #endregion
     }
 }

@@ -196,8 +196,14 @@ namespace Moggles.Controllers
                 return BadRequest(ModelState);
 
             var app = await _applicationsRepository.FindByIdAsync(environmentModel.ApplicationId);
-
-            app.ChangeDeployEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
+            try
+            {
+                app.ChangeDeployEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
+            }
+            catch (BusinessRuleValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             await _applicationsRepository.UpdateAsync(app);
             return Ok();

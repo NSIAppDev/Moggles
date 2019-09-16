@@ -4,7 +4,6 @@ namespace Moggles.Domain
 {
     public class FeatureToggleStatus : Entity
     {
-        public Guid EnvironmentId { get; set; }
         public string EnvironmentName { get; set; }
         public bool Enabled { get; set; }
         public bool IsDeployed { get; set; }
