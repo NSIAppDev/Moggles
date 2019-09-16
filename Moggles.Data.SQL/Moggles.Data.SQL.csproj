@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Configurations>Debug;Release;Staging</Configurations>
+    <AssemblyName>Moggles.Data.SQL</AssemblyName>
+    <RootNamespace>Moggles.Data.SQL</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Moggles.Domain\Moggles.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

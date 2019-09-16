@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.49
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles", "Moggles\Moggles.csproj", "{3A22C921-C180-4DCF-983A-7A0CE920AFE9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles.Data", "Moggles.Data\Moggles.Data.csproj", "{006CB3A8-EDD6-40F9-B357-D0BA7426E33E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles.Data.SQL", "Moggles.Data.SQL\Moggles.Data.SQL.csproj", "{006CB3A8-EDD6-40F9-B357-D0BA7426E33E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles.Domain", "Moggles.Domain\Moggles.Domain.csproj", "{1817D7EF-63DD-4749-9422-0AEC1A2559B7}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MogglesContracts", "MogglesContracts\MogglesContracts.csproj", "{0400E1AA-6C2A-424C-AEFC-99A2B2A169B1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles.UnitTests", "Moggles.UnitTests\Moggles.UnitTests.csproj", "{22F4174B-F892-4ECB-8DA5-B989E85324EB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles.Data.NoDb", "Moggles.Data.NoDb\Moggles.Data.NoDb.csproj", "{6AB5B659-582E-4C4C-86B8-19C1100118F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,6 +60,12 @@ Global
 		{22F4174B-F892-4ECB-8DA5-B989E85324EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{22F4174B-F892-4ECB-8DA5-B989E85324EB}.Staging|Any CPU.ActiveCfg = Debug|Any CPU
 		{22F4174B-F892-4ECB-8DA5-B989E85324EB}.Staging|Any CPU.Build.0 = Debug|Any CPU
+		{6AB5B659-582E-4C4C-86B8-19C1100118F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AB5B659-582E-4C4C-86B8-19C1100118F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AB5B659-582E-4C4C-86B8-19C1100118F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AB5B659-582E-4C4C-86B8-19C1100118F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AB5B659-582E-4C4C-86B8-19C1100118F3}.Staging|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AB5B659-582E-4C4C-86B8-19C1100118F3}.Staging|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

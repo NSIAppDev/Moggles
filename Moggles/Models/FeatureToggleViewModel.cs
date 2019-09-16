@@ -5,7 +5,7 @@ namespace Moggles.Models
 {
     public class FeatureToggleViewModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string ToggleName { get; set; }
         public bool UserAccepted { get; set; }
         public bool IsPermanent { get; set; }
@@ -16,7 +16,7 @@ namespace Moggles.Models
 
     public class FeatureToggleStatusViewModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public bool Enabled { get; set; }
         public string Environment { get; set; }
         public bool IsDeployed { get; set; }

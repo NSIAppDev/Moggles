@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Moggles.Domain;
 using Moggles.Models;
-using Moggles.Data;
 using MogglesContracts;
 
 namespace Moggles.Controllers
@@ -13,34 +14,35 @@ namespace Moggles.Controllers
     public class CacheRefreshController : Controller
     {
         private readonly IBus _bus;
-        private readonly TogglesContext _db;
         private readonly IConfiguration _configuration;
+        private readonly IRepository<Application> _applicationsRepository;
 
-        public CacheRefreshController(TogglesContext db, IConfiguration configuration, IServiceProvider serviceProvider)
+        public CacheRefreshController(IRepository<Application> applicationsRepository, IConfiguration configuration, IServiceProvider serviceProvider)
         {
-            _db = db;
+            _applicationsRepository = applicationsRepository;
             _configuration = configuration;
             _bus = (IBus)serviceProvider.GetService(typeof(IBus));
         }
 
         [HttpPost]
         [Route("")]
-        public IActionResult RefreshCache([FromBody]RefreshCacheModel refreshCacheModel)
+        public async Task<IActionResult> RefreshCache([FromBody]RefreshCacheModel refreshCacheModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var app = _db.Applications.Find(refreshCacheModel.ApplicationId);
+            var app = await _applicationsRepository.FindByIdAsync(refreshCacheModel.ApplicationId);
+
             if (app == null)
                 throw new InvalidOperationException("Application ID is invalid");
 
-            _bus.Publish(new RefreshTogglesCache
+            await _bus.Publish(new RefreshTogglesCache
             {
                 Environment = refreshCacheModel.EnvName,
                 ApplicationName = app.AppName
             });
 
-            _bus.Publish(new NSTogglesContracts.RefreshTogglesCache
+            await _bus.Publish(new NSTogglesContracts.RefreshTogglesCache
             {
                 Environment = refreshCacheModel.EnvName,
                 ApplicationName = app.AppName
@@ -53,7 +55,7 @@ namespace Moggles.Controllers
         [Route("getCacheRefreshAvailability")]
         public IActionResult GetCacheRefreshAvailability()
         {
-            return Ok(Boolean.TryParse(_configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging);
+            return Ok(bool.TryParse(_configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging);
         }
     }
 }

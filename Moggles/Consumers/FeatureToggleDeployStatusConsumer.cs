@@ -1,19 +1,18 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Moggles.Domain;
 using MogglesContracts;
-using Moggles.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Moggles.Consumers
 {
     public class FeatureToggleDeployStatusConsumer : IConsumer<RegisteredTogglesUpdate>
     {
-        private readonly TogglesContext _db;
+        private readonly IRepository<Application> _applicationsRepository;
 
-        public FeatureToggleDeployStatusConsumer(TogglesContext db)
+        public FeatureToggleDeployStatusConsumer(IRepository<Application> applicationsRepository)
         {
-            _db = db;
+            _applicationsRepository = applicationsRepository;
         }
 
         public async Task Consume(ConsumeContext<RegisteredTogglesUpdate> context)
@@ -22,22 +21,14 @@ namespace Moggles.Consumers
             string envName = context.Message.Environment;
             string[] clientToggles = context.Message.FeatureToggles;
 
-            var featureToggles = _db.FeatureToggles.Include(ft => ft.Application).Include(ft => ft.FeatureToggleStatuses).ThenInclude(fts => fts.Environment)
-                .Where(ft => ft.Application.AppName == appName)
-                .ToList();
+            var app = (await _applicationsRepository.GetAllAsync()).FirstOrDefault(a => a.AppName == appName);
 
-            var deployedToggles = featureToggles.Where(ft => clientToggles.Contains(ft.ToggleName)).ToList();
-            foreach (var featureToggle in deployedToggles)
+            if (app != null)
             {
-                featureToggle.MarkAsDeployed(envName);
-            }
+                app.MarkDeployedFeatureToggles(clientToggles, envName);
 
-            var removedToggles = featureToggles.Where(ft => !clientToggles.Contains(ft.ToggleName)).ToList();
-            foreach (var featureToggle in removedToggles)
-            {
-                featureToggle.MarkAsNotDeployed(envName);
+                await _applicationsRepository.UpdateAsync(app);
             }
-            await _db.SaveChangesAsync();
         }
     }
 }

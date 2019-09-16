@@ -1,7 +1,10 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moggles.Domain;
 using Moggles.Models;
 using MogglesContracts;
 
@@ -16,29 +19,33 @@ namespace Moggles.Tests
         [TestInitialize]
         public void BeforeEach()
         {
+            Utils.ClearStorage();
             _factory = new MogglesApplicationFactory<TestStartup>();
             _client = _factory.CreateClient();
         }
 
         [TestMethod]
-        public void Publishes_Message_With_CacheRefresh_Command()
+        public async Task Publishes_Message_With_CacheRefresh_Command()
         {
             //arrange
             var appModel = new AddApplicationModel { ApplicationName = "test", EnvironmentName = "testEnv", DefaultToggleValue = false };
-            var response = Utils.PostAsJsonAsync(_client, "/api/applications/add", appModel).Result;
+            var response = await _client.PostAsJsonAsync("/api/applications/add", appModel);
             response.EnsureSuccessStatusCode();
+
+            var app = await response.Content.ReadAsJsonAsync<Application>();
 
             var refreshCacheModel = new RefreshCacheModel
             {
                 EnvName = "DEV",
-                ApplicationId = 1
+                ApplicationId = app.Id
             };
 
             //act
             var response2 = Utils.PostAsJsonAsync(_client, "/api/CacheRefresh", refreshCacheModel).Result;
             response2.EnsureSuccessStatusCode();
-          
+
             //TODO: check to see how to test sending of messages on the BUS
+            //TODO: use mass transit test harness package
         }
     }
 

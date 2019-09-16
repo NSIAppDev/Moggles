@@ -10,7 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moggles.Consumers;
-using Moggles.Data;
+using Moggles.Data.SQL;
+using Moggles.Data.NoDb;
+using NoDb;
+using Moggles.Domain;
 
 namespace Moggles
 {
@@ -36,6 +39,10 @@ namespace Moggles
             {
                 ConfigureMassTransitAndMessageBus(services);
             }
+
+            services.AddNoDb<Application>();
+            services.AddScoped<IRepository<Application>, ApplicationsRepository>();
+
         }
 
         public virtual void ConfigureDatabaseServices(IServiceCollection services)

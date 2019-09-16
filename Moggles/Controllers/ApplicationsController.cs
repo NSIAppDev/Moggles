@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account.Manage;
-using Microsoft.AspNetCore.Mvc;
-using Moggles.Models;
-using Moggles.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using Moggles.Domain;
+using Moggles.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Moggles.Controllers
 {
@@ -13,98 +11,76 @@ namespace Moggles.Controllers
     [Route("api/Applications")]
     public class ApplicationsController : Controller
     {
-        private readonly TogglesContext _db;
+        private readonly IRepository<Application> _applicationsRepository;
 
-        public ApplicationsController(TogglesContext db)
+        public ApplicationsController(IRepository<Application> applicationsRepository)
         {
-            _db = db;
+            _applicationsRepository = applicationsRepository;
         }
 
         [HttpGet]
-        public IActionResult GetAllApplications()
-
+        public async Task<IActionResult> GetAllApplications()
         {
-            return Ok(_db.Applications.ToList());
+            var allApps = await _applicationsRepository.GetAllAsync();
+            return Ok(allApps.OrderBy(a => a.AppName).ToList());
         }
 
         [HttpPost]
         [Route("add")]
-        public IActionResult AddApplication([FromBody]AddApplicationModel applicationModel)
+        public async Task<IActionResult> AddApplication([FromBody] AddApplicationModel applicationModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var app = _db.Applications.FirstOrDefault(a => a.AppName == applicationModel.ApplicationName);
+            var apps = await _applicationsRepository.GetAllAsync();
+            var app = apps.FirstOrDefault(a => string.Compare(a.AppName, applicationModel.ApplicationName, StringComparison.OrdinalIgnoreCase) == 0);
 
             if (app != null)
-                return BadRequest("Application already exists!");
-                
-            var application = _db.Applications.Add(new Application
-            {
-                AppName = applicationModel.ApplicationName
-            });
+                return BadRequest("Application with same name already exists!");
 
-            _db.SaveChanges();
+            var application = Application.Create(applicationModel.ApplicationName, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue);
 
-            _db.DeployEnvironments.Add(
-                new DeployEnvironment
-                {
-                    EnvName = applicationModel.EnvironmentName,
-                    ApplicationId = application.Entity.Id,
-                    DefaultToggleValue = applicationModel.DefaultToggleValue,
-                    SortOrder = 1
-                });
+            await _applicationsRepository.AddAsync(application);
 
-            _db.SaveChanges();
-
-            return Ok(application.Entity);
+            return Ok(application);
         }
 
         [HttpPut]
         [Route("update")]
-        public IActionResult UpdateApplication([FromBody]UpdateApplicationModel applicationModel)
+        public async Task<IActionResult> UpdateApplication([FromBody] UpdateApplicationModel applicationModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var app = _db.Applications.FirstOrDefault(a => a.Id == applicationModel.Id);
-
+            var app = await _applicationsRepository.FindByIdAsync(applicationModel.Id);
             if (app == null)
-                throw new InvalidOperationException("Application does not exists!");
+                throw new InvalidOperationException("Application does not exist!");
 
-            app.AppName = applicationModel.ApplicationName;
+            var apps = await _applicationsRepository.GetAllAsync();
+            var existingApp = apps.FirstOrDefault(a =>
+                string.Compare(a.AppName, applicationModel.ApplicationName, StringComparison.OrdinalIgnoreCase) == 0 && a.Id != applicationModel.Id);
 
-            _db.SaveChanges();
+            if (existingApp != null)
+                return BadRequest("Application with same name already exists!");
+
+
+            app.UpdateName(applicationModel.ApplicationName);
+            await _applicationsRepository.UpdateAsync(app);
 
             return Ok();
         }
 
         [HttpDelete]
-        public IActionResult RemoveApp([FromQuery] int id)
+        public async Task<IActionResult> RemoveApp([FromQuery] Guid id)
         {
-            var app = _db.Applications.FirstOrDefault(x => x.Id == id);
+            var app = await _applicationsRepository.FindByIdAsync(id);
 
             if (app == null)
-                throw new InvalidOperationException("Application does not exists!");
+                throw  new InvalidOperationException("Application does not exist!");
 
-            var toggles = _db.FeatureToggles
-                .Where(e => e.ApplicationId == id);
-
-            var environments = _db.DeployEnvironments
-                .Where(e => e.ApplicationId == id).ToList();
-            var environmentIds = environments.Select(_ => _.Id);
-
-            var ftsToDelete = _db.FeatureToggleStatuses.Where(_ => environmentIds.Contains(_.EnvironmentId));
-
-            _db.FeatureToggleStatuses.RemoveRange(ftsToDelete);
-            _db.FeatureToggles.RemoveRange(toggles);
-            _db.DeployEnvironments.RemoveRange(environments);
-            _db.Applications.Remove(app);
-
-            _db.SaveChanges();
+            await _applicationsRepository.DeleteAsync(app);
 
             return Ok();
         }
-
     }
 }

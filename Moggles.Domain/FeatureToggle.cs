@@ -4,35 +4,89 @@ using System.Linq;
 
 namespace Moggles.Domain
 {
-    public class FeatureToggle
+    public class FeatureToggle : Entity
     {
-        public FeatureToggle()
-        {
-            FeatureToggleStatuses = new List<FeatureToggleStatus>();
-        }
-
-        public int Id { get; set; }
         public string ToggleName { get; set; }
         public bool UserAccepted { get; set; }
         public string Notes { get; set; }
         public DateTime CreatedDate { get; set; }
         public bool IsPermanent { get; set; }
+        public List<FeatureToggleStatus> FeatureToggleStatuses { get; set; } = new List<FeatureToggleStatus>();
 
-        public Application Application { get; set; }
-        public int ApplicationId { get; set; }
-
-        public List<FeatureToggleStatus> FeatureToggleStatuses { get; set; }
-
-        public void MarkAsDeployed(string deployEnvironment)
+        public static FeatureToggle Create(string name, string notes, bool isPermanent)
         {
-            var environmentStatus = FeatureToggleStatuses.FirstOrDefault(fts => fts.Environment.EnvName.ToUpper() == deployEnvironment.ToUpper());
-            environmentStatus?.MarkAsDeployed();
+            return new FeatureToggle
+            {
+                Id = Guid.NewGuid(),
+                CreatedDate = DateTime.UtcNow,
+                IsPermanent = isPermanent,
+                Notes = notes,
+                ToggleName = name
+            };
         }
 
-        public void MarkAsNotDeployed(string deployEnvironment)
+        public static FeatureToggle Create(string name, string notes, bool isPermanent, IEnumerable<DeployEnvironment> deployEnvironments)
         {
-            var environmentStatus = FeatureToggleStatuses.FirstOrDefault(fts => fts.Environment.EnvName.ToUpper() == deployEnvironment.ToUpper());
-            environmentStatus?.MarkAsNotDeployed();
+            var newToggle = Create(name, notes, isPermanent);
+
+            foreach (var env in deployEnvironments)
+            {
+                newToggle.AddStatus(env.DefaultToggleValue, env.EnvName);
+            }
+
+            return newToggle;
+        }
+
+        public void AddStatus(bool enabled, string envName)
+        {
+            FeatureToggleStatuses.Add(FeatureToggleStatus.Create(envName, enabled));
+          
+        }
+
+        public void RemoveStatus(string environment)
+        {
+            FeatureToggleStatuses.RemoveAll(s => s.EnvironmentName == environment);
+        }
+
+        public void SetPermanentStatus(bool isPermanent)
+        {
+            IsPermanent = isPermanent;
+        }
+
+        public void SetNotes(string notes)
+        {
+            Notes = notes;
+        }
+
+        public void MarkAsAccepted()
+        {
+            UserAccepted = true;
+        }
+
+        public void MarkUserRejected()
+        {
+            UserAccepted = false;
+        }
+
+        public void ChangeName(string newName)
+        {
+            ToggleName = newName;
+        }
+
+        public void Toggle(string environment, bool isEnabled)
+        {
+            var status = FeatureToggleStatuses.FirstOrDefault(s => s.EnvironmentName == environment);
+            status.ToggleStatus(isEnabled);
+        }
+
+        public void MarkAsDeployed(string envName)
+        {
+            FeatureToggleStatuses.FirstOrDefault(fts=>fts.EnvironmentName==envName)?.MarkAsDeployed();
+        }
+
+        public void MarkAsNotDeployed(string envName)
+        {
+            FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName == envName)?.MarkAsNotDeployed();
         }
     }
 }

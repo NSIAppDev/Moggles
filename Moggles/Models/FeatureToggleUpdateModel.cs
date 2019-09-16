@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Moggles.Models
 {
     public class FeatureToggleUpdateModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
+        public Guid ApplicationId { get; set; }
         [Required]
         public string FeatureToggleName { get; set; }
         public bool UserAccepted { get; set; }

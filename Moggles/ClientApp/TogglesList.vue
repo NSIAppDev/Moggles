@@ -227,7 +227,8 @@
 				};
 
 				let toggleUpdateModel = {
-					id: this.rowToEdit.id,
+                    id: this.rowToEdit.id,
+                    applicationid: this.selectedApp.id,
 					userAccepted: this.rowToEdit.userAccepted,
 					notes: this.rowToEdit.notes,
 					featureToggleName: this.rowToEdit.toggleName,
@@ -377,8 +378,8 @@
 				this.toggleIsDeployed = this.isToggleActive(this.rowDataToDelete)
 				this.showDeleteConfirmation = true
             },
-			deleteToggle() {
-				axios.delete(`/api/FeatureToggles?id=${this.rowDataToDelete.id}`).then((result) => {
+            deleteToggle() {
+                axios.delete(`/api/FeatureToggles?id=${this.rowDataToDelete.id}&applicationid=${this.selectedApp.id}`).then((result) => {
 					this.showDeleteConfirmation = false
 					this.rowDataToDelete = null
 					this.toggleIsDeployed = false

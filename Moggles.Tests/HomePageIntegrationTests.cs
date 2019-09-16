@@ -12,6 +12,7 @@ namespace Moggles.Tests
         [TestInitialize]
         public void BeforeEach()
         {
+            Utils.ClearStorage();
             _factory = new MogglesApplicationFactory<TestStartup>();
             _client = _factory.CreateClient();
         }
