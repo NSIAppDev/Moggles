@@ -209,6 +209,12 @@ namespace Moggles.Controllers
             return Ok();
         }
 
+        private async Task<Application> GetApplicationByName(string applicationName)
+        {
+            var apps = await _applicationsRepository.GetAllAsync();
+            return apps.FirstOrDefault(a => string.Compare(a.AppName, applicationName, StringComparison.OrdinalIgnoreCase) == 0);
+        }
+
         #region public API
 
         [HttpGet]
@@ -218,16 +224,22 @@ namespace Moggles.Controllers
         {
             _telemetry.TrackEvent("OnGetAllToggles");
 
-            var apps = await _applicationsRepository.GetAllAsync();
-            var app = apps.FirstOrDefault(a => a.AppName == applicationName);
-            var featureToggles = app.FeatureToggles
-                .Select(x => new ApplicationFeatureToggleViewModel
-                {
-                    FeatureToggleName = x.ToggleName,
-                    IsEnabled = x.FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName == environment).Enabled
-                });
+            var app = GetApplicationByName(applicationName).Result;
+            if (app != null && app.DeploymentEnvironments.Exists(env => string.Compare(env.EnvName, environment, StringComparison.OrdinalIgnoreCase) == 0)) { 
+                var featureToggles = app.FeatureToggles
+                    .Select(x => new ApplicationFeatureToggleViewModel
+                    {
+                        FeatureToggleName = x.ToggleName,
+                        IsEnabled = x.FeatureToggleStatuses.FirstOrDefault(fts => string.Compare(fts.EnvironmentName, environment, StringComparison.OrdinalIgnoreCase) == 0).Enabled
+                    });
 
-            return Ok(featureToggles);
+                return Ok(featureToggles);
+            }
+            else
+            {
+                return BadRequest("Environment or Application does not exist");
+            }
+
         }
 
         [HttpGet]
@@ -237,21 +249,27 @@ namespace Moggles.Controllers
         {
             _telemetry.TrackEvent("OnGetSpecificToggle");
 
-            var app = (await _applicationsRepository.GetAllAsync()).FirstOrDefault(a => a.AppName == applicationName);
+            var app = GetApplicationByName(applicationName).Result;
+            if (app != null && app.DeploymentEnvironments.Exists(env => string.Compare(env.EnvName, environment, StringComparison.OrdinalIgnoreCase) == 0))
+            {
+                var featureToggle = app.FeatureToggles
+                    .Where(ft => string.Compare(ft.ToggleName,featureToggleName, StringComparison.OrdinalIgnoreCase) == 0)
+                    .Select(x => new ApplicationFeatureToggleViewModel
+                    {
+                        FeatureToggleName = x.ToggleName,
+                        IsEnabled = x.FeatureToggleStatuses.FirstOrDefault(fts => string.Compare(fts.EnvironmentName, environment, StringComparison.OrdinalIgnoreCase) == 0).Enabled
+                    })
+                    .FirstOrDefault();
 
-            var featureToggle = app.FeatureToggles
-                .Where(ft => ft.ToggleName == featureToggleName)
-                .Select(x => new ApplicationFeatureToggleViewModel
-                {
-                    FeatureToggleName = x.ToggleName,
-                    IsEnabled = x.FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName ==  environment).Enabled
-                })
-                .FirstOrDefault();
+                if (featureToggle == null)
+                    return NotFound("Feature toggle does not exist!");
 
-            if (featureToggle == null)
-                return NotFound("Feature toggle does not exist!");
-
-            return Ok(featureToggle);
+                return Ok(featureToggle);
+            }
+            else
+            {
+                return BadRequest("Environment or Application does not exist");
+            }
         }
 
         [HttpPost]
@@ -262,7 +280,7 @@ namespace Moggles.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var app = (await _applicationsRepository.GetAllAsync()).FirstOrDefault(a => a.AppName == model.AppName);
+            var app = GetApplicationByName(model.AppName).Result;
             if (app == null)
                 throw new InvalidOperationException("Application does not exist");
 
