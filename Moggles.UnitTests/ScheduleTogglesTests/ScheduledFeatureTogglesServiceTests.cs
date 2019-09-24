@@ -17,14 +17,12 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         private IRepository<Application> _appRepository;
         private IRepository<ToggleSchedule> _toggleSchedulesRepository;
         private ScheduledFeatureTogglesService _sut;
-        private CancellationToken _cts;
 
         [TestInitialize]
         public void BeforeEach()
         {
             _appRepository = new InMemoryApplicationRepository();
             _toggleSchedulesRepository = new InMemoryRepository<ToggleSchedule>();
-            _cts = new CancellationToken();
             var services = new ServiceCollection();
             services.AddScoped(sp => _appRepository);
             services.AddScoped(sp => _toggleSchedulesRepository);
@@ -49,7 +47,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             await _toggleSchedulesRepository.AddAsync(schedule2);
 
             //act
-            await _sut.StartAsync(_cts);
+            await _sut.StartAsync(default);
 
             //assert
             var updatedApp = await _appRepository.FindByIdAsync(app.Id);
@@ -71,7 +69,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             await _toggleSchedulesRepository.AddAsync(schedule);
 
             //act
-            await _sut.StartAsync(_cts);
+            await _sut.StartAsync(default);
 
             //assert
             (await _toggleSchedulesRepository.GetAllAsync()).Count().Should().Be(0);
@@ -86,7 +84,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             await _appRepository.AddAsync(app);
 
             //act
-            await _sut.StartAsync(_cts);
+            await _sut.StartAsync(default);
 
             //assert
             var updatedApp = await _appRepository.FindByIdAsync(app.Id);
@@ -105,7 +103,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             await _toggleSchedulesRepository.AddAsync(schedule);
 
             //act
-            await _sut.StartAsync(_cts);
+            await _sut.StartAsync(default);
 
             //assert
             (await _toggleSchedulesRepository.GetAllAsync()).Count().Should().Be(0);

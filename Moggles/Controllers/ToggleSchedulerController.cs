@@ -1,0 +1,44 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Moggles.Domain;
+using Moggles.Models;
+using System;
+using System.Threading.Tasks;
+
+namespace Moggles.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ToggleSchedulerController : ControllerBase
+    {
+        private readonly IRepository<ToggleSchedule> _toggleScheduleRepository;
+        private readonly IRepository<Application> _applicationRepository;
+
+        public ToggleSchedulerController(IRepository<ToggleSchedule> toggleScheduleRepository, IRepository<Application> applicationRepository)
+        {
+            _applicationRepository = applicationRepository;
+            _toggleScheduleRepository = toggleScheduleRepository;
+        }
+
+        [HttpGet]
+        [Route("")]
+        public async Task<IActionResult> ScheduleToggles(Guid applicationId, ScheduleTogglesModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var app = await _applicationRepository.FindByIdAsync(applicationId);
+            if (app == null)
+                throw new InvalidOperationException("Application does not exist!");
+
+            foreach (var toggle in model.FeatureToggles)
+            {
+                var toggleSchedule = ToggleSchedule.Create(app.AppName, toggle, model.Environments, model.State, model.ScheduleDate);
+                await _toggleScheduleRepository.AddAsync(toggleSchedule);
+            }
+
+            return Ok();
+        }
+    }
+}
