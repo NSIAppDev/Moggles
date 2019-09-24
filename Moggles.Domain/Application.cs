@@ -5,7 +5,7 @@ using Moggles.Domain.DTO;
 
 namespace Moggles.Domain
 {
-    public class Application : Entity, IAggregateRoot
+    public class Application : AggregateRoot
     {
         public string AppName { get; set; }
 
@@ -167,11 +167,25 @@ namespace Moggles.Domain
             toggle.Toggle(environment, isEnabled);
         }
 
+        public void SetToggle(string name, string environment, bool isEnabled)
+        {
+            var toggle = GuardToggleExists(name);
+            toggle.Toggle(environment, isEnabled);
+        }
+
         private FeatureToggle GuardToggleExists(Guid toggleId)
         {
             var toggle = FeatureToggles.FirstOrDefault(f => f.Id == toggleId);
             if (toggle is null)
-                throw new InvalidOperationException("Feature toggle not found!");
+                throw new EntityNotFoundException("Feature toggle not found!", typeof(FeatureToggle).Name);
+            return toggle;
+        }
+
+        private FeatureToggle GuardToggleExists(string toggleName)
+        {
+            var toggle = FeatureToggles.FirstOrDefault(f => f.ToggleName == toggleName);
+            if (toggle is null)
+                throw new EntityNotFoundException("Feature toggle not found!", typeof(FeatureToggle).Name);
             return toggle;
         }
 
