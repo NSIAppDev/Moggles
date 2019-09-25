@@ -15,11 +15,11 @@
             </div>
             <div class="form-group">
                 <label class="control-label" for="toggleSelect">Select Toggles</label>
-                <multi-select id="toggleSelect" name="toggleSelect" v-model="selectedToggles" :options="allToggles" block />
+                <multi-select id="toggleSelect" name="toggleSelect" v-model="selectedToggles" :options="allToggles" block  :selected-icon="'fas fa-check'"/>
             </div>
             <div class="form-group">
                 <label class="control-label" for="environmentsSelect">Select Environments</label>
-                <multi-select id="environmentsSelect" name="environmentsSelect" v-model="selectedEnvironments" :options="allEnvironments" block />
+                <multi-select id="environmentsSelect" name="environmentsSelect" v-model="selectedEnvironments" :options="allEnvironments" block :selected-icon="'fas fa-check'"/>
             </div>
             <label class="control-label">Select Go Live Date/Time</label>
             <form class="form-inline form-group">
@@ -27,12 +27,12 @@
                     <div class="input-group">
                         <input id="dateInput" class="form-control" type="text" v-model="scheduledDate" readonly="readonly">
                         <div class="input-group-btn">
-                            <btn class="dropdown-toggle"><i class="glyphicon glyphicon-calendar"></i></btn>
+                            <btn class="dropdown-toggle"><i class="fas fa-calendar"></i></btn>
                         </div>
                     </div>
                     <template slot="dropdown">
                         <li>
-                            <date-picker v-model="scheduledDate" />
+                            <date-picker v-model="scheduledDate" :icon-control-left="'fas fa-angle-left'" :icon-control-right="'fas fa-angle-right'"/>
                         </li>
                     </template>
                 </dropdown>
@@ -40,12 +40,12 @@
                     <div class="input-group">
                         <input id="timeInput" class="form-control" type="text" :value="this.scheduledTime.toTimeString()" readonly="readonly">
                         <div class="input-group-btn">
-                            <btn class="dropdown-toggle"><i class="glyphicon glyphicon-time"></i></btn>
+                            <btn class="dropdown-toggle"><i class="fas fa-clock"></i></btn>
                         </div>
                     </div>
                     <template slot="dropdown">
                         <li style="padding: 10px">
-                            <time-picker v-model="scheduledTime" />
+                            <time-picker v-model="scheduledTime" :icon-control-up="'fas fa-angle-up'" :icon-control-down="'fas fa-angle-down'"/>
                         </li>
                     </template>
                 </dropdown>
