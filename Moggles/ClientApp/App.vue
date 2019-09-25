@@ -34,6 +34,7 @@
                                 <li><a role="button" @click="showAddToggle = true">Add Feature Toggle</a></li>
                                 <li><a role="button" @click="showAddApp = true">Add New Application</a></li>
                                 <li><a role="button" @click="showAddEnv = true">Add New Environment</a></li>
+                                <li><a role="button" @click="showScheduler = true">Feature Toggle Scheduler</a></li>
                                 <li v-if="isCacheRefreshEnabled"><a role="button" @click="showForceCacheRefresh = true">Force Cache Refresh</a></li>
                             </template>
                         </dropdown>
@@ -64,8 +65,12 @@
             <edit-application @close-app-edit-modal="showEditAppModal(false)"></edit-application>
         </modal>
 
-        <modal v-model="showDeleteAppConfirmation" title="You are about to delete an application" :footer="false" >        
+        <modal v-model="showDeleteAppConfirmation" title="You are about to delete an application" :footer="false">
             <delete-application @cancel="showDeleteAppConfirmation = false" @deleteAppCompleted="showEditAppModal(false)"></delete-application>
+        </modal>
+
+        <modal v-model="showScheduler" title="Schedule Toggles" :footer="false">
+            <toggle-scheduler></toggle-scheduler>
         </modal>
 
         <div class="container-fluid">
@@ -86,6 +91,7 @@
     import AddFeatureToggle from './AddFeatureToggle'
     import AddEnvironment from './AddEnvironment'
     import ForceCacheRefresh from './ForceCacheRefresh'
+    import ToggleScheduler from './ToggleScheduler'
     import BlockUi from './BlockUi'
     import { Bus } from './event-bus'
     import axios from 'axios'
@@ -99,7 +105,8 @@
                 showForceCacheRefresh: false,
                 isCacheRefreshEnabled: false,
                 editAppModalIsActive: false,
-                showDeleteAppConfirmation: false            
+                showDeleteAppConfirmation: false,
+                showScheduler: false
             }
         },
         methods: {
@@ -128,6 +135,9 @@
 			})
 			Bus.$on('close-refresh', () => {
 				this.showForceCacheRefresh = false;
+            })
+            Bus.$on('close-scheduler', () => {
+				this.showScheduler = false;
 			})
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
@@ -142,7 +152,8 @@
             "add-featuretoggle": AddFeatureToggle,
             "add-env": AddEnvironment,
 			'force-cache-refresh': ForceCacheRefresh,
-			'block-ui': BlockUi
+            'block-ui': BlockUi,
+            'toggle-scheduler': ToggleScheduler
         }
     }
 </script>

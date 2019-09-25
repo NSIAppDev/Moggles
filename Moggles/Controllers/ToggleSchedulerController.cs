@@ -19,16 +19,16 @@ namespace Moggles.Controllers
             _toggleScheduleRepository = toggleScheduleRepository;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("")]
-        public async Task<IActionResult> ScheduleToggles(Guid applicationId, ScheduleTogglesModel model)
+        public async Task<IActionResult> ScheduleToggles([FromBody] ScheduleTogglesModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var app = await _applicationRepository.FindByIdAsync(applicationId);
+            var app = await _applicationRepository.FindByIdAsync(model.ApplicationId);
             if (app == null)
                 throw new InvalidOperationException("Application does not exist!");
 

@@ -32,17 +32,18 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         {
             //arrange
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
-            var app =  Application.Create("tst","DEV",false);
+            var app = Application.Create("tst", "DEV", false);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1",null);
+            app.AddFeatureToggle("t1", null);
             app.AddFeatureToggle("t2", null);
             await _appRepository.AddAsync(app);
 
             //act
-            await _sut.ScheduleToggles(app.Id, new ScheduleTogglesModel
+            await _sut.ScheduleToggles(new ScheduleTogglesModel
             {
-                FeatureToggles = new List<string> {"t1", "t2"},
-                Environments = new List<string> {"DEV", "QA"},
+                ApplicationId = app.Id,
+                FeatureToggles = new List<string> { "t1", "t2" },
+                Environments = new List<string> { "DEV", "QA" },
                 ScheduleDate = date,
                 State = true
             });
@@ -52,7 +53,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             var sc1 = schedules.FirstOrDefault(s => s.ToggleName == "t1");
             schedules.Count().Should().Be(2);
             sc1.ScheduledState.Should().BeTrue();
-            sc1.Environments.Should().BeEquivalentTo(new[] {"DEV", "QA"});
+            sc1.Environments.Should().BeEquivalentTo(new[] { "DEV", "QA" });
             sc1.ApplicationName.Should().Be("tst");
             sc1.ScheduledDate.Should().Be(date);
         }
@@ -64,7 +65,10 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             _sut.ModelState.AddModelError("error", "some error");
 
             //act
-            var result = await _sut.ScheduleToggles(Guid.NewGuid(), new ScheduleTogglesModel());
+            var result = await _sut.ScheduleToggles(new ScheduleTogglesModel
+            {
+                ApplicationId = Guid.NewGuid()
+            });
 
             //assert
             result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
@@ -78,7 +82,10 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             await _appRepository.AddAsync(app);
 
             //act
-            Func<Task> act = async () => await _sut.ScheduleToggles(Guid.Empty, new ScheduleTogglesModel());
+            Func<Task> act = async () => await _sut.ScheduleToggles(new ScheduleTogglesModel
+            {
+                ApplicationId = Guid.Empty
+            });
 
             //assert
             act.Should().Throw<InvalidOperationException>();

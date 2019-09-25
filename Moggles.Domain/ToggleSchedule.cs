@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Moggles.Domain
 {
     public class ToggleSchedule : AggregateRoot
     {
-        public string ToggleName { get; private set; }
-        public string ApplicationName { get; private set; }
-
-        private readonly List<string> _environments = new List<string>();
-        public IReadOnlyCollection<string> Environments => _environments.ToList();
-        public bool ScheduledState { get; private set; }
-        public DateTime ScheduledDate { get; private set; }
+        public string ToggleName { get;  set; }
+        public string ApplicationName { get;  set; }
+        public List<string> Environments { get; set; } = new List<string>();
+        public bool ScheduledState { get;  set; }
+        public DateTime ScheduledDate { get;  set; }
 
         private ToggleSchedule()
         {
@@ -23,12 +20,13 @@ namespace Moggles.Domain
         {
             var ts = new ToggleSchedule
             {
+                Id = Guid.NewGuid(),
                 ApplicationName = appName,
                 ToggleName = toggleName,
                 ScheduledState = stateToSet,
                 ScheduledDate = schedule
             };
-            ts._environments.AddRange(environments);
+            ts.Environments.AddRange(environments);
             return ts;
         }
 

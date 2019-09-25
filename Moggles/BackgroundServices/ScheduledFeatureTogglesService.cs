@@ -12,8 +12,8 @@ namespace Moggles.BackgroundServices
     public class ScheduledFeatureTogglesService : BackgroundService
     {
         private readonly ILogger<ScheduledFeatureTogglesService> _logger;
-        private  IRepository<Application> _appRepository;
-        private  IRepository<ToggleSchedule> _toggleSchedulesRepository;
+        private IRepository<Application> _appRepository;
+        private IRepository<ToggleSchedule> _toggleSchedulesRepository;
         private readonly IServiceProvider _serviceProvider;
 
         public ScheduledFeatureTogglesService(ILogger<ScheduledFeatureTogglesService> logger, IServiceProvider serviceProvider)
@@ -24,14 +24,15 @@ namespace Moggles.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            try
+
+            _logger.LogInformation($"ScheduledFeatureTogglesService background task is starting.");
+
+            stoppingToken.Register(() =>
+                _logger.LogInformation($" ScheduledFeatureTogglesService background task is stopping (via token)."));
+
+            do
             {
-                _logger.LogInformation($"ScheduledFeatureTogglesService background task is starting.");
-
-                stoppingToken.Register(() =>
-                    _logger.LogInformation($" ScheduledFeatureTogglesService background task is stopping (via token)."));
-
-                do
+                try
                 {
                     using (var scope = _serviceProvider.CreateScope())
                     {
@@ -54,15 +55,14 @@ namespace Moggles.BackgroundServices
                                         try
                                         {
                                             app.SetToggle(toggleSchedule.ToggleName, env, toggleSchedule.ScheduledState);
+                                            _logger.LogInformation(
+                                                $"Set toggle {toggleSchedule.ToggleName} to {toggleSchedule.ScheduledState} on {env} environment for {app.AppName}");
                                         }
                                         catch (EntityNotFoundException ex) when (ex.EntityType == nameof(FeatureToggle))
                                         {
                                             _logger.LogError(ex, ex.Message);
                                             await _toggleSchedulesRepository.DeleteAsync(toggleSchedule);
                                         }
-
-                                        _logger.LogInformation(
-                                            $"Set toggle {toggleSchedule.ToggleName} to {toggleSchedule.ScheduledState} on {env} environment for {app.AppName}");
                                     }
 
                                     await _appRepository.UpdateAsync(app);
@@ -70,17 +70,15 @@ namespace Moggles.BackgroundServices
                                 }
                             }
                         }
-
-                        await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
                     }
-                } while (!stoppingToken.IsCancellationRequested);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogCritical(ex, ex.Message);
+                }
 
-                _logger.LogInformation($"ScheduledFeatureTogglesService background task is stopping.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogCritical(ex, ex.Message);
-            }
+                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+            } while (!stoppingToken.IsCancellationRequested);
         }
     }
 }

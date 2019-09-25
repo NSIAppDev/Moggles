@@ -6,6 +6,8 @@ namespace Moggles.Models
 {
     public class ScheduleTogglesModel
     {
+        public Guid ApplicationId { get; set; }
+
         [Required]
         public List<string> FeatureToggles { get; set; }
         [Required]
