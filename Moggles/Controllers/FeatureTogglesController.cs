@@ -28,26 +28,27 @@ namespace Moggles.Controllers
         public async Task<IActionResult> GetToggles(Guid applicationId)
         {
             var app = await _applicationsRepository.FindByIdAsync(applicationId);
-            return Ok(app.FeatureToggles
-                    .Select(ft => new FeatureToggleViewModel
-                    {
-                        Id = ft.Id,
-                        ToggleName = ft.ToggleName,
-                        UserAccepted = ft.UserAccepted,
-                        Notes = ft.Notes,
-                        CreatedDate = ft.CreatedDate,
-                        IsPermanent = ft.IsPermanent,
-                        Statuses = ft.FeatureToggleStatuses
-                            .Select(fts =>
-                                new FeatureToggleStatusViewModel
-                                {
-                                    Environment = fts.EnvironmentName,
-                                    Enabled = fts.Enabled,
-                                    IsDeployed = fts.IsDeployed,
-                                    LastUpdated = fts.LastUpdated,
-                                    FirstTimeDeployDate = fts.FirstTimeDeployDate
-                                }).ToList()
-                    }).OrderByDescending(ft => ft.CreatedDate));
+            var toggles = app.FeatureToggles
+                .Select(ft => new FeatureToggleViewModel
+                {
+                    Id = ft.Id,
+                    ToggleName = ft.ToggleName,
+                    UserAccepted = ft.UserAccepted,
+                    Notes = ft.Notes,
+                    CreatedDate = ft.CreatedDate,
+                    IsPermanent = ft.IsPermanent,
+                    Statuses = ft.FeatureToggleStatuses
+                        .Select(fts =>
+                            new FeatureToggleStatusViewModel
+                            {
+                                Environment = fts.EnvironmentName,
+                                Enabled = fts.Enabled,
+                                IsDeployed = fts.IsDeployed,
+                                LastUpdated = fts.LastUpdated,
+                                FirstTimeDeployDate = fts.FirstTimeDeployDate
+                            }).ToList()
+                }).OrderByDescending(ft => ft.CreatedDate);
+            return Ok(toggles);
 
         }
 

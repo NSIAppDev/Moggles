@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Moggles.BackgroundServices;
 using Moggles.Consumers;
 using Moggles.Data.SQL;
 using Moggles.Data.NoDb;
@@ -35,14 +36,15 @@ namespace Moggles
 
             ConfigureDatabaseServices(services);
 
-            if (Boolean.TryParse(Configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
+            if (bool.TryParse(Configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
             {
                 ConfigureMassTransitAndMessageBus(services);
             }
 
             services.AddNoDb<Application>();
+            services.AddNoDb<ToggleSchedule>();
             services.AddScoped<IRepository<Application>, ApplicationsRepository>();
-
+            services.AddScoped<IRepository<ToggleSchedule>, ToggleSchedulesRepository>();
         }
 
         public virtual void ConfigureDatabaseServices(IServiceCollection services)
@@ -81,12 +83,17 @@ namespace Moggles
             }
 
             app.UseStaticFiles();
-
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+            });
+            appLifetime.ApplicationStarted.Register(() =>
+            {
+                var z =new object();
+
             });
         }
 
@@ -101,6 +108,7 @@ namespace Moggles
             services.AddSingleton<IBus>(provider => provider.GetRequiredService<IBusControl>());
 
             services.AddSingleton<IHostedService, BusService>();
+            services.AddHostedService<ScheduledFeatureTogglesService>();
         }
 
         public virtual IBusControl ConfigureMessageBus(IServiceProvider serviceProvider)
