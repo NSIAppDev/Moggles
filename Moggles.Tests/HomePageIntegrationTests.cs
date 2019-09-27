@@ -1,5 +1,8 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Moggles.Tests
@@ -15,9 +18,15 @@ namespace Moggles.Tests
         {
             Utils.ClearStorage();
             _factory = new MogglesApplicationFactory<TestStartup>();
-            _client = _factory.CreateClient();
+            var factory = _factory.WithWebHostBuilder(b =>
+            {
+                b.UseSolutionRelativeContentRoot(Environment.CurrentDirectory);
+                b.ConfigureTestServices(services => { services.AddMvc().AddApplicationPart(typeof(Startup).Assembly); });
+            });
+            _client = factory.CreateClient();
         }
 
+        [Ignore]
         [TestMethod]
         public async Task SiteRootIsAccessible()
         {

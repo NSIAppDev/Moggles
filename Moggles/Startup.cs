@@ -90,11 +90,6 @@ namespace Moggles
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-            appLifetime.ApplicationStarted.Register(() =>
-            {
-                var z =new object();
-
-            });
         }
 
         private void ConfigureMassTransitAndMessageBus(IServiceCollection services)

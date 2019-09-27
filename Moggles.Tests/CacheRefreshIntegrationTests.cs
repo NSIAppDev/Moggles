@@ -1,12 +1,13 @@
-﻿using System;
-using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
-using MassTransit;
+﻿using MassTransit;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Domain;
 using Moggles.Models;
 using MogglesContracts;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Moggles.Tests
 {
@@ -21,14 +22,19 @@ namespace Moggles.Tests
         {
             Utils.ClearStorage();
             _factory = new MogglesApplicationFactory<TestStartup>();
-            _client = _factory.CreateClient();
+            var factory = _factory.WithWebHostBuilder(b =>
+            {
+                b.UseSolutionRelativeContentRoot(Environment.CurrentDirectory);
+                b.ConfigureTestServices(services => { services.AddMvc().AddApplicationPart(typeof(Startup).Assembly); });
+            });
+            _client = factory.CreateClient();
         }
 
         [TestMethod]
         public async Task Publishes_Message_With_CacheRefresh_Command()
         {
             //arrange
-            var appModel = new AddApplicationModel { ApplicationName = "test", EnvironmentName = "testEnv", DefaultToggleValue = false };
+            var appModel = new AddApplicationModel { ApplicationName = "tst", EnvironmentName = "testEnv", DefaultToggleValue = false };
             var response = await _client.PostAsJsonAsync("/api/applications/add", appModel);
             response.EnsureSuccessStatusCode();
 
@@ -41,9 +47,10 @@ namespace Moggles.Tests
             };
 
             //act
-            var response2 = Utils.PostAsJsonAsync(_client, "/api/CacheRefresh", refreshCacheModel).Result;
+            var response2 = await _client.PostAsJsonAsync("/api/CacheRefresh", refreshCacheModel);
             response2.EnsureSuccessStatusCode();
 
+            (await _client.DeleteAsync("/api/applications?id=" + app.Id)).EnsureSuccessStatusCode();
             //TODO: check to see how to test sending of messages on the BUS
             //TODO: use mass transit test harness package
         }

@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="nodb_storage\**" />
+    <Content Remove="nodb_storage\**" />
+    <EmbeddedResource Remove="nodb_storage\**" />
+    <None Remove="nodb_storage\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Autofac" Version="4.8.1" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.0.0" />
     <PackageReference Include="Chutzpah" Version="4.3.6" />

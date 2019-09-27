@@ -3,7 +3,7 @@ using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Moggles
+namespace Moggles.Tests
 {
     public class TestStartup : Startup
     {
