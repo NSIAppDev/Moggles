@@ -1,10 +1,9 @@
 ﻿using System;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Moggles.Tests
+namespace Moggles
 {
     public class TestStartup : Startup
     {

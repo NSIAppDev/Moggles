@@ -225,7 +225,7 @@ namespace Moggles.Controllers
         {
             _telemetry.TrackEvent("OnGetAllToggles");
 
-            var app = GetApplicationByName(applicationName).Result;
+            var app = await GetApplicationByName(applicationName);
             if (app != null && app.DeploymentEnvironments.Exists(env => string.Compare(env.EnvName, environment, StringComparison.OrdinalIgnoreCase) == 0)) { 
                 var featureToggles = app.FeatureToggles
                     .Select(x => new ApplicationFeatureToggleViewModel
@@ -236,10 +236,8 @@ namespace Moggles.Controllers
 
                 return Ok(featureToggles);
             }
-            else
-            {
-                return BadRequest("Environment or Application does not exist");
-            }
+
+            return BadRequest("Environment or Application does not exist");
 
         }
 
@@ -250,7 +248,7 @@ namespace Moggles.Controllers
         {
             _telemetry.TrackEvent("OnGetSpecificToggle");
 
-            var app = GetApplicationByName(applicationName).Result;
+            var app = await GetApplicationByName(applicationName);
             if (app != null && app.DeploymentEnvironments.Exists(env => string.Compare(env.EnvName, environment, StringComparison.OrdinalIgnoreCase) == 0))
             {
                 var featureToggle = app.FeatureToggles
@@ -267,10 +265,8 @@ namespace Moggles.Controllers
 
                 return Ok(featureToggle);
             }
-            else
-            {
-                return BadRequest("Environment or Application does not exist");
-            }
+
+            return BadRequest("Environment or Application does not exist");
         }
 
         [HttpPost]
@@ -281,7 +277,7 @@ namespace Moggles.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var app = GetApplicationByName(model.AppName).Result;
+            var app = await GetApplicationByName(model.AppName);
             if (app == null)
                 throw new InvalidOperationException("Application does not exist");
 

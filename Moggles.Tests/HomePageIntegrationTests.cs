@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Moggles.Tests
@@ -18,11 +19,10 @@ namespace Moggles.Tests
         }
 
         [TestMethod]
-        public void SiteRootIsAccessible()
+        public async Task SiteRootIsAccessible()
         {
-            var response = _client.GetAsync("/").Result;
+            var response = await _client.GetAsync("/");
             response.EnsureSuccessStatusCode();
-
         }
 
         [TestCleanup]

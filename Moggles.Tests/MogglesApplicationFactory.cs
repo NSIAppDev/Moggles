@@ -12,7 +12,7 @@ namespace Moggles.Tests
             return WebHost.CreateDefaultBuilder(new string[0])
                 .UseApplicationInsights()
                 .ConfigureKestrel(opt => opt.AddServerHeader = false)
-                .UseStartup<TestStartup>();
+                .UseStartup<Moggles.TestStartup>();
         }
     }
 }
