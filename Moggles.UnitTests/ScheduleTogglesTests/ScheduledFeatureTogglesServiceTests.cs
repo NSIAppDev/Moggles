@@ -4,7 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.BackgroundServices;
 using Moggles.Domain;
@@ -26,7 +29,9 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             var services = new ServiceCollection();
             services.AddScoped(sp => _appRepository);
             services.AddScoped(sp => _toggleSchedulesRepository);
-            _sut = new ScheduledFeatureTogglesService(new NullLogger<ScheduledFeatureTogglesService>(), services.BuildServiceProvider());
+            services.AddLogging(cfg => cfg.AddConsole()).Configure<LoggerFilterOptions>(cfg => cfg.MinLevel = LogLevel.Debug);
+            var serviceProvider = services.BuildServiceProvider();
+            _sut = new ScheduledFeatureTogglesService(serviceProvider.GetService<ILogger<ScheduledFeatureTogglesService>>(), serviceProvider);
         }
 
 
