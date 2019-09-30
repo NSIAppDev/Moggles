@@ -70,7 +70,7 @@ namespace Moggles.UnitTests.ApplicationsTests
             await controller.AddApplication(appModel);
 
             //assert
-            _appApplicationRepository.Applications.FirstOrDefault()?.AppName.Should().Be(appModel.ApplicationName);
+            (await _appApplicationRepository.GetAllAsync()).FirstOrDefault()?.AppName.Should().Be(appModel.ApplicationName);
         }
 
         [TestMethod]
@@ -87,7 +87,7 @@ namespace Moggles.UnitTests.ApplicationsTests
 
             //assert
             result.Should().BeOfType<BadRequestObjectResult>();
-            _appApplicationRepository.Applications.Single().AppName.Should().Be("bcc");
+            (await _appApplicationRepository.GetAllAsync()).Single().AppName.Should().Be("bcc");
         }
 
         [TestMethod]
@@ -101,7 +101,7 @@ namespace Moggles.UnitTests.ApplicationsTests
             await controller.AddApplication(appModel);
 
             //assert
-            var app = _appApplicationRepository.Applications.FirstOrDefault(x => x.AppName.Equals(appModel.ApplicationName));
+            var app = (await _appApplicationRepository.GetAllAsync()).FirstOrDefault(x => x.AppName.Equals(appModel.ApplicationName));
 
             Debug.Assert(app != null, nameof(app) + " != null");
             var results = app.DeploymentEnvironments.ToList();
@@ -221,7 +221,7 @@ namespace Moggles.UnitTests.ApplicationsTests
 
             //assert
             result.Should().BeOfType<OkResult>();
-            _appApplicationRepository.Applications.Count().Should().Be(0);
+            (await _appApplicationRepository.GetAllAsync()).Count().Should().Be(0);
 
         }
 

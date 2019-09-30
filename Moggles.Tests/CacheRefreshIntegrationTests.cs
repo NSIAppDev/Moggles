@@ -64,7 +64,6 @@ namespace Moggles.Tests
             var response2 = await _client.PostAsJsonAsync("/api/CacheRefresh", refreshCacheModel);
             response2.EnsureSuccessStatusCode();
 
-         //   Thread.Sleep(2000);
             var msg = (RefreshTogglesCache)_messages.FirstOrDefault(m => m is RefreshTogglesCache);
             msg.Should().NotBeNull();
             msg.Environment.Should().Be("DEV");
