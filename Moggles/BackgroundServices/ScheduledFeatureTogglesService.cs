@@ -70,6 +70,10 @@ namespace Moggles.BackgroundServices
                                 }
                             }
                         }
+                        else
+                        {
+                            _logger.LogInformation("No schedules found to apply.");
+                        }
                     }
                 }
                 catch (Exception ex)
