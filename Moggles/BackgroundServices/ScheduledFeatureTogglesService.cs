@@ -44,9 +44,11 @@ namespace Moggles.BackgroundServices
                         if (allSchedules.Any())
                         {
                             var apps = await _appRepository.GetAllAsync();
+                            _logger.LogDebug($"Schedule count = {allSchedules.Count()}");
 
                             foreach (var toggleSchedule in allSchedules)
                             {
+                                _logger.LogDebug($"Schedule processing: {toggleSchedule.ScheduledDate}");
                                 if (toggleSchedule.IsDue())
                                 {
                                     var app = apps.FirstOrDefault(a => a.AppName == toggleSchedule.ApplicationName);
@@ -68,11 +70,15 @@ namespace Moggles.BackgroundServices
                                     await _appRepository.UpdateAsync(app);
                                     await _toggleSchedulesRepository.DeleteAsync(toggleSchedule);
                                 }
+                                else
+                                {
+                                    _logger.LogDebug($"Schedule is not DUE: {toggleSchedule.ScheduledDate}, now={DateTime.Now}");
+                                }
                             }
                         }
                         else
                         {
-                            _logger.LogInformation("No schedules found to apply.");
+                            _logger.LogDebug("No schedules found to apply.");
                         }
                     }
                 }

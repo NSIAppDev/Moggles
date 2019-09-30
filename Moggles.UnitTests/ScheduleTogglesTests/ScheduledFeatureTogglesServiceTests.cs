@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.BackgroundServices;
 using Moggles.Domain;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,6 +53,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
 
             //act
             await _sut.StartAsync(_cts.Token);
+            Thread.Sleep(1000);
+            Trace.WriteLine("finished sleeping");
             await _sut.StopAsync(_cts.Token);
 
             //assert
@@ -75,6 +78,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
 
             //act
             await _sut.StartAsync(_cts.Token);
+            Thread.Sleep(1000);
+            Trace.WriteLine("finished sleeping");
             await _sut.StopAsync(_cts.Token);
 
             //assert
@@ -91,6 +96,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
 
             //act
             await _sut.StartAsync(_cts.Token);
+            Thread.Sleep(1000);
+            Trace.WriteLine("finished sleeping");
             await _sut.StopAsync(_cts.Token);
 
             //assert
@@ -111,6 +118,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
 
             //act
             await _sut.StartAsync(_cts.Token);
+            Thread.Sleep(1000);
+            Trace.WriteLine("finished sleeping");
             await _sut.StopAsync(_cts.Token);
 
             //assert
