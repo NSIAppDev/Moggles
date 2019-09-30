@@ -6,6 +6,7 @@ using Moggles.Domain;
 using Moggles.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -22,12 +23,15 @@ namespace Moggles.Tests
         [TestInitialize]
         public void BeforeEach()
         {
-            Utils.ClearStorage();
             _factory = new MogglesApplicationFactory<TestStartup>();
             var factory = _factory.WithWebHostBuilder(b =>
             {
                 b.UseSolutionRelativeContentRoot(Environment.CurrentDirectory);
-                b.ConfigureTestServices(services => { services.AddMvc().AddApplicationPart(typeof(Startup).Assembly); });
+                Trace.WriteLine(Environment.CurrentDirectory);
+                b.ConfigureTestServices(services =>
+                {
+                    services.AddMvc().AddApplicationPart(typeof(Startup).Assembly);
+                });
             });
             _client = factory.CreateClient();
         }
@@ -100,6 +104,7 @@ namespace Moggles.Tests
         public void Cleanup()
         {
             _factory.Dispose();
+            Utils.ClearStorage();
         }
     }
 }

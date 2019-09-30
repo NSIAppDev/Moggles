@@ -1,7 +1,7 @@
-﻿using System;
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Moggles.Tests
 {
@@ -24,13 +24,15 @@ namespace Moggles.Tests
 
         public override IBusControl ConfigureMessageBus(IServiceProvider serviceProvider)
         {
-            return Bus.Factory.CreateUsingInMemory(sbc =>
+            var busControl =  Bus.Factory.CreateUsingInMemory(sbc =>
             {
                 sbc.ReceiveEndpoint("test_queue", e =>
                 {
                     e.LoadFrom(serviceProvider);
                 });
             });
+
+            return busControl;
         }
     }
 }
