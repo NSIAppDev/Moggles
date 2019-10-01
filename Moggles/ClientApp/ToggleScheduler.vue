@@ -125,10 +125,11 @@
                     scheduleDate: combinedScheduledDateTime
                 }).then((response) => {
                     this.cleanup();
+                    this.closeModal();
                 }).catch(e => {
                     window.alert(e);
                 }).finally(e => {
-                    Bus.$emit('unblock-ui')
+                    Bus.$emit('unblock-ui');
                 });
             },
             loadToggles(appId) {
