@@ -55,7 +55,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             sc1.ScheduledState.Should().BeTrue();
             sc1.Environments.Should().BeEquivalentTo(new[] { "DEV", "QA" });
             sc1.ApplicationName.Should().Be("tst");
-            sc1.ScheduledDate.Should().Be(date);
+            sc1.ScheduledDate.Should().Be(date.ToUniversalTime());
         }
 
         [TestMethod]

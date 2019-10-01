@@ -27,7 +27,6 @@ namespace Moggles.Tests
             var factory = _factory.WithWebHostBuilder(b =>
             {
                 b.UseSolutionRelativeContentRoot(Environment.CurrentDirectory);
-                Trace.WriteLine(Environment.CurrentDirectory);
                 b.ConfigureTestServices(services =>
                 {
                     services.AddMvc().AddApplicationPart(typeof(Startup).Assembly);

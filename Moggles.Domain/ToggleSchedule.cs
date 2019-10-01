@@ -32,7 +32,7 @@ namespace Moggles.Domain
 
         public bool IsDue()
         {
-            return ScheduledDate < DateTime.Now;
+            return ScheduledDate < DateTime.UtcNow;
         }
     }
 }

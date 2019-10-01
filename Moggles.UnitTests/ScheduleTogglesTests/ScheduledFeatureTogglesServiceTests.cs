@@ -5,7 +5,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.BackgroundServices;
 using Moggles.Domain;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +18,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         private IRepository<ToggleSchedule> _toggleSchedulesRepository;
         private ScheduledFeatureTogglesService _sut;
         private CancellationTokenSource _cts;
+        private readonly DateTime _dateInThePast = new DateTime(2018,1,1,15,30,0);
 
         [TestInitialize]
         public void BeforeEach()
@@ -46,15 +46,13 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             app.SetToggle(app.FeatureToggles.Single(f => f.ToggleName == "onToggle").Id, "DEV", true);
             await _appRepository.AddAsync(app);
 
-            var schedule = ToggleSchedule.Create("tst","offToggle", new[] { "DEV" }, true, DateTime.UtcNow);
-            var schedule2 = ToggleSchedule.Create("tst","onToggle", new[] { "DEV" }, false, DateTime.UtcNow);
+            var schedule = ToggleSchedule.Create("tst","offToggle", new[] { "DEV" }, true, _dateInThePast);
+            var schedule2 = ToggleSchedule.Create("tst","onToggle", new[] { "DEV" }, false, _dateInThePast);
             await _toggleSchedulesRepository.AddAsync(schedule);
             await _toggleSchedulesRepository.AddAsync(schedule2);
 
             //act
             await _sut.StartAsync(_cts.Token);
-            Thread.Sleep(1000);
-            Trace.WriteLine("finished sleeping");
             await _sut.StopAsync(_cts.Token);
 
             //assert
@@ -73,13 +71,11 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             app.AddFeatureToggle("t1", null);
             await _appRepository.AddAsync(app);
 
-            var schedule = ToggleSchedule.Create("tst", "t1", new[] { "DEV" }, true, DateTime.UtcNow);
+            var schedule = ToggleSchedule.Create("tst", "t1", new[] { "DEV" }, true, _dateInThePast);
             await _toggleSchedulesRepository.AddAsync(schedule);
 
             //act
             await _sut.StartAsync(_cts.Token);
-            Thread.Sleep(1000);
-            Trace.WriteLine("finished sleeping");
             await _sut.StopAsync(_cts.Token);
 
             //assert
@@ -96,8 +92,6 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
 
             //act
             await _sut.StartAsync(_cts.Token);
-            Thread.Sleep(1000);
-            Trace.WriteLine("finished sleeping");
             await _sut.StopAsync(_cts.Token);
 
             //assert
@@ -113,13 +107,11 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             var app = Application.Create("tst", "DEV", false);
             await _appRepository.AddAsync(app);
 
-            var schedule = ToggleSchedule.Create("tst", "DeletedToggle", new[] { "DEV" }, true, DateTime.UtcNow);
+            var schedule = ToggleSchedule.Create("tst", "DeletedToggle", new[] { "DEV" }, true, _dateInThePast);
             await _toggleSchedulesRepository.AddAsync(schedule);
 
             //act
             await _sut.StartAsync(_cts.Token);
-            Thread.Sleep(1000);
-            Trace.WriteLine("finished sleeping");
             await _sut.StopAsync(_cts.Token);
 
             //assert

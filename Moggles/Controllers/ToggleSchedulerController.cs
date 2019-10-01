@@ -34,7 +34,7 @@ namespace Moggles.Controllers
 
             foreach (var toggle in model.FeatureToggles)
             {
-                var toggleSchedule = ToggleSchedule.Create(app.AppName, toggle, model.Environments, model.State, model.ScheduleDate);
+                var toggleSchedule = ToggleSchedule.Create(app.AppName, toggle, model.Environments, model.State, model.ScheduleDate.ToUniversalTime());
                 await _toggleScheduleRepository.AddAsync(toggleSchedule);
             }
 
