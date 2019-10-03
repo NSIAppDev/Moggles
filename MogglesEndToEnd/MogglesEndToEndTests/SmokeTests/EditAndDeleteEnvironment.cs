@@ -15,6 +15,7 @@ namespace MogglesEndToEndTests.SmokeTests
         }
 
         [TestMethod]
+        [Ignore]
         [TestCategory("EditANewEnvironment")]
         [TestCategory("SmokeTests")]
 
