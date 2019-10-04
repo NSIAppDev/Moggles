@@ -15,7 +15,7 @@ namespace MogglesEndToEndTests.SmokeTests
         }
 
         [TestMethod]
-        [Ignore]
+        
         [TestCategory("EditANewEnvironment")]
         [TestCategory("SmokeTests")]
 
@@ -42,7 +42,7 @@ namespace MogglesEndToEndTests.SmokeTests
         [TestCleanup]
         public void After()
         {
-            Pages.FeatureTogglesPage.DeleteApplication();
+            Pages.FeatureTogglesPage.DeleteApplication(Constants.NewApplicationName);
             Browser.Close();
             ChromeDriverUtils.KillChromeDriverProcesses();
         }
