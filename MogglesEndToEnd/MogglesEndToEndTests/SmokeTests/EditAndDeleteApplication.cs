@@ -24,13 +24,14 @@ namespace MogglesEndToEndTests.SmokeTests
             Pages.FeatureTogglesPage.Navigate();
             Pages.FeatureTogglesPage.AddNewApplication(Constants.NewApplicationName, Constants.FirstEnvName);
             Pages.FeatureTogglesPage.SelectASpecificApplication(Constants.NewApplicationName);
-            Pages.FeatureTogglesPage.ChangeApplicationName(Constants.EditedApplicationName);
+            Pages.FeatureTogglesPage.ChangeApplicationName(Constants.NewApplicationName,Constants.EditedApplicationName);
 
             //assert
             Pages.FeatureTogglesPage.ApplicationIsSelected(Constants.EditedApplicationName);
+            Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
 
             //act
-            Pages.FeatureTogglesPage.DeleteApplication();
+            Pages.FeatureTogglesPage.DeleteApplication(Constants.EditedApplicationName);
 
             //assert
             Pages.FeatureTogglesPage.ApplicationNameExists(Constants.EditedApplicationName).Should().BeFalse();
