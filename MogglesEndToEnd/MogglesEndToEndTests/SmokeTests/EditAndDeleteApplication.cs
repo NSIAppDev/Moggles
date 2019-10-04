@@ -28,6 +28,7 @@ namespace MogglesEndToEndTests.SmokeTests
 
             //assert
             Pages.FeatureTogglesPage.ApplicationIsSelected(Constants.EditedApplicationName);
+            Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
 
             //act
             Pages.FeatureTogglesPage.DeleteApplication(Constants.EditedApplicationName);
