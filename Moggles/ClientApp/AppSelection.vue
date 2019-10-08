@@ -1,7 +1,9 @@
 ﻿<template>
-    <div id="app-sel"> 
-		<multi-select :limit="1" :options="applicationList" v-model="selectedApps" @change="changeApp" :value-key="'id'" :label-key="'appName'" :selected-icon="'fas fa-check'" ref="appSelection" class="padding-left-10"></multi-select>
-    </div>
+  <div id="app-sel"> 
+    <multi-select ref="appSelection" v-model="selectedApps" :limit="1" 
+                  :options="applicationList" :value-key="'id'" :label-key="'appName'"
+                  :selected-icon="'fas fa-check'" class="padding-left-10" @change="changeApp" />
+  </div>
 </template>
 
 <script>
@@ -15,6 +17,23 @@
 				applicationList: [],
 				selectedApps: []
 			}
+		},
+		computed: {
+			appIsSelected() {
+				return this.selectedApps.length > 0;
+			}
+		},
+		created() {
+			this.getApplications()
+			Bus.$on("new-app-added", () => {
+				this.getApplications();
+			});
+			Bus.$on("reload-application-toggles", () => {
+				this.changeApp();
+			});
+			Bus.$on("refresh-apps", () => {
+				this.refreshApps();
+			});
 		},
 		methods: {
 			changeApp() {
@@ -43,23 +62,6 @@
 				this.selectedApps = []
 				this.getApplications()
 			},
-		},
-		created() {
-			this.getApplications()
-			Bus.$on("new-app-added", () => {
-				this.getApplications();
-			});
-			Bus.$on("reload-application-toggles", () => {
-				this.changeApp();
-			});
-			Bus.$on("refresh-apps", () => {
-				this.refreshApps();
-			});
-		},
-		computed: {
-			appIsSelected() {
-				return this.selectedApps.length > 0;
-			}
 		}
     }
 </script>

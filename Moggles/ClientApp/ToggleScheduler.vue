@@ -1,67 +1,85 @@
 ﻿<template>
-    <div>
-        <div class="panel-body">
-            <div v-for="error in errors" :key="error" class="text-danger margin-bottom-10">{{error}}</div>
-            <div class="form-group">
-                <label class="control-label">Select State</label>
-                <div class="form-inline">
-                    <label for="d1">
-                        <input id="d1" v-model="scheduledState" type="radio" :value="true"> On
-                    </label>
-                    <label for="d2">
-                        <input id="d2" v-model="scheduledState" type="radio" :value="false"> Off
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label" for="toggleSelect">Select Toggles</label>
-                <multi-select id="toggleSelect" name="toggleSelect" v-model="selectedToggles" :options="allToggles" block  :selected-icon="'fas fa-check'"/>
-            </div>
-            <div class="form-group">
-                <label class="control-label" for="environmentsSelect">Select Environments</label>
-                <multi-select id="environmentsSelect" name="environmentsSelect" v-model="selectedEnvironments" :options="allEnvironments" block :selected-icon="'fas fa-check'"/>
-            </div>
-            <label class="control-label">Select Go Live Date/Time</label>
-            <form class="form-inline form-group">
-                <dropdown class="form-group">
-                    <div class="input-group">
-                        <input id="dateInput" class="form-control" type="text" v-model="scheduledDate" readonly="readonly">
-                        <div class="input-group-btn">
-                            <btn class="dropdown-toggle"><i class="fas fa-calendar"></i></btn>
-                        </div>
-                    </div>
-                    <template slot="dropdown">
-                        <li>
-                            <date-picker v-model="scheduledDate" :icon-control-left="'fas fa-angle-left'" :icon-control-right="'fas fa-angle-right'"/>
-                        </li>
-                    </template>
-                </dropdown>
-                <dropdown class="form-group">
-                    <div class="input-group">
-                        <input id="timeInput" class="form-control" type="text" :value="this.scheduledTime.toTimeString()" readonly="readonly">
-                        <div class="input-group-btn">
-                            <btn class="dropdown-toggle"><i class="fas fa-clock"></i></btn>
-                        </div>
-                    </div>
-                    <template slot="dropdown">
-                        <li style="padding: 10px">
-                            <time-picker v-model="scheduledTime" :icon-control-up="'fas fa-angle-up'" :icon-control-down="'fas fa-angle-down'"/>
-                        </li>
-                    </template>
-                </dropdown>
-            </form>
-            <div class="text-right">
-                <button id="closeButton" class="btn btn-default" @click="closeModal">Close</button>
-                <button id="submitButton" class="btn btn-primary" v-on:click="addSchedule" type="button">Submit</button>
-            </div>
+  <div>
+    <div class="panel-body">
+      <div v-for="error in errors" :key="error" class="text-danger margin-bottom-10">
+        {{ error }}
+      </div>
+      <div class="form-group">
+        <label class="control-label">Select State</label>
+        <div class="form-inline">
+          <label for="d1">
+            <input id="d1" v-model="scheduledState" type="radio"
+                   :value="true"> On
+          </label>
+          <label for="d2">
+            <input id="d2" v-model="scheduledState" type="radio"
+                   :value="false"> Off
+          </label>
         </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="toggleSelect">Select Toggles</label>
+        <multi-select id="toggleSelect" v-model="selectedToggles" name="toggleSelect"
+                      :options="allToggles" block :selected-icon="'fas fa-check'" />
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="environmentsSelect">Select Environments</label>
+        <multi-select id="environmentsSelect" v-model="selectedEnvironments" name="environmentsSelect"
+                      :options="allEnvironments" block :selected-icon="'fas fa-check'" />
+      </div>
+      <label class="control-label">Select Go Live Date/Time</label>
+      <form class="form-inline form-group">
+        <dropdown class="form-group">
+          <div class="input-group">
+            <input id="dateInput" v-model="scheduledDate" class="form-control"
+                   type="text" readonly="readonly">
+            <div class="input-group-btn">
+              <btn class="dropdown-toggle">
+                <i class="fas fa-calendar" />
+              </btn>
+            </div>
+          </div>
+          <template slot="dropdown">
+            <li>
+              <date-picker v-model="scheduledDate" :icon-control-left="'fas fa-angle-left'" :icon-control-right="'fas fa-angle-right'" />
+            </li>
+          </template>
+        </dropdown>
+        <dropdown class="form-group">
+          <div class="input-group">
+            <input id="timeInput" class="form-control" type="text"
+                   :value="scheduledTime.toTimeString()" readonly="readonly">
+            <div class="input-group-btn">
+              <btn class="dropdown-toggle">
+                <i class="fas fa-clock" />
+              </btn>
+            </div>
+          </div>
+          <template slot="dropdown">
+            <li style="padding: 10px">
+              <time-picker v-model="scheduledTime" :icon-control-up="'fas fa-angle-up'" :icon-control-down="'fas fa-angle-down'" />
+            </li>
+          </template>
+        </dropdown>
+      </form>
+      <div class="text-right">
+        <button id="closeButton" class="btn btn-default" @click="closeModal">
+          Close
+        </button>
+        <button id="submitButton" class="btn btn-primary" type="button"
+                @click="addSchedule">
+          Submit
+        </button>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
     import { Bus } from './event-bus'
     import axios from 'axios'
     import moment from 'moment';
+    import _ from 'lodash';
 
     export default {
         data() {
@@ -123,12 +141,12 @@
                     featureToggles: this.selectedToggles,
                     environments: this.selectedEnvironments,
                     scheduleDate: combinedScheduledDateTime
-                }).then((response) => {
+                }).then(() => {
                     this.cleanup();
                     this.closeModal();
                 }).catch(e => {
                     window.alert(e);
-                }).finally(e => {
+                }).finally(() => {
                     Bus.$emit('unblock-ui');
                 });
             },

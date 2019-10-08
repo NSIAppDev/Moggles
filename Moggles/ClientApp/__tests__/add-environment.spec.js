@@ -1,6 +1,6 @@
-﻿import { shallow, mount } from '@vue/test-utils'
+﻿import { mount } from '@vue/test-utils'
 import AddEnv from '../AddEnvironment'
-import { alert } from 'vue-strap'
+
 
 describe('AddEnvironment.vue', () => {
     test('is a Vue instance', () => {

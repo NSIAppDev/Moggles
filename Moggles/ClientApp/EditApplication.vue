@@ -1,28 +1,37 @@
 <template>
-    <div>
-		<div class="form-horizontal">
-			<div class="row">
-				<div class="col-sm-12">
-					<div v-for="error in editAppErrors" :key="error" class="text-danger margin-left-15">{{error}}</div>
-				</div>
-				<div class="form-group">
-					<label class="col-sm-4 control-label" for="appName">Application name:</label>
-					<div class="col-sm-7">
-						<input type="text" class="form-control" name="appName" v-model="appName">
-					</div>
-				</div>
-				<div class="clearfix">
-					<div class="col-sm-6">
-						<button type="button" class="btn btn-danger" @click="showDeleteConfirmationMessage">Delete</button>
-					</div>
-					<div class="col-sm-6 text-right">
-						<button type="button" class="btn btn-default" @click="cancel">Cancel</button>
-						<button type="button" class="btn btn-primary" @click="updateApp">Save</button>
-					</div>
-				</div>
-			</div>
-		</div>
+  <div>
+    <div class="form-horizontal">
+      <div class="row">
+        <div class="col-sm-12">
+          <div v-for="error in editAppErrors" :key="error" class="text-danger margin-left-15">
+            {{ error }}
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-4 control-label" for="appName">Application name:</label>
+          <div class="col-sm-7">
+            <input v-model="appName" type="text" class="form-control"
+                   name="appName">
+          </div>
+        </div>
+        <div class="clearfix">
+          <div class="col-sm-6">
+            <button type="button" class="btn btn-danger" @click="showDeleteConfirmationMessage">
+              Delete
+            </button>
+          </div>
+          <div class="col-sm-6 text-right">
+            <button type="button" class="btn btn-default" @click="cancel">
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" @click="updateApp">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -51,7 +60,7 @@
                 if (this.stringIsNullOrEmpty(this.appName)) {
                     this.editAppErrors.push("Application name cannot be empty")
                     return;
-                };
+                }
 
                 let appUpdateModel = {
                     id: this.selectedApp.id,
@@ -59,7 +68,7 @@
                 }
 
                 axios.put('/api/applications/update', appUpdateModel)
-                    .then((result) => {
+                    .then(() => {
                         this.$emit('close-app-edit-modal');
                         Bus.$emit("new-app-added");
                     }).catch(e => {
