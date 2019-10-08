@@ -7,10 +7,4 @@ describe('AddEnvironment.vue', () => {
         const wrapper = mount(AddEnv)
         expect(wrapper.isVueInstance()).toBeTruthy()
     })
-
-    test('matches snapshot', () => {
-        const wrapper = mount(AddEnv)
-        expect(wrapper.vm.$el).toMatchSnapshot()
-    })
-
 })
