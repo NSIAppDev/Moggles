@@ -3,6 +3,7 @@ using NSTestFramework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using OpenQA.Selenium.Internal;
 using Browser = MogglesEndToEndTests.TestFramework.Browser;
@@ -164,6 +165,10 @@ namespace MogglesEndToEndTests.MogglesPages
 
         private readonly By _qaLastUpdatedDate =
             By.CssSelector("body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div> div > div:nth-child(5) > div > div.col-sm-6> div");
+
+        public IWebElement SelectedApplicationName =>
+            Browser.WebDriver.FindElement(
+                By.CssSelector("#app-sel  div  div  div:nth-child(1)"));
 
         public void Navigate()
         {
@@ -331,12 +336,18 @@ namespace MogglesEndToEndTests.MogglesPages
             return Utils.IsElementDisplayedOnScreen(_isPermanentFlag);
         }
 
-        public void ChangeApplicationName(string editedApplicationName)
+        public void ChangeApplicationName(string currentApplicationName,string editedApplicationName)
         {
+            var applicationName = GetSelectedApplicationName();
+            if (currentApplicationName != applicationName) return;
             EditApplicationIcon.Click();
+            
             EditApplicationNameInput.Clear();
+         
             EditApplicationNameInput.SendKeys(editedApplicationName);
+          
             SaveApplicationChangesButton.Click();
+          
         }
 
         public bool ApplicationIsSelected(string applicationName)
@@ -344,9 +355,16 @@ namespace MogglesEndToEndTests.MogglesPages
             return SelectedApplication.Text == applicationName;
         }
 
-        public void DeleteApplication()
+        public string GetSelectedApplicationName()
+        {
+            return SelectedApplicationName.Text;
+        }
+
+        public void DeleteApplication(string expectedApplicationName)
         {
             Thread.Sleep(1000);
+            var applicationName = GetSelectedApplicationName();
+            if (expectedApplicationName != applicationName) return;
             EditApplicationIcon.Click();
             DeleteApplicationButton.Click();
             AcceptDeleteApplicationButton.Click();
@@ -422,6 +440,7 @@ namespace MogglesEndToEndTests.MogglesPages
         public void CloseEditFeatureFlagsModal()
         {
             CancelEditFeatureFlagsModalButton.Click();
+            Thread.Sleep(1000);
         }
     }
 }
