@@ -134,11 +134,11 @@
               {{ error }}
             </div>
           </div>
-          <div class="form-group">
-            <label class="col-sm-4 control-label">Environment name</label>
-            <div class="col-sm-7">
-              <input v-model="environmentToEdit.newEnvName" type="text" class="form-control">
-            </div>
+          <div class="form-group">        
+              <label class="col-sm-4 control-label">Environment name</label>
+              <div class="col-sm-7">
+                  <input v-model="editedEnvironmentName" type="text" class="form-control">
+              </div>
           </div>
           <div class="clearfix">
             <div class="col-sm-6">
@@ -150,7 +150,7 @@
               <button type="button" class="btn btn-default" @click="cancelEditEnvName">
                 Cancel
               </button>
-              <button type="button" class="btn btn-primary" @click="saveEnvironment">
+              <button type="button" class="btn btn-primary" @click="saveEnvironment" :disabled=!enableEditEnvironmentSave>
                 Save
               </button>
             </div>
@@ -205,13 +205,17 @@
 				refreshAlertVisible: false,
 				isCacheRefreshEnabled: false,
                 editFeatureToggleErrors: [],
-                editEnvErrors: []
+                editEnvErrors: [],
+                editedEnvironmentName:""
 			}
 		},
 		computed: {
 			showRefreshAlert() {
 				return this.environmentsToRefresh.length > 0 ? this.refreshAlertVisible : false;
-			}
+            },
+            enableEditEnvironmentSave() {
+                return this.environmentToEdit.initialEnvName !== this.editedEnvironmentName;
+            }
 		},
 		created() {
 			axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
@@ -237,7 +241,7 @@
         methods: {
             saveEnvironment() {
                 this.editEnvErrors = []
-                if (this.stringIsNullOrEmpty(this.environmentToEdit.newEnvName)) {
+                if (this.stringIsNullOrEmpty(this.editedEnvironmentName)) {
                     this.editEnvErrors.push("Environment name cannot be empty")
                     return;
                 }
@@ -245,7 +249,7 @@
                 let envUpdateModel = {
                     applicationId: this.selectedApp.id,
                     initialEnvName: this.environmentToEdit.initialEnvName,
-                    newEnvName: this.environmentToEdit.newEnvName
+                    newEnvName: this.editedEnvironmentName
                 }
 
                 axios.put('/api/FeatureToggles/updateenvironment', envUpdateModel)
@@ -384,10 +388,10 @@
             },
             editEnvName(column) {      
                 this.environmentToEdit = {}
-                var environmentFromList = this.environmentsList.find(element => element == column.field)               
-                this.environmentToEdit.newEnvName = environmentFromList
+                var environmentFromList = this.environmentsList.find(element => element == column.field)
                 this.environmentToEdit.initialEnvName = environmentFromList
-                this.showEditEnvironmentModal = true
+                this.editedEnvironmentName = environmentFromList
+                this.showEditEnvironmentModal = true               
             },
             confirmDeleteEnvironment() {
                 this.showDeleteEnvironmentConfirmation = true
