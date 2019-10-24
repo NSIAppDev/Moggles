@@ -25,7 +25,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task EnvironmentIsBeingModified()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", "DEV", false, "username");
             await _appRepository.AddAsync(app);
 
             var controller = new FeatureTogglesController(_appRepository);
@@ -51,7 +51,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task WhenNewInvironmentName_MatchesAnExistingEnvrionment_TheChangeIsRejected()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", "DEV", false, "username");
             await _appRepository.AddAsync(app);
 
             var controller = new FeatureTogglesController(_appRepository);
@@ -76,7 +76,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task WhenEnvironmentIsModifiedWithInvalidID_ThrowsInvalidOperationException()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", "DEV", false, "username");
             await _appRepository.AddAsync(app);
 
             var controller = new FeatureTogglesController(_appRepository);

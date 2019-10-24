@@ -24,7 +24,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task ANewEnvironmentIsBeingCreatedWithProperInformation()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", "DEV", false, "username");
             await _appRepository.AddAsync(app);
             var createdEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "QA", DefaultToggleValue = true, SortOrder = 99 };
             var controller = new FeatureTogglesController(_appRepository);
@@ -60,7 +60,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task ReturnBadRequestResult_WhenEnvironmentAlreadyExists()
         {
             //arrange
-            var app = Application.Create("tst", "dev", false);
+            var app = Application.Create("tst", "dev", false, "username");
             await _appRepository.AddAsync(app);
 
             var controller = new FeatureTogglesController(_appRepository);
@@ -76,9 +76,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task EveryExistingFeatureToggle_IsMarkedAs_Off_ForTheNewEnvironment()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
-            app.AddFeatureToggle("t1", string.Empty);
-            app.AddFeatureToggle("t2", string.Empty);
+            var app = Application.Create("TestApp", "DEV", false, "username");
+            app.AddFeatureToggle("t1", string.Empty, "username");
+            app.AddFeatureToggle("t2", string.Empty, "username");
             await _appRepository.AddAsync(app);
 
             var newEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "QA" };
@@ -99,10 +99,10 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task EveryExistingFeatureToggle_IsMarkedAs_On_ForTheNewEnvironment_WhenTheDefaultValueForTheToggleIsTrue()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", "DEV", false, "username");
             var newEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "QA", DefaultToggleValue = true };
-            app.AddFeatureToggle("t1", string.Empty);
-            app.AddFeatureToggle("t2", string.Empty);
+            app.AddFeatureToggle("t1", string.Empty, "username");
+            app.AddFeatureToggle("t2", string.Empty, "username");
 
             await _appRepository.AddAsync(app);
             var controller = new FeatureTogglesController(_appRepository);

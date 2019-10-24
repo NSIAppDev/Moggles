@@ -25,10 +25,10 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task EnvironmentIsDeleted_FeatureToggleStatusForThatEnvironmentIsDeletedForAllToggles()
         {
             //arrange
-            var app = Application.Create("TestApp", "TestEnv", false);
-            app.AddFeatureToggle("t1", "");
-            app.AddFeatureToggle("t2", "");
-            app.AddFeatureToggle("t3", "");
+            var app = Application.Create("TestApp", "TestEnv", false, "username");
+            app.AddFeatureToggle("t1", "", "username");
+            app.AddFeatureToggle("t2", "", "username");
+            app.AddFeatureToggle("t3", "", "username");
             await _appRepository.AddAsync(app);
 
             var controller = new FeatureTogglesController(_appRepository);
@@ -53,10 +53,10 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task EnvironmentIsDeleted_FeatureTogglesAreNotDeleted()
         {
             //arrange
-            var app = Application.Create("TestApp", "TestEnv", false);
-            app.AddFeatureToggle("t1", "");
-            app.AddFeatureToggle("t2", "");
-            app.AddFeatureToggle("t3", "");
+            var app = Application.Create("TestApp", "TestEnv", false, "username");
+            app.AddFeatureToggle("t1", "", "username");
+            app.AddFeatureToggle("t2", "", "username");
+            app.AddFeatureToggle("t3", "", "username");
             await _appRepository.AddAsync(app);
 
             var controller = new FeatureTogglesController(_appRepository);
@@ -81,7 +81,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task WhenEnvironmentIsDeletedWithInvalidID_ThrowsInvalidOperationException()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", "DEV", false, "username");
             await _appRepository.AddAsync(app);
 
             var controller = new FeatureTogglesController(_appRepository);

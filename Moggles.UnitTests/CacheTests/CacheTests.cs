@@ -52,7 +52,7 @@ namespace Moggles.UnitTests.CacheTests
         public async Task RefreshCache_ThrowsException_WhenProvidedInvalidAppId()
         {
             //arrange
-            var app = Application.Create("tst", "dev", false);
+            var app = Application.Create("tst", "dev", false, "username");
             await _appRepository.AddAsync(app);
             var controller = new CacheRefreshController(_appRepository, new Mock<IConfiguration>().Object, _mockServiceProvider.Object);
 
@@ -67,7 +67,7 @@ namespace Moggles.UnitTests.CacheTests
         public async Task RefreshCacheEventIsPublished_WithTheCorrectAppNameAndEnvironmentInformation()
         {
             //arrange
-            var app = Application.Create("tst", "dev", false);
+            var app = Application.Create("tst", "dev", false, "username");
             await _appRepository.AddAsync(app);
            
             var controller = new CacheRefreshController(_appRepository, new Mock<IConfiguration>().Object, _mockServiceProvider.Object);

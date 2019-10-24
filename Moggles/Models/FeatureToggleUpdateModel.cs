@@ -20,5 +20,6 @@ namespace Moggles.Models
     {
         public bool Enabled { get; set; }
         public string Environment { get; set; }
+        public string UpdatedByUser { get; set; }
     }
 }

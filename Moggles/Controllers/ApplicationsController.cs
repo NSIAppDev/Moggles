@@ -29,6 +29,8 @@ namespace Moggles.Controllers
         [Route("add")]
         public async Task<IActionResult> AddApplication([FromBody] AddApplicationModel applicationModel)
         {
+            var username = User.Identity.Name;
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -38,7 +40,7 @@ namespace Moggles.Controllers
             if (app != null)
                 return BadRequest("Application with same name already exists!");
 
-            var application = Application.Create(applicationModel.ApplicationName, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue);
+            var application = Application.Create(applicationModel.ApplicationName, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue, username);
 
             await _applicationsRepository.AddAsync(application);
 

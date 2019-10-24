@@ -38,8 +38,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task ReturnBadRequestResult_WhenFeatureAlreadyExists()
         {
             //arrange
-            var app = Application.Create("bcc", "dev", false);
-            app.AddFeatureToggle("TestToggle", string.Empty);
+            var app = Application.Create("bcc", "dev", false, "username");
+            app.AddFeatureToggle("TestToggle", string.Empty, "username");
 
             var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
 
@@ -73,7 +73,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task FeatureToggleIsCreated()
         {
             //arrange
-            var app = Application.Create("tst", "dev", false);
+            var app = Application.Create("tst", "dev", false, "username");
             await _appRepository.AddAsync(app);
             var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
 
@@ -93,8 +93,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task FeatureToggleStatus_IsCreated_ForEveryEnvironment()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            var app = Application.Create("TestApp", "DEV", false, "username");
+            app.AddDeployEnvironment("QA", false, "username");
 
             var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
 

@@ -21,25 +21,25 @@ namespace Moggles.Domain
                 CreatedDate = DateTime.UtcNow,
                 IsPermanent = isPermanent,
                 Notes = notes,
-                ToggleName = name
+                ToggleName = name,
             };
         }
 
-        public static FeatureToggle Create(string name, string notes, bool isPermanent, IEnumerable<DeployEnvironment> deployEnvironments)
+        public static FeatureToggle Create(string name, string notes, bool isPermanent, IEnumerable<DeployEnvironment> deployEnvironments, string username)
         {
             var newToggle = Create(name, notes, isPermanent);
 
             foreach (var env in deployEnvironments)
             {
-                newToggle.AddStatus(env.DefaultToggleValue, env.EnvName);
+                newToggle.AddStatus(env.DefaultToggleValue, env.EnvName, username);
             }
 
             return newToggle;
         }
 
-        public void AddStatus(bool enabled, string envName)
+        public void AddStatus(bool enabled, string envName, string username)
         {
-            FeatureToggleStatuses.Add(FeatureToggleStatus.Create(envName, enabled));
+            FeatureToggleStatuses.Add(FeatureToggleStatus.Create(envName, enabled, username));
           
         }
 
@@ -73,10 +73,10 @@ namespace Moggles.Domain
             ToggleName = newName;
         }
 
-        public void Toggle(string environment, bool isEnabled)
+        public void Toggle(string environment, bool isEnabled, string username)
         {
             var status = FeatureToggleStatuses.FirstOrDefault(s => s.EnvironmentName == environment);
-            status.ToggleStatus(isEnabled);
+            status.ToggleStatus(isEnabled, username);
         }
 
         public void MarkAsDeployed(string envName)
@@ -87,6 +87,13 @@ namespace Moggles.Domain
         public void MarkAsNotDeployed(string envName)
         {
             FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName == envName)?.MarkAsNotDeployed();
+
+        }
+
+        public void ChangeLastUpdateUsername(string envName, string username)
+        {
+            var featureToggleStatus = FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName == envName);
+            featureToggleStatus.ChangeLastUpdateUser(username);
         }
     }
 }

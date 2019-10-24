@@ -81,12 +81,15 @@
                 </div>
               </div>
               <div class="col-sm-6 margin-top-8">
-                <div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null">
-                  <strong>Deployed:</strong> {{ rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('MM/DD/YYYY hh:mm') }}
-                </div>
-                <div v-if="isEnviroment(col.field)">
-                  <strong>Last Updated:</strong> {{ rowToEdit[col.field + '_LastUpdated'] | moment('MM/DD/YYYY hh:mm') }}
-                </div>
+                  <div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null">
+                      <strong>Deployed:</strong> {{ rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('MM/DD/YYYY hh:mm') }}
+                  </div>
+                  <div v-if="isEnviroment(col.field)">
+                      <strong>Last Updated:</strong> {{ rowToEdit[col.field + '_LastUpdated'] | moment('MM/DD/YYYY hh:mm') }}
+                  </div>
+                  <div v-if="isEnviroment(col.field)">
+                      <strong>Updated by:</strong> {{ rowToEdit[col.field + '_UpdatedByUser']   }}
+                  </div>
               </div>
             </div>
             <div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
@@ -458,6 +461,7 @@
                             rowModel[env + '_IsDeployed'] = envStatus ? envStatus.isDeployed : false;
                             rowModel[env + '_FirstTimeDeployDate'] = envStatus ? envStatus.firstTimeDeployDate : "";
                             rowModel[env + '_LastUpdated'] = envStatus ? envStatus.lastUpdated : "";
+                            rowModel[env + '_UpdatedByUser'] = envStatus ? envStatus.updatedByUser : "wtf";
                         });
 						return rowModel;
 					});

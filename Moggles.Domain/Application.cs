@@ -17,7 +17,7 @@ namespace Moggles.Domain
             AppName = newName;
         }
 
-        public void AddDeployEnvironment(string name, bool defaultToggleValue, int sortOrder = 1)
+        public void AddDeployEnvironment(string name, bool defaultToggleValue, string username, int sortOrder = 1)
         {
             if (DeployEnvExists(name))
                 throw new BusinessRuleValidationException("Environment with the same name already exists for this application!");
@@ -26,7 +26,7 @@ namespace Moggles.Domain
 
             foreach (var ft in FeatureToggles)
             {
-                ft.AddStatus(defaultToggleValue, name);
+                ft.AddStatus(defaultToggleValue, name, username);
             }
         }
 
@@ -35,25 +35,25 @@ namespace Moggles.Domain
             return DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, name, StringComparison.OrdinalIgnoreCase) == 0);
         }
 
-        public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment)
+        public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment, string username)
         {
             var app = new Application
             {
                 Id = Guid.NewGuid(),
                 AppName = appName
             };
-            app.AddDeployEnvironment(defaultEnvironmentName, defaultToggleValueForEnvironment);
+            app.AddDeployEnvironment(defaultEnvironmentName, defaultToggleValueForEnvironment, username);
             return app;
         }
 
-        public void AddFeatureToggle(string toggleName, string notes, bool isPermanent = false)
+        public void AddFeatureToggle(string toggleName, string notes, string username, bool isPermanent = false)
         {
             if (FeatureToggles.Exists(f => string.Compare(f.ToggleName, toggleName, StringComparison.OrdinalIgnoreCase) == 0))
             {
                 throw new BusinessRuleValidationException("Feature toggle with the same name already exists for this application!");
             }
 
-            var ft = FeatureToggle.Create(toggleName, notes, isPermanent, DeploymentEnvironments);
+            var ft = FeatureToggle.Create(toggleName, notes, isPermanent, DeploymentEnvironments, username);
             FeatureToggles.Add(ft);
         }
 
@@ -63,7 +63,8 @@ namespace Moggles.Domain
             return toggle.FeatureToggleStatuses.Where(fts => fts.EnvironmentName == environment).Select(x => new FeatureToggleStatusData
             {
                 EnvironmentName = x.EnvironmentName,
-                Enabled = x.Enabled
+                Enabled = x.Enabled,
+                UpdatedBy = x.UpdatedbyUser
             }).FirstOrDefault();
         }
 
@@ -157,20 +158,23 @@ namespace Moggles.Domain
             return toggle.FeatureToggleStatuses.Select(x => new FeatureToggleStatusData
             {
                 EnvironmentName = x.EnvironmentName,
-                Enabled = x.Enabled
+                Enabled = x.Enabled,
+                UpdatedBy = x.UpdatedbyUser
             }).ToList();
         }
 
-        public void SetToggle(Guid toggleId, string environment, bool isEnabled)
+        public void SetToggle(Guid toggleId, string environment, bool isEnabled, string username)
         {
             var toggle = GuardToggleExists(toggleId);
-            toggle.Toggle(environment, isEnabled);
+            toggle.Toggle(environment, isEnabled, username);
+            //toggle.ChangeLastUpdateUsername(environment, username);
         }
 
-        public void SetToggle(string name, string environment, bool isEnabled)
+        public void SetToggle(string name, string environment, bool isEnabled, string username)
         {
             var toggle = GuardToggleExists(name);
-            toggle.Toggle(environment, isEnabled);
+            toggle.Toggle(environment, isEnabled, username);
+            //toggle.ChangeLastUpdateUsername(environment, username);
         }
 
         private FeatureToggle GuardToggleExists(Guid toggleId)
