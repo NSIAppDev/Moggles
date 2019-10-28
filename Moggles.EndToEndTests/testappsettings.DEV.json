@@ -1,0 +1,6 @@
+﻿{
+  "AppSettings": {
+    "BaseUrl": "http://SmokeTest_MogglesAdmin:K7fgDAXv4HdX@moggles.northernsafety-dev.com/",
+    "MogglesConnection": "Data Source=FNY-SQL-DEVQA;Initial Catalog=SAPLookupServiceDev;Integrated Security=True;MultipleActiveResultSets=True;"
+  }
+}
