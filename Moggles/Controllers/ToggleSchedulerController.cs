@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Moggles.Domain;
 using Moggles.Models;
 using System;
@@ -12,11 +13,13 @@ namespace Moggles.Controllers
     {
         private readonly IRepository<ToggleSchedule> _toggleScheduleRepository;
         private readonly IRepository<Application> _applicationRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ToggleSchedulerController(IRepository<ToggleSchedule> toggleScheduleRepository, IRepository<Application> applicationRepository)
+        public ToggleSchedulerController(IRepository<ToggleSchedule> toggleScheduleRepository, IRepository<Application> applicationRepository, IHttpContextAccessor httpContextAccessor)
         {
             _applicationRepository = applicationRepository;
             _toggleScheduleRepository = toggleScheduleRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost]
@@ -24,7 +27,7 @@ namespace Moggles.Controllers
         public async Task<IActionResult> ScheduleToggles([FromBody] ScheduleTogglesModel model)
         {
 
-            var user = User.Identity.Name;
+            var username = _httpContextAccessor.HttpContext.User.Identity.Name;
 
             if (!ModelState.IsValid)
             {
@@ -37,7 +40,7 @@ namespace Moggles.Controllers
 
             foreach (var toggle in model.FeatureToggles)
             {
-                var toggleSchedule = ToggleSchedule.Create(app.AppName, toggle, model.Environments, model.State, model.ScheduleDate.ToUniversalTime(), user);
+                var toggleSchedule = ToggleSchedule.Create(app.AppName, toggle, model.Environments, model.State, model.ScheduleDate.ToUniversalTime(), username);
                 await _toggleScheduleRepository.AddAsync(toggleSchedule);
             }
 

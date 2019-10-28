@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
@@ -15,11 +16,13 @@ namespace Moggles.UnitTests.FeatureTogglesTests
     public class FeatureToggleQueriesTests
     {
         private IRepository<Application> _appRepository;
+        private IHttpContextAccessor _httpContextAccessor;
 
         [TestInitialize]
         public void BeforeTest()
         {
             _appRepository = new InMemoryApplicationRepository();
+            
         }
 
         [TestMethod]
@@ -32,7 +35,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
             var result = await controller.GetToggles(app.Id) as OkObjectResult;
@@ -60,7 +63,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //TODO: mark the toggle as deployed on these environments
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
             var result = await controller.GetToggles(app.Id) as OkObjectResult;
@@ -102,7 +105,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             await _appRepository.AddAsync(app);
 
             //act
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
             var results = await controller.GetEnvironments(app.Id) as OkObjectResult;
 
             //assert
@@ -121,7 +124,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var expectedEnvNames = new List<string> { "DEV", "QA", "TRN" };
 
             await _appRepository.AddAsync(app);
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
             var results = await controller.GetEnvironments(app.Id) as OkObjectResult;
@@ -143,7 +146,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
             var result = await controller.GetApplicationFeatureToggles(app.AppName, "DEV") as OkObjectResult;
@@ -167,7 +170,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             app.SetToggle(toggle.Id, "QA", true, "username");
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
             var result = await controller.GetApplicationFeatureToggleValue(app.AppName, "QA", "t1") as OkObjectResult;

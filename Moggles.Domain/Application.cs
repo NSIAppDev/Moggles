@@ -167,14 +167,12 @@ namespace Moggles.Domain
         {
             var toggle = GuardToggleExists(toggleId);
             toggle.Toggle(environment, isEnabled, username);
-            //toggle.ChangeLastUpdateUsername(environment, username);
         }
 
         public void SetToggle(string name, string environment, bool isEnabled, string username)
         {
             var toggle = GuardToggleExists(name);
             toggle.Toggle(environment, isEnabled, username);
-            //toggle.ChangeLastUpdateUsername(environment, username);
         }
 
         private FeatureToggle GuardToggleExists(Guid toggleId)

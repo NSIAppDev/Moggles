@@ -1,5 +1,6 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moggles.Domain;
 using Moggles.Models;
@@ -16,11 +17,13 @@ namespace Moggles.Controllers
     {
         private readonly TelemetryClient _telemetry = new TelemetryClient();
         private readonly IRepository<Application> _applicationsRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
 
-        public FeatureTogglesController(IRepository<Application> applicationsRepository)
+        public FeatureTogglesController(IRepository<Application> applicationsRepository, IHttpContextAccessor httpContextAccessor)
         {
             _applicationsRepository = applicationsRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
@@ -71,8 +74,9 @@ namespace Moggles.Controllers
         {
             var app = await _applicationsRepository.FindByIdAsync(model.ApplicationId);
             var toggleData = app.GetFeatureToggleBasicData(model.Id);
-            
-            var updatedBy = User.Identity.Name;
+
+            var username = _httpContextAccessor.HttpContext.User.Identity.Name;
+
 
             if (model.IsPermanent != toggleData.IsPermanent)
             {
@@ -111,7 +115,7 @@ namespace Moggles.Controllers
             }
             foreach (var newStatus in model.Statuses)
             {
-                app.SetToggle(model.Id, newStatus.Environment, newStatus.Enabled, updatedBy);
+                app.SetToggle(model.Id, newStatus.Environment, newStatus.Enabled, username);
             }
 
 
@@ -123,7 +127,7 @@ namespace Moggles.Controllers
         [Route("addFeatureToggle")]
         public async Task<IActionResult> AddFeatureToggle([FromBody]AddFeatureToggleModel featureToggleModel)
         {
-            var username = User.Identity.Name;
+            var username = _httpContextAccessor.HttpContext.User.Identity.Name;
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -160,7 +164,7 @@ namespace Moggles.Controllers
         [Route("AddEnvironment")]
         public async Task<IActionResult> AddEnvironment([FromBody] AddEnvironmentModel environmentModel)
         {
-            var username = User.Identity.Name;
+            var username = _httpContextAccessor.HttpContext.User.Identity.Name;
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -233,8 +237,6 @@ namespace Moggles.Controllers
         {
             _telemetry.TrackEvent("OnGetAllToggles");
 
-            var username = User.Identity.Name;
-
             var app = await GetApplicationByName(applicationName);
             if (app != null && app.DeploymentEnvironments.Exists(env => string.Compare(env.EnvName, environment, StringComparison.OrdinalIgnoreCase) == 0)) { 
                 var featureToggles = app.FeatureToggles
@@ -284,7 +286,7 @@ namespace Moggles.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CreateEnvironment([FromBody]AddEnvironmentPublicApiModel model)
         {
-            var username = User.Identity.Name;
+            var username = _httpContextAccessor.HttpContext.User.Identity.Name;
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
