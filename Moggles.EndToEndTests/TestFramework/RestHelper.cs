@@ -14,7 +14,7 @@ namespace Moggles.EndToEndTests.TestFramework
 
             var credential = new CredentialCache
             {
-                {new Uri(Constants.BaseUrl), "NTLM", new NetworkCredential("SAFETY\\rtoadere", "RAMTOASafety2")}
+                {new Uri(Constants.BaseUrl), "NTLM", new NetworkCredential("", "")}
             };
 
             client.Authenticator = new NtlmAuthenticator(credential);
