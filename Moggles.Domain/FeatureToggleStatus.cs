@@ -46,7 +46,10 @@ namespace Moggles.Domain
 
         public void ChangeLastUpdateUser(string username)
         {
+            if(username != UpdatedbyUser)
+            {
                 UpdatedbyUser = username;
+            }
         }
 
         public static FeatureToggleStatus Create(string envName, bool enabled, string username)
