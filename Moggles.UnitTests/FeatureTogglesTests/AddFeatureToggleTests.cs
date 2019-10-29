@@ -116,5 +116,28 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             result.Should().BeOfType<OkResult>();
             (await _appRepository.FindByIdAsync(app.Id)).FeatureToggles.FirstOrDefault().FeatureToggleStatuses.Count.Should().Be(2);
         }
+
+        [TestMethod]
+        public async Task FeatureToggleStatus_IsCreated_WithLoggedUsername()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "DEV", false, "username");
+            app.AddDeployEnvironment("QA", false, "username");
+
+            var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
+
+            await _appRepository.AddAsync(app);
+
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
+
+            //act
+            var result = await controller.AddFeatureToggle(newFeatureToggle);
+
+            //assert
+            result.Should().BeOfType<OkResult>();
+            (await _appRepository.FindByIdAsync(app.Id)).FeatureToggles.FirstOrDefault().FeatureToggleStatuses.Count.Should().Be(2);
+            (await _appRepository.FindByIdAsync(app.Id)).FeatureToggles.FirstOrDefault().FeatureToggleStatuses.First().UpdatedbyUser.Should().Be("bla");
+
+        }
     }
 }

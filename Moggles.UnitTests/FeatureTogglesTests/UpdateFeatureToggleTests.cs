@@ -120,5 +120,47 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             statuses.Count.Should().Be(2);
             statuses.All(s => s.Enabled).Should().BeTrue();
         }
+
+        [TestMethod]
+        public async Task FeatureToggleUpdate_ByDifferentUser_UsernameChanged()
+        {
+            //arrange
+            var app = Application.Create("test", "DEV", false, "username");
+            app.AddDeployEnvironment("QA", false, "username");
+            app.AddFeatureToggle("t1", "", "username");
+            await _appRepository.AddAsync(app);
+
+            var toggle = app.FeatureToggles.Single();
+            var updatedValue = new FeatureToggleUpdateModel
+            {
+                ApplicationId = app.Id,
+                Id = toggle.Id,
+                FeatureToggleName = "t1",
+                Statuses = new List<FeatureToggleStatusUpdateModel>
+                {
+                    new FeatureToggleStatusUpdateModel
+                    {
+                        Enabled = true,
+                        Environment = "DEV",
+                    },
+                    new FeatureToggleStatusUpdateModel
+                    {
+                        Enabled = true,
+                        Environment = "QA",
+                    }
+                }
+            };
+
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
+
+            //act
+            await controller.Update(updatedValue);
+
+            //assert
+            var savedApp = await _appRepository.FindByIdAsync(app.Id);
+            var statuses = savedApp.GetFeatureToggleStatuses(toggle.Id);
+            statuses.Count.Should().Be(2);
+            statuses.All(s => s.UpdatedBy == "bla").Should().BeTrue();
+        } 
     }
 }
