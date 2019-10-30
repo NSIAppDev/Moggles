@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.TestFramework;
 using MogglesEndToEndTests.TestFramework;
+using NSTestFrameworkDotNetCoreUI.Helpers;
 
 namespace MogglesEndToEndTests.SmokeTests
 {
@@ -15,7 +16,7 @@ namespace MogglesEndToEndTests.SmokeTests
         public void EditAndDeleteApplication_TheApplicationIsUpdatedAndAfterThatDeleted()
         {
             //act
-            Pages.FeatureTogglesPage.Navigate();
+            Browser.Goto(Constants.BaseUrl);
             Pages.FeatureTogglesPage.AddNewApplication(Constants.NewApplicationName, Constants.FirstEnvName);
             Pages.FeatureTogglesPage.SelectASpecificApplication(Constants.NewApplicationName);
             Pages.FeatureTogglesPage.ChangeApplicationName(Constants.NewApplicationName,Constants.EditedApplicationName);

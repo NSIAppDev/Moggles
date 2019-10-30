@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.TestFramework;
 using MogglesEndToEndTests.TestFramework;
+using NSTestFrameworkDotNetCoreUI.Helpers;
 
 namespace MogglesEndToEndTests.SmokeTests
 {
@@ -15,7 +16,7 @@ namespace MogglesEndToEndTests.SmokeTests
         public void DeleteAFeatureToggle_TheFeatureToggleIsNoLongerVisible()
         {
             //act
-            Pages.FeatureTogglesPage.Navigate();
+            Browser.Goto(Constants.BaseUrl);
             Pages.FeatureTogglesPage.SelectASpecificApplication(Constants.SmokeTestsApplication);
             Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
             Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName);

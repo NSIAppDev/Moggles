@@ -125,10 +125,7 @@ namespace MogglesEndToEndTests.MogglesPages
             Browser.WebDriver.FindElement(By.CssSelector(
                 "body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div> button.btn.btn-default"));
 
-        private readonly By _rowSelector = By.CssSelector(".vgt-responsive>table>tbody>tr");
-
-        private readonly By _headerSelector =
-            By.CssSelector("body > div > div> div > div > div > div> div > div> table > thead > tr:nth-child(1)");
+        private readonly By _rowSelector = By.CssSelector(".vgt-responsive> table > tbody> tr");
 
         private readonly By _statusesDropdown =
             By.CssSelector(
@@ -168,25 +165,6 @@ namespace MogglesEndToEndTests.MogglesPages
         public IWebElement SelectedApplicationName =>
             Browser.WebDriver.FindElement(
                 By.CssSelector("#app-sel  div  div  div:nth-child(1)"));
-
-        public void Navigate()
-        {
-            Browser.Goto(Constants.BaseUrl);
-
-            if (Browser.WebDriver.Title.Contains("Unauthorized"))
-            {
-                System.Diagnostics.Trace.WriteLine(
-                    $"Authorization issue: {Browser.WebDriver.Url} - {Browser.WebDriver.Title}");
-                throw new Exception();
-            }
-
-            IWait<IWebDriver> wait = new WebDriverWait(Browser.WebDriver, TimeSpan.FromSeconds(60));
-            wait.Until(
-                d => ((IJavaScriptExecutor) Browser.WebDriver).ExecuteScript("return document.readyState")
-                    .Equals("complete"));
-
-            Thread.Sleep(5000);
-        }
 
         public void SelectASpecificApplication(string applicationName)
         {
@@ -256,7 +234,7 @@ namespace MogglesEndToEndTests.MogglesPages
         public bool NewAddedFeatureToggleIsVisible(string newFeatureToggleName)
         {
             Thread.Sleep(1000);
-            var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
+            var rows = Utils.GetAllRowsFromGrid(FeatureTogglesGrid, _rowSelector);
             foreach (var row in rows)
             {
                 var cells = row.FindElements(By.TagName("td"));
@@ -269,7 +247,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public bool CreationDateIsCorrectlyDisplayed(string newFeatureToggleName)
         {
-            var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
+            var rows = Utils.GetAllRowsFromGrid(FeatureTogglesGrid, _rowSelector);
             foreach (var row in rows)
             {
                 var cells = row.FindElements(By.TagName("td"));
@@ -288,12 +266,12 @@ namespace MogglesEndToEndTests.MogglesPages
         public void DeleteFeatureToggle(string newFeatureToggleName)
         {
             Thread.Sleep(1000);
-            var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
-            for (var i = 0; i <= rows.Count - 1; i++)
+            var rows = Utils.GetAllRowsFromGrid(FeatureTogglesGrid, _rowSelector);
+            for (var i = 0; i <= rows.Count-1; i++)
             {
                 var cells = rows[i].FindElements(By.TagName("td"));
                 if (!cells[1].Text.Contains(newFeatureToggleName)) continue;
-                FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_deleteFeatureToggleIcon)
+                Utils.GetColumnSpecifiedByIndex(FeatureTogglesGrid, _rowSelector, i, 0).FindElement(_deleteFeatureToggleIcon)
                     .Click();
                 DeleteFeatureToggleButton.Click();
             }
@@ -302,13 +280,13 @@ namespace MogglesEndToEndTests.MogglesPages
         public void EditFeatureToggle(string newFeatureToggleName)
         {
             Thread.Sleep(1000);
-            var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
+            var rows = Utils.GetAllRowsFromGrid(FeatureTogglesGrid, _rowSelector);
             for (var i = 0; i <= rows.Count - 1; i++)
             {
                 var cells = rows[i].FindElements(By.TagName("td"));
                 if (cells[1].Text.Contains(newFeatureToggleName))
                 {
-                    FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_editFeatureToggleIcon)
+                    Utils.GetColumnSpecifiedByIndex(FeatureTogglesGrid, _rowSelector, i, 0).FindElement(_editFeatureToggleIcon)
                         .Click();
                 }
             }
@@ -386,7 +364,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void EditEnvironment(string environmentName)
         {
-            var element = FeatureTogglesGrid.GetHeaderSpecifiedByIndex(_headerSelector, 0, 3);
+            var element = Utils.GetHeaderSpecifiedByIndex(FeatureTogglesGrid,3);
             Thread.Sleep(1000);
             if (element.Text.Equals(environmentName))
                 {
@@ -404,7 +382,7 @@ namespace MogglesEndToEndTests.MogglesPages
         public bool EnvironmentNameExist(string envName)
         {
             Thread.Sleep(1000);
-            return FeatureTogglesGrid.GetHeaderSpecifiedByIndex(_headerSelector, 0, 3).Text.Equals(envName);
+            return Utils.GetHeaderSpecifiedByIndex(FeatureTogglesGrid,3).Text.Equals(envName);
         }
 
         public void DeleteEnvironment(string editedEnvName)
