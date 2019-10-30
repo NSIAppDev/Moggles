@@ -82,10 +82,10 @@
               </div>
               <div class="col-sm-6 margin-top-8">
                   <div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null">
-                      <strong>Deployed:</strong> {{ rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('MM/DD/YYYY hh:mm') }}
+                      <strong>Deployed:</strong> {{ rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('M/D/YY hh:mm:ss A') }}
                   </div>
                   <div v-if="isEnviroment(col.field)">
-                      <strong>Last Updated:</strong> {{ rowToEdit[col.field + '_LastUpdated'] | moment('MM/DD/YYYY hh:mm') }}
+                      <strong>Last Updated:</strong> {{ rowToEdit[col.field + '_LastUpdated'] | moment('M/D/YY hh:mm:ss A') }}
                   </div>
                   <div v-if="isEnviroment(col.field)">
                       <strong>Updated by:</strong> {{ rowToEdit[col.field + '_UpdatedByUser']   }}
