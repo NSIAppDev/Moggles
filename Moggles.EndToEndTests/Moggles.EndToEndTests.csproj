@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
 
     <IsPackable>false</IsPackable>
 
@@ -11,7 +11,6 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.9.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="1.0.19269.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
@@ -34,6 +33,20 @@
 
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="testappsettings.DEV.json">
+      <IsTransformFile>true</IsTransformFile>
+      <DependentUpon>testappsettings.json</DependentUpon>
+    </None>
+    <None Update="testappsettings.json">
+      <TransformOnBuild>true</TransformOnBuild>
+    </None>
+    <None Update="testappsettings.LIVE.json">
+      <IsTransformFile>true</IsTransformFile>
+      <DependentUpon>testappsettings.json</DependentUpon>
+    </None>
   </ItemGroup>
 
 </Project>
