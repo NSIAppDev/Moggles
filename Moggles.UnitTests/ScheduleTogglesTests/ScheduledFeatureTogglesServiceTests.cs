@@ -39,15 +39,15 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         public async Task FlipToggles_HavingSheduledTimeInThePast()
         {
             //arrange
-            var app = Application.Create("tst", "DEV", false, "username");
-            app.AddFeatureToggle("offToggle", null, "username");
-            app.AddFeatureToggle("onToggle", null, "username");
+            var app = Application.Create("tst", "DEV", false);
+            app.AddFeatureToggle("offToggle", null);
+            app.AddFeatureToggle("onToggle", null);
             app.SetToggle(app.FeatureToggles.Single(f => f.ToggleName == "offToggle").Id, "DEV", false, "username");
             app.SetToggle(app.FeatureToggles.Single(f => f.ToggleName == "onToggle").Id, "DEV", true, "username");
             await _appRepository.AddAsync(app);
 
-            var schedule = ToggleSchedule.Create("tst","offToggle", new[] { "DEV" }, true, _dateInThePast, "username");
-            var schedule2 = ToggleSchedule.Create("tst","onToggle", new[] { "DEV" }, false, _dateInThePast, "username");
+            var schedule = ToggleSchedule.Create("tst","offToggle", new[] { "DEV" }, true, _dateInThePast, "updatedBy");
+            var schedule2 = ToggleSchedule.Create("tst","onToggle", new[] { "DEV" }, false, _dateInThePast, "updatedBy");
             await _toggleSchedulesRepository.AddAsync(schedule);
             await _toggleSchedulesRepository.AddAsync(schedule2);
 
@@ -67,11 +67,11 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         public async Task OnceToggleIsSet_TheScheduleIsRemoved()
         {
             //arrange
-            var app = Application.Create("tst", "DEV", false, "username");
-            app.AddFeatureToggle("t1", null, "username");
+            var app = Application.Create("tst", "DEV", false);
+            app.AddFeatureToggle("t1", null);
             await _appRepository.AddAsync(app);
 
-            var schedule = ToggleSchedule.Create("tst", "t1", new[] { "DEV" }, true, _dateInThePast, "username");
+            var schedule = ToggleSchedule.Create("tst", "t1", new[] { "DEV" }, true, _dateInThePast, "updatedBy");
             await _toggleSchedulesRepository.AddAsync(schedule);
 
             //act
@@ -86,8 +86,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         public async Task WhenThereAreNoSchedulesDoNothing()
         {
             //arrange
-            var app = Application.Create("tst", "DEV", false, "username");
-            app.AddFeatureToggle("t1", null, "username");
+            var app = Application.Create("tst", "DEV", false);
+            app.AddFeatureToggle("t1", null);
             await _appRepository.AddAsync(app);
 
             //act
@@ -104,10 +104,10 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         public async Task IfFeatureToggleIsDeleted_BeforeScheduledDate_RemovesTheSchedule()
         {
             //arrange
-            var app = Application.Create("tst", "DEV", false, "username");
+            var app = Application.Create("tst", "DEV", false);
             await _appRepository.AddAsync(app);
 
-            var schedule = ToggleSchedule.Create("tst", "DeletedToggle", new[] { "DEV" }, true, _dateInThePast, "username");
+            var schedule = ToggleSchedule.Create("tst", "DeletedToggle", new[] { "DEV" }, true, _dateInThePast, "updatedBy");
             await _toggleSchedulesRepository.AddAsync(schedule);
 
             //act

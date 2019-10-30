@@ -26,9 +26,7 @@ namespace Moggles.Controllers
         [Route("")]
         public async Task<IActionResult> ScheduleToggles([FromBody] ScheduleTogglesModel model)
         {
-
-            var username = _httpContextAccessor.HttpContext.User.Identity.Name;
-
+            var updatedBy = _httpContextAccessor.HttpContext.User.Identity.Name;
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -40,7 +38,7 @@ namespace Moggles.Controllers
 
             foreach (var toggle in model.FeatureToggles)
             {
-                var toggleSchedule = ToggleSchedule.Create(app.AppName, toggle, model.Environments, model.State, model.ScheduleDate.ToUniversalTime(), username);
+                var toggleSchedule = ToggleSchedule.Create(app.AppName, toggle, model.Environments, model.State, model.ScheduleDate.ToUniversalTime(), updatedBy);
                 await _toggleScheduleRepository.AddAsync(toggleSchedule);
             }
 

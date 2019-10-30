@@ -17,7 +17,7 @@ namespace Moggles.Domain
 
         }
 
-        public static ToggleSchedule Create(string appName, string toggleName, IEnumerable<string> environments, bool stateToSet, DateTime schedule, string username)
+        public static ToggleSchedule Create(string appName, string toggleName, IEnumerable<string> environments, bool stateToSet, DateTime schedule, string updatedBy)
         {
             var ts = new ToggleSchedule
             {
@@ -26,7 +26,7 @@ namespace Moggles.Domain
                 ToggleName = toggleName,
                 ScheduledState = stateToSet,
                 ScheduledDate = schedule,
-                UpdatedBy = username
+                UpdatedBy = "Updated by scheduler on behalf of " + updatedBy
             };
             ts.Environments.AddRange(environments);
             return ts;

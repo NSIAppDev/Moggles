@@ -17,7 +17,7 @@ namespace Moggles.Domain
             AppName = newName;
         }
 
-        public void AddDeployEnvironment(string name, bool defaultToggleValue, string username, int sortOrder = 1)
+        public void AddDeployEnvironment(string name, bool defaultToggleValue,  int sortOrder = 1)
         {
             if (DeployEnvExists(name))
                 throw new BusinessRuleValidationException("Environment with the same name already exists for this application!");
@@ -26,7 +26,7 @@ namespace Moggles.Domain
 
             foreach (var ft in FeatureToggles)
             {
-                ft.AddStatus(defaultToggleValue, name, username);
+                ft.AddStatus(defaultToggleValue, name);
             }
         }
 
@@ -35,25 +35,25 @@ namespace Moggles.Domain
             return DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, name, StringComparison.OrdinalIgnoreCase) == 0);
         }
 
-        public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment, string username)
+        public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment)
         {
             var app = new Application
             {
                 Id = Guid.NewGuid(),
                 AppName = appName
             };
-            app.AddDeployEnvironment(defaultEnvironmentName, defaultToggleValueForEnvironment, username);
+            app.AddDeployEnvironment(defaultEnvironmentName, defaultToggleValueForEnvironment);
             return app;
         }
 
-        public void AddFeatureToggle(string toggleName, string notes, string username, bool isPermanent = false)
+        public void AddFeatureToggle(string toggleName, string notes, bool isPermanent = false)
         {
             if (FeatureToggles.Exists(f => string.Compare(f.ToggleName, toggleName, StringComparison.OrdinalIgnoreCase) == 0))
             {
                 throw new BusinessRuleValidationException("Feature toggle with the same name already exists for this application!");
             }
 
-            var ft = FeatureToggle.Create(toggleName, notes, isPermanent, DeploymentEnvironments, username);
+            var ft = FeatureToggle.Create(toggleName, notes, isPermanent, DeploymentEnvironments);
             FeatureToggles.Add(ft);
         }
 

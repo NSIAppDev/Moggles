@@ -75,7 +75,7 @@ namespace Moggles.Controllers
             var app = await _applicationsRepository.FindByIdAsync(model.ApplicationId);
             var toggleData = app.GetFeatureToggleBasicData(model.Id);
 
-            var username = _httpContextAccessor.HttpContext.User.Identity.Name;
+            var updatedBy = _httpContextAccessor.HttpContext.User.Identity.Name;
 
 
             if (model.IsPermanent != toggleData.IsPermanent)
@@ -115,7 +115,7 @@ namespace Moggles.Controllers
             }
             foreach (var newStatus in model.Statuses)
             {
-                app.SetToggle(model.Id, newStatus.Environment, newStatus.Enabled, username);
+                app.SetToggle(model.Id, newStatus.Environment, newStatus.Enabled, updatedBy);
             }
 
 
@@ -127,7 +127,6 @@ namespace Moggles.Controllers
         [Route("addFeatureToggle")]
         public async Task<IActionResult> AddFeatureToggle([FromBody]AddFeatureToggleModel featureToggleModel)
         {
-            var username = _httpContextAccessor.HttpContext.User.Identity.Name;
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -138,7 +137,7 @@ namespace Moggles.Controllers
 
             try
             {
-                app.AddFeatureToggle(featureToggleModel.FeatureToggleName, featureToggleModel.Notes, username, featureToggleModel.IsPermanent);
+                app.AddFeatureToggle(featureToggleModel.FeatureToggleName, featureToggleModel.Notes, featureToggleModel.IsPermanent);
             }
             catch (BusinessRuleValidationException ex)
             {
@@ -164,7 +163,6 @@ namespace Moggles.Controllers
         [Route("AddEnvironment")]
         public async Task<IActionResult> AddEnvironment([FromBody] AddEnvironmentModel environmentModel)
         {
-            var username = _httpContextAccessor.HttpContext.User.Identity.Name;
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -178,7 +176,7 @@ namespace Moggles.Controllers
 
             try
             {
-                app.AddDeployEnvironment(environmentModel.EnvName, environmentModel.DefaultToggleValue, username, environmentModel.SortOrder);
+                app.AddDeployEnvironment(environmentModel.EnvName, environmentModel.DefaultToggleValue,  environmentModel.SortOrder);
             }
             catch (BusinessRuleValidationException ex)
             {
@@ -286,7 +284,6 @@ namespace Moggles.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CreateEnvironment([FromBody]AddEnvironmentPublicApiModel model)
         {
-            var username = _httpContextAccessor.HttpContext.User.Identity.Name;
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -295,7 +292,7 @@ namespace Moggles.Controllers
             if (app == null)
                 throw new InvalidOperationException("Application does not exist");
 
-            app.AddDeployEnvironment(model.EnvName, false, username, 500);
+            app.AddDeployEnvironment(model.EnvName, false, 500);
 
             await _applicationsRepository.UpdateAsync(app);
             return Ok();

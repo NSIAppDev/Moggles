@@ -25,21 +25,21 @@ namespace Moggles.Domain
             };
         }
 
-        public static FeatureToggle Create(string name, string notes, bool isPermanent, IEnumerable<DeployEnvironment> deployEnvironments, string username)
+        public static FeatureToggle Create(string name, string notes, bool isPermanent, IEnumerable<DeployEnvironment> deployEnvironments)
         {
             var newToggle = Create(name, notes, isPermanent);
 
             foreach (var env in deployEnvironments)
             {
-                newToggle.AddStatus(env.DefaultToggleValue, env.EnvName, username);
+                newToggle.AddStatus(env.DefaultToggleValue, env.EnvName);
             }
 
             return newToggle;
         }
 
-        public void AddStatus(bool enabled, string envName, string username)
+        public void AddStatus(bool enabled, string envName)
         {
-            FeatureToggleStatuses.Add(FeatureToggleStatus.Create(envName, enabled, username));
+            FeatureToggleStatuses.Add(FeatureToggleStatus.Create(envName, enabled));
           
         }
 

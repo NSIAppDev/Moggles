@@ -29,9 +29,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task GetToggles_ReturnsAList_WithAllTheToggles_ForTheGivenApplication()
         {
             //arrange
-            var app = Application.Create("BCC", "dev", false, "username");
-            app.AddFeatureToggle("TestToggle", "TestNotes", "username", true);
-            app.AddFeatureToggle("TestToggle2", "TestNotes2", "username");
+            var app = Application.Create("BCC", "dev", false);
+            app.AddFeatureToggle("TestToggle", "TestNotes",  true);
+            app.AddFeatureToggle("TestToggle2", "TestNotes2");
 
             await _appRepository.AddAsync(app);
 
@@ -54,9 +54,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task GetToggles_ReturnsAList_WithAllTheToggles_AndTheStatusesOfThoseToggles_ForTheGivenApplication()
         {
             //arrange
-            var app = Application.Create("tst", "DEV", false, "username");
-            app.AddDeployEnvironment("QA", false, "username");
-            app.AddFeatureToggle("t1", "", "username");
+            var app = Application.Create("tst", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", "");
             var toggle = app.FeatureToggles.Single();
             app.SetToggle(toggle.Id, "DEV", true, "username");
             app.SetToggle(toggle.Id, "QA", true, "username");
@@ -87,7 +87,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task GetEnvironments_ReturnsAList_WithAllTheEnvironments_ForTheGivenApplication()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false, "username");
+            var app = Application.Create("TestApp", "DEV", false);
 
             var expectedEnvNames = new List<string>
             {
@@ -98,10 +98,10 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 "LIVE"
             };
 
-            app.AddDeployEnvironment("QA", false, "username");
-            app.AddDeployEnvironment("SBX", false, "username");
-            app.AddDeployEnvironment("TRN", false, "username");
-            app.AddDeployEnvironment("LIVE", false, "username");
+            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("SBX", false);
+            app.AddDeployEnvironment("TRN", false);
+            app.AddDeployEnvironment("LIVE", false);
             await _appRepository.AddAsync(app);
 
             //act
@@ -116,10 +116,10 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task GetEnvironments_ReturnsAList_WithAllTheDistinctEnvironments_ForTheGivenApplication()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false, "username");
+            var app = Application.Create("TestApp", "DEV", false);
 
-            app.AddDeployEnvironment("QA", false, "username");
-            app.AddDeployEnvironment("TRN", false, "username");
+            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("TRN", false);
 
             var expectedEnvNames = new List<string> { "DEV", "QA", "TRN" };
 
@@ -137,9 +137,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task GetApplicationFeatureToggles_ReturnsFeatureToggleState_ForTheGivenApplicationNameAndEnvironmentName()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false, "username");
-            app.AddDeployEnvironment("QA", false, "username");
-            app.AddFeatureToggle("t1", "", "username");
+            var app = Application.Create("TestApp", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", "");
             var toggle = app.FeatureToggles.FirstOrDefault(f => f.ToggleName == "t1");
             app.SetToggle(toggle.Id, "DEV", true, "username");
             app.SetToggle(toggle.Id, "QA", false, "username");
@@ -162,9 +162,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task GetApplicationFeatureToggleValue_ReturnsTheStatus_OfTheGivenFeatureToggle()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false, "username");
-            app.AddDeployEnvironment("QA", false, "username");
-            app.AddFeatureToggle("t1", "", "username");
+            var app = Application.Create("TestApp", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", "");
             var toggle = app.FeatureToggles.FirstOrDefault(f => f.ToggleName == "t1");
             app.SetToggle(toggle.Id, "DEV", false, "username");
             app.SetToggle(toggle.Id, "QA", true, "username");

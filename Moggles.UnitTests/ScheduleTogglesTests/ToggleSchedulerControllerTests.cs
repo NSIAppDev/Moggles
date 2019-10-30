@@ -41,10 +41,10 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         {
             //arrange
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
-            var app = Application.Create("tst", "DEV", false, "username");
-            app.AddDeployEnvironment("QA", false, "username");
-            app.AddFeatureToggle("t1", null, "username");
-            app.AddFeatureToggle("t2", null, "username");
+            var app = Application.Create("tst", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", null);
+            app.AddFeatureToggle("t2", null);
             await _appRepository.AddAsync(app);
 
             //act
@@ -87,7 +87,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         public async Task ThrowsException_WhenAppIdIsInvalid()
         {
             //arrange
-            var app = Application.Create("tst", "DEV", false, "username");
+            var app = Application.Create("tst", "DEV", false);
             await _appRepository.AddAsync(app);
 
             //act

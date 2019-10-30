@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using FluentAssertions;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
+using Moggles.Domain;
 using Moggles.Models;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Moggles.Domain;
-using Microsoft.AspNetCore.Http;
-using Moq;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Moggles.UnitTests.ApplicationsTests
 {
@@ -35,8 +34,8 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task GetApplications_ReturnsAllExistingApplications()
         {
             //arrange
-            var bccApp = Application.Create("BCC", "dev", false, "username");
-            var cmmApp = Application.Create("CMM", "dev", false, "username");
+            var bccApp = Application.Create("BCC", "dev", false);
+            var cmmApp = Application.Create("CMM", "dev", false);
 
             await _appApplicationRepository.AddAsync(bccApp);
             await _appApplicationRepository.AddAsync(cmmApp);
@@ -86,7 +85,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task AddApplication_ApplicationIsNotAdded_WhenOneWithTheSameNameAlreadyExists_CaseInsensitive()
         {
             //arrange
-            var app = Application.Create("bcc", "dev", false, "username");
+            var app = Application.Create("bcc", "dev", false);
             await _appApplicationRepository.AddAsync(app);
             var appModel = new AddApplicationModel { ApplicationName = "BCC" };
             var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);
@@ -127,7 +126,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task EditApp_AppIsBeingModified()
         {
             //arrange
-            var app = Application.Create("TestApp", "dev", false, "username");
+            var app = Application.Create("TestApp", "dev", false);
             await _appApplicationRepository.AddAsync(app);
 
             var updatedAppName = "TestAppUpdated";
@@ -153,7 +152,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task EditApp_WithInvalidID_ThrowsInvalidOperationException()
         {
             //arrange
-            var app = Application.Create("TestApp", "dev", false, "username");
+            var app = Application.Create("TestApp", "dev", false);
             await _appApplicationRepository.AddAsync(app);
 
             var updatedAppName = "TestAppUpdated";
@@ -191,8 +190,8 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task EditApp_WhenAlreadyExistsAppWithTheSameName_RejectTheEdit()
         {
             //arrange
-            var app = Application.Create("TestApp", "dev", false, "username");
-            var app2 = Application.Create("TestAppUpdated", "dev", false, "username");
+            var app = Application.Create("TestApp", "dev", false);
+            var app2 = Application.Create("TestAppUpdated", "dev", false);
             await _appApplicationRepository.AddAsync(app);
             await _appApplicationRepository.AddAsync(app2);
 
@@ -219,7 +218,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task DeleteApp_AppIsDeleted()
         {
             //arrange
-            var app = Application.Create("test", "dev", false, "username");
+            var app = Application.Create("test", "dev", false);
 
             await _appApplicationRepository.AddAsync(app);
 
@@ -239,7 +238,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task DeleteApp_WithInvalidID_ThrowsInvalidOperationException()
         {
             //arrange
-            var app = Application.Create("TestApp", "dev", false, "username");
+            var app = Application.Create("TestApp", "dev", false);
             await _appApplicationRepository.AddAsync(app);
 
             var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);

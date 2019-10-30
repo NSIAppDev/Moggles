@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "7c4eb0a0f1ba0f475329"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "fb83bcc5b45c1d19a2d1"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -15735,7 +15735,7 @@ var render = function() {
                                                     col.field +
                                                       "_FirstTimeDeployDate"
                                                   ],
-                                                  "MM/DD/YYYY hh:mm"
+                                                  "M/D/YY hh:mm:ss A"
                                                 )
                                               ) +
                                               "\n                "
@@ -15755,7 +15755,7 @@ var render = function() {
                                                   _vm.rowToEdit[
                                                     col.field + "_LastUpdated"
                                                   ],
-                                                  "MM/DD/YYYY hh:mm"
+                                                  "M/D/YY hh:mm:ss A"
                                                 )
                                               ) +
                                               "\n                "

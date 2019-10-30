@@ -30,8 +30,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task RemoveFeatureToggle_FeatureToggleIsDeleted()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false, "username");
-            app.AddFeatureToggle("t1", "", "username");
+            var app = Application.Create("TestApp", "DEV", false);
+            app.AddFeatureToggle("t1", "");
             var theToggle = app.FeatureToggles.Single();
             await _appRepository.AddAsync(app);
 

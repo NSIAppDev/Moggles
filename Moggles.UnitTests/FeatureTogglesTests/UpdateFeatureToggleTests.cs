@@ -32,8 +32,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task ExistingFeatureToggleBasicDataIsUpdated()
         {
             //arrange
-            var app = Application.Create("test", "DEV", false, "username");
-            app.AddFeatureToggle("TestToggle", "FirstNote", "username");
+            var app = Application.Create("test", "DEV", false);
+            app.AddFeatureToggle("TestToggle", "FirstNote");
             await _appRepository.AddAsync(app);
 
             var toggle = app.FeatureToggles.Single();
@@ -60,9 +60,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task ChangingToggleName_ToExistingName_IsNotAllowed()
         {
             //arrange
-            var app = Application.Create("test", "DEV", false, "username");
-            app.AddFeatureToggle("t1", "", "username");
-            app.AddFeatureToggle("t2", "", "username");
+            var app = Application.Create("test", "DEV", false);
+            app.AddFeatureToggle("t1", "");
+            app.AddFeatureToggle("t2", "");
             await _appRepository.AddAsync(app);
 
             var toggle = app.FeatureToggles.FirstOrDefault(t => t.ToggleName == "t1");
@@ -83,9 +83,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task FeatureToggleCanBeTurnedOn_ForAllExistingEnvironments()
         {
             //arrange
-            var app = Application.Create("test", "DEV", false, "username");
-            app.AddDeployEnvironment("QA", false, "username");
-            app.AddFeatureToggle("t1", "", "username");
+            var app = Application.Create("test", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", "");
             await _appRepository.AddAsync(app);
 
             var toggle = app.FeatureToggles.Single();
@@ -125,9 +125,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task FeatureToggleUpdate_ByDifferentUser_UsernameChanged()
         {
             //arrange
-            var app = Application.Create("test", "DEV", false, "username");
-            app.AddDeployEnvironment("QA", false, "username");
-            app.AddFeatureToggle("t1", "", "username");
+            var app = Application.Create("test", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", "");
             await _appRepository.AddAsync(app);
 
             var toggle = app.FeatureToggles.Single();

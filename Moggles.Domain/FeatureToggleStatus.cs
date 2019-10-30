@@ -52,7 +52,7 @@ namespace Moggles.Domain
             }
         }
 
-        public static FeatureToggleStatus Create(string envName, bool enabled, string username)
+        public static FeatureToggleStatus Create(string envName, bool enabled)
         {
             return new FeatureToggleStatus
             {
@@ -60,7 +60,7 @@ namespace Moggles.Domain
                 Enabled = enabled,
                 EnvironmentName = envName,
                 LastUpdated = DateTime.UtcNow,
-                UpdatedbyUser = username
+                UpdatedbyUser = "System"
             };
         }
     }
