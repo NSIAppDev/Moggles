@@ -73,10 +73,10 @@ namespace Moggles.Domain
             ToggleName = newName;
         }
 
-        public void Toggle(string environment, bool isEnabled, string username)
+        public void Toggle(string environment, bool isEnabled, string updatedBy)
         {
             var status = FeatureToggleStatuses.FirstOrDefault(s => s.EnvironmentName == environment);
-            status.ToggleStatus(isEnabled, username);
+            status.ToggleStatus(isEnabled, updatedBy);
         }
 
         public void MarkAsDeployed(string envName)
@@ -90,10 +90,10 @@ namespace Moggles.Domain
 
         }
 
-        public void ChangeLastUpdateUsername(string envName, string username)
+        public void ChangeLastUpdateUsername(string envName, string updatedBy)
         {
             var featureToggleStatus = FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName == envName);
-            featureToggleStatus.ChangeLastUpdateUser(username);
+            featureToggleStatus.ChangeLastUpdateUser(updatedBy);
         }
     }
 }

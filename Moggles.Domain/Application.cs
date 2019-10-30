@@ -163,16 +163,16 @@ namespace Moggles.Domain
             }).ToList();
         }
 
-        public void SetToggle(Guid toggleId, string environment, bool isEnabled, string username)
+        public void SetToggle(Guid toggleId, string environment, bool isEnabled, string updatedBy)
         {
             var toggle = GuardToggleExists(toggleId);
-            toggle.Toggle(environment, isEnabled, username);
+            toggle.Toggle(environment, isEnabled, updatedBy);
         }
 
-        public void SetToggle(string name, string environment, bool isEnabled, string username)
+        public void SetToggle(string name, string environment, bool isEnabled, string updatedBy)
         {
             var toggle = GuardToggleExists(name);
-            toggle.Toggle(environment, isEnabled, username);
+            toggle.Toggle(environment, isEnabled, updatedBy);
         }
 
         private FeatureToggle GuardToggleExists(Guid toggleId)

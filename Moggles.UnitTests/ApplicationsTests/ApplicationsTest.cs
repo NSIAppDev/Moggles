@@ -70,7 +70,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task AddApplication_ApplicationIsBeingAdded()
         {
             //arrange
-            var appModel = new AddApplicationModel { ApplicationName = "BCC" , UpdatedByUser = "username"};
+            var appModel = new AddApplicationModel { ApplicationName = "BCC" , UpdatedByUser = "updatedBy" };
             var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);
 
 

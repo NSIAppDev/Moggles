@@ -29,26 +29,26 @@ namespace Moggles.Domain
             LastDeployStatusUpdate = DateTime.UtcNow;
         }
 
-        public void ToggleStatus(bool isEnabled, string username)
+        public void ToggleStatus(bool isEnabled, string updatedBy)
         {
-            UpdateTimestampOnChange(isEnabled, username);
+            UpdateTimestampOnChange(isEnabled, updatedBy);
             Enabled = isEnabled;
         }
 
-        private void UpdateTimestampOnChange(bool isEnabled, string username)
+        private void UpdateTimestampOnChange(bool isEnabled, string updatedBy)
         {
             if (Enabled != isEnabled)
             {
                 LastUpdated = DateTime.UtcNow;
-                ChangeLastUpdateUser(username);
+                ChangeLastUpdateUser(updatedBy);
             }
         }
 
-        public void ChangeLastUpdateUser(string username)
+        public void ChangeLastUpdateUser(string updatedBy)
         {
-            if(username != UpdatedbyUser)
+            if(updatedBy != UpdatedbyUser)
             {
-                UpdatedbyUser = username;
+                UpdatedbyUser = updatedBy;
             }
         }
 
