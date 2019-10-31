@@ -36,6 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="chromedriver.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="e2e.runsettings">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
