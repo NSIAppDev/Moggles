@@ -22,5 +22,6 @@ namespace Moggles.Models
         public bool IsDeployed { get; set; }
         public DateTime? FirstTimeDeployDate { get; set; }
         public DateTime LastUpdated { get; set; }
+        public string UpdatedByUser { get; set; }
     }
 }

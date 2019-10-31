@@ -1,9 +1,11 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
 using Moggles.Domain;
 using Moggles.Models;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,13 +20,20 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
 
         private IRepository<Application> _appRepository;
         private IRepository<ToggleSchedule> _toggleSchedulesRepository;
+        private IHttpContextAccessor _httpContextAccessor;
+        private Mock<IHttpContextAccessor> _mockHttpContextAccessor; 
+
 
         [TestInitialize]
         public void BeforeEach()
         {
             _appRepository = new InMemoryApplicationRepository();
             _toggleSchedulesRepository = new InMemoryRepository<ToggleSchedule>();
-            _sut = new ToggleSchedulerController(_toggleSchedulesRepository, _appRepository);
+            _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            _mockHttpContextAccessor.Setup(x => x.HttpContext.User.Identity.Name).Returns("bla");
+            _httpContextAccessor = _mockHttpContextAccessor.Object;
+            _sut = new ToggleSchedulerController(_toggleSchedulesRepository, _appRepository, _httpContextAccessor);
+            
         }
 
         [TestMethod]

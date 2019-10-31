@@ -2,11 +2,13 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
 using Moggles.Domain;
 using Moggles.Models;
+using Moq;
 
 namespace Moggles.UnitTests.FeatureTogglesTests
 {
@@ -14,11 +16,16 @@ namespace Moggles.UnitTests.FeatureTogglesTests
     public class UpdateFeatureToggleTests
     {
         private IRepository<Application> _appRepository;
+        private IHttpContextAccessor _httpContextAccessor;
+        private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
 
         [TestInitialize]
         public void BeforeTest()
         {
             _appRepository = new InMemoryApplicationRepository();
+            _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            _mockHttpContextAccessor.Setup(x => x.HttpContext.User.Identity.Name).Returns("bla");
+            _httpContextAccessor = _mockHttpContextAccessor.Object;
         }
 
         [TestMethod]
@@ -36,7 +43,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 Statuses = new List<FeatureToggleStatusUpdateModel>(), IsPermanent = true
             };
 
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
             await controller.Update(updatedValue);
@@ -61,7 +68,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var toggle = app.FeatureToggles.FirstOrDefault(t => t.ToggleName == "t1");
             var updatedValue = new FeatureToggleUpdateModel { ApplicationId = app.Id, Id = toggle.Id, FeatureToggleName = "t2" };
 
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
             var result = await controller.Update(updatedValue);
@@ -102,7 +109,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 }
             };
 
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
             await controller.Update(updatedValue);
@@ -113,5 +120,47 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             statuses.Count.Should().Be(2);
             statuses.All(s => s.Enabled).Should().BeTrue();
         }
+
+        [TestMethod]
+        public async Task FeatureToggleUpdate_ByDifferentUser_UsernameChanged()
+        {
+            //arrange
+            var app = Application.Create("test", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", "");
+            await _appRepository.AddAsync(app);
+
+            var toggle = app.FeatureToggles.Single();
+            var updatedValue = new FeatureToggleUpdateModel
+            {
+                ApplicationId = app.Id,
+                Id = toggle.Id,
+                FeatureToggleName = "t1",
+                Statuses = new List<FeatureToggleStatusUpdateModel>
+                {
+                    new FeatureToggleStatusUpdateModel
+                    {
+                        Enabled = true,
+                        Environment = "DEV",
+                    },
+                    new FeatureToggleStatusUpdateModel
+                    {
+                        Enabled = true,
+                        Environment = "QA",
+                    }
+                }
+            };
+
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
+
+            //act
+            await controller.Update(updatedValue);
+
+            //assert
+            var savedApp = await _appRepository.FindByIdAsync(app.Id);
+            var statuses = savedApp.GetFeatureToggleStatuses(toggle.Id);
+            statuses.Count.Should().Be(2);
+            statuses.All(s => s.UpdatedBy == "bla").Should().BeTrue();
+        } 
     }
 }

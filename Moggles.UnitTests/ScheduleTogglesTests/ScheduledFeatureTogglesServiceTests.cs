@@ -42,12 +42,12 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             var app = Application.Create("tst", "DEV", false);
             app.AddFeatureToggle("offToggle", null);
             app.AddFeatureToggle("onToggle", null);
-            app.SetToggle(app.FeatureToggles.Single(f => f.ToggleName == "offToggle").Id, "DEV", false);
-            app.SetToggle(app.FeatureToggles.Single(f => f.ToggleName == "onToggle").Id, "DEV", true);
+            app.SetToggle(app.FeatureToggles.Single(f => f.ToggleName == "offToggle").Id, "DEV", false, "username");
+            app.SetToggle(app.FeatureToggles.Single(f => f.ToggleName == "onToggle").Id, "DEV", true, "username");
             await _appRepository.AddAsync(app);
 
-            var schedule = ToggleSchedule.Create("tst","offToggle", new[] { "DEV" }, true, _dateInThePast);
-            var schedule2 = ToggleSchedule.Create("tst","onToggle", new[] { "DEV" }, false, _dateInThePast);
+            var schedule = ToggleSchedule.Create("tst","offToggle", new[] { "DEV" }, true, _dateInThePast, "updatedBy");
+            var schedule2 = ToggleSchedule.Create("tst","onToggle", new[] { "DEV" }, false, _dateInThePast, "updatedBy");
             await _toggleSchedulesRepository.AddAsync(schedule);
             await _toggleSchedulesRepository.AddAsync(schedule2);
 
@@ -71,7 +71,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             app.AddFeatureToggle("t1", null);
             await _appRepository.AddAsync(app);
 
-            var schedule = ToggleSchedule.Create("tst", "t1", new[] { "DEV" }, true, _dateInThePast);
+            var schedule = ToggleSchedule.Create("tst", "t1", new[] { "DEV" }, true, _dateInThePast, "updatedBy");
             await _toggleSchedulesRepository.AddAsync(schedule);
 
             //act
@@ -107,7 +107,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             var app = Application.Create("tst", "DEV", false);
             await _appRepository.AddAsync(app);
 
-            var schedule = ToggleSchedule.Create("tst", "DeletedToggle", new[] { "DEV" }, true, _dateInThePast);
+            var schedule = ToggleSchedule.Create("tst", "DeletedToggle", new[] { "DEV" }, true, _dateInThePast, "updatedBy");
             await _toggleSchedulesRepository.AddAsync(schedule);
 
             //act

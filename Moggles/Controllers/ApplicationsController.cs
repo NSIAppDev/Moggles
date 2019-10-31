@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Moggles.Domain;
 using Moggles.Models;
 using System;
@@ -12,10 +13,12 @@ namespace Moggles.Controllers
     public class ApplicationsController : Controller
     {
         private readonly IRepository<Application> _applicationsRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ApplicationsController(IRepository<Application> applicationsRepository)
+        public ApplicationsController(IRepository<Application> applicationsRepository, IHttpContextAccessor httpContextAccessor)
         {
             _applicationsRepository = applicationsRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
@@ -29,6 +32,7 @@ namespace Moggles.Controllers
         [Route("add")]
         public async Task<IActionResult> AddApplication([FromBody] AddApplicationModel applicationModel)
         {
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 

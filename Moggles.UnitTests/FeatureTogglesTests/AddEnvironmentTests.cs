@@ -1,11 +1,13 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
 using Moggles.Domain;
 using Moggles.Models;
+using Moq;
 
 namespace Moggles.UnitTests.FeatureTogglesTests
 {
@@ -13,11 +15,16 @@ namespace Moggles.UnitTests.FeatureTogglesTests
     public class AddEnvironmentTests
     {
         private IRepository<Application> _appRepository;
+        private IHttpContextAccessor _httpContextAccessor;
+        private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
 
         [TestInitialize]
         public void BeforeTest()
         {
             _appRepository = new InMemoryApplicationRepository();
+            _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            _mockHttpContextAccessor.Setup(x => x.HttpContext.User.Identity.Name).Returns("bla");
+            _httpContextAccessor = _mockHttpContextAccessor.Object;
         }
 
         [TestMethod]
@@ -27,7 +34,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var app = Application.Create("TestApp", "DEV", false);
             await _appRepository.AddAsync(app);
             var createdEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "QA", DefaultToggleValue = true, SortOrder = 99 };
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
             var result = await controller.AddEnvironment(createdEnvironment);
@@ -46,7 +53,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task ReturnBadRequestResult_WhenModelStateIsInvalid()
         {
             //arrange
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
             controller.ModelState.AddModelError("error", "some error");
 
             //act
@@ -63,7 +70,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var app = Application.Create("tst", "dev", false);
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
             var result = await controller.AddEnvironment(new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "DEV" });
@@ -83,7 +90,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             var newEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "QA" };
 
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
             var result = await controller.AddEnvironment(newEnvironment);
@@ -105,7 +112,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             app.AddFeatureToggle("t2", string.Empty);
 
             await _appRepository.AddAsync(app);
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
             var result = await controller.AddEnvironment(newEnvironment);

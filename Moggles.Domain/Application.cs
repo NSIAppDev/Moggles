@@ -17,7 +17,7 @@ namespace Moggles.Domain
             AppName = newName;
         }
 
-        public void AddDeployEnvironment(string name, bool defaultToggleValue, int sortOrder = 1)
+        public void AddDeployEnvironment(string name, bool defaultToggleValue,  int sortOrder = 1)
         {
             if (DeployEnvExists(name))
                 throw new BusinessRuleValidationException("Environment with the same name already exists for this application!");
@@ -63,7 +63,8 @@ namespace Moggles.Domain
             return toggle.FeatureToggleStatuses.Where(fts => fts.EnvironmentName == environment).Select(x => new FeatureToggleStatusData
             {
                 EnvironmentName = x.EnvironmentName,
-                Enabled = x.Enabled
+                Enabled = x.Enabled,
+                UpdatedBy = x.UpdatedbyUser
             }).FirstOrDefault();
         }
 
@@ -157,20 +158,21 @@ namespace Moggles.Domain
             return toggle.FeatureToggleStatuses.Select(x => new FeatureToggleStatusData
             {
                 EnvironmentName = x.EnvironmentName,
-                Enabled = x.Enabled
+                Enabled = x.Enabled,
+                UpdatedBy = x.UpdatedbyUser
             }).ToList();
         }
 
-        public void SetToggle(Guid toggleId, string environment, bool isEnabled)
+        public void SetToggle(Guid toggleId, string environment, bool isEnabled, string updatedBy)
         {
             var toggle = GuardToggleExists(toggleId);
-            toggle.Toggle(environment, isEnabled);
+            toggle.Toggle(environment, isEnabled, updatedBy);
         }
 
-        public void SetToggle(string name, string environment, bool isEnabled)
+        public void SetToggle(string name, string environment, bool isEnabled, string updatedBy)
         {
             var toggle = GuardToggleExists(name);
-            toggle.Toggle(environment, isEnabled);
+            toggle.Toggle(environment, isEnabled, updatedBy);
         }
 
         private FeatureToggle GuardToggleExists(Guid toggleId)

@@ -1,13 +1,14 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Moggles.Models;
+using System.Diagnostics;
 
 namespace Moggles.Controllers
 {
     [Authorize(Policy = "OnlyAdmins")]
     public class HomeController : Controller
     {
+       
         [CustomExceptionFilter]
         public IActionResult Index()
         {

@@ -21,7 +21,7 @@ namespace Moggles.Domain
                 CreatedDate = DateTime.UtcNow,
                 IsPermanent = isPermanent,
                 Notes = notes,
-                ToggleName = name
+                ToggleName = name,
             };
         }
 
@@ -73,10 +73,10 @@ namespace Moggles.Domain
             ToggleName = newName;
         }
 
-        public void Toggle(string environment, bool isEnabled)
+        public void Toggle(string environment, bool isEnabled, string updatedBy)
         {
             var status = FeatureToggleStatuses.FirstOrDefault(s => s.EnvironmentName == environment);
-            status.ToggleStatus(isEnabled);
+            status.ToggleStatus(isEnabled, updatedBy);
         }
 
         public void MarkAsDeployed(string envName)
@@ -87,6 +87,13 @@ namespace Moggles.Domain
         public void MarkAsNotDeployed(string envName)
         {
             FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName == envName)?.MarkAsNotDeployed();
+
+        }
+
+        public void ChangeLastUpdateUsername(string envName, string updatedBy)
+        {
+            var featureToggleStatus = FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName == envName);
+            featureToggleStatus.ChangeLastUpdateUser(updatedBy);
         }
     }
 }

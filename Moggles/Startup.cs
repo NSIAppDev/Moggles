@@ -15,6 +15,7 @@ using Moggles.Data.SQL;
 using Moggles.Data.NoDb;
 using NoDb;
 using Moggles.Domain;
+using Microsoft.AspNetCore.Http;
 
 namespace Moggles
 {
@@ -45,6 +46,8 @@ namespace Moggles
             services.AddNoDb<ToggleSchedule>();
             services.AddScoped<IRepository<Application>, ApplicationsRepository>();
             services.AddScoped<IRepository<ToggleSchedule>, ToggleSchedulesRepository>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddHostedService<ScheduledFeatureTogglesService>();
         }
 
         public virtual void ConfigureDatabaseServices(IServiceCollection services)
@@ -103,7 +106,7 @@ namespace Moggles
             services.AddSingleton<IBus>(provider => provider.GetRequiredService<IBusControl>());
 
             services.AddSingleton<IHostedService, BusService>();
-            services.AddHostedService<ScheduledFeatureTogglesService>();
+           
         }
 
         public virtual IBusControl ConfigureMessageBus(IServiceProvider serviceProvider)
