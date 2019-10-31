@@ -36,6 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="e2e.runsettings">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="testappsettings.DEV.json">
       <IsTransformFile>true</IsTransformFile>
       <DependentUpon>testappsettings.json</DependentUpon>
