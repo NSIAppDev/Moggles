@@ -36,19 +36,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="e2e.runsettings">
+    <None Update="chromedriver.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="testappsettings.DEV.json">
-      <IsTransformFile>true</IsTransformFile>
-      <DependentUpon>testappsettings.json</DependentUpon>
-    </None>
-    <None Update="testappsettings.json">
-      <TransformOnBuild>true</TransformOnBuild>
-    </None>
-    <None Update="testappsettings.LIVE.json">
-      <IsTransformFile>true</IsTransformFile>
-      <DependentUpon>testappsettings.json</DependentUpon>
+    <None Update="e2e.runsettings">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
