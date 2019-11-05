@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
 using Moggles.Domain;
 using Moggles.Models;
+using Moggles.UnitTests.Helpers;
 using Moq;
 
 namespace Moggles.UnitTests.FeatureTogglesTests
@@ -98,8 +99,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //assert
             result.Should().BeOfType<OkResult>();
             var savedApp = await _appRepository.FindByIdAsync(app.Id);
-            savedApp.GetFeatureToggleStatus("t1", "QA").Enabled.Should().BeFalse();
-            savedApp.GetFeatureToggleStatus("t2", "QA").Enabled.Should().BeFalse();
+            FeatureToggleHelper.GetFeatureToggleStatus(savedApp, "t1", "QA").Enabled.Should().BeFalse();
+            FeatureToggleHelper.GetFeatureToggleStatus(savedApp, "t2", "QA").Enabled.Should().BeFalse();
         }
 
         [TestMethod]
@@ -120,8 +121,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //assert
             result.Should().BeOfType<OkResult>();
             var savedApp = await _appRepository.FindByIdAsync(app.Id);
-            savedApp.GetFeatureToggleStatus("t1", "QA").Enabled.Should().BeTrue();
-            savedApp.GetFeatureToggleStatus("t2", "QA").Enabled.Should().BeTrue();
+            FeatureToggleHelper.GetFeatureToggleStatus(savedApp, "t1", "QA").Enabled.Should().BeTrue();
+            FeatureToggleHelper.GetFeatureToggleStatus(savedApp, "t2", "QA").Enabled.Should().BeTrue();
         }
     }
 }

@@ -45,7 +45,8 @@ namespace Moggles.Domain
 
         public void RemoveStatus(string environment)
         {
-            FeatureToggleStatuses.RemoveAll(s => s.EnvironmentName == environment);
+            var envStatus = GetFeatureToggleStatusForEnv(environment);
+            FeatureToggleStatuses.Remove(envStatus);
         }
 
         public void SetPermanentStatus(bool isPermanent)
@@ -75,25 +76,23 @@ namespace Moggles.Domain
 
         public void Toggle(string environment, bool isEnabled, string updatedBy)
         {
-            var status = FeatureToggleStatuses.FirstOrDefault(s => s.EnvironmentName == environment);
-            status.ToggleStatus(isEnabled, updatedBy);
+            GetFeatureToggleStatusForEnv(environment)?.ToggleStatus(isEnabled, updatedBy);
         }
 
         public void MarkAsDeployed(string envName)
         {
-            FeatureToggleStatuses.FirstOrDefault(fts=>fts.EnvironmentName==envName)?.MarkAsDeployed();
+            GetFeatureToggleStatusForEnv(envName)?.MarkAsDeployed();
         }
 
         public void MarkAsNotDeployed(string envName)
         {
-            FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName == envName)?.MarkAsNotDeployed();
-
+            GetFeatureToggleStatusForEnv(envName)?.MarkAsNotDeployed();
         }
 
-        public void ChangeLastUpdateUsername(string envName, string updatedBy)
+        public FeatureToggleStatus GetFeatureToggleStatusForEnv(string envName)
         {
-            var featureToggleStatus = FeatureToggleStatuses.FirstOrDefault(fts => fts.EnvironmentName == envName);
-            featureToggleStatus.ChangeLastUpdateUser(updatedBy);
+            return FeatureToggleStatuses.FirstOrDefault(fts =>
+                string.Compare(fts.EnvironmentName, envName, StringComparison.OrdinalIgnoreCase) == 0);
         }
     }
 }

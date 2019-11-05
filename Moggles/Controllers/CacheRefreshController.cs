@@ -42,12 +42,6 @@ namespace Moggles.Controllers
                 ApplicationName = app.AppName
             });
 
-            await _bus.Publish(new NSTogglesContracts.RefreshTogglesCache
-            {
-                Environment = refreshCacheModel.EnvName,
-                ApplicationName = app.AppName
-            });
-
             return Ok();
         }
 

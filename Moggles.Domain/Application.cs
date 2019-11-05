@@ -57,17 +57,6 @@ namespace Moggles.Domain
             FeatureToggles.Add(ft);
         }
 
-        public FeatureToggleStatusData GetFeatureToggleStatus(string toggleName, string environment)
-        {
-            var toggle = FeatureToggles.FirstOrDefault(f => string.Compare(f.ToggleName, toggleName, StringComparison.OrdinalIgnoreCase) == 0);
-            return toggle.FeatureToggleStatuses.Where(fts => fts.EnvironmentName == environment).Select(x => new FeatureToggleStatusData
-            {
-                EnvironmentName = x.EnvironmentName,
-                Enabled = x.Enabled,
-                UpdatedBy = x.UpdatedbyUser
-            }).FirstOrDefault();
-        }
-
         public void DeleteDeployEnvironment(string environment)
         {
             if (!DeployEnvExists(environment))

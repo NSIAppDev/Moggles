@@ -9,6 +9,7 @@ using Moq;
 using System;
 using System.Threading.Tasks;
 using Moggles.Domain;
+using MogglesContracts;
 
 namespace Moggles.UnitTests.CacheTests
 {
@@ -76,7 +77,7 @@ namespace Moggles.UnitTests.CacheTests
             await controller.RefreshCache(new RefreshCacheModel {ApplicationId = app.Id, EnvName = "DEV"});
 
             //assert
-            _busMock.Verify(x => x.Publish(It.Is<NSTogglesContracts.RefreshTogglesCache>(e => e.ApplicationName == "tst" && e.Environment == "DEV"), default),
+            _busMock.Verify(x => x.Publish(It.Is<RefreshTogglesCache>(e => e.ApplicationName == "tst" && e.Environment == "DEV"), default),
                 Times.Once);
         }
     }

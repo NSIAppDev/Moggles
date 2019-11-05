@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Moggles.UnitTests.Helpers;
 
 namespace Moggles.UnitTests.ScheduleTogglesTests
 {
@@ -57,9 +58,9 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
 
             //assert
             var updatedApp = await _appRepository.FindByIdAsync(app.Id);
-            var status = updatedApp.GetFeatureToggleStatus("offtoggle", "DEV");
+            var status = FeatureToggleHelper.GetFeatureToggleStatus(updatedApp, "offtoggle", "DEV");
             status.Enabled.Should().BeTrue();
-            var status2 = updatedApp.GetFeatureToggleStatus("onToggle", "DEV");
+            var status2 = FeatureToggleHelper.GetFeatureToggleStatus(updatedApp, "onToggle", "DEV");
             status2.Enabled.Should().BeFalse();
         }
 
@@ -96,7 +97,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
 
             //assert
             var updatedApp = await _appRepository.FindByIdAsync(app.Id);
-            var status = updatedApp.GetFeatureToggleStatus("t1", "DEV");
+            var status = FeatureToggleHelper.GetFeatureToggleStatus(updatedApp, "t1", "DEV");
             status.Enabled.Should().BeFalse();
         }
 
