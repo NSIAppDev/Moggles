@@ -58,9 +58,9 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
 
             //assert
             var updatedApp = await _appRepository.FindByIdAsync(app.Id);
-            var status = FeatureToggleHelper.GetFeatureToggleStatus(updatedApp, "offtoggle", "DEV");
+            var status = FeatureToggleTestHelper.GetFeatureToggleStatus(updatedApp, "offtoggle", "DEV");
             status.Enabled.Should().BeTrue();
-            var status2 = FeatureToggleHelper.GetFeatureToggleStatus(updatedApp, "onToggle", "DEV");
+            var status2 = FeatureToggleTestHelper.GetFeatureToggleStatus(updatedApp, "onToggle", "DEV");
             status2.Enabled.Should().BeFalse();
         }
 
@@ -97,7 +97,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
 
             //assert
             var updatedApp = await _appRepository.FindByIdAsync(app.Id);
-            var status = FeatureToggleHelper.GetFeatureToggleStatus(updatedApp, "t1", "DEV");
+            var status = FeatureToggleTestHelper.GetFeatureToggleStatus(updatedApp, "t1", "DEV");
             status.Enabled.Should().BeFalse();
         }
 

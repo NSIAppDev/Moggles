@@ -31,7 +31,7 @@ namespace Moggles.UnitTests.ShowDeployedTogglesTests
 
             await _appRepository.AddAsync(app);
 
-            FeatureToggleHelper.UpdateFeatureToggleDeployedStatus(app, "TestToggle-1", "DEV", true);
+            FeatureToggleTestHelper.UpdateFeatureToggleDeployedStatus(app, "TestToggle-1", "DEV", true);
 
             var context = new TestConsumeContext<RegisteredTogglesUpdate>(new RegisteredTogglesUpdate
             {
@@ -46,8 +46,8 @@ namespace Moggles.UnitTests.ShowDeployedTogglesTests
 
             //assert
             var updatedApp = await _appRepository.FindByIdAsync(app.Id);
-            FeatureToggleHelper.GetFeatureToggleDeployedStatus(updatedApp, "TestToggle-1", "DEV").Should().BeFalse();
-            FeatureToggleHelper.GetFeatureToggleDeployedStatus(updatedApp, "TestToggle-2", "DEV").Should().BeTrue();
+            FeatureToggleTestHelper.GetFeatureToggleDeployedStatus(updatedApp, "TestToggle-1", "DEV").Should().BeFalse();
+            FeatureToggleTestHelper.GetFeatureToggleDeployedStatus(updatedApp, "TestToggle-2", "DEV").Should().BeTrue();
         }
     }
 }

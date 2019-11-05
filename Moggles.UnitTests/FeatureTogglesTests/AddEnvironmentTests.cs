@@ -99,8 +99,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //assert
             result.Should().BeOfType<OkResult>();
             var savedApp = await _appRepository.FindByIdAsync(app.Id);
-            FeatureToggleHelper.GetFeatureToggleStatus(savedApp, "t1", "QA").Enabled.Should().BeFalse();
-            FeatureToggleHelper.GetFeatureToggleStatus(savedApp, "t2", "QA").Enabled.Should().BeFalse();
+            FeatureToggleTestHelper.GetFeatureToggleStatus(savedApp, "t1", "QA").Enabled.Should().BeFalse();
+            FeatureToggleTestHelper.GetFeatureToggleStatus(savedApp, "t2", "QA").Enabled.Should().BeFalse();
         }
 
         [TestMethod]
@@ -121,8 +121,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //assert
             result.Should().BeOfType<OkResult>();
             var savedApp = await _appRepository.FindByIdAsync(app.Id);
-            FeatureToggleHelper.GetFeatureToggleStatus(savedApp, "t1", "QA").Enabled.Should().BeTrue();
-            FeatureToggleHelper.GetFeatureToggleStatus(savedApp, "t2", "QA").Enabled.Should().BeTrue();
+            FeatureToggleTestHelper.GetFeatureToggleStatus(savedApp, "t1", "QA").Enabled.Should().BeTrue();
+            FeatureToggleTestHelper.GetFeatureToggleStatus(savedApp, "t2", "QA").Enabled.Should().BeTrue();
         }
     }
 }

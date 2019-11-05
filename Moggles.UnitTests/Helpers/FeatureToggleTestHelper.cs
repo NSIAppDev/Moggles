@@ -5,7 +5,7 @@ using Moggles.Domain.DTO;
 
 namespace Moggles.UnitTests.Helpers
 {
-    public static class FeatureToggleHelper
+    public static class FeatureToggleTestHelper
     {
 
         public static FeatureToggleStatusData GetFeatureToggleStatus(Application app, string toggleName, string environment)
