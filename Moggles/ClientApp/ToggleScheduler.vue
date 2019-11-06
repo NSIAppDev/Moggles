@@ -63,13 +63,13 @@
         </dropdown>
       </form>
       <div class="text-right">
-        <button id="closeButton" class="btn btn-default" @click="closeModal">
-          Close
-        </button>
-        <button id="submitButton" class="btn btn-primary" type="button"
-                @click="addSchedule">
-          Submit
-        </button>
+          <button id="closeButton" class="btn btn-default" @click="closeModal">
+              Close
+          </button>
+          <button id="submitButton" class="btn btn-primary" type="button" @click="addSchedule">
+              Submit
+          </button>
+        
       </div>
     </div>
   </div>
@@ -93,7 +93,7 @@
                 allEnvironments: [],
                 selectedEnvironments: [],
                 scheduledDate: null,
-                scheduledTime: new Date()
+                scheduledTime: new Date(),
             }
         },
         created() {
@@ -124,7 +124,17 @@
                 if (this.selectedEnvironments.length == 0) {
                     this.errors.push('You must select at least one environment');
                 }
+        
+                let currentDate = moment().format('YYYY-MM-DD');
+                let currentTime = moment().format('hh:mm:ss A');
 
+                let scheduledTimeFormat = moment(this.scheduledTime).format('hh:mm:ss A');
+                let scheduledDateFormat = moment(this.scheduledDate).format('YYYY-MM-DD');
+
+
+                if (scheduledDateFormat < currentDate || scheduledTimeFormat < currentTime) {
+                    this.errors.push("You have selected a GoLive date in the past.");
+                }
                 if (this.errors.length > 0) {
                     Bus.$emit('unblock-ui')
                     return;
@@ -135,6 +145,7 @@
                 combinedScheduledDateTime.add(time.hours(), 'hours');
                 combinedScheduledDateTime.add(time.minutes(), 'minutes');
 
+
                 axios.post('api/ToggleScheduler', {
                     applicationId: this.selectedAppId,
                     state: this.scheduledState,
@@ -142,6 +153,7 @@
                     environments: this.selectedEnvironments,
                     scheduleDate: combinedScheduledDateTime
                 }).then(() => {
+                    
                     this.cleanup();
                     this.closeModal();
                 }).catch(e => {
