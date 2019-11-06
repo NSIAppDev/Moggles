@@ -10,6 +10,7 @@ namespace Moggles.Domain
         public DateTime? FirstTimeDeployDate { get; set; }
         public DateTime? LastDeployStatusUpdate { get; set; }
         public DateTime LastUpdated { get; set; }
+        public string UpdatedbyUser { get; set; }
 
         public void MarkAsDeployed()
         {
@@ -28,16 +29,27 @@ namespace Moggles.Domain
             LastDeployStatusUpdate = DateTime.UtcNow;
         }
 
-        public void ToggleStatus(bool isEnabled)
+        public void ToggleStatus(bool isEnabled, string updatedBy)
         {
-            UpdateTimestampOnChange(isEnabled);
+            UpdateTimestampOnChange(isEnabled, updatedBy);
             Enabled = isEnabled;
         }
 
-        private void UpdateTimestampOnChange(bool isEnabled)
+        private void UpdateTimestampOnChange(bool isEnabled, string updatedBy)
         {
             if (Enabled != isEnabled)
+            {
                 LastUpdated = DateTime.UtcNow;
+                ChangeLastUpdateUser(updatedBy);
+            }
+        }
+
+        public void ChangeLastUpdateUser(string updatedBy)
+        {
+            if(updatedBy != UpdatedbyUser)
+            {
+                UpdatedbyUser = updatedBy;
+            }
         }
 
         public static FeatureToggleStatus Create(string envName, bool enabled)
@@ -47,7 +59,8 @@ namespace Moggles.Domain
                 Id = Guid.NewGuid(),
                 Enabled = enabled,
                 EnvironmentName = envName,
-                LastUpdated = DateTime.UtcNow
+                LastUpdated = DateTime.UtcNow,
+                UpdatedbyUser = "System"
             };
         }
     }

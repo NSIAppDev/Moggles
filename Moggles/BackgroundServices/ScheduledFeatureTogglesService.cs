@@ -56,7 +56,7 @@ namespace Moggles.BackgroundServices
                                     {
                                         try
                                         {
-                                            app.SetToggle(toggleSchedule.ToggleName, env, toggleSchedule.ScheduledState);
+                                            app.SetToggle(toggleSchedule.ToggleName, env, toggleSchedule.ScheduledState, "Scheduled on behalf of "+toggleSchedule.UpdatedBy);
                                             _logger.LogInformation(
                                                 $"Set toggle {toggleSchedule.ToggleName} to {toggleSchedule.ScheduledState} on {env} environment for {app.AppName}");
                                         }

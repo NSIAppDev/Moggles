@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using FluentAssertions;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
+using Moggles.Domain;
 using Moggles.Models;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Moggles.Domain;
 
 namespace Moggles.UnitTests.ApplicationsTests
 {
@@ -16,11 +18,16 @@ namespace Moggles.UnitTests.ApplicationsTests
     public class ApplicationsTest
     {
         private InMemoryApplicationRepository _appApplicationRepository;
+        private IHttpContextAccessor _httpContextAccessor;
+        private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
 
         [TestInitialize]
         public void BeforeTest()
         {
             _appApplicationRepository = new InMemoryApplicationRepository();
+            _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            _mockHttpContextAccessor.Setup(x => x.HttpContext.User.Identity.Name).Returns("bla");
+            _httpContextAccessor = _mockHttpContextAccessor.Object;
         }
 
         [TestMethod]
@@ -33,7 +40,7 @@ namespace Moggles.UnitTests.ApplicationsTests
             await _appApplicationRepository.AddAsync(bccApp);
             await _appApplicationRepository.AddAsync(cmmApp);
 
-            var controller = new ApplicationsController(_appApplicationRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);
 
             //act
             var result = await controller.GetAllApplications() as OkObjectResult;
@@ -49,7 +56,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task AddApplication_ReturnBadRequestResult_WhenModelStateIsInvalid()
         {
             //arrange
-            var controller = new ApplicationsController(_appApplicationRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);
             controller.ModelState.AddModelError("error", "some error");
 
             //act
@@ -63,8 +70,9 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task AddApplication_ApplicationIsBeingAdded()
         {
             //arrange
-            var appModel = new AddApplicationModel { ApplicationName = "BCC" };
-            var controller = new ApplicationsController(_appApplicationRepository);
+            var appModel = new AddApplicationModel { ApplicationName = "BCC" , UpdatedByUser = "updatedBy" };
+            var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);
+
 
             //act
             await controller.AddApplication(appModel);
@@ -80,7 +88,7 @@ namespace Moggles.UnitTests.ApplicationsTests
             var app = Application.Create("bcc", "dev", false);
             await _appApplicationRepository.AddAsync(app);
             var appModel = new AddApplicationModel { ApplicationName = "BCC" };
-            var controller = new ApplicationsController(_appApplicationRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);
 
             //act
             var result  = await controller.AddApplication(appModel);
@@ -95,7 +103,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         {
             //arrange
             var appModel = new AddApplicationModel { ApplicationName = "BCC", EnvironmentName = "Test", DefaultToggleValue = false };
-            var controller = new ApplicationsController(_appApplicationRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);
 
             //act
             await controller.AddApplication(appModel);
@@ -129,7 +137,7 @@ namespace Moggles.UnitTests.ApplicationsTests
                 ApplicationName = updatedAppName
             };
 
-            var controller = new ApplicationsController(_appApplicationRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);
 
             //act
             var result = await controller.UpdateApplication(updatedApp);
@@ -155,7 +163,7 @@ namespace Moggles.UnitTests.ApplicationsTests
                 ApplicationName = updatedAppName
             };
 
-            var controller = new ApplicationsController(_appApplicationRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);
 
             //act
             await controller.UpdateApplication(updatedApp);
@@ -168,7 +176,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task EditApplication_ReturnBadRequestResult_WhenModelStateIsInvalid()
         {
             //arrange
-            var controller = new ApplicationsController(_appApplicationRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);
             controller.ModelState.AddModelError("error", "some error");
 
             //act
@@ -193,7 +201,7 @@ namespace Moggles.UnitTests.ApplicationsTests
                 ApplicationName = "TestAppUpdated"
             };
 
-            var controller = new ApplicationsController(_appApplicationRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);
 
             //act
             var result = await controller.UpdateApplication(updatedApp);
@@ -214,7 +222,7 @@ namespace Moggles.UnitTests.ApplicationsTests
 
             await _appApplicationRepository.AddAsync(app);
 
-            var controller = new ApplicationsController(_appApplicationRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);
 
             //act
             var result = await controller.RemoveApp(app.Id);
@@ -233,7 +241,7 @@ namespace Moggles.UnitTests.ApplicationsTests
             var app = Application.Create("TestApp", "dev", false);
             await _appApplicationRepository.AddAsync(app);
 
-            var controller = new ApplicationsController(_appApplicationRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _httpContextAccessor);
 
             //act
             await controller.RemoveApp(Guid.NewGuid());

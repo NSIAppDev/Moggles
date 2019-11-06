@@ -1,5 +1,6 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moggles.Domain;
 using Moggles.Models;
@@ -16,11 +17,13 @@ namespace Moggles.Controllers
     {
         private readonly TelemetryClient _telemetry = new TelemetryClient();
         private readonly IRepository<Application> _applicationsRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
 
-        public FeatureTogglesController(IRepository<Application> applicationsRepository)
+        public FeatureTogglesController(IRepository<Application> applicationsRepository, IHttpContextAccessor httpContextAccessor)
         {
             _applicationsRepository = applicationsRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
@@ -45,7 +48,8 @@ namespace Moggles.Controllers
                                 Enabled = fts.Enabled,
                                 IsDeployed = fts.IsDeployed,
                                 LastUpdated = fts.LastUpdated,
-                                FirstTimeDeployDate = fts.FirstTimeDeployDate
+                                FirstTimeDeployDate = fts.FirstTimeDeployDate,
+                                UpdatedByUser = fts.UpdatedbyUser
                             }).ToList()
                 }).OrderByDescending(ft => ft.CreatedDate);
             return Ok(toggles);
@@ -71,6 +75,9 @@ namespace Moggles.Controllers
             var app = await _applicationsRepository.FindByIdAsync(model.ApplicationId);
             var toggleData = app.GetFeatureToggleBasicData(model.Id);
 
+            var updatedBy = _httpContextAccessor.HttpContext.User.Identity.Name;
+
+
             if (model.IsPermanent != toggleData.IsPermanent)
             {
                 app.UpdateFeatureTogglePermanentStatus(model.Id, model.IsPermanent);
@@ -91,6 +98,7 @@ namespace Moggles.Controllers
                 {
                     app.FeatureRejectedByUser(model.Id);
                 }
+
             }
 
             if (model.FeatureToggleName != toggleData.ToggleName)
@@ -103,12 +111,13 @@ namespace Moggles.Controllers
                 {
                     return BadRequest(ex.Message);
                 }
-            }
 
+            }
             foreach (var newStatus in model.Statuses)
             {
-                app.SetToggle(model.Id, newStatus.Environment, newStatus.Enabled);
+                app.SetToggle(model.Id, newStatus.Environment, newStatus.Enabled, updatedBy);
             }
+
 
             await _applicationsRepository.UpdateAsync(app);
             return Ok(model);
@@ -154,6 +163,7 @@ namespace Moggles.Controllers
         [Route("AddEnvironment")]
         public async Task<IActionResult> AddEnvironment([FromBody] AddEnvironmentModel environmentModel)
         {
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -166,7 +176,7 @@ namespace Moggles.Controllers
 
             try
             {
-                app.AddDeployEnvironment(environmentModel.EnvName, environmentModel.DefaultToggleValue, environmentModel.SortOrder);
+                app.AddDeployEnvironment(environmentModel.EnvName, environmentModel.DefaultToggleValue,  environmentModel.SortOrder);
             }
             catch (BusinessRuleValidationException ex)
             {
@@ -274,6 +284,7 @@ namespace Moggles.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CreateEnvironment([FromBody]AddEnvironmentPublicApiModel model)
         {
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 

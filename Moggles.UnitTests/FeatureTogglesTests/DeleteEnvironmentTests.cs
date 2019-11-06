@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
@@ -14,6 +15,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
     public class DeleteEnvironmentTests
     {
         private IRepository<Application> _appRepository;
+        private IHttpContextAccessor _httpContextAccessor;
 
         [TestInitialize]
         public void BeforeTest()
@@ -31,7 +33,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             app.AddFeatureToggle("t3", "");
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             var environmentToRemove = new DeleteEnvironmentModel
             {
@@ -59,7 +61,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             app.AddFeatureToggle("t3", "");
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             var environmentToRemove = new DeleteEnvironmentModel
             {
@@ -84,7 +86,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var app = Application.Create("TestApp", "DEV", false);
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository);
+            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             var environmentToRemove = new DeleteEnvironmentModel
             {

@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using System;
+using MassTransit;
 using Moggles.Domain;
 using MogglesContracts;
 using System.Linq;
@@ -21,7 +22,8 @@ namespace Moggles.Consumers
             string envName = context.Message.Environment;
             string[] clientToggles = context.Message.FeatureToggles;
 
-            var app = (await _applicationsRepository.GetAllAsync()).FirstOrDefault(a => a.AppName == appName);
+            var apps = await _applicationsRepository.GetAllAsync();
+            var app = apps.FirstOrDefault(a => string.Compare(a.AppName, appName, StringComparison.OrdinalIgnoreCase) == 0);
 
             if (app != null)
             {

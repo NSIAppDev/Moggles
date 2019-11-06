@@ -16,6 +16,7 @@
     <PackageReference Include="AutoMapper" Version="7.0.1" />
     <PackageReference Include="EntityFramework" Version="6.2.0" />
     <PackageReference Include="FluentAssertions" Version="5.5.0" />
+    <PackageReference Include="MassTransit.TestFramework" Version="5.5.6" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.8.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
