@@ -133,7 +133,7 @@
 
 
                 if (scheduledDateFormat < currentDate || scheduledTimeFormat < currentTime) {
-                    this.errors.push("You have selected a GoLive date in the past.");
+                    this.errors.push("Please select a GoLive date in the future!");
                 }
                 if (this.errors.length > 0) {
                     Bus.$emit('unblock-ui')
@@ -157,9 +157,31 @@
                     this.cleanup();
                     this.closeModal();
                 }).catch(e => {
-                    window.alert(e);
+                    Bus.$emit('unblock-ui')
+                    this.$notify({
+                        type: "error",
+                        content: "Error",
+                        offsetY: 70,
+                        icon: 'fas fa-check-circle'
+
+                    }).catch((e) => {
+						window.alert(e);
+					}).finally(() => {
+						Bus.$emit('unblock-ui')
+					});     
                 }).finally(() => {
-                    Bus.$emit('unblock-ui');
+                     Bus.$emit('unblock-ui')
+                    this.$notify({
+                        type: "success",
+                        content: "Success scheduling feature toggle!",
+                        offsetY: 70,
+                        icon: 'fas fa-check-circle'
+
+                    }).catch((e) => {
+						window.alert(e);
+					}).finally(() => {
+						Bus.$emit('unblock-ui')
+					}); 
                 });
             },
             loadToggles(appId) {

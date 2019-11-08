@@ -350,7 +350,7 @@
 						field: 'userAccepted',
 						label: 'Accepted by User',
 						type: 'boolean',
-						sortable: false,
+                        sortable: false,
 						filterOptions: {
 							enabled: true,
 							filterDropdownItems: [
@@ -461,12 +461,13 @@
                             rowModel[env + '_IsDeployed'] = envStatus ? envStatus.isDeployed : false;
                             rowModel[env + '_FirstTimeDeployDate'] = envStatus ? envStatus.firstTimeDeployDate : "";
                             rowModel[env + '_LastUpdated'] = envStatus ? envStatus.lastUpdated : "";
-                            rowModel[env + '_UpdatedByUser'] = envStatus ? envStatus.updatedByUser : "wtf";
+                            rowModel[env + '_UpdatedByUser'] = envStatus ? envStatus.updatedByUser : "";
                         });
 						return rowModel;
 					});
 
-					this.toggles = gridRowModels;
+                    this.toggles = gridRowModels;
+                    console.log(this.toggles);
 					Bus.$emit('toggles-loaded', gridRowModels);
 
 				}).catch(() => {
