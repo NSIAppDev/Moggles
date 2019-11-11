@@ -160,7 +160,7 @@
                     Bus.$emit('unblock-ui')
                     this.$notify({
                         type: "error",
-                        content: "Error",
+                        content: "Error scheduling feature: "+ e,
                         offsetY: 70,
                         icon: 'fas fa-check-circle'
 
@@ -181,7 +181,7 @@
 						window.alert(e);
 					}).finally(() => {
 						Bus.$emit('unblock-ui')
-					}); 
+                    }); 
                 });
             },
             loadToggles(appId) {
@@ -190,7 +190,7 @@
                         applicationId: appId
                     }
                 }).then((response) => {
-                    let dropDownModels = _.map(response.data, toggle => {
+                    let dropDownModels = _.map(response.data.filter(ft => ft.userAccepted == false), toggle => {
                         return {
                             value: toggle.toggleName,
                             label: toggle.toggleName

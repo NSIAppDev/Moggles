@@ -288,14 +288,15 @@
 					_.forEach(this.environmentsEdited, envName => {
 						this.addEnvironemntToRefreshList(envName);
 					});
-				}
-				axios.put('/api/featuretoggles', toggleUpdateModel)
-					.then(() => {
-						this.showEditModal = false
-						this.rowToEdit = null
-						this.loadGridData(this.selectedApp.id)
-						this.environmentsEdited = [];
-					}).catch(error => window.alert(error))
+                }
+                axios.put('/api/featuretoggles', toggleUpdateModel)
+                    .then(() => {
+                        this.showEditModal = false
+                        this.rowToEdit = null
+                        this.loadGridData(this.selectedApp.id)
+                        this.environmentsEdited = [];
+                    }).catch(error => window.alert(error))
+                Bus.$emit("refresh-apps");
             },
             cancelEditEnvName() {
                 this.showEditEnvironmentModal = false
@@ -467,7 +468,6 @@
 					});
 
                     this.toggles = gridRowModels;
-                    console.log(this.toggles);
 					Bus.$emit('toggles-loaded', gridRowModels);
 
 				}).catch(() => {
