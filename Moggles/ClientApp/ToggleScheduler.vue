@@ -93,7 +93,7 @@
                 allEnvironments: [],
                 selectedEnvironments: [],
                 scheduledDate: null,
-                scheduledTime: new Date(),
+                scheduledTime: new Date()
             }
         },
         created() {
@@ -132,7 +132,7 @@
                 let scheduledDateFormat = moment(this.scheduledDate).format('YYYY-MM-DD');
 
 
-                if (scheduledDateFormat < currentDate || scheduledTimeFormat < currentTime) {
+                if (scheduledDateFormat <= currentDate && scheduledTimeFormat <currentTime) {
                     this.errors.push("Please select a GoLive date in the future!");
                 }
                 if (this.errors.length > 0) {
@@ -153,35 +153,25 @@
                     environments: this.selectedEnvironments,
                     scheduleDate: combinedScheduledDateTime
                 }).then(() => {
-                    
+                     this.$notify({
+                        type: "success",
+                        content: "Success scheduling feature toggle!",
+                        offsetY: 70,
+                        icon: 'fas fa-check-circle'
+
+                    }) 
                     this.cleanup();
                     this.closeModal();
                 }).catch(e => {
                     Bus.$emit('unblock-ui')
                     this.$notify({
                         type: "error",
-                        content: "Error scheduling feature: "+ e,
+                        content: "Error scheduling feature: " + e,
                         offsetY: 70,
                         icon: 'fas fa-check-circle'
-
-                    }).catch((e) => {
-						window.alert(e);
-					}).finally(() => {
-						Bus.$emit('unblock-ui')
-					});     
+                    });
                 }).finally(() => {
                      Bus.$emit('unblock-ui')
-                    this.$notify({
-                        type: "success",
-                        content: "Success scheduling feature toggle!",
-                        offsetY: 70,
-                        icon: 'fas fa-check-circle'
-
-                    }).catch((e) => {
-						window.alert(e);
-					}).finally(() => {
-						Bus.$emit('unblock-ui')
-                    }); 
                 });
             },
             loadToggles(appId) {
