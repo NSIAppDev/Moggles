@@ -176,7 +176,7 @@ namespace Moggles.Controllers
 
             try
             {
-                app.AddDeployEnvironment(environmentModel.EnvName, environmentModel.DefaultToggleValue,  environmentModel.SortOrder);
+                app.AddDeployEnvironment(environmentModel.EnvName, environmentModel.DefaultToggleValue, environmentModel.SortOrder);
             }
             catch (BusinessRuleValidationException ex)
             {
@@ -236,7 +236,8 @@ namespace Moggles.Controllers
             _telemetry.TrackEvent("OnGetAllToggles");
 
             var app = await GetApplicationByName(applicationName);
-            if (app != null && app.DeploymentEnvironments.Exists(env => string.Compare(env.EnvName, environment, StringComparison.OrdinalIgnoreCase) == 0)) { 
+            if (app != null && app.DeploymentEnvironments.Exists(env => string.Compare(env.EnvName, environment, StringComparison.OrdinalIgnoreCase) == 0))
+            {
                 var featureToggles = app.FeatureToggles
                     .Select(x => new ApplicationFeatureToggleViewModel
                     {
@@ -262,7 +263,7 @@ namespace Moggles.Controllers
             if (app != null && app.DeploymentEnvironments.Exists(env => string.Compare(env.EnvName, environment, StringComparison.OrdinalIgnoreCase) == 0))
             {
                 var featureToggle = app.FeatureToggles
-                    .Where(ft => string.Compare(ft.ToggleName,featureToggleName, StringComparison.OrdinalIgnoreCase) == 0)
+                    .Where(ft => string.Compare(ft.ToggleName, featureToggleName, StringComparison.OrdinalIgnoreCase) == 0)
                     .Select(x => new ApplicationFeatureToggleViewModel
                     {
                         FeatureToggleName = x.ToggleName,

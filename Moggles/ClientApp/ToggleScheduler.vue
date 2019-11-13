@@ -63,13 +63,13 @@
         </dropdown>
       </form>
       <div class="text-right">
-        <button id="closeButton" class="btn btn-default" @click="closeModal">
-          Close
-        </button>
-        <button id="submitButton" class="btn btn-primary" type="button"
-                @click="addSchedule">
-          Submit
-        </button>
+          <button id="closeButton" class="btn btn-default" @click="closeModal">
+              Close
+          </button>
+          <button id="submitButton" class="btn btn-primary" type="button" @click="addSchedule">
+              Submit
+          </button>
+        
       </div>
     </div>
   </div>
@@ -124,7 +124,16 @@
                 if (this.selectedEnvironments.length == 0) {
                     this.errors.push('You must select at least one environment');
                 }
+        
+                let currentDate = new Date(moment().format("YYYY-MM-DD hh:mm:ss A"));
+                let scheduledDateFormat = moment(this.scheduledDate).format("YYYY-MM-DD");
+                let scheduledTimeFormat = moment(this.scheduledTime).format("hh:mm:ss A");
+                let dateTime = scheduledDateFormat + " " + scheduledTimeFormat;
+                let scheduledDateTime = new Date(dateTime);
 
+                if (scheduledDateTime < currentDate) {
+                    this.errors.push("Please select a GoLive date in the future!");
+                }
                 if (this.errors.length > 0) {
                     Bus.$emit('unblock-ui')
                     return;
@@ -142,12 +151,25 @@
                     environments: this.selectedEnvironments,
                     scheduleDate: combinedScheduledDateTime
                 }).then(() => {
+                     this.$notify({
+                        type: "success",
+                        content: "Success scheduling feature toggle!",
+                        offsetY: 70,
+                        icon: 'fas fa-check-circle'
+
+                    }) 
                     this.cleanup();
                     this.closeModal();
                 }).catch(e => {
-                    window.alert(e);
+                    Bus.$emit('unblock-ui')
+                    this.$notify({
+                        type: "error",
+                        content: "Error scheduling feature: " + e,
+                        offsetY: 70,
+                        icon: 'fas fa-check-circle'
+                    });
                 }).finally(() => {
-                    Bus.$emit('unblock-ui');
+                     Bus.$emit('unblock-ui')
                 });
             },
             loadToggles(appId) {
@@ -156,7 +178,7 @@
                         applicationId: appId
                     }
                 }).then((response) => {
-                    let dropDownModels = _.map(response.data, toggle => {
+                    let dropDownModels = _.map(response.data.filter(ft => ft.userAccepted == false), toggle => {
                         return {
                             value: toggle.toggleName,
                             label: toggle.toggleName
