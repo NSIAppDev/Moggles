@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.TestHost;
+﻿using System;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net.Http;
@@ -18,10 +19,10 @@ namespace Moggles.Tests
             _factory = new MogglesApplicationFactory<TestStartup>();
             var factory = _factory.WithWebHostBuilder(b =>
             {
-                b.UseSolutionRelativeContentRoot("Moggles");
+                b.UseSolutionRelativeContentRoot(Environment.CurrentDirectory);
                 b.ConfigureTestServices(services =>
                 {
-                    services.AddMvc().AddApplicationPart(typeof(Startup).Assembly);
+                    services.AddControllersWithViews().AddApplicationPart(typeof(Startup).Assembly);
                 });
             });
             _client = factory.CreateClient();

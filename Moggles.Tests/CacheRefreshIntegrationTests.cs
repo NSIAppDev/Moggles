@@ -29,10 +29,10 @@ namespace Moggles.Tests
             var factory = _factory.WithWebHostBuilder(b =>
             {
                 b.UseSolutionRelativeContentRoot(Environment.CurrentDirectory);
-                b.ConfigureTestServices(services => { services.AddMvc().AddApplicationPart(typeof(Startup).Assembly); });
+                b.ConfigureTestServices(services => { services.AddControllersWithViews().AddApplicationPart(typeof(Startup).Assembly); });
             });
             _client = factory.CreateClient();
-            var bus = (IBusControl)factory.Server.Host.Services.GetRequiredService(typeof(IBusControl));
+            var bus = (IBusControl)factory.Server.Services.GetRequiredService(typeof(IBusControl));
             bus.ConnectPublishObserver(this);
         }
 
