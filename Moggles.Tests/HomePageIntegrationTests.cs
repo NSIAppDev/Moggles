@@ -32,6 +32,7 @@ namespace Moggles.Tests
         public async Task SiteRootIsAccessible()
         {
             var response = await _client.GetAsync("/");
+            //var content = response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();
         }
 
