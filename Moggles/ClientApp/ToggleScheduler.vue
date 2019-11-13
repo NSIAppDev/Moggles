@@ -125,14 +125,13 @@
                     this.errors.push('You must select at least one environment');
                 }
         
-                let currentDate = moment().format('YYYY-MM-DD');
-                let currentTime = moment().format('hh:mm:ss A');
+                let currentDate = new Date(moment().format("YYYY-MM-DD hh:mm:ss A"));
+                let scheduledDateFormat = moment(this.scheduledDate).format("YYYY-MM-DD");
+                let scheduledTimeFormat = moment(this.scheduledTime).format("hh:mm:ss A");
+                let dateTime = scheduledDateFormat + " " + scheduledTimeFormat;
+                let scheduledDateTime = new Date(dateTime);
 
-                let scheduledTimeFormat = moment(this.scheduledTime).format('hh:mm:ss A');
-                let scheduledDateFormat = moment(this.scheduledDate).format('YYYY-MM-DD');
-
-
-                if (scheduledDateFormat <= currentDate && scheduledTimeFormat <currentTime) {
+                if (scheduledDateTime < currentDate) {
                     this.errors.push("Please select a GoLive date in the future!");
                 }
                 if (this.errors.length > 0) {
@@ -144,7 +143,6 @@
                 let time = moment(this.scheduledTime);
                 combinedScheduledDateTime.add(time.hours(), 'hours');
                 combinedScheduledDateTime.add(time.minutes(), 'minutes');
-
 
                 axios.post('api/ToggleScheduler', {
                     applicationId: this.selectedAppId,
