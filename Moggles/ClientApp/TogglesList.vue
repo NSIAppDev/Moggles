@@ -289,14 +289,15 @@
 					_.forEach(this.environmentsEdited, envName => {
 						this.addEnvironemntToRefreshList(envName);
 					});
-				}
-				axios.put('/api/featuretoggles', toggleUpdateModel)
-					.then(() => {
-						this.showEditModal = false
-						this.rowToEdit = null
-						this.loadGridData(this.selectedApp.id)
-						this.environmentsEdited = [];
-					}).catch(error => window.alert(error))
+                }
+                axios.put('/api/featuretoggles', toggleUpdateModel)
+                    .then(() => {
+                        this.showEditModal = false
+                        this.rowToEdit = null
+                        this.loadGridData(this.selectedApp.id)
+                        this.environmentsEdited = [];
+                    }).catch(error => window.alert(error))
+                Bus.$emit("refresh-apps");
             },
             cancelEditEnvName() {
                 this.showEditEnvironmentModal = false
@@ -351,7 +352,7 @@
 						field: 'userAccepted',
 						label: 'Accepted by User',
 						type: 'boolean',
-						sortable: false,
+                        sortable: false,
 						filterOptions: {
 							enabled: true,
 							filterDropdownItems: [
@@ -462,12 +463,12 @@
                             rowModel[env + '_IsDeployed'] = envStatus ? envStatus.isDeployed : false;
                             rowModel[env + '_FirstTimeDeployDate'] = envStatus ? envStatus.firstTimeDeployDate : "";
                             rowModel[env + '_LastUpdated'] = envStatus ? envStatus.lastUpdated : "";
-                            rowModel[env + '_UpdatedByUser'] = envStatus ? envStatus.updatedByUser : "wtf";
+                            rowModel[env + '_UpdatedByUser'] = envStatus ? envStatus.updatedByUser : "";
                         });
 						return rowModel;
 					});
 
-					this.toggles = gridRowModels;
+                    this.toggles = gridRowModels;
 					Bus.$emit('toggles-loaded', gridRowModels);
 
 				}).catch(() => {
