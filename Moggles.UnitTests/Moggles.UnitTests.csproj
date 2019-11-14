@@ -2,11 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
     <AssemblyName>Moggles.UnitTests</AssemblyName>
-
     <RootNamespace>Moggles.UnitTests</RootNamespace>
   </PropertyGroup>
 
@@ -17,7 +14,6 @@
     <PackageReference Include="EntityFramework" Version="6.3.0" />
     <PackageReference Include="FluentAssertions" Version="5.9.0" />
     <PackageReference Include="MassTransit.TestFramework" Version="5.5.6" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.3.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
