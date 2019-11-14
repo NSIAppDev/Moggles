@@ -27,6 +27,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.8.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="NoDb" Version="1.2.2" />
+    <PackageReference Include="NSTestFrameworkDotNetCoreUI" Version="1.19.1028.2" />
   </ItemGroup>
 
   <ItemGroup>
