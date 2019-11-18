@@ -228,10 +228,10 @@
 				if (app) {
                     this.selectedApp = app;
 					this.initializeGrid(app)
-					this.environmentsToRefresh = []
-					this.closeRefreshAlert()
+					//this.environmentsToRefresh = []
+					//this.closeRefreshAlert()
 				}
-			})
+            })
 
 			Bus.$on("env-added", () => {
 				this.initializeGrid(this.selectedApp);
@@ -277,7 +277,8 @@
 					featureToggleName: this.rowToEdit.toggleName,
 					isPermanent: this.rowToEdit.isPermanent,
 					statuses: []
-				}
+                }
+                this.isCacheRefreshEnabled = true;
                 _.forEach(this.environmentsList, envName => {
                     toggleUpdateModel.statuses.push({
                         environment: envName,
@@ -294,8 +295,8 @@
                         this.showEditModal = false
                         this.rowToEdit = null
                         this.loadGridData(this.selectedApp.id)
-                        this.environmentsEdited = [];
-                        Bus.$emit("app-changed", this.selectedApp);
+                        this.environmentsEdited = []
+                        Bus.$emit("app-changed", this.selectedApp)
                     }).catch(error => window.alert(error))
             },
             cancelEditEnvName() {

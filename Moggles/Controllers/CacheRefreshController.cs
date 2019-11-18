@@ -36,12 +36,6 @@ namespace Moggles.Controllers
             if (app == null)
                 throw new InvalidOperationException("Application ID is invalid");
 
-            await _bus.Publish(new RefreshTogglesCache
-            {
-                Environment = refreshCacheModel.EnvName,
-                ApplicationName = app.AppName
-            });
-
             return Ok();
         }
 
