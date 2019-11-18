@@ -57,6 +57,7 @@ namespace Moggles.Controllers
 
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [Route("environments")]
         public async Task<IActionResult> GetEnvironments(Guid applicationId)

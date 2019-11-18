@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Moggles.Controllers
 {
-    [Authorize]
+    [Authorize()]
     [Route("api/[controller]")]
     [ApiController]
     public class ToggleSchedulerController : ControllerBase
