@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Moggles.Controllers
 {
+    [Authorize]
     [Produces("application/json")]
     [Route("api/FeatureToggles")]
     public class FeatureTogglesController : Controller
