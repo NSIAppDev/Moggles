@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Moggles.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "OnlyAdmins")]
     [Produces("application/json")]
     [Route("api/FeatureToggles")]
     public class FeatureTogglesController : Controller
@@ -57,7 +57,6 @@ namespace Moggles.Controllers
 
         }
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("environments")]
         public async Task<IActionResult> GetEnvironments(Guid applicationId)
