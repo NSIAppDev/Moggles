@@ -11,9 +11,9 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.9.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="1.0.19269.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
     <PackageReference Include="Microsoft.VisualStudio.SlowCheetah" Version="3.2.26">
       <PrivateAssets>all</PrivateAssets>
@@ -25,9 +25,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NSTestFrameworkDotNetCoreUI" Version="1.19.1028.2" />
+    <PackageReference Include="NSTestFrameworkDotNetCoreUI" Version="1.19.1113.2" />
     <PackageReference Include="RestSharp" Version="106.6.10" />
     <PackageReference Include="Selenium.Chrome.WebDriver" Version="77.0.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
   </ItemGroup>
 
