@@ -26,30 +26,31 @@
         </div>
       </div>
       <template slot="table-row" slot-scope="props">
-        <span v-if="props.column.type == 'boolean'" class="pull-left" :class="{ 'is-deployed': props.row[props.column.field + '_IsDeployed']}">
-          <p-check v-if="props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
-                   color="success">
-            <i slot="extra" class="icon fas fa-check" />
-          </p-check>
-          <p-check v-if="!props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
-                   color="default">
-            <i slot="extra" class="icon fas fa-check" />
-          </p-check>
-        </span>
-        <span v-else-if="props.column.field == 'id'">
-          <a @click="edit(props.row)"><i class="fas fa-edit" /></a>
-          <a v-if="!props.row.isPermanent" @click="confirmDelete(props.row)"><i class="fas fa-trash-alt" /></a>
-          <span v-if="props.row.isPermanent" title="Permanent flags cannot be deleted!" class="disabled-link"><i class="fas fa-trash-alt" /></span>
-        </span>
-        <span v-else-if="props.column.field == 'toggleName' && props.row.isPermanent">
-          <span>{{ props.row.toggleName }}</span> <span class="label label-danger">Permanent</span>
-        </span>
-        <span v-else-if="props.column.field == 'createdDate'">
-          {{ props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A') }}
-        </span>
-        <span v-else>
-          {{ props.formattedRow[props.column.field] }}
-        </span>
+          <span v-if="props.column.type == 'boolean'" class="pull-left" :class="{ 'is-deployed': props.row[props.column.field + '_IsDeployed']}">
+              <p-check v-if="props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
+                       color="success">
+                  <i slot="extra" class="icon fas fa-check" />
+              </p-check>
+              <p-check v-if="!props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
+                       color="default">
+                  <i slot="extra" class="icon fas fa-check" />
+              </p-check>
+          </span>
+          <span v-else-if="props.column.field == 'id'">
+              <a @click="edit(props.row)"><i class="fas fa-edit" /></a>
+              <a v-if="!props.row.isPermanent" @click="confirmDelete(props.row)"><i class="fas fa-trash-alt" /></a>
+              <span v-if="props.row.isPermanent" title="Permanent flags cannot be deleted!" class="disabled-link"><i class="fas fa-trash-alt" /></span>
+          </span>
+          <span v-else-if="props.column.field == 'toggleName' && props.row.isPermanent">
+              <span>{{ props.row.toggleName }}</span> <span class="label label-danger">Permanent</span>
+          </span>
+          
+          <span v-else-if="props.column.field == 'createdDate'">
+              {{ props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A') }}
+          </span>
+          <span v-else>
+              {{ props.formattedRow[props.column.field] }}
+          </span>
       </template>
       <template slot="table-column" slot-scope="props">
         {{ props.column.label }}
@@ -289,6 +290,28 @@
 						this.addEnvironemntToRefreshList(envName);
 					});
                 }
+                axios.get("/api/toggleScheduler", {
+                    params: {
+                        applicationId: this.selectedApp.id
+                    }
+                }).then((response) => {
+
+                    //create the flattened row models
+                    let models = _.map(response.data.filter, toggle => {
+                        let model = {
+                            id: toggle.id,
+                            toggleName: toggle.toggleName,
+                            scheduledDate: toggle.scheduledDate,
+                            scheduledState: toggle.scheduledState,
+                            updatedBy: toggle.updatedBy
+                        };
+                        return model;
+                    });
+                    console.log(models);
+                }).catch(() => {
+                    //do not uncomment this, the null reference exception will return to haunt us !
+                    //window.alert(error)
+                });
                 axios.put('/api/featuretoggles', toggleUpdateModel)
                     .then(() => {
                         this.showEditModal = false

@@ -45,5 +45,13 @@ namespace Moggles.Controllers
 
             return Ok();
         }
+        [HttpGet]
+        [Route("")]
+        public async Task<IActionResult> GetScheduledToggles(Guid applicationId)
+        {
+            var scheduledToggles = (await _toggleScheduleRepository.GetAllAsync()).ToList();
+            return Ok(scheduledToggles);
+
+        }
     }
 }
