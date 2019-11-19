@@ -296,8 +296,8 @@
                         this.rowToEdit = null
                         this.loadGridData(this.selectedApp.id)
                         this.environmentsEdited = [];
+                        Bus.$emit("app-changed", this.selectedApp);
                     }).catch(error => window.alert(error))
-                Bus.$emit("refresh-apps");
             },
             cancelEditEnvName() {
                 this.showEditEnvironmentModal = false

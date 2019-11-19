@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Moggles.Controllers
 {
+    [Authorize(Policy = "OnlyAdmins")]
     [Produces("application/json")]
     [Route("api/FeatureToggles")]
     public class FeatureTogglesController : Controller
