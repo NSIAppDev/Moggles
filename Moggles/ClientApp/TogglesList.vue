@@ -228,8 +228,6 @@
 				if (app) {
                     this.selectedApp = app;
 					this.initializeGrid(app)
-					//this.environmentsToRefresh = []
-					//this.closeRefreshAlert()
 				}
             })
 
@@ -278,7 +276,6 @@
 					isPermanent: this.rowToEdit.isPermanent,
 					statuses: []
                 }
-                this.isCacheRefreshEnabled = true;
                 _.forEach(this.environmentsList, envName => {
                     toggleUpdateModel.statuses.push({
                         environment: envName,
@@ -531,7 +528,7 @@
 				let index = _.indexOf(this.environmentsToRefresh, env);
 				if (index === -1 && this.isEnviroment(env)) {
 					this.environmentsToRefresh.push(env);
-					this.refreshAlertVisible = true;
+                    this.refreshAlertVisible = true;
 				}
 			},
 			closeRefreshAlert() {
