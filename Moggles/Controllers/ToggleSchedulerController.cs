@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moggles.Domain;
 using Moggles.Models;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Moggles.Controllers
 {
+    [Authorize(Policy ="OnlyAdmins")]
     [Route("api/[controller]")]
     [ApiController]
     public class ToggleSchedulerController : ControllerBase

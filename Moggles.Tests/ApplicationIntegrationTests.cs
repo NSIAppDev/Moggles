@@ -29,7 +29,7 @@ namespace Moggles.Tests
                 b.UseSolutionRelativeContentRoot(Environment.CurrentDirectory);
                 b.ConfigureTestServices(services =>
                 {
-                    services.AddMvc().AddApplicationPart(typeof(Startup).Assembly);
+                    services.AddControllersWithViews().AddApplicationPart(typeof(Startup).Assembly);
                 });
             });
             _client = factory.CreateClient();

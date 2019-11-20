@@ -4,7 +4,6 @@ using MassTransit.ExtensionsDependencyInjectionIntegration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.IISIntegration;
-using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +15,7 @@ using Moggles.Data.NoDb;
 using NoDb;
 using Moggles.Domain;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SpaServices.Webpack;
 
 namespace Moggles
 {
@@ -33,7 +33,9 @@ namespace Moggles
         {
             ConfigureAuthServices(services);
 
-            services.AddMvc();
+            services.AddControllersWithViews();
+
+            services.AddApplicationInsightsTelemetry();
 
             ConfigureDatabaseServices(services);
 
@@ -65,12 +67,15 @@ namespace Moggles
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env, Microsoft.AspNetCore.Hosting.IApplicationLifetime appLifetime, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+#pragma warning disable CS0618 // Type or member is obsolete
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
+#pragma warning restore CS0618 // Type or member is obsolete
                 {
                     HotModuleReplacement = true
                 });
@@ -82,16 +87,20 @@ namespace Moggles
             else
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseExceptionHandler("/Home/Error");
             }
 
             app.UseStaticFiles();
-            
-            app.UseMvc(routes =>
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllers();
+                endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapFallbackToController("Index", "Home");
             });
         }
 
@@ -106,7 +115,6 @@ namespace Moggles
             services.AddSingleton<IBus>(provider => provider.GetRequiredService<IBusControl>());
 
             services.AddSingleton<IHostedService, BusService>();
-           
         }
 
         public virtual IBusControl ConfigureMessageBus(IServiceProvider serviceProvider)

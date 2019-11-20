@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using Moggles.Domain;
 using Moggles.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Moggles.Controllers
 {
+    [Authorize(Policy = "OnlyAdmins")]
     [Produces("application/json")]
     [Route("api/FeatureToggles")]
     public class FeatureTogglesController : Controller
