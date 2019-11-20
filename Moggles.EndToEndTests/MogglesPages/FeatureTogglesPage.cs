@@ -55,6 +55,11 @@ namespace MogglesEndToEndTests.MogglesPages
                 By.CssSelector(
                     "body > div:nth-child(1) > div> div > div > div > div> div > div > div> div> div > div:nth-child(4) > div > div> div > div > input[type=checkbox]"));
 
+        public IWebElement RefreshEnvironmentButton =>
+            Browser.WebDriver.FindElement(
+                By.CssSelector(
+                    "body > div > div> div > div > div > div.alert.alert-info > span > button"));
+
         public IWebElement FilterByACriteria =>
             Browser.WebDriver.FindElement(
                 By.CssSelector(
@@ -421,8 +426,8 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void CloseEditFeatureFlagsModal()
         {
-            CancelEditFeatureFlagsModalButton.Click();
             Thread.Sleep(1000);
+            CancelEditFeatureFlagsModalButton.Click();
         }
 
         public void UpdateDevEnvironment()
@@ -430,6 +435,8 @@ namespace MogglesEndToEndTests.MogglesPages
             Thread.Sleep(1000);
             DevEnvironmentCheckbox.Click();
             SaveButton.Click();
+            Thread.Sleep(1000);
+            RefreshEnvironmentButton.Click();
         }
     }
 }

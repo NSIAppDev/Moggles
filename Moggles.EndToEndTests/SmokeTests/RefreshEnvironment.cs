@@ -1,17 +1,19 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moggles.EndToEndTests.TestFramework;
 using MogglesEndToEndTests.TestFramework;
 using NSTestFrameworkDotNetCoreUI.Helpers;
 
 namespace Moggles.EndToEndTests.SmokeTests
 {
     [TestClass]
-    public class RefreshEnvironment
+    public class RefreshEnvironment : BaseTest
     {
         [TestMethod]
-        [TestCategory("AddFeatureToggle")]
+        [TestCategory("RefreshEnvironment")]
         [TestCategory("SmokeTests")]
 
-        public void AddANewFeatureToggle_TheFeatureToggleIsAdded()
+        public void UpdateDevEnvironment_DevEnvironmentIsRefreshed()
         {
             //act
             Browser.Goto(Constants.BaseUrl);
@@ -19,6 +21,18 @@ namespace Moggles.EndToEndTests.SmokeTests
             Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
             Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
             Pages.FeatureTogglesPage.UpdateDevEnvironment();
+            Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
+
+            //assert
+            Pages.FeatureTogglesPage.IsDevEnvironmentCheckboxChecked().Should().BeFalse();
+        }
+
+        [TestCleanup]
+        public override void After()
+        {
+            Pages.FeatureTogglesPage.CloseEditFeatureFlagsModal();
+            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName);
+            base.After();
         }
     }
 }
