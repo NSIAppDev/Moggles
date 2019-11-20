@@ -81,15 +81,15 @@
                 </div>
               </div>
               <div class="col-sm-6 margin-top-8">
-                  <div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null">
-                      <strong>Deployed:</strong> {{ rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('M/D/YY hh:mm:ss A') }}
-                  </div>
-                  <div v-if="isEnviroment(col.field)">
-                      <strong>Last Updated:</strong> {{ rowToEdit[col.field + '_LastUpdated'] | moment('M/D/YY hh:mm:ss A') }}
-                  </div>
-                  <div v-if="isEnviroment(col.field)">
-                      <strong>Updated by:</strong> {{ rowToEdit[col.field + '_UpdatedByUser']   }}
-                  </div>
+                <div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null">
+                  <strong>Deployed:</strong> {{ rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('M/D/YY hh:mm:ss A') }}
+                </div>
+                <div v-if="isEnviroment(col.field)">
+                  <strong>Last Updated:</strong> {{ rowToEdit[col.field + '_LastUpdated'] | moment('M/D/YY hh:mm:ss A') }}
+                </div>
+                <div v-if="isEnviroment(col.field)">
+                  <strong>Updated by:</strong> {{ rowToEdit[col.field + '_UpdatedByUser'] }}
+                </div>
               </div>
             </div>
             <div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
@@ -138,10 +138,10 @@
             </div>
           </div>
           <div class="form-group">        
-              <label class="col-sm-4 control-label">Environment name</label>
-              <div class="col-sm-7">
-                  <input v-model="editedEnvironmentName" type="text" class="form-control">
-              </div>
+            <label class="col-sm-4 control-label">Environment name</label>
+            <div class="col-sm-7">
+              <input v-model="editedEnvironmentName" type="text" class="form-control">
+            </div>
           </div>
           <div class="clearfix">
             <div class="col-sm-6">
@@ -153,7 +153,8 @@
               <button type="button" class="btn btn-default" @click="cancelEditEnvName">
                 Cancel
               </button>
-              <button type="button" class="btn btn-primary" @click="saveEnvironment" :disabled=!enableEditEnvironmentSave>
+              <button type="button" class="btn btn-primary" :disabled="!enableEditEnvironmentSave"
+                      @click="saveEnvironment">
                 Save
               </button>
             </div>
@@ -228,10 +229,8 @@
 				if (app) {
                     this.selectedApp = app;
 					this.initializeGrid(app)
-					this.environmentsToRefresh = []
-					this.closeRefreshAlert()
 				}
-			})
+            })
 
 			Bus.$on("env-added", () => {
 				this.initializeGrid(this.selectedApp);
@@ -277,7 +276,7 @@
 					featureToggleName: this.rowToEdit.toggleName,
 					isPermanent: this.rowToEdit.isPermanent,
 					statuses: []
-				}
+                }
                 _.forEach(this.environmentsList, envName => {
                     toggleUpdateModel.statuses.push({
                         environment: envName,
@@ -294,8 +293,8 @@
                         this.showEditModal = false
                         this.rowToEdit = null
                         this.loadGridData(this.selectedApp.id)
-                        this.environmentsEdited = [];
-                        Bus.$emit("app-changed", this.selectedApp);
+                        this.environmentsEdited = []
+                        Bus.$emit("app-changed", this.selectedApp)
                     }).catch(error => window.alert(error))
             },
             cancelEditEnvName() {
@@ -530,7 +529,7 @@
 				let index = _.indexOf(this.environmentsToRefresh, env);
 				if (index === -1 && this.isEnviroment(env)) {
 					this.environmentsToRefresh.push(env);
-					this.refreshAlertVisible = true;
+                    this.refreshAlertVisible = true;
 				}
 			},
 			closeRefreshAlert() {
