@@ -44,7 +44,9 @@
           <span v-else-if="props.column.field == 'toggleName' && props.row.isPermanent">
               <span>{{ props.row.toggleName }}</span> <span class="label label-danger">Permanent</span>
           </span>
-          
+          <span v-else-if="props.column.field == 'toggleName' && isfeatureSchedulerActive">
+              <span>{{ props.row.toggleName }}</span>  <span class=""></span>
+          </span>
           <span v-else-if="props.column.field == 'createdDate'">
               {{ props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A') }}
           </span>
@@ -210,7 +212,9 @@
 				isCacheRefreshEnabled: false,
                 editFeatureToggleErrors: [],
                 editEnvErrors: [],
-                editedEnvironmentName:""
+                editedEnvironmentName: "",
+                editFeatureToggleScheduler: [],
+                isfeatureSchedulerActive : true
 			}
 		},
 		computed: {
@@ -297,7 +301,7 @@
                 }).then((response) => {
 
                     //create the flattened row models
-                    let models = _.map(response.data.filter, toggle => {
+                    let models = _.map(response.data, toggle => {
                         let model = {
                             id: toggle.id,
                             toggleName: toggle.toggleName,
@@ -305,6 +309,7 @@
                             scheduledState: toggle.scheduledState,
                             updatedBy: toggle.updatedBy
                         };
+                        console.log(model);
                         return model;
                     });
                     console.log(models);

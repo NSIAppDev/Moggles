@@ -49,7 +49,8 @@ namespace Moggles.Controllers
         [Route("")]
         public async Task<IActionResult> GetScheduledToggles(Guid applicationId)
         {
-            var scheduledToggles = (await _toggleScheduleRepository.GetAllAsync()).ToList();
+            var app = await _applicationRepository.FindByIdAsync(applicationId);
+            var scheduledToggles = (await _toggleScheduleRepository.GetAllAsync()).ToList().Where(fts => fts.ApplicationName == app.AppName);
             return Ok(scheduledToggles);
 
         }
