@@ -172,6 +172,9 @@ namespace MogglesEndToEndTests.MogglesPages
         private readonly By _qaLastUpdatedDate =
             By.CssSelector("body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div> div > div:nth-child(5) > div > div.col-sm-6> div");
 
+        private readonly By _refreshedEnvMessage =
+            By.CssSelector("body > div.fade.alert.alert-success.alert-dismissible.in");
+
         public IWebElement SelectedApplicationName =>
             Browser.WebDriver.FindElement(
                 By.CssSelector("#app-sel  div  div  div:nth-child(1)"));
@@ -434,9 +437,19 @@ namespace MogglesEndToEndTests.MogglesPages
         {
             Thread.Sleep(1000);
             DevEnvironmentCheckbox.Click();
-            SaveButton.Click();
+            SaveButton.Click();     
+        }
+
+        public void RefreshEnvironment()
+        {
             Thread.Sleep(1000);
             RefreshEnvironmentButton.Click();
+        }
+
+        public bool IsRefreshedEnvironmentMessageIsDisplayed()
+        {
+            WaitHelpers.WaitUntilElementIsVisible(_refreshedEnvMessage);
+            return PageHelpers.IsElementEnabled(_refreshedEnvMessage);
         }
     }
 }

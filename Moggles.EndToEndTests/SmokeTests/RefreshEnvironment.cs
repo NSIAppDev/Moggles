@@ -13,7 +13,7 @@ namespace Moggles.EndToEndTests.SmokeTests
         [TestCategory("RefreshEnvironment")]
         [TestCategory("SmokeTests")]
 
-        public void UpdateDevEnvironment_DevEnvironmentIsRefreshed()
+        public void UpdateEnvironment_RefreshIsTriggered()
         {
             //act
             Browser.Goto(Constants.BaseUrl);
@@ -21,16 +21,15 @@ namespace Moggles.EndToEndTests.SmokeTests
             Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
             Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
             Pages.FeatureTogglesPage.UpdateDevEnvironment();
-            Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
+            Pages.FeatureTogglesPage.RefreshEnvironment();
 
             //assert
-            Pages.FeatureTogglesPage.IsDevEnvironmentCheckboxChecked().Should().BeFalse();
+            Pages.FeatureTogglesPage.IsRefreshedEnvironmentMessageIsDisplayed().Should().BeTrue();
         }
 
         [TestCleanup]
         public override void After()
         {
-            Pages.FeatureTogglesPage.CloseEditFeatureFlagsModal();
             Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName);
             base.After();
         }
