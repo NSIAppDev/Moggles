@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Moggles.Domain;
 using Moggles.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Moggles.Controllers
 {
-    [Authorize(Policy ="OnlyAdmins")]
+    [Authorize(Policy = "OnlyAdmins")]
     [Route("api/[controller]")]
     [ApiController]
     public class ToggleSchedulerController : ControllerBase
@@ -53,7 +55,43 @@ namespace Moggles.Controllers
             var app = await _applicationRepository.FindByIdAsync(applicationId);
             var scheduledToggles = (await _toggleScheduleRepository.GetAllAsync()).ToList().Where(fts => fts.ApplicationName == app.AppName);
             return Ok(scheduledToggles);
+        }
+        [HttpGet]
+        [Route("getToggleScheduler")]
+        public async Task<IActionResult> GetFeatureSchedule([FromQuery] Guid toggleId)
+        {
+            var toggle = await _toggleScheduleRepository.FindByIdAsync(toggleId);
+            return Ok(toggle);
+        }
 
+        [HttpPut]
+        [Route("")]
+        public async Task<IActionResult> Update([FromBody] UpdateFeatureToggleSchedulerModel model)
+        {
+            var updatedBy = _httpContextAccessor.HttpContext.User.Identity.Name;
+            var toggleSchedule = await _toggleScheduleRepository.FindByIdAsync(model.Id);
+            var models = model.Environments;
+            var tg = toggleSchedule.Environments;
+            toggleSchedule.Environments = new List<string>();
+
+            foreach (var env in  model.Environments)
+            {
+                toggleSchedule.AddEnvironment(env);
+            }
+            if (model.ScheduledDate != toggleSchedule.ScheduledDate)
+            {
+                toggleSchedule.ChangeDate(model.ScheduledDate);
+            }
+            if (model.ScheduledState != toggleSchedule.ScheduledState)
+            {
+                toggleSchedule.ChangeState(model.ScheduledState);
+            }
+            if (toggleSchedule.UpdatedBy != updatedBy)
+            {
+                toggleSchedule.ChangeUpdatedBy(updatedBy);
+            }
+            await _toggleScheduleRepository.UpdateAsync(toggleSchedule);
+            return Ok(toggleSchedule);
         }
     }
 }

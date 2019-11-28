@@ -99,5 +99,31 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             //assert
             act.Should().Throw<InvalidOperationException>();
         }
+
+        [TestMethod]
+        public async Task ReturnScheduleToggled_WhenThereAreTogglesScheduled()
+        {
+            //arrange
+            var date = new DateTime(2099, 3, 2, 15, 45, 0);
+            var app = Application.Create("tst", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", null);
+            app.AddFeatureToggle("t2", null);
+            await _appRepository.AddAsync(app);
+            await _sut.ScheduleToggles(new ScheduleTogglesModel
+            {
+                ApplicationId = app.Id,
+                FeatureToggles = new List<string> { "t1", "t2" },
+                Environments = new List<string> { "DEV", "QA" },
+                ScheduleDate = date,
+                State = true
+            });
+
+            //act
+            var apps = await _toggleSchedulesRepository.GetAllAsync();
+
+            //assert
+            apps.Count().Should().Be(2);
+        }
     }
 }

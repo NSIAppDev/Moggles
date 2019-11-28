@@ -36,7 +36,7 @@
                 <li><a role="button" @click="showAddToggle = true">Add Feature Toggle</a></li>
                 <li><a role="button" @click="showAddApp = true">Add New Application</a></li>
                 <li><a role="button" @click="showAddEnv = true">Add New Environment</a></li>
-                <li><a role="button" @click="showScheduler = true">Feature Toggle Scheduler</a></li>
+                <li><a role="button" @click="showAddScheduler()">Feature Toggle Scheduler</a></li>
                 <li v-if="isCacheRefreshEnabled">
                   <a role="button" @click="showForceCacheRefresh = true">Force Cache Refresh</a>
                 </li>
@@ -158,6 +158,10 @@
             confirmDeleteApp() {
                 this.showDeleteAppConfirmation = true;
             },
+            showAddScheduler() {
+                this.showScheduler = true;
+                Bus.$emit('add-scheduler');
+            }
         }
     }
 </script>
