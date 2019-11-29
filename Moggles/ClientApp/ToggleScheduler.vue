@@ -199,7 +199,7 @@
                     }).then(() => {
                         this.$notify({
                             type: "success",
-                            content: "Success updating a schedule feature toggle!",
+                            content: "Success updating a scheduled feature toggle!",
                             offsetY: 70,
                             icon: 'fas fa-check-circle'
                         })
@@ -210,13 +210,14 @@
                         Bus.$emit('unblock-ui')
                         this.$notify({
                             type: "error",
-                            content: "Error scheduling feature: " + e,
+                            content: "Error updating scheduled feature toggle: " + e,
                             offsetY: 70,
                             icon: 'fas fa-check-circle'
                         });
                     }).finally(() => {
                         Bus.$emit('unblock-ui')
                     });
+
                 }
             },
             loadToggles(appId) {

@@ -237,8 +237,10 @@
             }).catch(error => window.alert(error));
             Bus.$on("app-changed", app => {
                 if (app) {
+                    this.scheduledToggles = [];
                     this.selectedApp = app;
-                    this.initializeGrid(app)
+                    this.initializeGrid(app);
+                    this.getAllScheduledToggle(this.selectedApp.id);
                 }
             })
 
@@ -503,6 +505,7 @@
 
 
             loadGridData(appId) {
+                Bus.$emit('toggle-scheduled');
 				axios.get("/api/FeatureToggles", {
 					params: {
 						applicationId: appId
@@ -539,8 +542,7 @@
 			},
 			initializeGrid(app) {
                 this.environmentsList = [];
-                this.getAllScheduledToggle(app.id);
-                console.log(this.scheduledToggles);
+                Bus.$emit('toggle-scheduled');
 				axios.get("/api/FeatureToggles/environments", {
 					params: {
 						applicationId: app.id
