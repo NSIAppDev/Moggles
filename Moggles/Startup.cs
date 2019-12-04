@@ -33,6 +33,8 @@ namespace Moggles
         {
             ConfigureAuthServices(services);
 
+            services.AddSignalR();
+
             services.AddControllersWithViews();
 
             services.AddApplicationInsightsTelemetry();
@@ -101,6 +103,7 @@ namespace Moggles
                 endpoints.MapControllers();
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapFallbackToController("Index", "Home");
+                endpoints.MapHub<IsDueHub>("/isDueHub");
             });
         }
 
