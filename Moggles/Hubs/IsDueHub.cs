@@ -9,6 +9,7 @@ namespace Moggles.Hubs
     {
         Task IsDue(ToggleSchedule toggleSchedule);
     }
+
     public class IsDueHub : Hub<IIsDueHub>
     { 
         public override Task OnConnectedAsync()

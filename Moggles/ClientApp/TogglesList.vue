@@ -240,8 +240,8 @@
             //    Bus.$emit("app-changed", this.selectedApp);
             //    this.start();
             //});
-            this.connection.start();
-            console.log(this.connection);
+            //this.connection.start();
+            //console.log(this.connection);
            
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
@@ -272,19 +272,25 @@
             })
             
 
-		},
+        },
+        mounted() {
+            this.start();
+        },
         methods: {
 
             start() {
                 try {
                     console.log("start() called");
-                    this.connection.off('IsDue', this.scheduledToggles);
-                    this.connection.on('IsDue', this.scheduledToggles);
+                    this.connection.off('IsDue', this.signal);
+                    this.connection.on('IsDue', this.signal);
                     this.connection.start();
                     console.log(this.connection);
                 } catch (err) {
                     setTimeout(() => this.start, 5000);
                 }
+            },
+            signal(data) {
+                this.loadGridData(this.selectedApp.id);
             },
             saveEnvironment() {
                 this.editEnvErrors = []
