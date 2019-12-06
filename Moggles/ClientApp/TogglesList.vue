@@ -189,7 +189,7 @@
     import _ from 'lodash';
     import { Bus } from './event-bus';
     import ToggleScheduler from "./ToggleScheduler";
-
+    import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 	export default {
         environmentsList: [],
 		components: {
@@ -220,7 +220,9 @@
                 editedEnvironmentName: "",
                 editFeatureToggleScheduler: [],
                 scheduledToggles: [],
-                showScheduler : false
+                showScheduler: false,
+                connectionId: null,
+                connection:null
             }
 		},
 		computed: {
@@ -232,6 +234,15 @@
             }
 		},
         created() {
+            this.connection = new HubConnectionBuilder().withUrl("/isDueHub").configureLogging(LogLevel.Trace).build();
+
+            //this.connection.onclose(() => {
+            //    Bus.$emit("app-changed", this.selectedApp);
+            //    this.start();
+            //});
+            //this.connection.start();
+            //console.log(this.connection);
+           
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
             }).catch(error => window.alert(error));
@@ -261,8 +272,26 @@
             })
             
 
-		},
+        },
+        mounted() {
+            this.start();
+        },
         methods: {
+
+            start() {
+                try {
+                    console.log("start() called");
+                    this.connection.off('IsDue', this.signal);
+                    this.connection.on('IsDue', this.signal);
+                    this.connection.start();
+                    console.log(this.connection);
+                } catch (err) {
+                    setTimeout(() => this.start, 5000);
+                }
+            },
+            signal(data) {
+                this.loadGridData(this.selectedApp.id);
+            },
             saveEnvironment() {
                 this.editEnvErrors = []
                 if (this.stringIsNullOrEmpty(this.editedEnvironmentName)) {
@@ -459,6 +488,7 @@
 				return false;
             },
             getAllScheduledToggle(appId) {
+
                 axios.get("/api/toggleScheduler", {
                     params: {
                         applicationId: appId

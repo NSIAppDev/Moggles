@@ -16,6 +16,7 @@ using NoDb;
 using Moggles.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.Webpack;
+using Moggles.Hubs;
 
 namespace Moggles
 {
@@ -32,6 +33,8 @@ namespace Moggles
         public void ConfigureServices(IServiceCollection services)
         {
             ConfigureAuthServices(services);
+
+            services.AddSignalR();
 
             services.AddControllersWithViews();
 
@@ -101,6 +104,7 @@ namespace Moggles
                 endpoints.MapControllers();
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapFallbackToController("Index", "Home");
+                endpoints.MapHub<IsDueHub>("/isDueHub");
             });
         }
 
