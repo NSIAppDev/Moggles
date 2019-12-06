@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNet.SignalR.Hubs;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using Moggles.Domain;
 using System.Threading.Tasks;
 
-namespace Moggles.Consumers
+namespace Moggles.Hubs
 {
-    public class IsDueHub : Hub
-    {
-        public async Task SendMessage(ToggleSchedule toggleSchedule, string message)
-        {
-             await Clients.All.SendAsync("ReceiveMessage", toggleSchedule, message);
-        }
 
+    public interface IIsDueHub
+    {
+        Task IsDue(ToggleSchedule toggleSchedule);
+    }
+    public class IsDueHub : Hub<IIsDueHub>
+    { 
         public override Task OnConnectedAsync()
         {
             string name = Context.User.Identity.Name ?? Context.UserIdentifier;

@@ -16,6 +16,7 @@ using NoDb;
 using Moggles.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.Webpack;
+using Moggles.Hubs;
 
 namespace Moggles
 {

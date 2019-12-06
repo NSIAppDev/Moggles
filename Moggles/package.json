@@ -59,6 +59,7 @@
     "lint-fix": "eslint ClientApp/**/*.{js,vue} --fix"
   },
   "dependencies": {
+    "@microsoft/signalr": "^3.1.0",
     "axios": "^0.18.0",
     "bootstrap-sass": "^3.4.1",
     "jquery": "^3.4.1",
