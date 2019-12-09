@@ -42,7 +42,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             hubCltMock.Setup(_ => _.Group(It.IsAny<string>())).Returns(_hubContext.Object);
             _hubContextMock = new Mock<IHubContext<IsDueHub, IIsDueHub>>();
             _hubContextMock.Setup(_ => _.Clients).Returns(hubCltMock.Object);
-
+            ToggleSchedule toggleSchedule;
 
             _sut = new ScheduledFeatureTogglesService(serviceProvider.GetService<ILogger<ScheduledFeatureTogglesService>>(), serviceProvider, _hubContextMock.Object);
             _cts = new CancellationTokenSource();
@@ -62,8 +62,10 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
 
             var schedule = ToggleSchedule.Create("tst","offToggle", new[] { "DEV" }, true, _dateInThePast, "updatedBy");
             var schedule2 = ToggleSchedule.Create("tst","onToggle", new[] { "DEV" }, false, _dateInThePast, "updatedBy");
-            await _toggleSchedulesRepository.AddAsync(schedule);
             await _toggleSchedulesRepository.AddAsync(schedule2);
+
+            await _toggleSchedulesRepository.AddAsync(schedule);
+            var schedules = await _toggleSchedulesRepository.GetAllAsync();
 
             ToggleSchedule toggleSchedule;
             _hubContext.Setup(x => x.IsDue(It.IsAny<ToggleSchedule>())).Callback<ToggleSchedule>((p) =>
