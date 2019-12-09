@@ -289,8 +289,10 @@
                     setTimeout(() => this.start, 5000);
                 }
             },
-            signal(data) {
+            signal() {
+                                    this.scheduledToggles = [];
                 this.loadGridData(this.selectedApp.id);
+                this.getAllScheduledToggle(this.selectedApp.id);
             },
             saveEnvironment() {
                 this.editEnvErrors = []

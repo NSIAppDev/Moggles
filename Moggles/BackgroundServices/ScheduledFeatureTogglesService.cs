@@ -20,9 +20,7 @@ namespace Moggles.BackgroundServices
         private readonly IServiceProvider _serviceProvider;
         private readonly IHubContext<IsDueHub, IIsDueHub> _hubContext;
 
-        public ScheduledFeatureTogglesService(ILogger<ScheduledFeatureTogglesService> logger, IServiceProvider serviceProvider
-            , IHubContext<IsDueHub, IIsDueHub> hubContext
-            )
+        public ScheduledFeatureTogglesService(ILogger<ScheduledFeatureTogglesService> logger, IServiceProvider serviceProvider, IHubContext<IsDueHub, IIsDueHub> hubContext)
         {
             _hubContext = hubContext;
             _serviceProvider = serviceProvider;
@@ -62,10 +60,11 @@ namespace Moggles.BackgroundServices
                                     {
                                         try
                                         {
-                                            _hubContext.NotifyClient(toggleSchedule);
                                             app.SetToggle(toggleSchedule.ToggleName, env, toggleSchedule.ScheduledState, "Scheduled on behalf of "+toggleSchedule.UpdatedBy);
                                             _logger.LogInformation(
                                                 $"Set toggle {toggleSchedule.ToggleName} to {toggleSchedule.ScheduledState} on {env} environment for {app.AppName}");
+                                            _hubContext.NotifyClient(toggleSchedule);
+
                                         }
                                         catch (EntityNotFoundException ex) when (ex.EntityType == nameof(FeatureToggle))
                                         {

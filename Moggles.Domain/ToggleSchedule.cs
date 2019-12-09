@@ -58,10 +58,7 @@ namespace Moggles.Domain
 
         public void ChangeDate(DateTime scheduledDateTime)
         {
-            if (scheduledDateTime > DateTime.Now)
-            {
                 ScheduledDate = scheduledDateTime;
-            }
         }
         public void ChangeUpdatedBy(string updatedBy)
         {

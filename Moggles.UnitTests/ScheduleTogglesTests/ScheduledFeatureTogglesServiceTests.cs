@@ -9,6 +9,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Moggles.UnitTests.Helpers;
+using Moggles.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using Moq;
 
 namespace Moggles.UnitTests.ScheduleTogglesTests
 {
@@ -20,6 +23,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         private ScheduledFeatureTogglesService _sut;
         private CancellationTokenSource _cts;
         private readonly DateTime _dateInThePast = new DateTime(2018,1,1,15,30,0);
+        private Mock<IIsDueHub> _hubContext;
+        private Mock<IHubContext<IsDueHub, IIsDueHub>> _hubContextMock;
 
         [TestInitialize]
         public void BeforeEach()
@@ -31,7 +36,15 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             services.AddScoped(sp => _toggleSchedulesRepository);
             services.AddLogging(cfg => cfg.AddConsole()).Configure<LoggerFilterOptions>(cfg => cfg.MinLevel = LogLevel.Trace);
             var serviceProvider = services.BuildServiceProvider();
-            _sut = new ScheduledFeatureTogglesService(serviceProvider.GetService<ILogger<ScheduledFeatureTogglesService>>(), serviceProvider);
+
+            _hubContext = new Mock<IIsDueHub>();
+            var hubCltMock = new Mock<IHubClients<IIsDueHub>>();
+            hubCltMock.Setup(_ => _.Group(It.IsAny<string>())).Returns(_hubContext.Object);
+            _hubContextMock = new Mock<IHubContext<IsDueHub, IIsDueHub>>();
+            _hubContextMock.Setup(_ => _.Clients).Returns(hubCltMock.Object);
+
+
+            _sut = new ScheduledFeatureTogglesService(serviceProvider.GetService<ILogger<ScheduledFeatureTogglesService>>(), serviceProvider, _hubContextMock.Object);
             _cts = new CancellationTokenSource();
         }
 
@@ -51,6 +64,12 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             var schedule2 = ToggleSchedule.Create("tst","onToggle", new[] { "DEV" }, false, _dateInThePast, "updatedBy");
             await _toggleSchedulesRepository.AddAsync(schedule);
             await _toggleSchedulesRepository.AddAsync(schedule2);
+
+            ToggleSchedule toggleSchedule;
+            _hubContext.Setup(x => x.IsDue(It.IsAny<ToggleSchedule>())).Callback<ToggleSchedule>((p) =>
+            {
+                toggleSchedule = p;
+            });
 
             //act
             await _sut.StartAsync(_cts.Token);
