@@ -124,7 +124,7 @@
                 if (this.selectedEnvironments.length == 0) {
                     this.errors.push('You must select at least one environment');
                 }
-                if (this.scheduledDate === null || this.scheduledTime===null) {
+                if (this.scheduledDate === null) {
                     this.errors.push('You must select a change state date and time');
                 }
         
