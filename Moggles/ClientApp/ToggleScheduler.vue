@@ -27,7 +27,7 @@
         <multi-select id="environmentsSelect" v-model="selectedEnvironments" name="environmentsSelect"
                       :options="allEnvironments" block :selected-icon="'fas fa-check'" />
       </div>
-      <label class="control-label">Select Go Live Date/Time</label>
+      <label class="control-label">Select Change State Date/Time</label>
       <form class="form-inline form-group">
         <dropdown class="form-group">
           <div class="input-group">
@@ -124,6 +124,9 @@
                 if (this.selectedEnvironments.length == 0) {
                     this.errors.push('You must select at least one environment');
                 }
+                if (this.scheduledDate === null || this.scheduledTime===null) {
+                    this.errors.push('You must select a change state date and time');
+                }
         
                 let currentDate = new Date(moment().format("YYYY-MM-DD hh:mm:ss A"));
                 let scheduledDateFormat = moment(this.scheduledDate).format("YYYY-MM-DD");
@@ -132,7 +135,7 @@
                 let scheduledDateTime = new Date(dateTime);
 
                 if (scheduledDateTime < currentDate) {
-                    this.errors.push("Please select a GoLive date in the future!");
+                    this.errors.push("Please select a change state date and time in the future!");
                 }
                 if (this.errors.length > 0) {
                     Bus.$emit('unblock-ui')
