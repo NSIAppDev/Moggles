@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Moggles.Domain;
 using System.Threading.Tasks;
 
@@ -9,7 +10,7 @@ namespace Moggles.Hubs
     {
         Task IsDue(ToggleSchedule toggleSchedule);
     }
-
+    [Authorize]
     public class IsDueHub : Hub<IIsDueHub>
     { 
         public override Task OnConnectedAsync()

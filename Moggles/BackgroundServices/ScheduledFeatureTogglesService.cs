@@ -63,7 +63,6 @@ namespace Moggles.BackgroundServices
                                             app.SetToggle(toggleSchedule.ToggleName, env, toggleSchedule.ScheduledState, "Scheduled on behalf of "+toggleSchedule.UpdatedBy);
                                             _logger.LogInformation(
                                                 $"Set toggle {toggleSchedule.ToggleName} to {toggleSchedule.ScheduledState} on {env} environment for {app.AppName}");
-                                            _hubContext.NotifyClient(toggleSchedule);
 
                                         }
                                         catch (EntityNotFoundException ex) when (ex.EntityType == nameof(FeatureToggle))
@@ -72,8 +71,8 @@ namespace Moggles.BackgroundServices
                                             await _toggleSchedulesRepository.DeleteAsync(toggleSchedule);
                                         }
                                     }
-
                                     await _appRepository.UpdateAsync(app);
+                                    _hubContext.NotifyClient(toggleSchedule);
                                     await _toggleSchedulesRepository.DeleteAsync(toggleSchedule);
                                 }
                                 else
