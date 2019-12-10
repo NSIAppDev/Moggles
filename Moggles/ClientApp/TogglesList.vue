@@ -235,13 +235,6 @@
 		},
         created() {
             this.connection = new HubConnectionBuilder().withUrl("/isDueHub").configureLogging(LogLevel.Trace).build();
-
-            //this.connection.onclose(() => {
-            //    Bus.$emit("app-changed", this.selectedApp);
-            //    this.start();
-            //});
-            //this.connection.start();
-            //console.log(this.connection);
            
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
@@ -284,7 +277,6 @@
                     this.connection.off('IsDue', this.signal);
                     this.connection.on('IsDue', this.signal);
                     this.connection.start();
-                    console.log(this.connection);
                 } catch (err) {
                     setTimeout(() => this.start, 5000);
                 }

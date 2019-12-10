@@ -65,12 +65,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
 
             var schedule = ToggleSchedule.Create("tst","offToggle", new[] { "DEV" }, true, _dateInThePast, "updatedBy");
             var schedule2 = ToggleSchedule.Create("tst","onToggle", new[] { "DEV" }, false, _dateInThePast, "updatedBy");
-            await _toggleSchedulesRepository.AddAsync(schedule2);
-
             await _toggleSchedulesRepository.AddAsync(schedule);
-            var schedules = await _toggleSchedulesRepository.GetAllAsync();
-
-            ToggleSchedule toggleSchedule;
+            await _toggleSchedulesRepository.AddAsync(schedule2);
 
             //act
             await _sut.StartAsync(_cts.Token);
