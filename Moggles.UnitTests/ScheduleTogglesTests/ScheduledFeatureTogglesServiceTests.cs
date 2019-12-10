@@ -37,11 +37,14 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             services.AddLogging(cfg => cfg.AddConsole()).Configure<LoggerFilterOptions>(cfg => cfg.MinLevel = LogLevel.Trace);
             var serviceProvider = services.BuildServiceProvider();
 
-            _hubContext = new Mock<IIsDueHub>();
-            var hubCltMock = new Mock<IHubClients<IIsDueHub>>();
-            hubCltMock.Setup(_ => _.Group(It.IsAny<string>())).Returns(_hubContext.Object);
             _hubContextMock = new Mock<IHubContext<IsDueHub, IIsDueHub>>();
+            var hubCltMock = new Mock<IHubClients<IIsDueHub>>();
+
+            _hubContext = new Mock<IIsDueHub>();
+       
+            hubCltMock.Setup(_ => _.All).Returns(_hubContext.Object);
             _hubContextMock.Setup(_ => _.Clients).Returns(hubCltMock.Object);
+
             ToggleSchedule toggleSchedule;
 
             _sut = new ScheduledFeatureTogglesService(serviceProvider.GetService<ILogger<ScheduledFeatureTogglesService>>(), serviceProvider, _hubContextMock.Object);
@@ -68,10 +71,6 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             var schedules = await _toggleSchedulesRepository.GetAllAsync();
 
             ToggleSchedule toggleSchedule;
-            _hubContext.Setup(x => x.IsDue(It.IsAny<ToggleSchedule>())).Callback<ToggleSchedule>((p) =>
-            {
-                toggleSchedule = p;
-            });
 
             //act
             await _sut.StartAsync(_cts.Token);
