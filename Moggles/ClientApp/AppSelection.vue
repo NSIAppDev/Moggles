@@ -39,7 +39,8 @@
 			changeApp() {
 				var app = _.find(this.applicationList, (a) => a.id == this.selectedApps[0])
 				if (app) {
-					Bus.$emit('app-changed', app)
+                    Bus.$emit('app-changed', app)
+                    localStorage.setItem('selectedApp', app.id);
 					this.$refs.appSelection.showDropdown = false
 				}
 			},

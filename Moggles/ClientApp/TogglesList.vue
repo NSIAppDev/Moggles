@@ -219,12 +219,24 @@
             },
             enableEditEnvironmentSave() {
                 return this.environmentToEdit.initialEnvName !== this.editedEnvironmentName;
-            }
+            },
+            
 		},
 		created() {
 			axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
 				this.isCacheRefreshEnabled = response.data;
-			}).catch(error => window.alert(error));
+            }).catch(error => window.alert(error));
+            console.log(this.selectedApp);
+            axios.get('/api/applications')
+                .then((response) => {
+                    let apps = response.data;
+                    console.log(apps);
+                    let selectedAppId = localStorage.getItem('selectedApp');
+                    this.selectedApp = _.find(apps, (a) => selectedAppId == apps.id);
+                        console.log(this.selectedApp);
+                })
+                .catch(error => { window.alert(error) })
+            console.log(this.selectedApp);
 			Bus.$on("app-changed", app => {
 				if (app) {
                     this.selectedApp = app;
@@ -437,7 +449,7 @@
 				return false;
 			},
 
-			loadGridData(appId) {
+            loadGridData(appId) {
 				axios.get("/api/FeatureToggles", {
 					params: {
 						applicationId: appId
@@ -474,7 +486,7 @@
 					//window.alert(error)
 				});
 			},
-			initializeGrid(app) {
+            initializeGrid(app) {
 				this.environmentsList = [];
 
 				axios.get("/api/FeatureToggles/environments", {
