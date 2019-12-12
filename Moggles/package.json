@@ -30,7 +30,7 @@
     "jsdom-global": "^3.0.2",
     "mocha": "^5.0.5",
     "mocha-webpack": "^1.1.0",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.13.0",
     "postcss-cli": "^6.1.2",
     "postcss-loader": "^3.0.0",
     "pretty-checkbox-vue": "^1.1.9",
