@@ -36,11 +36,13 @@
 			});
 		},
 		methods: {
-			changeApp() {
-				var app = _.find(this.applicationList, (a) => a.id == this.selectedApps[0])
+            changeApp() {
+                var app =_.find(this.applicationList, (a) => a.id == this.selectedApps[0]);
+                console.log(app);
 				if (app) {
                     Bus.$emit('app-changed', app)
                     localStorage.setItem('selectedApp', app.id);
+                    //localStorage.removeItem('selectedApp');
 					this.$refs.appSelection.showDropdown = false
 				}
 			},
@@ -50,9 +52,14 @@
 						this.applicationList = response.data
 						if (!this.appIsSelected) {
 							if (response.data.length > 0) {
-								if (this.selectedApps.length == 0) {
-									this.selectedApps.push(response.data[0].id);
-									this.changeApp();
+                                if (this.selectedApps.length == 0) {
+                                    if (localStorage.getItem('selectedApp') === null) {
+                                        this.selectedApps.push(response.data[0].id);
+                                    }
+                                    else {
+                                        this.selectedApps.push(localStorage.getItem('selectedApp'));
+                                    }
+                                    this.changeApp();
 								}
 							}
 						}
