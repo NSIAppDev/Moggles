@@ -34,6 +34,34 @@ namespace Moggles.Domain
         public bool IsDue()
         {
             return ScheduledDate < DateTime.UtcNow;
+        }   
+
+        public bool EnvExists(string name)
+        {
+            return Environments.Exists(envs => string.Compare(envs, name, StringComparison.OrdinalIgnoreCase) ==0);
+        }
+
+        public void AddEnvironment(string env)
+        {
+           Environments.Add(env);
+        }
+
+        public void RemoveEnvironment(string name)
+        {
+            Environments.RemoveAll(env => string.Compare(env, name) == 0);
+        }
+        public void ChangeState(bool state)
+        {
+            ScheduledState = state;
+        }
+
+        public void ChangeDate(DateTime scheduledDateTime)
+        {
+                ScheduledDate = scheduledDateTime;
+        }
+        public void ChangeUpdatedBy(string updatedBy)
+        {
+            UpdatedBy = updatedBy;
         }
     }
 }
