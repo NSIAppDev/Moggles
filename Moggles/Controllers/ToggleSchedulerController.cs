@@ -70,26 +70,16 @@ namespace Moggles.Controllers
         {
             var updatedBy = _httpContextAccessor.HttpContext.User.Identity.Name;
             var toggleSchedule = await _toggleScheduleRepository.FindByIdAsync(model.Id);
-            var models = model.Environments;
-            var tg = toggleSchedule.Environments;
             toggleSchedule.Environments = new List<string>();
 
             foreach (var env in  model.Environments)
             {
                 toggleSchedule.AddEnvironment(env);
             }
-            if (model.ScheduledDate != toggleSchedule.ScheduledDate)
-            {
-                toggleSchedule.ChangeDate(model.ScheduledDate);
-            }
-            if (model.ScheduledState != toggleSchedule.ScheduledState)
-            {
-                toggleSchedule.ChangeState(model.ScheduledState);
-            }
-            if (toggleSchedule.UpdatedBy != updatedBy)
-            {
-                toggleSchedule.ChangeUpdatedBy(updatedBy);
-            }
+            toggleSchedule.ChangeDate(model.ScheduledDate);
+            toggleSchedule.ChangeState(model.ScheduledState);
+            toggleSchedule.ChangeUpdatedBy(updatedBy);
+            
             await _toggleScheduleRepository.UpdateAsync(toggleSchedule);
             return Ok(toggleSchedule);
         }

@@ -19,7 +19,7 @@
       </div>
       <div class="form-group">
           <label class="control-label" for="toggleSelect">Select Toggles</label>
-          <multi-select v-if="toggle===null" id="toggleSelect" v-model="selectedToggles" name="toggleSelect"
+          <multi-select v-if="existsTogggleSchedule(toggle)" id="toggleSelect" v-model="selectedToggles" name="toggleSelect"
                         :options="allToggles" block :selected-icon="'fas fa-check'" />
           <multi-select  v-else id="toggleSelect" type="text" v-model="selectedToggles"  name="toggleSelect"  
                         :options="allToggles" block :selected-icon="'fas fa-check'" disabled />
@@ -96,8 +96,7 @@
                 selectedEnvironments: [],
                 scheduledDate: null,
                 scheduledTime: new Date(),
-                toggle: null,
-                toggleName:null
+                toggle: null
             }
         },
         created() {
@@ -129,6 +128,9 @@
             })
         },
         methods: {
+            existsTogggleSchedule(toggle) {
+                return toggle === null ? true : false;
+            },
             addSchedule() {
                 this.errors = [];
                 Bus.$emit('block-ui')
@@ -162,7 +164,7 @@
                 let time = moment(this.scheduledTime);
                 combinedScheduledDateTime.add(time.hours(), 'hours');
                 combinedScheduledDateTime.add(time.minutes(), 'minutes');
-                if (this.toggle === null) {
+                if (this.existsTogggleSchedule(this.toggle)) {
                     axios.post('api/ToggleScheduler', {
                         applicationId: this.selectedAppId,
                         state: this.scheduledState,

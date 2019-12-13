@@ -43,7 +43,7 @@
                 </span>
                 <span v-else-if="props.column.field == 'toggleName' ">
                     <span>{{ props.row.toggleName }}</span> <span v-if="props.row.isPermanent" class="label label-danger">Permanent</span>
-                    <span v-for="ft in isScheduled(props.row.toggleName)" v-bind:key="ft.id" @click="editToggleScheduler(ft)"><i class="fas fa-clock" style="color:steelblue"></i> <i></i></span>
+                    <span v-for="ft in getScheduled(props.row.toggleName)" v-bind:key="ft.id" @click="editToggleScheduler(ft)"><i class="fas fa-clock" style="color:steelblue"></i> <i></i></span>
                 </span>
                 <span v-else-if="props.column.field == 'createdDate'">
                     {{ props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A') }}
@@ -273,7 +273,6 @@
 
             start() {
                 try {
-                    console.log("start() called");
                     this.connection.off('IsDue', this.signal);
                     this.connection.on('IsDue', this.signal);
                     this.connection.start();
@@ -491,7 +490,7 @@
 
                     //create the flattened row models
                     let models = _.map(response.data, toggle => {
-                        let model = {
+                        return  {
                             id: toggle.id,
                             toggleName: toggle.toggleName,
                             scheduledDate: toggle.scheduledDate,
@@ -499,18 +498,14 @@
                             updatedBy: toggle.updatedBy,
                             environments: toggle.environments
                         };
-                        return model;
                     });
                     this.scheduledToggles = models;
-                }).catch(() => {
-                    //do not uncomment this, the null reference exception will return to haunt us !
-                    //window.alert(error)
                 });
             },
 
-            isScheduled(toggleName) {
+            getScheduled(toggleName) {
                 let filtered = _.map(this.scheduledToggles.filter(ft => ft.toggleName == toggleName), sch => {
-                    let model = {
+                    return  {
                         toggleId: sch.id,
                         toggleName: sch.toggleName,
                         scheduledDate: sch.scheduledDate,
@@ -518,7 +513,7 @@
                         updatedBy: sch.updatedBy,
                         environments: sch.environments
                     };
-                    return model;
+                    
                 });
                 return filtered;
             },
@@ -529,7 +524,7 @@
 
 
             loadGridData(appId) {
-                Bus.$emit('toggle-scheduled');
+                this.getAllScheduledToggle(appId);
 				axios.get("/api/FeatureToggles", {
 					params: {
 						applicationId: appId
@@ -566,7 +561,7 @@
 			},
 			initializeGrid(app) {
                 this.environmentsList = [];
-                Bus.$emit('toggle-scheduled');
+                this.getAllScheduledToggle(app.id);
 				axios.get("/api/FeatureToggles/environments", {
 					params: {
 						applicationId: app.id

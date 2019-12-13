@@ -43,8 +43,7 @@ namespace Moggles.Domain
 
         public void AddEnvironment(string env)
         {
-            //if (!EnvExists(env))
-                Environments.Add(env);
+           Environments.Add(env);
         }
 
         public void RemoveEnvironment(string name)

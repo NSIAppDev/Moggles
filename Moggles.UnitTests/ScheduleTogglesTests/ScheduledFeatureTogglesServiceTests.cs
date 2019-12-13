@@ -25,6 +25,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         private readonly DateTime _dateInThePast = new DateTime(2018,1,1,15,30,0);
         private Mock<IIsDueHub> _hubContext;
         private Mock<IHubContext<IsDueHub, IIsDueHub>> _hubContextMock;
+        private Mock<ILogger<ScheduledFeatureTogglesService>> _loggerMock;
 
         [TestInitialize]
         public void BeforeEach()
@@ -44,10 +45,9 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
        
             hubCltMock.Setup(_ => _.All).Returns(_hubContext.Object);
             _hubContextMock.Setup(_ => _.Clients).Returns(hubCltMock.Object);
+            _loggerMock = new Mock<ILogger<ScheduledFeatureTogglesService>>();
 
-            ToggleSchedule toggleSchedule;
-
-            _sut = new ScheduledFeatureTogglesService(serviceProvider.GetService<ILogger<ScheduledFeatureTogglesService>>(), serviceProvider, _hubContextMock.Object);
+            _sut = new ScheduledFeatureTogglesService(_loggerMock.Object, serviceProvider, _hubContextMock.Object);
             _cts = new CancellationTokenSource();
         }
 
