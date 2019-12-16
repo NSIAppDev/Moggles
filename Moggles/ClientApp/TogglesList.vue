@@ -13,10 +13,7 @@
                     :columns="gridColumns"
                     :rows="toggles"
                     @on-per-page-change="onPageChange"
-                    :pagination-options="{
-                         perPage: getRowsPerPage(),
-                      enabled: true
-                    }"
+                    :pagination-options="getR"
                     :sort-options="{
                       enabled: true,
                       initialSortBy: {field: 'toggleName', type: 'asc'}
@@ -223,7 +220,9 @@
             enableEditEnvironmentSave() {
                 return this.environmentToEdit.initialEnvName !== this.editedEnvironmentName;
             },
-            
+            getR() {
+                return { enabled: true, perPage: parseInt(this.getRowsPerPage()) };
+            }
 		},
 		created() {
 			axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
@@ -244,7 +243,7 @@
 				this.loadGridData(this.selectedApp.id)
             })
             this.getRowsPerPage()
-            console.log(this.rowsPerPage);
+            console.log("This:" + parseInt(this.getRowsPerPage()));
 
 		},
         methods: {
@@ -257,6 +256,7 @@
             },
             onPageChange(page) {
                 let perPage = page.currentPerPage;
+                this.rowsPerPage = perPage;
                 localStorage.setItem('rowsPerPage', perPage);
                 console.log("pgch ", localStorage.getItem('rowsPerPage'));
             },
