@@ -42,18 +42,17 @@
 				if (app) {
                     Bus.$emit('app-changed', app)
                     localStorage.setItem('selectedApp', app.id);
-                    //localStorage.removeItem('selectedApp');
 					this.$refs.appSelection.showDropdown = false
 				}
 			},
-			getApplications() {
+            getApplications() {
 				axios.get('/api/applications')
 					.then((response) => {
 						this.applicationList = response.data
 						if (!this.appIsSelected) {
 							if (response.data.length > 0) {
                                 if (this.selectedApps.length == 0) {
-                                    if (localStorage.getItem('selectedApp') === null) {
+                                    if (localStorage.getItem('selectedApp') === null || !this.existsStoredApp()) {
                                         this.selectedApps.push(response.data[0].id);
                                     }
                                     else {
@@ -69,7 +68,21 @@
 			refreshApps() {
 				this.selectedApps = []
 				this.getApplications()
-			},
+            },
+            getAllAplications() {
+                axios.get('/api/applications')
+                    .then((response) => {
+                        this.applicationList = response.data;
+                        console.log(response.data);
+                        console.log(this.applicationList);
+
+                    })
+                    .catch(error => { window.alert(error) });
+            },
+            existsStoredApp() {
+                var app = _.find(this.applicationList, (a) => a.id == localStorage.getItem('selectedApp'));
+                return app != null ? true: false
+            }
 		}
     }
 </script>

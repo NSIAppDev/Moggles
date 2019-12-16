@@ -12,7 +12,9 @@
     <vue-good-table ref="toggleGrid"
                     :columns="gridColumns"
                     :rows="toggles"
+                    @on-per-page-change="onPageChange"
                     :pagination-options="{
+                         perPage: getRowsPerPage(),
                       enabled: true
                     }"
                     :sort-options="{
@@ -210,7 +212,8 @@
 				isCacheRefreshEnabled: false,
                 editFeatureToggleErrors: [],
                 editEnvErrors: [],
-                editedEnvironmentName:""
+                editedEnvironmentName: "",
+                rowsPerPage:10
 			}
 		},
 		computed: {
@@ -226,7 +229,6 @@
 			axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
 				this.isCacheRefreshEnabled = response.data;
             }).catch(error => window.alert(error));
-            console.log(localStorage.getItem('selectedApp'));
 			Bus.$on("app-changed", app => {
 				if (app) {
                     this.selectedApp = app;
@@ -241,8 +243,23 @@
 			Bus.$on("toggle-added", () => {
 				this.loadGridData(this.selectedApp.id)
             })
+            this.getRowsPerPage()
+            console.log(this.rowsPerPage);
+
 		},
         methods: {
+            getRowsPerPage() {
+                console.log("rpp");
+                if (localStorage.getItem('rowsPerPage') != null) {
+                    this.rowsPerPage = localStorage.getItem('rowsPerPage');
+                }
+                return this.rowsPerPage;
+            },
+            onPageChange(page) {
+                let perPage = page.currentPerPage;
+                localStorage.setItem('rowsPerPage', perPage);
+                console.log("pgch ", localStorage.getItem('rowsPerPage'));
+            },
             saveEnvironment() {
                 this.editEnvErrors = []
                 if (this.stringIsNullOrEmpty(this.editedEnvironmentName)) {
@@ -440,6 +457,7 @@
 			},
 
             loadGridData(appId) {
+                console.log(localStorage.getItem('rowsPerPage'));
 				axios.get("/api/FeatureToggles", {
 					params: {
 						applicationId: appId
