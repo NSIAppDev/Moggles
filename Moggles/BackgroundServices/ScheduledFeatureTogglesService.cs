@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Moggles.Consumers;
+using Moggles.Domain;
+using Moggles.Hubs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Moggles.Domain;
 
 namespace Moggles.BackgroundServices
 {
@@ -15,9 +18,11 @@ namespace Moggles.BackgroundServices
         private IRepository<Application> _appRepository;
         private IRepository<ToggleSchedule> _toggleSchedulesRepository;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IHubContext<IsDueHub, IIsDueHub> _hubContext;
 
-        public ScheduledFeatureTogglesService(ILogger<ScheduledFeatureTogglesService> logger, IServiceProvider serviceProvider)
+        public ScheduledFeatureTogglesService(ILogger<ScheduledFeatureTogglesService> logger, IServiceProvider serviceProvider, IHubContext<IsDueHub, IIsDueHub> hubContext)
         {
+            _hubContext = hubContext;
             _serviceProvider = serviceProvider;
             _logger = logger;
         }
@@ -29,7 +34,6 @@ namespace Moggles.BackgroundServices
 
             stoppingToken.Register(() =>
                 _logger.LogInformation($" ScheduledFeatureTogglesService background task is stopping (via token)."));
-
             do
             {
                 try
@@ -59,6 +63,7 @@ namespace Moggles.BackgroundServices
                                             app.SetToggle(toggleSchedule.ToggleName, env, toggleSchedule.ScheduledState, "Scheduled on behalf of "+toggleSchedule.UpdatedBy);
                                             _logger.LogInformation(
                                                 $"Set toggle {toggleSchedule.ToggleName} to {toggleSchedule.ScheduledState} on {env} environment for {app.AppName}");
+
                                         }
                                         catch (EntityNotFoundException ex) when (ex.EntityType == nameof(FeatureToggle))
                                         {
@@ -66,8 +71,8 @@ namespace Moggles.BackgroundServices
                                             await _toggleSchedulesRepository.DeleteAsync(toggleSchedule);
                                         }
                                     }
-
                                     await _appRepository.UpdateAsync(app);
+                                    _hubContext.NotifyClient(toggleSchedule);
                                     await _toggleSchedulesRepository.DeleteAsync(toggleSchedule);
                                 }
                                 else

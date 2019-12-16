@@ -9,6 +9,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Moggles.UnitTests.Helpers;
+using Moggles.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using Moq;
 
 namespace Moggles.UnitTests.ScheduleTogglesTests
 {
@@ -20,6 +23,9 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         private ScheduledFeatureTogglesService _sut;
         private CancellationTokenSource _cts;
         private readonly DateTime _dateInThePast = new DateTime(2018,1,1,15,30,0);
+        private Mock<IIsDueHub> _hubContext;
+        private Mock<IHubContext<IsDueHub, IIsDueHub>> _hubContextMock;
+        private Mock<ILogger<ScheduledFeatureTogglesService>> _loggerMock;
 
         [TestInitialize]
         public void BeforeEach()
@@ -31,7 +37,17 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             services.AddScoped(sp => _toggleSchedulesRepository);
             services.AddLogging(cfg => cfg.AddConsole()).Configure<LoggerFilterOptions>(cfg => cfg.MinLevel = LogLevel.Trace);
             var serviceProvider = services.BuildServiceProvider();
-            _sut = new ScheduledFeatureTogglesService(serviceProvider.GetService<ILogger<ScheduledFeatureTogglesService>>(), serviceProvider);
+
+            _hubContextMock = new Mock<IHubContext<IsDueHub, IIsDueHub>>();
+            var hubCltMock = new Mock<IHubClients<IIsDueHub>>();
+
+            _hubContext = new Mock<IIsDueHub>();
+       
+            hubCltMock.Setup(_ => _.All).Returns(_hubContext.Object);
+            _hubContextMock.Setup(_ => _.Clients).Returns(hubCltMock.Object);
+            _loggerMock = new Mock<ILogger<ScheduledFeatureTogglesService>>();
+
+            _sut = new ScheduledFeatureTogglesService(_loggerMock.Object, serviceProvider, _hubContextMock.Object);
             _cts = new CancellationTokenSource();
         }
 

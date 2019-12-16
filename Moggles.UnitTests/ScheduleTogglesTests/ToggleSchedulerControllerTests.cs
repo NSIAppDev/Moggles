@@ -99,5 +99,95 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             //assert
             act.Should().Throw<InvalidOperationException>();
         }
+
+        [TestMethod]
+        public async Task ReturnScheduleToggles_WhenThereAreTogglesScheduled()
+        {
+            //arrange
+            var date = new DateTime(2099, 3, 2, 15, 45, 0);
+            var app = Application.Create("tst", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", null);
+            app.AddFeatureToggle("t2", null);
+            await _appRepository.AddAsync(app);
+            await _sut.ScheduleToggles(new ScheduleTogglesModel
+            {
+                ApplicationId = app.Id,
+                FeatureToggles = new List<string> { "t1", "t2" },
+                Environments = new List<string> { "DEV", "QA" },
+                ScheduleDate = date,
+                State = true
+            });
+
+            //act
+            var apps = await _sut.GetScheduledToggles(app.Id) as OkObjectResult;
+            var appsList = apps.Value as IEnumerable<ToggleSchedule>;
+
+            //assert
+            appsList.Count().Should().Be(2);
+        }
+
+        [TestMethod]
+        public async Task ReturnBadResult_WhenNoTogglesAreScheduled()
+        {
+            //arrange
+            var date = new DateTime(2099, 3, 2, 15, 45, 0);
+            var app = Application.Create("tst", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", null);
+            app.AddFeatureToggle("t2", null);
+            await _appRepository.AddAsync(app);
+          
+
+            //act
+            var apps = await _sut.GetScheduledToggles(app.Id) as OkObjectResult;
+            var appsList = apps.Value as IEnumerable<ToggleSchedule>;
+
+
+            //assert
+            appsList.Count().Should().Be(0);
+        }
+
+        [TestMethod]
+        public async Task UpdateScheduledFeatureToggle_WithValidData()
+        {
+            //arrange
+            var date = new DateTime(2099, 3, 2, 15, 45, 0);
+            var app = Application.Create("tst", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", null);
+            app.AddFeatureToggle("t2", null);
+            await _appRepository.AddAsync(app);
+            await _sut.ScheduleToggles(new ScheduleTogglesModel
+            {
+                ApplicationId = app.Id,
+                FeatureToggles = new List<string> { "t1", "t2" },
+                Environments = new List<string> { "DEV" },
+                ScheduleDate = date,
+                State = true
+            });
+            var scheduledToggles = await _toggleSchedulesRepository.GetAllAsync();
+            var scheduled = scheduledToggles.ToList().First();
+            scheduled.Environments.Add("QA");
+
+            //act
+            var apps = await _sut.Update(new UpdateFeatureToggleSchedulerModel
+            {
+                Id = scheduled.Id,
+                ToggleName = scheduled.ToggleName,
+                Environments = scheduled.Environments,
+                ScheduledDate = new DateTime(2020, 5, 2, 15, 45, 0),
+                ScheduledState = false
+            });
+
+            //assert
+            var updatedScheduledToggle = await  _toggleSchedulesRepository.FindByIdAsync(scheduled.Id);
+            updatedScheduledToggle.ToggleName.Should().Be("t1");
+            updatedScheduledToggle.Environments.Should().BeEquivalentTo(new List<string> { "DEV", "QA" });
+            updatedScheduledToggle.ScheduledDate.Should().Be(new DateTime(2020, 5, 2, 15, 45, 0));
+            updatedScheduledToggle.ScheduledState.Should().BeFalse();
+        }
+
+        
     }
 }
