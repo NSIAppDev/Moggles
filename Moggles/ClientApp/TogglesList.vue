@@ -13,7 +13,7 @@
                     :columns="gridColumns"
                     :rows="toggles"
                     @on-per-page-change="onPageChange"
-                    :pagination-options="getR"
+                    :pagination-options="getPaginationOptions"
                     :sort-options="{
                       enabled: true,
                       initialSortBy: {field: 'toggleName', type: 'asc'}
@@ -220,7 +220,7 @@
             enableEditEnvironmentSave() {
                 return this.environmentToEdit.initialEnvName !== this.editedEnvironmentName;
             },
-            getR() {
+            getPaginationOptions() {
                 return { enabled: true, perPage: parseInt(this.getRowsPerPage()) };
             }
 		},
@@ -243,12 +243,10 @@
 				this.loadGridData(this.selectedApp.id)
             })
             this.getRowsPerPage()
-            console.log("This:" + parseInt(this.getRowsPerPage()));
 
 		},
         methods: {
             getRowsPerPage() {
-                console.log("rpp");
                 if (localStorage.getItem('rowsPerPage') != null) {
                     this.rowsPerPage = localStorage.getItem('rowsPerPage');
                 }
@@ -258,7 +256,6 @@
                 let perPage = page.currentPerPage;
                 this.rowsPerPage = perPage;
                 localStorage.setItem('rowsPerPage', perPage);
-                console.log("pgch ", localStorage.getItem('rowsPerPage'));
             },
             saveEnvironment() {
                 this.editEnvErrors = []
@@ -457,7 +454,6 @@
 			},
 
             loadGridData(appId) {
-                console.log(localStorage.getItem('rowsPerPage'));
 				axios.get("/api/FeatureToggles", {
 					params: {
 						applicationId: appId

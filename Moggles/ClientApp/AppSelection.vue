@@ -38,7 +38,6 @@
 		methods: {
             changeApp() {
                 var app =_.find(this.applicationList, (a) => a.id == this.selectedApps[0]);
-                console.log(app);
 				if (app) {
                     Bus.$emit('app-changed', app)
                     localStorage.setItem('selectedApp', app.id);
@@ -73,9 +72,6 @@
                 axios.get('/api/applications')
                     .then((response) => {
                         this.applicationList = response.data;
-                        console.log(response.data);
-                        console.log(this.applicationList);
-
                     })
                     .catch(error => { window.alert(error) });
             },
