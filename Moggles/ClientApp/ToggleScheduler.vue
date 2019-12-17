@@ -50,7 +50,7 @@
         <dropdown class="form-group">
           <div class="input-group">
             <input id="timeInput" class="form-control" type="text"
-                   :value="scheduledTime" readonly="readonly">
+                   :value="scheduledTime.toTimeString()" readonly="readonly">
             <div class="input-group-btn">
               <btn class="dropdown-toggle">
                 <i class="fas fa-clock" />

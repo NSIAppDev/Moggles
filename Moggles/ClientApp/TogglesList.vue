@@ -42,7 +42,7 @@
                 </span>
                 <span v-else-if="props.column.field == 'toggleName' ">
                     <span>{{ props.row.toggleName }}</span> <span v-if="props.row.isPermanent" class="label label-danger">Permanent</span>
-                    <span v-for="ft in getScheduled(props.row.toggleName)" v-bind:key="ft.id" @click="editToggleScheduler(ft)"><i class="fas fa-clock" style="color:steelblue"></i> <i></i></span>
+                    <a v-for="ft in getScheduled(props.row.toggleName)" v-bind:key="ft.id" @click="editToggleScheduler(ft)"><i class="fas fa-clock" /> <i></i></a>
                 </span>
                 <span v-else-if="props.column.field == 'createdDate'">
                     {{ props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A') }}
