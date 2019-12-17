@@ -34,7 +34,17 @@ namespace Moggles
         {
             ConfigureAuthServices(services);
 
-            services.AddSignalR();
+            services.AddSignalR(o =>
+            {
+                //The recommended value is double the KeepAliveInterval value, as per documentation
+                o.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
+
+                //The recommended value for KeepAliveInterval is half the serverTimeoutInMilliseconds on the client
+                o.KeepAliveInterval = TimeSpan.FromSeconds(60);
+
+                o.EnableDetailedErrors = true;
+                o.HandshakeTimeout = TimeSpan.FromSeconds(20);
+            });
 
             services.AddControllersWithViews();
 
@@ -106,7 +116,9 @@ namespace Moggles
                 endpoints.MapFallbackToController("Index", "Home");
                 endpoints.MapHub<IsDueHub>("/isDueHub");
             });
+
         }
+        
 
         private void ConfigureMassTransitAndMessageBus(IServiceCollection services)
         {
