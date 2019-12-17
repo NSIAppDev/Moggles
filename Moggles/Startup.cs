@@ -17,8 +17,6 @@ using Moggles.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Moggles.Hubs;
-using Autofac;
-using Microsoft.ApplicationInsights;
 
 namespace Moggles
 {
@@ -30,7 +28,6 @@ namespace Moggles
         }
 
         public IConfiguration Configuration { get; }
-        public ILifetimeScope ApplicationContainer { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -83,7 +80,7 @@ namespace Moggles
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -121,11 +118,7 @@ namespace Moggles
             });
 
         }
-        public void JobTick()
-        {
-            var tclient = new TelemetryClient();
-            tclient.TrackEvent("recurringJobTick");
-        }
+        
 
         private void ConfigureMassTransitAndMessageBus(IServiceCollection services)
         {
