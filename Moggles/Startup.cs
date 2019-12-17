@@ -17,6 +17,8 @@ using Moggles.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Moggles.Hubs;
+using Autofac;
+using Microsoft.ApplicationInsights;
 
 namespace Moggles
 {
@@ -28,13 +30,24 @@ namespace Moggles
         }
 
         public IConfiguration Configuration { get; }
+        public ILifetimeScope ApplicationContainer { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             ConfigureAuthServices(services);
 
-            services.AddSignalR();
+            services.AddSignalR(o =>
+            {
+                //The recommended value is double the KeepAliveInterval value, as per documentation
+                o.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
+
+                //The recommended value for KeepAliveInterval is half the serverTimeoutInMilliseconds on the client
+                o.KeepAliveInterval = TimeSpan.FromSeconds(60);
+
+                o.EnableDetailedErrors = true;
+                o.HandshakeTimeout = TimeSpan.FromSeconds(20);
+            });
 
             services.AddControllersWithViews();
 
@@ -70,7 +83,7 @@ namespace Moggles
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)
         {
             if (env.IsDevelopment())
             {
@@ -106,6 +119,12 @@ namespace Moggles
                 endpoints.MapFallbackToController("Index", "Home");
                 endpoints.MapHub<IsDueHub>("/isDueHub");
             });
+
+        }
+        public void JobTick()
+        {
+            var tclient = new TelemetryClient();
+            tclient.TrackEvent("recurringJobTick");
         }
 
         private void ConfigureMassTransitAndMessageBus(IServiceCollection services)

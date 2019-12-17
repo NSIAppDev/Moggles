@@ -238,7 +238,10 @@
 		},
         created() {
             this.connection = new HubConnectionBuilder().withUrl("/isDueHub").configureLogging(LogLevel.Trace).build();
-           
+            this.connection.onclose(() => {
+				
+				this.start();
+			});           
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
             }).catch(error => window.alert(error));
