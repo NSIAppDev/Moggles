@@ -77,7 +77,7 @@
             },
             existsStoredApp() {
                 var app = _.find(this.applicationList, (a) => a.id == localStorage.getItem('selectedApp'));
-                return app != null ? true: false
+                return app != null 
             }
 		}
     }
