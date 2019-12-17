@@ -277,7 +277,6 @@
                 if (localStorage.getItem('rowsPerPage') != null) {
                     this.rowsPerPage = localStorage.getItem('rowsPerPage');
                 }
-                console.log(this.rowsPerPage);
                 return this.rowsPerPage;
             },
             onPageChange(page) {
