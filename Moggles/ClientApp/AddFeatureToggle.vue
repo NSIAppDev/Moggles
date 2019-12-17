@@ -54,7 +54,7 @@
 		components: {
 			'p-check': PrettyCheck
 		},
-		data() {
+        data() {
 			return {
 				applicationId: -1,
 				notes: '',
@@ -66,17 +66,23 @@
 				showSuccessAlert: false,
 				alertDuration: 1500
 			}
-		},
-		mounted() {
-			Bus.$on("app-changed", app => {
-				if (app) {
-					this.applicationId = app.id;
-				}
-			});
+        },
+        computed() {
+            this.clearFields();
+        },
+        mounted() {
+            Bus.$on("app-changed", app => {
+                if (app) {
+                    this.applicationId = app.id;
+                }
+            });
 
-			Bus.$on("toggles-loaded", toggles => {
-				this.existingToggles = toggles;
-			});
+            Bus.$on("toggles-loaded", toggles => {
+                this.existingToggles = toggles;
+            });
+            Bus.$on("open-modal", () => {
+                this.clearFields();
+            })
 		},
 		methods: {
 			addFeatureToggle() {
@@ -107,13 +113,19 @@
 						Bus.$emit("toggle-added")
 					}).catch((e) => {
 						this.errors.push(e.response.data);
-					}).finally(() => {
-						Bus.$emit('unblock-ui')
-					});
+                    }).finally(() => {
+                        Bus.$emit('unblock-ui')
+                    });    
 			},
-			closeAddToggleModal() {
-				Bus.$emit('close-add-toggle');
-			}
+            closeAddToggleModal() {
+                Bus.$emit('close-add-toggle');
+            },
+            clearFields() {
+                this.featureToggleName = "";
+                this.errors = [];
+                this.notes = '';
+                this.isPermanent = false;
+            }
 		}
 	}
 </script>

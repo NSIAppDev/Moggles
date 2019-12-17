@@ -61,6 +61,11 @@
 				alertDuration: 1500
             }
         },
+        mounted() {
+            Bus.$on('openAddAppModal', () => {
+                this.clearFields();
+            })
+        },
         methods: {
             addApplication() {
                 this.errors = [];
@@ -93,14 +98,20 @@
                         this.showSuccessAlert = false;
                     }, this.alertDuration)
                 }).catch(e => {
-					this.errors.push(e.response.data);
+                    this.errors.push(e.response.data);
                 }).finally(() => {
 					Bus.$emit('unblock-ui')
                 });
             },
 			closeAddApplicationModal() {
 				Bus.$emit('close-add-application');
-			}
+            },
+            clearFields() {
+                this.applicationName = "";
+                this.environmentName = "";
+                this.errors = [];
+                this.defaultToggleValue = true;
+            }
         }
     }
 </script>
