@@ -36,22 +36,28 @@
 			});
 		},
 		methods: {
-			changeApp() {
-				var app = _.find(this.applicationList, (a) => a.id == this.selectedApps[0])
+            changeApp() {
+                var app =_.find(this.applicationList, (a) => a.id == this.selectedApps[0]);
 				if (app) {
-					Bus.$emit('app-changed', app)
+                    Bus.$emit('app-changed', app)
+                    localStorage.setItem('selectedApp', app.id);
 					this.$refs.appSelection.showDropdown = false
 				}
 			},
-			getApplications() {
+            getApplications() {
 				axios.get('/api/applications')
 					.then((response) => {
 						this.applicationList = response.data
 						if (!this.appIsSelected) {
 							if (response.data.length > 0) {
-								if (this.selectedApps.length == 0) {
-									this.selectedApps.push(response.data[0].id);
-									this.changeApp();
+                                if (this.selectedApps.length == 0) {
+                                    if (localStorage.getItem('selectedApp') === null || !this.existsStoredApp()) {
+                                        this.selectedApps.push(response.data[0].id);
+                                    }
+                                    else {
+                                        this.selectedApps.push(localStorage.getItem('selectedApp'));
+                                    }
+                                    this.changeApp();
 								}
 							}
 						}
@@ -61,7 +67,18 @@
 			refreshApps() {
 				this.selectedApps = []
 				this.getApplications()
-			},
+            },
+            getAllAplications() {
+                axios.get('/api/applications')
+                    .then((response) => {
+                        this.applicationList = response.data;
+                    })
+                    .catch(error => { window.alert(error) });
+            },
+            existsStoredApp() {
+                var app = _.find(this.applicationList, (a) => a.id == localStorage.getItem('selectedApp'));
+                return app != null 
+            }
 		}
     }
 </script>

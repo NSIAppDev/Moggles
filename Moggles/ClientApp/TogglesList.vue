@@ -12,9 +12,8 @@
         <vue-good-table ref="toggleGrid"
                         :columns="gridColumns"
                         :rows="toggles"
-                        :pagination-options="{
-                      enabled: true
-                    }"
+                        @on-per-page-change="onPageChange"
+                        :pagination-options="getPaginationOptions"
                         :sort-options="{
                       enabled: true,
                       initialSortBy: {field: 'toggleName', type: 'asc'}
@@ -222,7 +221,8 @@
                 scheduledToggles: [],
                 showScheduler: false,
                 connectionId: null,
-                connection:null
+                connection: null,
+                rowsPerPage: 10
             }
 		},
 		computed: {
@@ -231,6 +231,9 @@
             },
             enableEditEnvironmentSave() {
                 return this.environmentToEdit.initialEnvName !== this.editedEnvironmentName;
+            },
+            getPaginationOptions() {
+                return { enabled: true, perPage: parseInt(this.getRowsPerPage()) };
             }
 		},
         created() {
@@ -270,7 +273,17 @@
             this.start();
         },
         methods: {
-
+            getRowsPerPage() {
+                if (localStorage.getItem('rowsPerPage') != null) {
+                    this.rowsPerPage = localStorage.getItem('rowsPerPage');
+                }
+                return this.rowsPerPage;
+            },
+            onPageChange(page) {
+                let perPage = page.currentPerPage;
+                this.rowsPerPage = perPage;
+                localStorage.setItem('rowsPerPage', perPage);
+            },
             start() {
                 try {
                     this.connection.off('IsDue', this.signal);
