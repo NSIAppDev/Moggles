@@ -17,12 +17,16 @@ namespace Moggles.UnitTests.FeatureTogglesTests
     {
         private IRepository<Application> _appRepository;
         private IHttpContextAccessor _httpContextAccessor;
+        private IRepository<ToggleSchedule> _toggleScheduleRepository;
+        private FeatureTogglesController _featureToggleController;
+        
 
         [TestInitialize]
         public void BeforeTest()
         {
             _appRepository = new InMemoryApplicationRepository();
-            
+            _toggleScheduleRepository = new InMemoryRepository<ToggleSchedule>();
+            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository);
         }
 
         [TestMethod]
@@ -30,15 +34,13 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("BCC", "dev", false);
-            app.AddFeatureToggle("TestToggle", "TestNotes",  true);
+            app.AddFeatureToggle("TestToggle", "TestNotes", true);
             app.AddFeatureToggle("TestToggle2", "TestNotes2");
 
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             //act
-            var result = await controller.GetToggles(app.Id) as OkObjectResult;
+            var result = await _featureToggleController.GetToggles(app.Id) as OkObjectResult;
             var list = result.Value as IEnumerable<FeatureToggleViewModel>;
 
             //assert
@@ -63,10 +65,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //TODO: mark the toggle as deployed on these environments
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             //act
-            var result = await controller.GetToggles(app.Id) as OkObjectResult;
+            var result = await _featureToggleController.GetToggles(app.Id) as OkObjectResult;
             result.Should().NotBeNull();
             var list = result.Value as IEnumerable<FeatureToggleViewModel>;
 
@@ -105,8 +105,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             await _appRepository.AddAsync(app);
 
             //act
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-            var results = await controller.GetEnvironments(app.Id) as OkObjectResult;
+            var results = await _featureToggleController.GetEnvironments(app.Id) as OkObjectResult;
 
             //assert
             results.Value.Should().BeEquivalentTo(expectedEnvNames);
@@ -124,10 +123,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var expectedEnvNames = new List<string> { "DEV", "QA", "TRN" };
 
             await _appRepository.AddAsync(app);
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
-            var results = await controller.GetEnvironments(app.Id) as OkObjectResult;
+            var results = await _featureToggleController.GetEnvironments(app.Id) as OkObjectResult;
 
             //assert
             results.Value.Should().BeEquivalentTo(expectedEnvNames);
@@ -146,10 +144,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             //act
-            var result = await controller.GetApplicationFeatureToggles(app.AppName, "DEV") as OkObjectResult;
+            var result = await _featureToggleController.GetApplicationFeatureToggles(app.AppName, "DEV") as OkObjectResult;
             var okObjectResult = result.Value as IEnumerable<ApplicationFeatureToggleViewModel>;
 
             //assert
@@ -170,10 +166,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             app.SetToggle(toggle.Id, "QA", true, "username");
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             //act
-            var result = await controller.GetApplicationFeatureToggleValue(app.AppName, "QA", "t1") as OkObjectResult;
+            var result = await _featureToggleController.GetApplicationFeatureToggleValue(app.AppName, "QA", "t1") as OkObjectResult;
             var okObjectResult = result.Value as ApplicationFeatureToggleViewModel;
 
             //assert

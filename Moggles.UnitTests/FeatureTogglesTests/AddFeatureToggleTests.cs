@@ -17,6 +17,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         private IRepository<Application> _appRepository;
         private IHttpContextAccessor _httpContextAccessor;
         private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
+        private IRepository<ToggleSchedule> _toggleScheduleRepository;
+        private FeatureTogglesController _featureToggleController;
 
         [TestInitialize]
         public void BeforeTest()
@@ -25,17 +27,18 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             _mockHttpContextAccessor.Setup(x => x.HttpContext.User.Identity.Name).Returns("bla");
             _httpContextAccessor = _mockHttpContextAccessor.Object;
+            _toggleScheduleRepository = new InMemoryRepository<ToggleSchedule>();
+            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository);
         }
 
         [TestMethod]
         public async Task ReturnBadRequestResult_WhenModelStateIsInvalid()
         {
             //arrange
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-            controller.ModelState.AddModelError("error", "some error");
+            _featureToggleController.ModelState.AddModelError("error", "some error");
 
             //act
-            var result = await controller.AddFeatureToggle(new AddFeatureToggleModel());
+            var result = await _featureToggleController.AddFeatureToggle(new AddFeatureToggleModel());
 
             //assert
             result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
@@ -52,10 +55,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
-            var result = await controller.AddFeatureToggle(newFeatureToggle);
+            var result = await _featureToggleController.AddFeatureToggle(newFeatureToggle);
 
             //assert
             result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
@@ -67,10 +69,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var newFeatureToggle = new AddFeatureToggleModel { FeatureToggleName = "TestToggle" };
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
-            var result = await controller.AddFeatureToggle(newFeatureToggle);
+            var result = await _featureToggleController.AddFeatureToggle(newFeatureToggle);
 
             //assert
             result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
@@ -84,10 +85,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             await _appRepository.AddAsync(app);
             var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             //act
-            var result = await controller.AddFeatureToggle(newFeatureToggle);
+            var result = await _featureToggleController.AddFeatureToggle(newFeatureToggle);
 
             //assert
             result.Should().BeOfType<OkResult>();
@@ -107,10 +106,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             //act
-            var result = await controller.AddFeatureToggle(newFeatureToggle);
+            var result = await _featureToggleController.AddFeatureToggle(newFeatureToggle);
 
             //assert
             result.Should().BeOfType<OkResult>();
@@ -128,10 +125,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             //act
-            var result = await controller.AddFeatureToggle(newFeatureToggle);
+            var result = await _featureToggleController.AddFeatureToggle(newFeatureToggle);
 
             //assert
             result.Should().BeOfType<OkResult>();
