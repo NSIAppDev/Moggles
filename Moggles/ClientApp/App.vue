@@ -151,7 +151,7 @@
         methods: {
             showAddFeatureModal() {
                 this.showAddToggle = true;
-                Bus.$emit('open-modal');
+                Bus.$emit('openAddFeatureToggleModal');
             },
             showAddAppModal() {
                 this.showAddApp = true;

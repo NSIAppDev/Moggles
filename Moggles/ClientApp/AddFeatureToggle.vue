@@ -67,9 +67,6 @@
 				alertDuration: 1500
 			}
         },
-        computed() {
-            this.clearFields();
-        },
         mounted() {
             Bus.$on("app-changed", app => {
                 if (app) {
@@ -80,7 +77,7 @@
             Bus.$on("toggles-loaded", toggles => {
                 this.existingToggles = toggles;
             });
-            Bus.$on("open-modal", () => {
+            Bus.$on("openAddFeatureToggleModal", () => {
                 this.clearFields();
             })
 		},
