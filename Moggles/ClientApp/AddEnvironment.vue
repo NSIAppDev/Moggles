@@ -69,9 +69,18 @@
 
 			Bus.$on("env-loaded", envs => {
 				this.existingEnvs = envs;
-			});
+            });
+
+            Bus.$on('openAddEnvModal', () => {
+                this.clearFields();
+            })
 		},
-		methods: {
+        methods: {
+            clearFields() {
+                this.envName = "";
+                this.errors = [];
+                this.defaultToggleValue = false;
+            },
 			addEnv() {
 				if (this.applicationId === -1)
 					return;

@@ -33,9 +33,9 @@
               <a class="dropdown-toggle" role="button">Tools <span class="caret" /></a>
               <template slot="dropdown">
                 <li><a role="button" @click="() => {ReloadCurrentApplicationToggles();}">Reload Application Toggles</a></li>
-                <li><a role="button" @click="showAddToggle = true">Add Feature Toggle</a></li>
-                <li><a role="button" @click="showAddApp = true">Add New Application</a></li>
-                <li><a role="button" @click="showAddEnv = true">Add New Environment</a></li>
+                <li><a role="button" @click="showAddFeatureModal()">Add Feature Toggle</a></li>
+                <li><a role="button" @click="showAddAppModal()">Add New Application</a></li>
+                <li><a role="button" @click="showAddEnvModal()">Add New Environment</a></li>
                 <li><a role="button" @click="showAddScheduler()">Feature Toggle Scheduler</a></li>
                 <li v-if="isCacheRefreshEnabled">
                   <a role="button" @click="showForceCacheRefresh = true">Force Cache Refresh</a>
@@ -149,6 +149,18 @@
             }).catch(error => { window.alert(error) });
         },
         methods: {
+            showAddFeatureModal() {
+                this.showAddToggle = true;
+                Bus.$emit('openAddFeatureToggleModal');
+            },
+            showAddAppModal() {
+                this.showAddApp = true;
+                Bus.$emit('openAddAppModal');
+            },
+            showAddEnvModal() {
+                this.showAddEnv = true;
+                Bus.$emit('openAddEnvModal');
+            },
             ReloadCurrentApplicationToggles(){
                 Bus.$emit("reload-application-toggles");
             },
