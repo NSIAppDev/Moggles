@@ -268,6 +268,8 @@
             
             Bus.$on('close-scheduler', () => {
                 this.showScheduler = false;
+                this.initializeGrid(this.selectedApp);
+                    this.getAllScheduledToggle(this.selectedApp.id);
             })
             
 
@@ -535,7 +537,7 @@
             },
             editToggleScheduler(toggle) {
                 Bus.$emit("edit-schedule", toggle.toggleId);
-                this.showScheduler = true;            
+                this.showScheduler = true;     
             },
 
 

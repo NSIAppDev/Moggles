@@ -75,8 +75,7 @@
                     Submit
                 </button>
             </div>
-        </div>
-        <modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle schedule" :footer="false">
+            <modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle schedule" :footer="false" append-to-body>
                 <div>
                     Are you sure you want to delete this feature toggle?
                 </div>
@@ -88,7 +87,9 @@
                         Delete
                     </button>
                 </div>
-        </modal>
+            </modal>
+        </div>
+        
     </div>
 </template>
 
@@ -148,9 +149,9 @@
                 this.showDeleteConfirmation = true;
             },
             deleteScheduler() {
-
-                axios.delete('/api/ToggleScheduler?id=${this.toggle.id}').then(() => {
+                axios.delete(`/api/ToggleScheduler?id=${this.toggle.id}`).then(() => {
                     this.showDeleteConfirmation = false;
+                    Bus.$emit('close-scheduler');
                 }).catch(error => window.alert(error));
             },
             existsTogggleSchedule(toggle) {

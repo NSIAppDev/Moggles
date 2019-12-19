@@ -85,7 +85,7 @@ namespace Moggles.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody]Guid id)
+        public async Task<IActionResult> Delete([FromQuery] Guid id)
         {
             var toggleScheduler = await _toggleScheduleRepository.FindByIdAsync(id);
 
