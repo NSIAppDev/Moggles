@@ -64,7 +64,7 @@
                     </template>
                 </dropdown>
             </form>
-            <div v-if="!existsTogggleSchedule(toggle)" class="col-sm-6">
+            <div v-if="!existsTogggleSchedule(toggle)">
                 <button type="button" class="btn btn-danger" @click="showConfirmDeleteModal">Delete</button>
             </div>
             <div class="text-right">
