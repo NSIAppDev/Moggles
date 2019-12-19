@@ -18,6 +18,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         private IRepository<Application> _appRepository;
         private IHttpContextAccessor _httpContextAccessor;
         private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
+        private IRepository<ToggleSchedule> _toggleScheduleRepository;
+        private FeatureTogglesController _featureToggleController;
 
         [TestInitialize]
         public void BeforeTest()
@@ -26,6 +28,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             _mockHttpContextAccessor.Setup(x => x.HttpContext.User.Identity.Name).Returns("bla");
             _httpContextAccessor = _mockHttpContextAccessor.Object;
+            _toggleScheduleRepository = new InMemoryRepository<ToggleSchedule>();
+            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository);
         }
 
         [TestMethod]
@@ -39,14 +43,17 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var toggle = app.FeatureToggles.Single();
             var updatedValue = new FeatureToggleUpdateModel
             {
-                ApplicationId = app.Id, Id = toggle.Id, FeatureToggleName = "UpdatedFeatureToggleName", Notes = "Update", UserAccepted = true,
-                Statuses = new List<FeatureToggleStatusUpdateModel>(), IsPermanent = true
+                ApplicationId = app.Id,
+                Id = toggle.Id,
+                FeatureToggleName = "UpdatedFeatureToggleName",
+                Notes = "Update",
+                UserAccepted = true,
+                Statuses = new List<FeatureToggleStatusUpdateModel>(),
+                IsPermanent = true
             };
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             //act
-            await controller.Update(updatedValue);
+            await _featureToggleController.Update(updatedValue);
 
             //assert
             var savedApp = await _appRepository.FindByIdAsync(app.Id);
@@ -68,10 +75,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var toggle = app.FeatureToggles.FirstOrDefault(t => t.ToggleName == "t1");
             var updatedValue = new FeatureToggleUpdateModel { ApplicationId = app.Id, Id = toggle.Id, FeatureToggleName = "t2" };
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             //act
-            var result = await controller.Update(updatedValue);
+            var result = await _featureToggleController.Update(updatedValue);
 
             //assert
             result.Should().BeOfType<BadRequestObjectResult>().Which.Should().NotBeNull();
@@ -109,10 +114,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 }
             };
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             //act
-            await controller.Update(updatedValue);
+            await _featureToggleController.Update(updatedValue);
 
             //assert
             var savedApp = await _appRepository.FindByIdAsync(app.Id);
@@ -151,16 +155,14 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 }
             };
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             //act
-            await controller.Update(updatedValue);
+            await _featureToggleController.Update(updatedValue);
 
             //assert
             var savedApp = await _appRepository.FindByIdAsync(app.Id);
             var statuses = savedApp.GetFeatureToggleStatuses(toggle.Id);
             statuses.Count.Should().Be(2);
             statuses.All(s => s.UpdatedBy == "bla").Should().BeTrue();
-        } 
+        }
     }
 }

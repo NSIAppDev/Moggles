@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -8,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
 using Moggles.Domain;
 using Moggles.Models;
+using Moq;
 
 namespace Moggles.UnitTests.FeatureTogglesTests
 {
@@ -16,11 +18,22 @@ namespace Moggles.UnitTests.FeatureTogglesTests
     {
         private IRepository<Application> _appRepository;
         private IHttpContextAccessor _httpContextAccessor;
+        private IRepository<ToggleSchedule> _toggleScheduleRepository;
+        private FeatureTogglesController _featureToggleController;
+        private ToggleSchedulerController _toggleSchedulerConstroller;
+        private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
+
 
         [TestInitialize]
         public void BeforeTest()
         {
             _appRepository = new InMemoryApplicationRepository();
+            _toggleScheduleRepository = new InMemoryRepository<ToggleSchedule>();
+            _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            _mockHttpContextAccessor.Setup(x => x.HttpContext.User.Identity.Name).Returns("bla");
+            _httpContextAccessor = _mockHttpContextAccessor.Object;
+            _toggleSchedulerConstroller = new ToggleSchedulerController(_toggleScheduleRepository, _appRepository, _httpContextAccessor);
+            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository);
         }
 
         [TestMethod]
@@ -33,7 +46,6 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             app.AddFeatureToggle("t3", "");
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             var environmentToRemove = new DeleteEnvironmentModel
             {
@@ -42,7 +54,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             };
 
             //act
-            var result = await controller.RemoveEnvironment(environmentToRemove);
+            var result = await _featureToggleController.RemoveEnvironment(environmentToRemove);
 
             //assert
             result.Should().BeOfType<OkResult>();
@@ -61,15 +73,13 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             app.AddFeatureToggle("t3", "");
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             var environmentToRemove = new DeleteEnvironmentModel
             {
                 ApplicationId = app.Id,
                 EnvName = "TestEnv"
             };
             //act
-            var result = await controller.RemoveEnvironment(environmentToRemove);
+            var result = await _featureToggleController.RemoveEnvironment(environmentToRemove);
 
             //assert
             result.Should().BeOfType<OkResult>();
@@ -86,8 +96,6 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var app = Application.Create("TestApp", "DEV", false);
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             var environmentToRemove = new DeleteEnvironmentModel
             {
                 ApplicationId = app.Id,
@@ -95,10 +103,38 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             };
 
             //act
-            await controller.RemoveEnvironment(environmentToRemove);
+            await _featureToggleController.RemoveEnvironment(environmentToRemove);
 
             //assert
             //throws InvalidOperationException
+        }
+
+        [TestMethod]
+        public async Task WhenEnvironmentIsDeleted_RemoveAllSchedulersForEnvironment()
+        {
+            //arrange
+            var date = new DateTime(2099, 3, 2, 15, 45, 0);
+            var app = Application.Create("tst", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", null);
+            var toggle = app.FeatureToggles.Single();
+            await _appRepository.AddAsync(app);
+            await _toggleSchedulerConstroller.ScheduleToggles(new ScheduleTogglesModel
+            {
+                ApplicationId = app.Id,
+                FeatureToggles = new List<string> { "t1" },
+                Environments = new List<string> { "DEV", "QA" },
+                ScheduleDate = date,
+                State = true
+            });
+
+            //act
+            var result = await _featureToggleController.RemoveEnvironment(new DeleteEnvironmentModel { ApplicationId = app.Id, EnvName = "DEV" });
+
+            //assert
+            result.Should().BeOfType<OkResult>();
+            var schedulers = (await _toggleScheduleRepository.GetAllAsync()).Where(ft => ft.Environments.Contains("DEV"));
+            schedulers.Count().Should().Be(0);
         }
     }
 }
