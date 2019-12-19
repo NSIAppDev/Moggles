@@ -16,11 +16,15 @@ namespace Moggles.UnitTests.FeatureTogglesTests
     {
         private IRepository<Application> _appRepository;
         private IHttpContextAccessor _httpContextAccessor;
+        private IRepository<ToggleSchedule> _toggleScheduleRepository;
+        private FeatureTogglesController _featureToggleController;
 
         [TestInitialize]
         public void BeforeTest()
         {
             _appRepository = new InMemoryApplicationRepository();
+            _toggleScheduleRepository = new InMemoryRepository<ToggleSchedule>();
+            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository);
         }
 
         [TestMethod]
@@ -29,8 +33,6 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var app = Application.Create("TestApp", "DEV", false);
             await _appRepository.AddAsync(app);
-
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
 
             var updatedEnvironmentName = "QA";
 
@@ -42,7 +44,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             };
 
             //act
-            var result = await controller.UpdateEnvironment(updatedEnvironment);
+            var result = await _featureToggleController.UpdateEnvironment(updatedEnvironment);
 
             //assert
             result.Should().BeOfType<OkResult>();
@@ -56,8 +58,6 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var app = Application.Create("TestApp", "DEV", false);
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             var updatedEnvironment = new UpdateEnvironmentModel
             {
                 ApplicationId = app.Id,
@@ -66,7 +66,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             };
 
             //act
-            var result = await controller.UpdateEnvironment(updatedEnvironment);
+            var result = await _featureToggleController.UpdateEnvironment(updatedEnvironment);
 
             //assert
             result.Should().BeOfType<BadRequestObjectResult>();
@@ -81,8 +81,6 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var app = Application.Create("TestApp", "DEV", false);
             await _appRepository.AddAsync(app);
 
-            var controller = new FeatureTogglesController(_appRepository, _httpContextAccessor);
-
             var updatedEnvironmentName = "QA";
 
             var updatedEnvironment = new UpdateEnvironmentModel
@@ -93,7 +91,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             };
 
             //act
-            await controller.UpdateEnvironment(updatedEnvironment);
+            await _featureToggleController.UpdateEnvironment(updatedEnvironment);
 
             //assert
             //throws InvalidOperationException

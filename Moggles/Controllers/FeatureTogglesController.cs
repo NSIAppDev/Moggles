@@ -17,12 +17,14 @@ namespace Moggles.Controllers
     {
         private readonly TelemetryClient _telemetry = new TelemetryClient();
         private readonly IRepository<Application> _applicationsRepository;
+        private readonly IRepository<ToggleSchedule> _toggleScheduleRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
 
-        public FeatureTogglesController(IRepository<Application> applicationsRepository, IHttpContextAccessor httpContextAccessor)
+        public FeatureTogglesController(IRepository<Application> applicationsRepository, IHttpContextAccessor httpContextAccessor, IRepository<ToggleSchedule> toggleScheduleRepository)
         {
             _applicationsRepository = applicationsRepository;
+            _toggleScheduleRepository = toggleScheduleRepository;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -152,9 +154,16 @@ namespace Moggles.Controllers
         public async Task<IActionResult> RemoveFeatureToggle([FromQuery] Guid id, Guid applicationId)
         {
             var app = await _applicationsRepository.FindByIdAsync(applicationId);
+            var toggle = app.GetFeatureToggleBasicData(id);
+            var toggleSchedulers = _toggleScheduleRepository.GetAllAsync().Result.Where(ft => ft.ToggleName == toggle.ToggleName);
+
+            foreach(var fts in toggleSchedulers)
+            {
+                _toggleScheduleRepository.DeleteAsync(fts);
+            }
 
             app.RemoveFeatureToggle(id);
-
+            
             await _applicationsRepository.UpdateAsync(app);
             return Ok();
         }
@@ -192,7 +201,18 @@ namespace Moggles.Controllers
         public async Task<IActionResult> RemoveEnvironment([FromBody]DeleteEnvironmentModel environmentModel)
         {
             var app = await _applicationsRepository.FindByIdAsync(environmentModel.ApplicationId);
+            var toggleSchedulers = await _toggleScheduleRepository.GetAllAsync();
+            foreach(var fts in toggleSchedulers)
+            {
+                fts.RemoveEnvironment(environmentModel.EnvName);
+                await _toggleScheduleRepository.UpdateAsync(fts);
+                if(fts.Environments.Count()==0)
+                {
+                    await _toggleScheduleRepository.DeleteAsync(fts);
+                }
 
+            }
+            
             app.DeleteDeployEnvironment(environmentModel.EnvName);
 
             await _applicationsRepository.UpdateAsync(app);

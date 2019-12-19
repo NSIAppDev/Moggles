@@ -470,6 +470,7 @@
                     this.showEditEnvironmentModal = false
                     this.environmentToEdit = null
                     this.initializeGrid(this.selectedApp);
+                    Bus.$emit("app-changed", this.selectedApp)
                 }).catch(error => window.alert(error))
             },
             edit(row) {
