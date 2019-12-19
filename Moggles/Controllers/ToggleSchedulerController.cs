@@ -90,7 +90,7 @@ namespace Moggles.Controllers
             var toggleScheduler = await _toggleScheduleRepository.FindByIdAsync(id);
 
             if (toggleScheduler == null)
-                throw new InvalidOperationException("Toggle Scheduler does not exists!");
+                throw new InvalidOperationException("Toggle Scheduler does not exist!");
 
             await _toggleScheduleRepository.DeleteAsync(toggleScheduler);
 

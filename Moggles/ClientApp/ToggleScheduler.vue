@@ -65,7 +65,7 @@
                 </dropdown>
             </form>
             <div v-if="!existsTogggleSchedule(toggle)" class="col-sm-6">
-                <button type="button" class="btn btn-danger" @click="confirmDelete">Delete</button>
+                <button type="button" class="btn btn-danger" @click="showConfirmDeleteModal">Delete</button>
             </div>
             <div class="text-right">
                 <button id="closeButton" class="btn btn-default" @click="closeModal">
@@ -77,7 +77,7 @@
             </div>
             <modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle schedule" :footer="false" append-to-body>
                 <div>
-                    Are you sure you want to delete this feature toggle?
+                    Are you sure you want to delete this feature toggle schedule?
                 </div>
                 <div class="text-right">
                     <button type="button" class="btn btn-default" @click="showDeleteConfirmation = false">
@@ -145,7 +145,7 @@
             })
         },
         methods: {
-            confirmDelete() {
+            showConfirmDeleteModal () {
                 this.showDeleteConfirmation = true;
             },
             deleteScheduler() {
