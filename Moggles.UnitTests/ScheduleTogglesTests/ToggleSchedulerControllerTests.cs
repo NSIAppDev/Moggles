@@ -21,7 +21,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         private IRepository<Application> _appRepository;
         private IRepository<ToggleSchedule> _toggleSchedulesRepository;
         private IHttpContextAccessor _httpContextAccessor;
-        private Mock<IHttpContextAccessor> _mockHttpContextAccessor; 
+        private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
 
 
         [TestInitialize]
@@ -33,7 +33,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             _mockHttpContextAccessor.Setup(x => x.HttpContext.User.Identity.Name).Returns("bla");
             _httpContextAccessor = _mockHttpContextAccessor.Object;
             _sut = new ToggleSchedulerController(_toggleSchedulesRepository, _appRepository, _httpContextAccessor);
-            
+
         }
 
         [TestMethod]
@@ -137,7 +137,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             app.AddFeatureToggle("t1", null);
             app.AddFeatureToggle("t2", null);
             await _appRepository.AddAsync(app);
-          
+
 
             //act
             var apps = await _sut.GetScheduledToggles(app.Id) as OkObjectResult;
@@ -181,13 +181,69 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             });
 
             //assert
-            var updatedScheduledToggle = await  _toggleSchedulesRepository.FindByIdAsync(scheduled.Id);
+            var updatedScheduledToggle = await _toggleSchedulesRepository.FindByIdAsync(scheduled.Id);
             updatedScheduledToggle.ToggleName.Should().Be("t1");
             updatedScheduledToggle.Environments.Should().BeEquivalentTo(new List<string> { "DEV", "QA" });
             updatedScheduledToggle.ScheduledDate.Should().Be(new DateTime(2020, 5, 2, 15, 45, 0));
             updatedScheduledToggle.ScheduledState.Should().BeFalse();
         }
 
+        [TestMethod]
+        public async Task DeleteToggleScheduler_SchedulerIsDeleted() 
+        {
+            //arrange
+            var date = new DateTime(2099, 3, 2, 15, 45, 0);
+            var app = Application.Create("tst", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", null);
+            app.AddFeatureToggle("t2", null);
+            await _appRepository.AddAsync(app);
+            await _sut.ScheduleToggles(new ScheduleTogglesModel
+            {
+                ApplicationId = app.Id,
+                FeatureToggles = new List<string> { "t1", "t2" },
+                Environments = new List<string> { "DEV" },
+                ScheduleDate = date,
+                State = true
+            });
+            var scheduledToggles = await _toggleSchedulesRepository.GetAllAsync();
+            var scheduled = scheduledToggles.ToList().First();
+
+            //act
+            var result = await _sut.Delete(scheduled.Id);
+
+            //assert
+            result.Should().BeOfType<OkResult>();
+            (await _toggleSchedulesRepository.GetAllAsync()).Count().Should().Be(1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public async Task DeteleToggleScheduler_WithInvalidId_ThrowsInvalidOperationException()
+        {
+            //arrange
+            var date = new DateTime(2099, 3, 2, 15, 45, 0);
+            var app = Application.Create("tst", "DEV", false);
+            app.AddDeployEnvironment("QA", false);
+            app.AddFeatureToggle("t1", null);
+            app.AddFeatureToggle("t2", null);
+            await _appRepository.AddAsync(app);
+            await _sut.ScheduleToggles(new ScheduleTogglesModel
+            {
+                ApplicationId = app.Id,
+                FeatureToggles = new List<string> { "t1", "t2" },
+                Environments = new List<string> { "DEV" },
+                ScheduleDate = date,
+                State = true
+            });
+            var scheduledToggles = await _toggleSchedulesRepository.GetAllAsync();
+            var scheduled = scheduledToggles.ToList().First();
+
+            //act
+            var result = await _sut.Delete(Guid.NewGuid());
+
+            //assert
+        }
         
     }
 }

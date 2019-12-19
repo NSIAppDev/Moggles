@@ -142,7 +142,7 @@
 				this.showForceCacheRefresh = false;
             })
             Bus.$on('close-scheduler', () => {
-				this.showScheduler = false;
+                this.showScheduler = false;
 			})
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;

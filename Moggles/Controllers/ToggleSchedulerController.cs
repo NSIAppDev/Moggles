@@ -83,5 +83,18 @@ namespace Moggles.Controllers
             await _toggleScheduleRepository.UpdateAsync(toggleSchedule);
             return Ok(toggleSchedule);
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromQuery] Guid id)
+        {
+            var toggleScheduler = await _toggleScheduleRepository.FindByIdAsync(id);
+
+            if (toggleScheduler == null)
+                throw new InvalidOperationException("Toggle Scheduler does not exist!");
+
+            await _toggleScheduleRepository.DeleteAsync(toggleScheduler);
+
+            return Ok();
+        }
     }
 }
