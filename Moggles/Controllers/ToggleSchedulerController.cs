@@ -42,7 +42,7 @@ namespace Moggles.Controllers
 
             foreach (var toggle in model.FeatureToggles)
             {
-                var toggleSchedule = ToggleSchedule.Create(app.AppName, toggle, model.Environments, model.State, model.ScheduleDate.ToUniversalTime(), updatedBy);
+                var toggleSchedule = ToggleSchedule.Create(app.AppName, toggle, model.Environments, model.State, model.ScheduleDate.ToUniversalTime(), updatedBy, model.ForceCacheRefresh);
                 await _toggleScheduleRepository.AddAsync(toggleSchedule);
             }
 
@@ -79,6 +79,7 @@ namespace Moggles.Controllers
             toggleSchedule.ChangeDate(model.ScheduledDate);
             toggleSchedule.ChangeState(model.ScheduledState);
             toggleSchedule.ChangeUpdatedBy(updatedBy);
+            toggleSchedule.ChangeForceCacheRefresh(model.ForceCacheRefresh);
             
             await _toggleScheduleRepository.UpdateAsync(toggleSchedule);
             return Ok(toggleSchedule);

@@ -11,12 +11,13 @@ namespace Moggles.Domain
         public bool ScheduledState { get;  set; }
         public DateTime ScheduledDate { get;  set; }
         public string UpdatedBy { get; set; }
+        public bool ForceCacheRefresh { get; set; }
 
         private ToggleSchedule()
         {
         }
 
-        public static ToggleSchedule Create(string appName, string toggleName, IEnumerable<string> environments, bool stateToSet, DateTime schedule, string createdBy)
+        public static ToggleSchedule Create(string appName, string toggleName, IEnumerable<string> environments, bool stateToSet, DateTime schedule, string createdBy, bool refreshCache=false)
         {
             var ts = new ToggleSchedule
             {
@@ -25,7 +26,8 @@ namespace Moggles.Domain
                 ToggleName = toggleName,
                 ScheduledState = stateToSet,
                 ScheduledDate = schedule,
-                UpdatedBy =  createdBy
+                UpdatedBy =  createdBy,
+                ForceCacheRefresh=refreshCache
             };
             ts.Environments.AddRange(environments);
             return ts;
@@ -62,6 +64,10 @@ namespace Moggles.Domain
         public void ChangeUpdatedBy(string updatedBy)
         {
             UpdatedBy = updatedBy;
+        }
+        public void ChangeForceCacheRefresh(bool refreshCache)
+        {
+            ForceCacheRefresh = refreshCache;
         }
     }
 }
