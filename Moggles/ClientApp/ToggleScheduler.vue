@@ -64,11 +64,11 @@
                     </template>
                 </dropdown>
             </form>
-            <div>
-                <div v-if="!existsTogggleSchedule(toggle)" class="col-sm-6">
+            <div class="clearfix">
+                <div class="pull-left" v-if="!existsTogggleSchedule(toggle)">
                     <button type="button" class="btn btn-danger" @click="showConfirmDeleteModal">Delete</button>
                 </div>
-                <div class="text-right">
+                <div class="pull-right">
                     <button id="closeButton" class="btn btn-default" @click="closeModal">
                         Close
                     </button>
