@@ -64,16 +64,18 @@
                     </template>
                 </dropdown>
             </form>
-            <div v-if="!existsTogggleSchedule(toggle)">
-                <button type="button" class="btn btn-danger" @click="showConfirmDeleteModal">Delete</button>
-            </div>
-            <div class="text-right">
-                <button id="closeButton" class="btn btn-default" @click="closeModal">
-                    Close
-                </button>
-                <button id="submitButton" class="btn btn-primary" type="button" @click="addSchedule">
-                    Submit
-                </button>
+            <div class="clearfix">
+                <div class="pull-left" v-if="!existsTogggleSchedule(toggle)">
+                    <button type="button" class="btn btn-danger" @click="showConfirmDeleteModal">Delete</button>
+                </div>
+                <div class="pull-right">
+                    <button id="closeButton" class="btn btn-default" @click="closeModal">
+                        Close
+                    </button>
+                    <button id="submitButton" class="btn btn-primary" type="button" @click="addSchedule">
+                        Submit
+                    </button>
+                </div>
             </div>
             <modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle schedule" :footer="false" append-to-body>
                 <div>
