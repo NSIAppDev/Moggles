@@ -110,7 +110,6 @@
     import _ from 'lodash';
     import PrettyCheck from 'pretty-checkbox-vue/check';
 
-
     export default {
         components: {
             'p-check': PrettyCheck
@@ -158,7 +157,7 @@
                 this.cleanup();
                 this.loadToggles(this.selectedAppId);
                 this.toggle = null;
-                this.forceCacheRefresh = false;
+                //this.forceCacheRefresh = false;
             })
         },
         methods: {

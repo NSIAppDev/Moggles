@@ -93,8 +93,6 @@ namespace Moggles.BackgroundServices
                                     }
                                     _hubContext.NotifyClient(toggleSchedule);
                                     await _toggleSchedulesRepository.DeleteAsync(toggleSchedule);
-                                    
-
                                 }
                                 else
                                 {
