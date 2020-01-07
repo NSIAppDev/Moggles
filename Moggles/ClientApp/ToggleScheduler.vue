@@ -64,6 +64,14 @@
                     </template>
                 </dropdown>
             </form>
+             <div class="form-group">
+                 <label class="control-label" for="cacheRefresh">Force Cache Refresh</label>
+                 <span class="padding-left-5">
+                     <p-check v-model="forceCacheRefresh" class="p-icon p-fill" name="cacheRefresh" color="default">
+                         <i slot="extra" class="icon fas fa-check"/>
+                     </p-check>
+                 </span>
+             </div>
             <div class="clearfix">
                 <div class="pull-left" v-if="!existsTogggleSchedule(toggle)">
                     <button type="button" class="btn btn-danger" @click="showConfirmDeleteModal">Delete</button>
@@ -100,8 +108,13 @@
     import axios from 'axios'
     import moment from 'moment';
     import _ from 'lodash';
+    import PrettyCheck from 'pretty-checkbox-vue/check';
+
 
     export default {
+        components: {
+            'p-check': PrettyCheck
+        },
         data() {
             return {
                 environmentName: "",
@@ -115,7 +128,8 @@
                 scheduledDate: null,
                 scheduledTime: new Date(),
                 toggle: null,
-                showDeleteConfirmation: false
+                showDeleteConfirmation: false,
+                forceCacheRefresh:false
             }
         },
         created() {
@@ -144,6 +158,7 @@
                 this.cleanup();
                 this.loadToggles(this.selectedAppId);
                 this.toggle = null;
+                this.forceCacheRefresh = false;
             })
         },
         methods: {
@@ -198,7 +213,8 @@
                         state: this.scheduledState,
                         featureToggles: this.selectedToggles,
                         environments: this.selectedEnvironments,
-                        scheduleDate: combinedScheduledDateTime
+                        scheduleDate: combinedScheduledDateTime,
+                        forceCacheRefresh: this.forceCacheRefresh
                     }).then(() => {
                         this.$notify({
                             type: "success",
@@ -228,7 +244,8 @@
                         id:this.toggle.id,
                         scheduledState: this.scheduledState,
                         scheduledDate: combinedScheduledDateTime,
-                        environments: this.selectedEnvironments
+                        environments: this.selectedEnvironments,
+                        forceCacheRefresh: this.forceCacheRefresh
                     }).then(() => {
                         this.$notify({
                             type: "success",
@@ -300,6 +317,7 @@
                     this.scheduledDate = moment(this.toggle.scheduledDate).format("YYYY-MM-DD");
                     this.scheduledTime = new Date(this.toggle.scheduledDate);
                     this.scheduledState = this.toggle.scheduledState;
+                    this.forceCacheRefresh = this.toggle.forceCacheRefresh;
                 }).catch((e) => { window.alert(e) });
 
             },
@@ -312,6 +330,7 @@
                 this.scheduledTime = new Date();
                 this.toggle = null;
                 this.toggleName = null;
+                this.forceCacheRefresh = false;
             },
             closeModal() {
                 this.cleanup();

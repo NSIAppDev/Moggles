@@ -12,6 +12,9 @@ using Moggles.UnitTests.Helpers;
 using Moggles.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
+using Microsoft.Extensions.Configuration;
+using MassTransit;
+using MogglesContracts;
 
 namespace Moggles.UnitTests.ScheduleTogglesTests
 {
@@ -26,6 +29,10 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         private Mock<IIsDueHub> _hubContext;
         private Mock<IHubContext<IsDueHub, IIsDueHub>> _hubContextMock;
         private Mock<ILogger<ScheduledFeatureTogglesService>> _loggerMock;
+        private Mock<IServiceProvider> _serviceProvider;
+        private Mock<IBus> _bus;
+        private Mock<IRepository<Application>> apprep;
+
 
         [TestInitialize]
         public void BeforeEach()
@@ -36,7 +43,17 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             services.AddScoped(sp => _appRepository);
             services.AddScoped(sp => _toggleSchedulesRepository);
             services.AddLogging(cfg => cfg.AddConsole()).Configure<LoggerFilterOptions>(cfg => cfg.MinLevel = LogLevel.Trace);
-            var serviceProvider = services.BuildServiceProvider();
+            _bus = new Mock<IBus>();
+            _serviceProvider = new Mock<IServiceProvider>();
+            _serviceProvider.Setup(x => x.GetService(typeof(IBus))).Returns(_bus.Object);
+
+            var serviceScope = new Mock<IServiceScope>();
+            serviceScope.Setup(x => x.ServiceProvider).Returns(_serviceProvider.Object);
+            var serviceScopeFactory = new Mock<IServiceScopeFactory>();
+            serviceScopeFactory.Setup(x => x.CreateScope()).Returns(serviceScope.Object);
+            _serviceProvider.Setup(x => x.GetService(typeof(IServiceScopeFactory))).Returns(serviceScopeFactory.Object);
+            serviceScope.Setup(x => x.ServiceProvider.GetService(typeof(IRepository<Application>))).Returns(_appRepository);
+            serviceScope.Setup(x => x.ServiceProvider.GetService(typeof(IRepository<ToggleSchedule>))).Returns(_toggleSchedulesRepository);
 
             _hubContextMock = new Mock<IHubContext<IsDueHub, IIsDueHub>>();
             var hubCltMock = new Mock<IHubClients<IIsDueHub>>();
@@ -47,7 +64,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             _hubContextMock.Setup(_ => _.Clients).Returns(hubCltMock.Object);
             _loggerMock = new Mock<ILogger<ScheduledFeatureTogglesService>>();
 
-            _sut = new ScheduledFeatureTogglesService(_loggerMock.Object, serviceProvider, _hubContextMock.Object);
+            _sut = new ScheduledFeatureTogglesService(_loggerMock.Object, _serviceProvider.Object, _hubContextMock.Object, (new Mock<IConfiguration>()).Object);
             _cts = new CancellationTokenSource();
         }
 
@@ -63,8 +80,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             app.SetToggle(app.FeatureToggles.Single(f => f.ToggleName == "onToggle").Id, "DEV", true, "username");
             await _appRepository.AddAsync(app);
 
-            var schedule = ToggleSchedule.Create("tst","offToggle", new[] { "DEV" }, true, _dateInThePast, "updatedBy");
-            var schedule2 = ToggleSchedule.Create("tst","onToggle", new[] { "DEV" }, false, _dateInThePast, "updatedBy");
+            var schedule = ToggleSchedule.Create("tst","offToggle", new[] { "DEV" }, true, _dateInThePast, "updatedBy", true);
+            var schedule2 = ToggleSchedule.Create("tst","onToggle", new[] { "DEV" }, false, _dateInThePast, "updatedBy", true);
             await _toggleSchedulesRepository.AddAsync(schedule);
             await _toggleSchedulesRepository.AddAsync(schedule2);
 
@@ -133,6 +150,26 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
 
             //assert
             (await _toggleSchedulesRepository.GetAllAsync()).Count().Should().Be(0);
+        }
+
+        [TestMethod]
+        public async Task ForceCacheRefresh_OnToggleSchedule_IfEnabled()
+        {
+            //arrange
+            var app = Application.Create("tst", "DEV", false);
+            app.AddFeatureToggle("t1", null);
+
+            await _appRepository.AddAsync(app);
+
+            var schedule = ToggleSchedule.Create("tst", "t1", new[] { "DEV" }, true, _dateInThePast, "updatedBy", true);
+            await _toggleSchedulesRepository.AddAsync(schedule);
+
+            //act
+            await _sut.StartAsync(_cts.Token);
+            await _sut.StopAsync(_cts.Token);
+
+            //assert
+            _bus.Verify(x => x.Publish(It.Is<RefreshTogglesCache>(e => e.ApplicationName == "tst" && e.Environment == "DEV"), default), Times.Once);
         }
     }
 }
