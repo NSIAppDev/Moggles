@@ -131,7 +131,7 @@
 
         <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false">
             <div v-if="environmentToEdit" class="form-horizontal">
-                <div class="row">
+                <div class="panel-body">
                     <div class="col-sm-12">
                         <div v-for="error in editEnvErrors" :key="error" class="text-danger margin-left-15">
                             {{ error }}
@@ -141,6 +141,21 @@
                         <label class="col-sm-4 control-label">Environment name</label>
                         <div class="col-sm-7">
                             <input v-model="editedEnvironmentName" type="text" class="form-control">
+                        </div>
+                    </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">
+                                Default toggle value
+                            </label>
+                            <div>
+                                <label for="d1">True</label>
+                                <input id="d1" v-model="defaultToggleValue" type="radio"
+                                       :value="true" checked>
+
+                                <label for="d2">False</label>
+                                <input id="d2" v-model="defaultToggleValue" type="radio"
+                                       :value="false">
+                            </div>
                         </div>
                     </div>
                     <div class="clearfix">
@@ -159,7 +174,7 @@
                             </button>
                         </div>
                     </div>
-                </div>
+                <!--</div>-->
             </div>
         </modal>
         <modal v-model="showDeleteEnvironmentConfirmation" title="You are about to delete an environment" :footer="false">
