@@ -16,5 +16,6 @@ namespace Moggles.Models
         public bool State { get; set; }
         [Required]
         public DateTime ScheduleDate { get; set; }
+        public bool ForceCacheRefresh { get; set; }
     }
 }

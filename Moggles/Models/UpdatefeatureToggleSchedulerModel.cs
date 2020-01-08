@@ -13,5 +13,6 @@ namespace Moggles.Models
 
         public DateTime ScheduledDate { get; set; }
         public List<string> Environments { get; set; }
+        public bool ForceCacheRefresh { get; set; }
     }
 }
