@@ -23,7 +23,7 @@ namespace Moggles.BackgroundServices
         private readonly IServiceProvider _serviceProvider;
         private readonly IHubContext<IsDueHub, IIsDueHub> _hubContext;
         private readonly IBus _bus;
-        private IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
 
         public ScheduledFeatureTogglesService(ILogger<ScheduledFeatureTogglesService> logger, IServiceProvider serviceProvider, IHubContext<IsDueHub, IIsDueHub> hubContext, IConfiguration configuration)
@@ -80,7 +80,7 @@ namespace Moggles.BackgroundServices
                                         }
                                     }
                                     await _appRepository.UpdateAsync(app);
-                                    if(bool.TryParse(_configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
+                                    if (this.GetCacheRefreshAvailability())
                                     {
                                         if (toggleSchedule.ForceCacheRefresh)
                                         {
@@ -116,6 +116,11 @@ namespace Moggles.BackgroundServices
 
                 await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             } while (!stoppingToken.IsCancellationRequested);
+        }
+
+        private bool GetCacheRefreshAvailability()
+        {
+            return bool.TryParse(_configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging;
         }
     }
 }

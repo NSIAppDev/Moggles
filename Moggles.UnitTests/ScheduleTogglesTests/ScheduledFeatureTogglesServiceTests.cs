@@ -62,8 +62,12 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             hubCltMock.Setup(_ => _.All).Returns(_hubContext.Object);
             _hubContextMock.Setup(_ => _.Clients).Returns(hubCltMock.Object);
             _loggerMock = new Mock<ILogger<ScheduledFeatureTogglesService>>();
+            _configurationMock = new Mock<IConfiguration>();
 
-            _sut = new ScheduledFeatureTogglesService(_loggerMock.Object, _serviceProvider.Object, _hubContextMock.Object);
+            var _configurationSectionMock = new Mock<IConfigurationSection>();
+            _configurationMock.Setup(x => x.GetSection("Messaging")["UseMessaging"]).Returns("true");
+
+            _sut = new ScheduledFeatureTogglesService(_loggerMock.Object, _serviceProvider.Object, _hubContextMock.Object, _configurationMock.Object);
             _cts = new CancellationTokenSource();
         }
 
