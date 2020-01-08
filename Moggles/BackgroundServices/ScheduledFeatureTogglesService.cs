@@ -23,15 +23,13 @@ namespace Moggles.BackgroundServices
         private readonly IServiceProvider _serviceProvider;
         private readonly IHubContext<IsDueHub, IIsDueHub> _hubContext;
         private readonly IBus _bus;
-        private readonly IConfiguration _configuration;
 
 
-        public ScheduledFeatureTogglesService(ILogger<ScheduledFeatureTogglesService> logger, IServiceProvider serviceProvider, IHubContext<IsDueHub, IIsDueHub> hubContext, IConfiguration configuration)
+        public ScheduledFeatureTogglesService(ILogger<ScheduledFeatureTogglesService> logger, IServiceProvider serviceProvider, IHubContext<IsDueHub, IIsDueHub> hubContext)
         {
             _hubContext = hubContext;
             _serviceProvider = serviceProvider;
             _logger = logger;
-            _configuration = configuration;
             _bus = (IBus)(serviceProvider.GetService(typeof(IBus)));
         }
 
@@ -80,7 +78,7 @@ namespace Moggles.BackgroundServices
                                         }
                                     }
                                     await _appRepository.UpdateAsync(app);
-                                    if (toggleSchedule.ForceCacheRefresh == true)
+                                    if (toggleSchedule.ForceCacheRefresh)
                                     {
                                         foreach (var env in toggleSchedule.Environments)
                                         {

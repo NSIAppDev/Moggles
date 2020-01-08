@@ -31,8 +31,6 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         private Mock<ILogger<ScheduledFeatureTogglesService>> _loggerMock;
         private Mock<IServiceProvider> _serviceProvider;
         private Mock<IBus> _bus;
-        private Mock<IRepository<Application>> apprep;
-
 
         [TestInitialize]
         public void BeforeEach()
@@ -64,7 +62,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             _hubContextMock.Setup(_ => _.Clients).Returns(hubCltMock.Object);
             _loggerMock = new Mock<ILogger<ScheduledFeatureTogglesService>>();
 
-            _sut = new ScheduledFeatureTogglesService(_loggerMock.Object, _serviceProvider.Object, _hubContextMock.Object, (new Mock<IConfiguration>()).Object);
+            _sut = new ScheduledFeatureTogglesService(_loggerMock.Object, _serviceProvider.Object, _hubContextMock.Object);
             _cts = new CancellationTokenSource();
         }
 
