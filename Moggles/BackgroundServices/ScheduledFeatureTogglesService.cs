@@ -80,7 +80,7 @@ namespace Moggles.BackgroundServices
                                         }
                                     }
                                     await _appRepository.UpdateAsync(app);
-                                    if (this.GetCacheRefreshAvailability())
+                                    if (IsCacheRefreshAvailability())
                                     {
                                         if (toggleSchedule.ForceCacheRefresh)
                                         {
@@ -118,7 +118,7 @@ namespace Moggles.BackgroundServices
             } while (!stoppingToken.IsCancellationRequested);
         }
 
-        private bool GetCacheRefreshAvailability()
+        private bool IsCacheRefreshAvailability()
         {
             return bool.TryParse(_configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging;
         }
