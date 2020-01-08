@@ -23,14 +23,16 @@ namespace Moggles.BackgroundServices
         private readonly IServiceProvider _serviceProvider;
         private readonly IHubContext<IsDueHub, IIsDueHub> _hubContext;
         private readonly IBus _bus;
+        private IConfiguration _configuration;
 
 
-        public ScheduledFeatureTogglesService(ILogger<ScheduledFeatureTogglesService> logger, IServiceProvider serviceProvider, IHubContext<IsDueHub, IIsDueHub> hubContext)
+        public ScheduledFeatureTogglesService(ILogger<ScheduledFeatureTogglesService> logger, IServiceProvider serviceProvider, IHubContext<IsDueHub, IIsDueHub> hubContext, IConfiguration configuration)
         {
             _hubContext = hubContext;
             _serviceProvider = serviceProvider;
             _logger = logger;
             _bus = (IBus)(serviceProvider.GetService(typeof(IBus)));
+            _configuration = configuration;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -78,15 +80,18 @@ namespace Moggles.BackgroundServices
                                         }
                                     }
                                     await _appRepository.UpdateAsync(app);
-                                    if (toggleSchedule.ForceCacheRefresh)
+                                    if(bool.TryParse(_configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
                                     {
-                                        foreach (var env in toggleSchedule.Environments)
+                                        if (toggleSchedule.ForceCacheRefresh)
                                         {
-                                            await _bus.Publish(new RefreshTogglesCache
+                                            foreach (var env in toggleSchedule.Environments)
                                             {
-                                                Environment = env,
-                                                ApplicationName = toggleSchedule.ApplicationName
-                                            });
+                                                await _bus.Publish(new RefreshTogglesCache
+                                                {
+                                                    Environment = env,
+                                                    ApplicationName = toggleSchedule.ApplicationName
+                                                });
+                                            }
                                         }
                                     }
                                     _hubContext.NotifyClient(toggleSchedule);

@@ -30,7 +30,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         private Mock<IHubContext<IsDueHub, IIsDueHub>> _hubContextMock;
         private Mock<ILogger<ScheduledFeatureTogglesService>> _loggerMock;
         private Mock<IServiceProvider> _serviceProvider;
-        private Mock<IBus> _bus;
+        private Mock<IBus> _busMock;
+        private Mock<IConfiguration> _configurationMock;
 
         [TestInitialize]
         public void BeforeEach()
@@ -41,9 +42,9 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             services.AddScoped(sp => _appRepository);
             services.AddScoped(sp => _toggleSchedulesRepository);
             services.AddLogging(cfg => cfg.AddConsole()).Configure<LoggerFilterOptions>(cfg => cfg.MinLevel = LogLevel.Trace);
-            _bus = new Mock<IBus>();
+            _busMock = new Mock<IBus>();
             _serviceProvider = new Mock<IServiceProvider>();
-            _serviceProvider.Setup(x => x.GetService(typeof(IBus))).Returns(_bus.Object);
+            _serviceProvider.Setup(x => x.GetService(typeof(IBus))).Returns(_busMock.Object);
 
             var serviceScope = new Mock<IServiceScope>();
             serviceScope.Setup(x => x.ServiceProvider).Returns(_serviceProvider.Object);
@@ -167,7 +168,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             await _sut.StopAsync(_cts.Token);
 
             //assert
-            _bus.Verify(x => x.Publish(It.Is<RefreshTogglesCache>(e => e.ApplicationName == "tst" && e.Environment == "DEV"), default), Times.Once);
+            _busMock.Verify(x => x.Publish(It.Is<RefreshTogglesCache>(e => e.ApplicationName == "tst" && e.Environment == "DEV"), default), Times.Once);
         }
     }
 }

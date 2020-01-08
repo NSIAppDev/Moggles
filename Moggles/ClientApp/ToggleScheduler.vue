@@ -67,7 +67,7 @@
                   </template>
               </dropdown>
           </form>
-          <div class="form-group">
+          <div v-if="isCacheRefreshEnabled" class="form-group">
               <label class="control-label" for="cacheRefresh">Force Cache Refresh</label>
               <span class="padding-left-5">
                   <p-check v-model="forceCacheRefresh" class="p-icon p-fill" name="cacheRefresh" color="default">
@@ -134,7 +134,8 @@
                 scheduledTime: new Date(),
                 toggle: null,
                 showDeleteConfirmation: false,
-                forceCacheRefresh:false
+                forceCacheRefresh: false, 
+                isCacheRefreshEnabled: false
             }
         },
         created() {
@@ -163,7 +164,11 @@
                 this.cleanup();
                 this.loadToggles(this.selectedAppId);
                 this.toggle = null;
-            })
+            }) 
+
+            axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
+                this.isCacheRefreshEnabled = response.data;
+            }).catch(error => { window.alert(error) });
         },
         methods: {
             showConfirmDeleteModal () {
