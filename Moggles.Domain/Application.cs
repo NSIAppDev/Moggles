@@ -86,6 +86,15 @@ namespace Moggles.Domain
 
             env.EnvName = newName;
         }
+        public void ChangeEnvironmentDefaultValue(string name, bool newDefaultValue)
+        {
+            var env = DeploymentEnvironments.FirstOrDefault(e => string.Compare(e.EnvName, name, StringComparison.OrdinalIgnoreCase) == 0);
+
+            if (env == null)
+                throw new InvalidOperationException("Environment does not exist!");
+
+            env.DefaultToggleValue = newDefaultValue;
+        }
 
         public void RemoveFeatureToggle(Guid id)
         {

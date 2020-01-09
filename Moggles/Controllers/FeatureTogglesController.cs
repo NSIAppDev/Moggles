@@ -230,6 +230,7 @@ namespace Moggles.Controllers
             try
             {
                 app.ChangeDeployEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
+                app.ChangeEnvironmentDefaultValue(environmentModel.InitialEnvName, environmentModel.DefaultToggleValue);
             }
             catch (BusinessRuleValidationException ex)
             {

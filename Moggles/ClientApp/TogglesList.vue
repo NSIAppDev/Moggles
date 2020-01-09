@@ -137,14 +137,14 @@
                             {{ error }}
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class=" col-sm-12 form-group">
                         <label class="col-sm-4 control-label">Environment name</label>
-                        <div class="col-sm-7">
+                        <div class="col-sm-8">
                             <input v-model="editedEnvironmentName" type="text" class="form-control">
                         </div>
                     </div>
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">
+                        <div class="col-sm-6 form-group">
+                            <label class="control-label">
                                 Default toggle value
                             </label>
                             <div>
@@ -168,7 +168,7 @@
                             <button type="button" class="btn btn-default" @click="cancelEditEnvName">
                                 Cancel
                             </button>
-                            <button type="button" class="btn btn-primary" :disabled="!enableEditEnvironmentSave"
+                            <button type="button" class="btn btn-primary"
                                     @click="saveEnvironment">
                                 Save
                             </button>
@@ -237,16 +237,17 @@
                 showScheduler: false,
                 connectionId: null,
                 connection: null,
-                rowsPerPage: 10
+                rowsPerPage: 10,
+                defaultToggleValue: false
             }
 		},
 		computed: {
 			showRefreshAlert() {
 				return this.environmentsToRefresh.length > 0 ? this.refreshAlertVisible : false;
             },
-            enableEditEnvironmentSave() {
-                return this.environmentToEdit.initialEnvName !== this.editedEnvironmentName;
-            },
+            //enableEditEnvironmentSave() {
+            //    return this.environmentToEdit.initialEnvName !== this.editedEnvironmentName;
+            //},
             getPaginationOptions() {
                 return { enabled: true, perPage: parseInt(this.getRowsPerPage()) };
             }
@@ -328,8 +329,10 @@
                 let envUpdateModel = {
                     applicationId: this.selectedApp.id,
                     initialEnvName: this.environmentToEdit.initialEnvName,
-                    newEnvName: this.editedEnvironmentName
+                    newEnvName: this.editedEnvironmentName,
+                    defaultToggleValue: this.defaultToggleValue
                 }
+                console.log(envUpdateModel);
 
                 axios.put('/api/FeatureToggles/updateenvironment', envUpdateModel)
 					.then(() => {
