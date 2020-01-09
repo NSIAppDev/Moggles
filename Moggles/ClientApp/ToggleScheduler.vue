@@ -1,112 +1,112 @@
 ﻿<template>
-  <div>
-      <div class="panel-body">
-          <div v-for="error in errors" :key="error" class="text-danger margin-bottom-10">
-              {{ error }}
-          </div>
-          <div class="form-group">
-              <label class="control-label">Select State</label>
-              <div class="form-inline">
-                  <label for="d1">
-                      <input id="d1" v-model="scheduledState" type="radio"
-                             :value="true"> On
-                  </label>
-                  <label for="d2">
-                      <input id="d2" v-model="scheduledState" type="radio"
-                             :value="false"> Off
-                  </label>
-              </div>
-          </div>
-          <div class="form-group">
-              <label class="control-label" for="toggleSelect">Select Toggles</label>
-              <multi-select v-if="existsTogggleSchedule(toggle)" id="toggleSelect" v-model="selectedToggles"
-                            name="toggleSelect"
-                            :options="allToggles" block :selected-icon="'fas fa-check'" />
-              <multi-select v-else id="toggleSelect" v-model="selectedToggles"
-                            type="text" name="toggleSelect"
-                            :options="allToggles" block :selected-icon="'fas fa-check'"
-                            disabled />
-          </div>
-          <div class="form-group">
-              <label class="control-label" for="environmentsSelect">Select Environments</label>
-              <multi-select id="environmentsSelect" v-model="selectedEnvironments" name="environmentsSelect"
-                            :options="allEnvironments" block :selected-icon="'fas fa-deactivate'" />
-          </div>
-          <label class="control-label">Select Change State Date/Time</label>
-          <form class="form-inline form-group">
-              <dropdown class="form-group">
-                  <div class="input-group">
-                      <input id="dateInput" v-model="scheduledDate" class="form-control"
-                             type="text" readonly="readonly">
-                      <div class="input-group-btn">
-                          <btn class="dropdown-toggle">
-                              <i class="fas fa-calendar" />
-                          </btn>
-                      </div>
-                  </div>
-                  <template slot="dropdown">
-                      <li>
-                          <date-picker v-model="scheduledDate" :icon-control-left="'fas fa-angle-left'" :icon-control-right="'fas fa-angle-right'" />
-                      </li>
-                  </template>
-              </dropdown>
-              <dropdown class="form-group">
-                  <div class="input-group">
-                      <input id="timeInput" class="form-control" type="text"
-                             :value="scheduledTime.toTimeString()" readonly="readonly">
-                      <div class="input-group-btn">
-                          <btn class="dropdown-toggle">
-                              <i class="fas fa-clock" />
-                          </btn>
-                      </div>
-                  </div>
-                  <template slot="dropdown">
-                      <li style="padding: 10px">
-                          <time-picker v-model="scheduledTime" :icon-control-up="'fas fa-angle-up'" :icon-control-down="'fas fa-angle-down'" />
-                      </li>
-                  </template>
-              </dropdown>
-          </form>
-          <div v-if="isCacheRefreshEnabled" class="form-group">
-              <label class="control-label" for="cacheRefresh">Force Cache Refresh</label>
-              <span class="padding-left-5">
-                  <p-check v-model="forceCacheRefresh" class="p-icon p-fill" name="cacheRefresh" color="default">
-                      <i slot="extra" class="icon fas fa-check" />
-                  </p-check>
-              </span>
-          </div>
-          <div class="clearfix">
-              <div v-if="!existsTogggleSchedule(toggle)" class="pull-left">
-                  <button type="button" class="btn btn-danger" @click="showConfirmDeleteModal">
-                      Delete
-                  </button>
-              </div>
-              <div class="pull-right">
-                  <button id="closeButton" class="btn btn-default" @click="closeModal">
-                      Close
-                  </button>
-                  <button id="submitButton" class="btn btn-primary" type="button"
-                          @click="addSchedule">
-                      Submit
-                  </button>
-              </div>
-          </div>
-          <modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle schedule" :footer="false"
-                 append-to-body>
-              <div>
-                  Are you sure you want to delete this feature toggle schedule?
-              </div>
-              <div class="text-right">
-                  <button type="button" class="btn btn-default" @click="showDeleteConfirmation = false">
-                      Cancel
-                  </button>
-                  <button type="button" class="btn btn-primary" @click="deleteScheduler">
-                      Delete
-                  </button>
-              </div>
-          </modal>
-      </div>
-  </div>
+    <div>
+        <div class="panel-body">
+            <div v-for="error in errors" :key="error" class="text-danger margin-bottom-10">
+                {{ error }}
+            </div>
+            <div class="form-group">
+                <label class="control-label">Select State</label>
+                <div class="form-inline">
+                    <label for="d1">
+                        <input id="d1" v-model="scheduledState" type="radio"
+                               :value="true"> On
+                    </label>
+                    <label for="d2">
+                        <input id="d2" v-model="scheduledState" type="radio"
+                               :value="false"> Off
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="toggleSelect">Select Toggles</label>
+                <multi-select v-if="existsTogggleSchedule(toggle)" id="toggleSelect" v-model="selectedToggles"
+                              name="toggleSelect"
+                              :options="allToggles" block :selected-icon="'fas fa-check'" />
+                <multi-select v-else id="toggleSelect" v-model="selectedToggles"
+                              type="text" name="toggleSelect"
+                              :options="allToggles" block :selected-icon="'fas fa-check'"
+                              disabled />
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="environmentsSelect">Select Environments</label>
+                <multi-select id="environmentsSelect" v-model="selectedEnvironments" name="environmentsSelect"
+                              :options="allEnvironments" block :selected-icon="'fas fa-deactivate'" />
+            </div>
+            <label class="control-label">Select Change State Date/Time</label>
+            <form class="form-inline form-group">
+                <dropdown class="form-group">
+                    <div class="input-group">
+                        <input id="dateInput" v-model="scheduledDate" class="form-control"
+                               type="text" readonly="readonly">
+                        <div class="input-group-btn">
+                            <btn class="dropdown-toggle">
+                                <i class="fas fa-calendar" />
+                            </btn>
+                        </div>
+                    </div>
+                    <template slot="dropdown">
+                        <li>
+                            <date-picker v-model="scheduledDate" :icon-control-left="'fas fa-angle-left'" :icon-control-right="'fas fa-angle-right'" />
+                        </li>
+                    </template>
+                </dropdown>
+                <dropdown class="form-group">
+                    <div class="input-group">
+                        <input id="timeInput" class="form-control" type="text"
+                               :value="scheduledTime.toTimeString()" readonly="readonly">
+                        <div class="input-group-btn">
+                            <btn class="dropdown-toggle">
+                                <i class="fas fa-clock" />
+                            </btn>
+                        </div>
+                    </div>
+                    <template slot="dropdown">
+                        <li style="padding: 10px">
+                            <time-picker v-model="scheduledTime" :icon-control-up="'fas fa-angle-up'" :icon-control-down="'fas fa-angle-down'" />
+                        </li>
+                    </template>
+                </dropdown>
+            </form>
+            <div v-if="isCacheRefreshEnabled" class="form-group">
+                <label class="control-label" for="cacheRefresh">Force Cache Refresh</label>
+                <span class="padding-left-5">
+                    <p-check v-model="forceCacheRefresh" class="p-icon p-fill" name="cacheRefresh" color="default">
+                        <i slot="extra" class="icon fas fa-check" />
+                    </p-check>
+                </span>
+            </div>
+            <div class="clearfix">
+                <div v-if="!existsTogggleSchedule(toggle)" class="pull-left">
+                    <button type="button" class="btn btn-danger" @click="showConfirmDeleteModal">
+                        Delete
+                    </button>
+                </div>
+                <div class="pull-right">
+                    <button id="closeButton" class="btn btn-default" @click="closeModal">
+                        Close
+                    </button>
+                    <button id="submitButton" class="btn btn-primary" type="button"
+                            @click="addSchedule">
+                        Submit
+                    </button>
+                </div>
+            </div>
+            <modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle schedule" :footer="false"
+                   append-to-body>
+                <div>
+                    Are you sure you want to delete this feature toggle schedule?
+                </div>
+                <div class="text-right">
+                    <button type="button" class="btn btn-default" @click="showDeleteConfirmation = false">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" @click="deleteScheduler">
+                        Delete
+                    </button>
+                </div>
+            </modal>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -134,7 +134,7 @@
                 scheduledTime: new Date(),
                 toggle: null,
                 showDeleteConfirmation: false,
-                forceCacheRefresh: false, 
+                forceCacheRefresh: false,
                 isCacheRefreshEnabled: false
             }
         },
@@ -156,22 +156,25 @@
             })
 
             Bus.$on("edit-schedule", toggleId => {
+                this.selectedEnvironments = [];
                 this.loadToggles(this.selectedAppId);
                 this.loadToggleForEdit(toggleId);
+                this.loadEnvironments(this.selectedAppId);
             })
-            
+
             Bus.$on('add-scheduler', () => {
                 this.cleanup();
                 this.loadToggles(this.selectedAppId);
+                this.loadEnvironments(this.selectedAppId);
                 this.toggle = null;
-            }) 
+            })
 
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
             }).catch(error => { window.alert(error) });
         },
         methods: {
-            showConfirmDeleteModal () {
+            showConfirmDeleteModal() {
                 this.showDeleteConfirmation = true;
             },
             deleteScheduler() {
@@ -197,13 +200,12 @@
                 if (this.scheduledDate === null) {
                     this.errors.push('You must select a change state date and time');
                 }
-        
+
                 let currentDate = new Date(moment().format("YYYY-MM-DD hh:mm:ss A"));
                 let scheduledDateFormat = moment(this.scheduledDate).format("YYYY-MM-DD");
                 let scheduledTimeFormat = moment(this.scheduledTime).format("hh:mm:ss A");
                 let dateTime = scheduledDateFormat + " " + scheduledTimeFormat;
                 let scheduledDateTime = new Date(dateTime);
-
                 if (scheduledDateTime < currentDate) {
                     this.errors.push("Please select a change state date and time in the future!");
                 }
@@ -249,8 +251,8 @@
                 }
                 else {
                     axios.put('api/ToggleScheduler', {
-                        toggleName:this.toggle.toggleName,
-                        id:this.toggle.id,
+                        toggleName: this.toggle.toggleName,
+                        id: this.toggle.id,
                         scheduledState: this.scheduledState,
                         scheduledDate: combinedScheduledDateTime,
                         environments: this.selectedEnvironments,

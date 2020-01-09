@@ -6,8 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
+using Moggles.Data.NoDb;
 using Moggles.Domain;
 using Moggles.Models;
+using Moggles.UnitTests.Helpers;
+using NoDb;
 
 namespace Moggles.UnitTests.FeatureTogglesTests
 {
@@ -95,6 +98,41 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             //assert
             //throws InvalidOperationException
+        }
+
+        [TestMethod]
+        public async Task WhenEnvironmentIsModified_EnvironmentNameForFeatureToggleStatusesUpdated()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "DEV", true);
+            await _appRepository.AddAsync(app);
+            app.AddFeatureToggle("t1", string.Empty);
+            app.AddFeatureToggle("t2", string.Empty);
+            var t1 = app.FeatureToggles.ToList().FirstOrDefault(ft => ft.ToggleName == "t1");
+            app.SetToggle(t1.Id, "DEV", false, "bla");
+
+            var updatedEnvironmentName = "QA";
+
+            var updatedEnvironment = new UpdateEnvironmentModel
+            {
+                ApplicationId = app.Id,
+                InitialEnvName = "DEV",
+                NewEnvName = updatedEnvironmentName
+            };
+
+            //act
+            var result = await _featureToggleController.UpdateEnvironment(updatedEnvironment);
+
+            //assert
+            result.Should().BeOfType<OkResult>();
+            var savedApp = await _appRepository.FindByIdAsync(app.Id);
+            var t1Statuses = t1.FeatureToggleStatuses.First();
+            t1Statuses.EnvironmentName.Should().Be("QA");
+            t1Statuses.Enabled.Should().BeFalse();
+            var t2 = savedApp.FeatureToggles.ToList().FirstOrDefault(ft => ft.ToggleName == "t2");
+            var t2Statuses = t2.FeatureToggleStatuses.First();
+            t2Statuses.EnvironmentName.Should().Be("QA");
+            t2Statuses.Enabled.Should().BeTrue();
         }
     }
 }
