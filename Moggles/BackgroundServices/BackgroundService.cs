@@ -20,7 +20,7 @@ namespace Moggles.BackgroundServices
         public virtual Task StartAsync(CancellationToken cancellationToken)
         {
             // Store the task we're executing
-            _executingTask = ExecuteAsync(_stoppingCts.Token);
+            _executingTask = ExecuteAsync(cancellationToken);
 
             // If the task is completed then return it,
             // this will bubble cancellation and failure to the caller
