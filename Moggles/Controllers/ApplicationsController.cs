@@ -12,10 +12,12 @@ namespace Moggles.Controllers
     public class ApplicationsController : Controller
     {
         private readonly IRepository<Application> _applicationsRepository;
+        private readonly IRepository<ToggleSchedule> _toggleScheduleRepository;
 
-        public ApplicationsController(IRepository<Application> applicationsRepository)
+        public ApplicationsController(IRepository<Application> applicationsRepository, IRepository<ToggleSchedule> toggleScheduleRepository)
         {
             _applicationsRepository = applicationsRepository;
+            _toggleScheduleRepository = toggleScheduleRepository;
         }
 
         [HttpGet]
@@ -81,6 +83,14 @@ namespace Moggles.Controllers
 
             await _applicationsRepository.DeleteAsync(app);
 
+            var schedulers = await _toggleScheduleRepository.GetAllAsync();
+            foreach(var schedule in schedulers)
+            {
+                if(schedule.ApplicationName == app.AppName)
+                {
+                    await _toggleScheduleRepository.DeleteAsync(schedule);
+                }
+            }
             return Ok();
         }
     }
