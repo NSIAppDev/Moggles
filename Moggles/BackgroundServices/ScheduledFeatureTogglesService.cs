@@ -60,46 +60,54 @@ namespace Moggles.BackgroundServices
 
                             foreach (var toggleSchedule in allSchedules)
                             {
-                                _logger.LogDebug($"Schedule processing: {toggleSchedule.ScheduledDate}");
-                                if (toggleSchedule.IsDue())
+                                var app = apps.FirstOrDefault(a => a.AppName == toggleSchedule.ApplicationName);
+                                if (app == null)
                                 {
-                                    var app = apps.FirstOrDefault(a => a.AppName == toggleSchedule.ApplicationName);
-                                    foreach (var env in toggleSchedule.Environments)
-                                    {
-                                        try
-                                        {
-                                            app.SetToggle(toggleSchedule.ToggleName, env, toggleSchedule.ScheduledState, "Scheduled on behalf of "+toggleSchedule.UpdatedBy);
-                                            _logger.LogInformation(
-                                                $"Set toggle {toggleSchedule.ToggleName} to {toggleSchedule.ScheduledState} on {env} environment for {app.AppName}");
-
-                                        }
-                                        catch (EntityNotFoundException ex) when (ex.EntityType == nameof(FeatureToggle))
-                                        {
-                                            _logger.LogError(ex, ex.Message);
-                                            await _toggleSchedulesRepository.DeleteAsync(toggleSchedule);
-                                        }
-                                    }
-                                    await _appRepository.UpdateAsync(app);
-                                    if (IsCacheRefreshAvailable())
-                                    {
-                                        if (toggleSchedule.ForceCacheRefresh)
-                                        {
-                                            foreach (var env in toggleSchedule.Environments)
-                                            {
-                                                await _bus.Publish(new RefreshTogglesCache
-                                                {
-                                                    Environment = env,
-                                                    ApplicationName = toggleSchedule.ApplicationName
-                                                });
-                                            }
-                                        }
-                                    }
-                                    _hubContext.NotifyClient(toggleSchedule);
                                     await _toggleSchedulesRepository.DeleteAsync(toggleSchedule);
                                 }
                                 else
                                 {
-                                    _logger.LogDebug($"Schedule is not DUE: {toggleSchedule.ScheduledDate}, now={DateTime.Now}");
+                                    _logger.LogDebug($"Schedule processing: {toggleSchedule.ScheduledDate}");
+                                    if (toggleSchedule.IsDue())
+                                    {
+
+                                        foreach (var env in toggleSchedule.Environments)
+                                        {
+                                            try
+                                            {
+                                                app.SetToggle(toggleSchedule.ToggleName, env, toggleSchedule.ScheduledState, "Scheduled on behalf of " + toggleSchedule.UpdatedBy);
+                                                _logger.LogInformation(
+                                                    $"Set toggle {toggleSchedule.ToggleName} to {toggleSchedule.ScheduledState} on {env} environment for {app.AppName}");
+
+                                            }
+                                            catch (EntityNotFoundException ex) when (ex.EntityType == nameof(FeatureToggle))
+                                            {
+                                                _logger.LogError(ex, ex.Message);
+                                                await _toggleSchedulesRepository.DeleteAsync(toggleSchedule);
+                                            }
+                                        }
+                                        await _appRepository.UpdateAsync(app);
+                                        if (IsCacheRefreshAvailable())
+                                        {
+                                            if (toggleSchedule.ForceCacheRefresh)
+                                            {
+                                                foreach (var env in toggleSchedule.Environments)
+                                                {
+                                                    await _bus.Publish(new RefreshTogglesCache
+                                                    {
+                                                        Environment = env,
+                                                        ApplicationName = toggleSchedule.ApplicationName
+                                                    });
+                                                }
+                                            }
+                                        }
+                                        _hubContext.NotifyClient(toggleSchedule);
+                                        await _toggleSchedulesRepository.DeleteAsync(toggleSchedule);
+                                    }
+                                    else
+                                    {
+                                        _logger.LogDebug($"Schedule is not DUE: {toggleSchedule.ScheduledDate}, now={DateTime.Now}");
+                                    }
                                 }
                             }
                         }
