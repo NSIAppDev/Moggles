@@ -227,10 +227,15 @@ namespace Moggles.Controllers
                 return BadRequest(ModelState);
 
             var app = await _applicationsRepository.FindByIdAsync(environmentModel.ApplicationId);
+            var featureTogglesSchedulers = await _toggleScheduleRepository.GetAllAsync();
             try
             {
                 app.ChangeDeployEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
-                app.ChangeEnvironmentDefaultValue(environmentModel.InitialEnvName, environmentModel.DefaultToggleValue);
+                foreach(var fts in featureTogglesSchedulers)
+                {
+                    fts.ChangeEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
+                    await _toggleScheduleRepository.UpdateAsync(fts);
+                }
             }
             catch (BusinessRuleValidationException ex)
             {

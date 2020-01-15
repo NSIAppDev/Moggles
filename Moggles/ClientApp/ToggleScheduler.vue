@@ -19,10 +19,13 @@
             </div>
             <div class="form-group">
                 <label class="control-label" for="toggleSelect">Select Toggles</label>
-                <multi-select v-if="existsTogggleSchedule(toggle)" id="toggleSelect" v-model="selectedToggles" name="toggleSelect"
+                <multi-select v-if="existsTogggleSchedule(toggle)" id="toggleSelect" v-model="selectedToggles"
+                              name="toggleSelect"
                               :options="allToggles" block :selected-icon="'fas fa-check'" />
-                <multi-select v-else id="toggleSelect" type="text" v-model="selectedToggles" name="toggleSelect"
-                              :options="allToggles" block :selected-icon="'fas fa-check'" disabled />
+                <multi-select v-else id="toggleSelect" v-model="selectedToggles"
+                              type="text" name="toggleSelect"
+                              :options="allToggles" block :selected-icon="'fas fa-check'"
+                              disabled />
             </div>
             <div class="form-group">
                 <label class="control-label" for="environmentsSelect">Select Environments</label>
@@ -64,20 +67,32 @@
                     </template>
                 </dropdown>
             </form>
+            <div v-if="isCacheRefreshEnabled" class="form-group">
+                <label class="control-label" for="cacheRefresh">Force Cache Refresh</label>
+                <span class="padding-left-5">
+                    <p-check v-model="forceCacheRefresh" class="p-icon p-fill" name="cacheRefresh" color="default">
+                        <i slot="extra" class="icon fas fa-check" />
+                    </p-check>
+                </span>
+            </div>
             <div class="clearfix">
-                <div class="pull-left" v-if="!existsTogggleSchedule(toggle)">
-                    <button type="button" class="btn btn-danger" @click="showConfirmDeleteModal">Delete</button>
+                <div v-if="!existsTogggleSchedule(toggle)" class="pull-left">
+                    <button type="button" class="btn btn-danger" @click="showConfirmDeleteModal">
+                        Delete
+                    </button>
                 </div>
                 <div class="pull-right">
                     <button id="closeButton" class="btn btn-default" @click="closeModal">
                         Close
                     </button>
-                    <button id="submitButton" class="btn btn-primary" type="button" @click="addSchedule">
+                    <button id="submitButton" class="btn btn-primary" type="button"
+                            @click="addSchedule">
                         Submit
                     </button>
                 </div>
             </div>
-            <modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle schedule" :footer="false" append-to-body>
+            <modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle schedule" :footer="false"
+                   append-to-body>
                 <div>
                     Are you sure you want to delete this feature toggle schedule?
                 </div>
@@ -91,7 +106,6 @@
                 </div>
             </modal>
         </div>
-        
     </div>
 </template>
 
@@ -100,8 +114,12 @@
     import axios from 'axios'
     import moment from 'moment';
     import _ from 'lodash';
+    import PrettyCheck from 'pretty-checkbox-vue/check';
 
     export default {
+        components: {
+            'p-check': PrettyCheck
+        },
         data() {
             return {
                 environmentName: "",
@@ -115,7 +133,9 @@
                 scheduledDate: null,
                 scheduledTime: new Date(),
                 toggle: null,
-                showDeleteConfirmation: false
+                showDeleteConfirmation: false,
+                forceCacheRefresh: false,
+                isCacheRefreshEnabled: false
             }
         },
         created() {
@@ -136,18 +156,25 @@
             })
 
             Bus.$on("edit-schedule", toggleId => {
+                this.selectedEnvironments = [];
                 this.loadToggles(this.selectedAppId);
                 this.loadToggleForEdit(toggleId);
+                this.loadEnvironments(this.selectedAppId);
             })
-            
+
             Bus.$on('add-scheduler', () => {
                 this.cleanup();
                 this.loadToggles(this.selectedAppId);
+                this.loadEnvironments(this.selectedAppId);
                 this.toggle = null;
             })
+
+            axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
+                this.isCacheRefreshEnabled = response.data;
+            }).catch(error => { window.alert(error) });
         },
         methods: {
-            showConfirmDeleteModal () {
+            showConfirmDeleteModal() {
                 this.showDeleteConfirmation = true;
             },
             deleteScheduler() {
@@ -173,13 +200,12 @@
                 if (this.scheduledDate === null) {
                     this.errors.push('You must select a change state date and time');
                 }
-        
+
                 let currentDate = new Date(moment().format("YYYY-MM-DD hh:mm:ss A"));
                 let scheduledDateFormat = moment(this.scheduledDate).format("YYYY-MM-DD");
                 let scheduledTimeFormat = moment(this.scheduledTime).format("hh:mm:ss A");
                 let dateTime = scheduledDateFormat + " " + scheduledTimeFormat;
                 let scheduledDateTime = new Date(dateTime);
-
                 if (scheduledDateTime < currentDate) {
                     this.errors.push("Please select a change state date and time in the future!");
                 }
@@ -198,7 +224,8 @@
                         state: this.scheduledState,
                         featureToggles: this.selectedToggles,
                         environments: this.selectedEnvironments,
-                        scheduleDate: combinedScheduledDateTime
+                        scheduleDate: combinedScheduledDateTime,
+                        forceCacheRefresh: this.forceCacheRefresh
                     }).then(() => {
                         this.$notify({
                             type: "success",
@@ -224,11 +251,12 @@
                 }
                 else {
                     axios.put('api/ToggleScheduler', {
-                        toggleName:this.toggle.toggleName,
-                        id:this.toggle.id,
+                        toggleName: this.toggle.toggleName,
+                        id: this.toggle.id,
                         scheduledState: this.scheduledState,
                         scheduledDate: combinedScheduledDateTime,
-                        environments: this.selectedEnvironments
+                        environments: this.selectedEnvironments,
+                        forceCacheRefresh: this.forceCacheRefresh
                     }).then(() => {
                         this.$notify({
                             type: "success",
@@ -300,6 +328,7 @@
                     this.scheduledDate = moment(this.toggle.scheduledDate).format("YYYY-MM-DD");
                     this.scheduledTime = new Date(this.toggle.scheduledDate);
                     this.scheduledState = this.toggle.scheduledState;
+                    this.forceCacheRefresh = this.toggle.forceCacheRefresh;
                 }).catch((e) => { window.alert(e) });
 
             },
@@ -312,6 +341,7 @@
                 this.scheduledTime = new Date();
                 this.toggle = null;
                 this.toggleName = null;
+                this.forceCacheRefresh = false;
             },
             closeModal() {
                 this.cleanup();

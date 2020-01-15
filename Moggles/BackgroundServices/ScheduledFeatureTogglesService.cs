@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using MassTransit;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moggles.Consumers;
 using Moggles.Domain;
 using Moggles.Hubs;
+using MogglesContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +22,17 @@ namespace Moggles.BackgroundServices
         private IRepository<ToggleSchedule> _toggleSchedulesRepository;
         private readonly IServiceProvider _serviceProvider;
         private readonly IHubContext<IsDueHub, IIsDueHub> _hubContext;
+        private readonly IBus _bus;
+        private readonly IConfiguration _configuration;
 
-        public ScheduledFeatureTogglesService(ILogger<ScheduledFeatureTogglesService> logger, IServiceProvider serviceProvider, IHubContext<IsDueHub, IIsDueHub> hubContext)
+
+        public ScheduledFeatureTogglesService(ILogger<ScheduledFeatureTogglesService> logger, IServiceProvider serviceProvider, IHubContext<IsDueHub, IIsDueHub> hubContext, IConfiguration configuration)
         {
             _hubContext = hubContext;
             _serviceProvider = serviceProvider;
             _logger = logger;
+            _bus = (IBus)(serviceProvider.GetService(typeof(IBus)));
+            _configuration = configuration;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -72,6 +80,20 @@ namespace Moggles.BackgroundServices
                                         }
                                     }
                                     await _appRepository.UpdateAsync(app);
+                                    if (IsCacheRefreshAvailable())
+                                    {
+                                        if (toggleSchedule.ForceCacheRefresh)
+                                        {
+                                            foreach (var env in toggleSchedule.Environments)
+                                            {
+                                                await _bus.Publish(new RefreshTogglesCache
+                                                {
+                                                    Environment = env,
+                                                    ApplicationName = toggleSchedule.ApplicationName
+                                                });
+                                            }
+                                        }
+                                    }
                                     _hubContext.NotifyClient(toggleSchedule);
                                     await _toggleSchedulesRepository.DeleteAsync(toggleSchedule);
                                 }
@@ -94,6 +116,11 @@ namespace Moggles.BackgroundServices
 
                 await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             } while (!stoppingToken.IsCancellationRequested);
+        }
+
+        private bool IsCacheRefreshAvailable()
+        {
+            return bool.TryParse(_configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging;
         }
     }
 }
