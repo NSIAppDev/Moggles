@@ -234,6 +234,7 @@ namespace Moggles.Controllers
                 foreach(var fts in featureTogglesSchedulers)
                 {
                     fts.ChangeEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
+                    _toggleScheduleRepository.UpdateAsync(fts);
                 }
             }
             catch (BusinessRuleValidationException ex)
