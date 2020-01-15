@@ -82,16 +82,18 @@ namespace Moggles.Controllers
                 throw  new InvalidOperationException("Application does not exist!");
 
             await _applicationsRepository.DeleteAsync(app);
-
-            var schedulers = await _toggleScheduleRepository.GetAllAsync();
-            foreach(var schedule in schedulers)
-            {
-                if(schedule.ApplicationName == app.AppName)
-                {
-                    await _toggleScheduleRepository.DeleteAsync(schedule);
-                }
-            }
+            await DeleteAllSchedulersForApp(app.AppName);
+            
             return Ok();
+        }
+
+        private async Task DeleteAllSchedulersForApp(string appName)
+        {
+            var schedulers = (await _toggleScheduleRepository.GetAllAsync()).Where(sch => sch.ApplicationName.Equals(appName));
+            foreach (var schedule in schedulers)
+            {
+                await _toggleScheduleRepository.DeleteAsync(schedule);
+            }
         }
     }
 }
