@@ -114,7 +114,10 @@ namespace Moggles
                 endpoints.MapControllers();
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapFallbackToController("Index", "Home");
-                endpoints.MapHub<IsDueHub>("/isDueHub");
+                endpoints.MapHub<IsDueHub>("/isDueHub", options => {
+                    options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.LongPolling;
+                });
+                
             });
 
         }

@@ -35,7 +35,7 @@ namespace Moggles.Domain
 
         public bool IsDue()
         {
-            return ScheduledDate < DateTime.UtcNow;
+            return ScheduledDate.ToUniversalTime() < DateTime.UtcNow;
         }   
 
         public bool EnvExists(string name)

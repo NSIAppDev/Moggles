@@ -12,10 +12,12 @@ namespace Moggles.Controllers
     public class ApplicationsController : Controller
     {
         private readonly IRepository<Application> _applicationsRepository;
+        private readonly IRepository<ToggleSchedule> _toggleScheduleRepository;
 
-        public ApplicationsController(IRepository<Application> applicationsRepository)
+        public ApplicationsController(IRepository<Application> applicationsRepository, IRepository<ToggleSchedule> toggleScheduleRepository)
         {
             _applicationsRepository = applicationsRepository;
+            _toggleScheduleRepository = toggleScheduleRepository;
         }
 
         [HttpGet]
@@ -80,8 +82,15 @@ namespace Moggles.Controllers
                 throw  new InvalidOperationException("Application does not exist!");
 
             await _applicationsRepository.DeleteAsync(app);
-
+            await DeleteAllSchedulersForApp(app.AppName);
+            
             return Ok();
+        }
+
+        private async Task DeleteAllSchedulersForApp(string appName)
+        {
+            var schedulers = (await _toggleScheduleRepository.GetAllAsync()).Where(sch => sch.ApplicationName.Equals(appName)).ToList();
+            schedulers.ForEach(async _ => await _toggleScheduleRepository.DeleteAsync(_));
         }
     }
 }

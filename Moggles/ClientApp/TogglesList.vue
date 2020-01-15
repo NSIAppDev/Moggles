@@ -238,10 +238,14 @@
 		},
         created() {
             this.connection = new HubConnectionBuilder().withUrl("/isDueHub").configureLogging(LogLevel.Trace).build();
-            this.connection.onclose(() => {
+   //         this.connection.onclose(() => {
 				
-				this.start();
-			});           
+   //             try {
+   //                 this.connection.start();
+   //             } catch (err) {
+   //                 setTimeout(() => this.start(), 5000);
+   //             }
+			//});           
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
             }).catch(error => window.alert(error));
