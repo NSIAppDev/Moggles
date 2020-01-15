@@ -63,5 +63,10 @@ namespace Moggles.Domain
                 UpdatedbyUser = "System"
             };
         }
+
+        public void ChangeEnvironmentName(string envName)
+        {
+            EnvironmentName = envName;
+        }
     }
 }

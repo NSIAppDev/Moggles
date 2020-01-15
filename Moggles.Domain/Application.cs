@@ -85,6 +85,13 @@ namespace Moggles.Domain
             }
 
             env.EnvName = newName;
+
+            var featureToggles = FeatureToggles.ToList();
+            foreach (var ft in featureToggles)
+            {
+                ft.ChangeEnvironmentnameForFeatureToggleStatus(oldName, newName);
+            }
+
         }
 
         public void RemoveFeatureToggle(Guid id)

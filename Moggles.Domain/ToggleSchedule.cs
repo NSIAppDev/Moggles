@@ -69,5 +69,12 @@ namespace Moggles.Domain
         {
             ForceCacheRefresh = refreshCache;
         }
+        public void ChangeEnvironmentName(string oldEnvName, string newEnvName)
+        {
+            if (EnvExists(oldEnvName))
+            {
+                Environments[Environments.IndexOf(oldEnvName)] = newEnvName;
+            }
+        }
     }
 }
