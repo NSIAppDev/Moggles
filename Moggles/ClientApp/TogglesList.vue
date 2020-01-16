@@ -320,11 +320,15 @@
                     newEnvName: this.editedEnvironmentName
                 }
 
-                axios.put('/api/FeatureToggles/updateenvironment', envUpdateModel)
+                axios.put('/api/FeatureToggles/updateEnvironment', envUpdateModel)
 					.then(() => {
 						this.showEditEnvironmentModal = false
                         this.environmentToEdit = null
                         this.initializeGrid(this.selectedApp);
+                        let index = _.indexOf(this.environmentsToRefresh, envUpdateModel.initialEnvName);
+                        if (index != -1) {
+                            this.environmentsToRefresh.splice(index,1);
+                        }
 					}).catch(error => window.alert(error))
             },
 			saveToggle() {
@@ -639,7 +643,7 @@
 					this.environmentsToRefresh.push(env);
                     this.refreshAlertVisible = true;
 				}
-			},
+            },
 			closeRefreshAlert() {
 				this.refreshAlertVisible = false;
 			},
