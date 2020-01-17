@@ -236,6 +236,7 @@ namespace Moggles.Controllers
             try
             {
                 app.ChangeDeployEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
+                app.ChangeEnvironmentDefaultValue(environmentModel.NewEnvName, environmentModel.DefaultToggleValue);
                 foreach(var fts in featureTogglesSchedulers)
                 {
                     fts.ChangeEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
