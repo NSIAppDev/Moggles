@@ -146,7 +146,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var t1 = app.FeatureToggles.ToList().FirstOrDefault(ft => ft.ToggleName == "t1");
             app.SetToggle(t1.Id, "DEV", false, "bla");
             var schedule = ToggleSchedule.Create("TestApp", "t1", new[] { "DEV" }, true, new DateTime(2018, 1, 1, 15, 30, 0), "updatedBy", true);
-            _toggleScheduleRepository.AddAsync(schedule);
+            await _toggleScheduleRepository.AddAsync(schedule);
 
             var updatedEnvironmentName = "QA";
 
@@ -164,6 +164,32 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var ts1 = (await _toggleScheduleRepository.GetAllAsync()).FirstOrDefault(fts => fts.ToggleName == "t1");
             ts1.Environments.Should().Contain("QA");
             ts1.Environments.Should().NotContain("DEV");
+        }
+
+        [TestMethod]
+        public async Task DefaultToggleValueChanged_NextToggleHasDefaultValue()
+        {
+            var app = Application.Create("TestApp", "DEV", true);
+            await _appRepository.AddAsync(app);
+            app.AddFeatureToggle("t1", string.Empty);
+            var t1 = app.FeatureToggles.ToList().FirstOrDefault(ft => ft.ToggleName == "t1");
+
+            var updatedEnvironment = new UpdateEnvironmentModel
+            {
+                ApplicationId = app.Id,
+                DefaultToggleValue = false,
+                InitialEnvName = "DEV",
+                NewEnvName="DEV"
+            };
+
+            //act
+            var result = await _featureToggleController.UpdateEnvironment(updatedEnvironment);
+
+            //assert
+            app.AddFeatureToggle("t2", string.Empty);
+            var t2 = app.FeatureToggles.ToList().FirstOrDefault(ft => ft.ToggleName == "t2");
+            t1.GetFeatureToggleStatusForEnv("DEV").Enabled.Should().Be(true);
+            t2.GetFeatureToggleStatusForEnv("DEV").Enabled.Should().Be(false);
         }
     }
 }

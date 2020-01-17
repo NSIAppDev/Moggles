@@ -13,5 +13,7 @@ namespace Moggles.Models
 
         [Required] [MaxLength(50)]
         public string NewEnvName { get; set; }
+
+        public bool DefaultToggleValue { get; set; }
     }
 }

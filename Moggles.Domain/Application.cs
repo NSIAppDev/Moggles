@@ -30,9 +30,9 @@ namespace Moggles.Domain
             }
         }
 
-        private bool DeployEnvExists(string name)
+        private bool DeployEnvExists(string newName, string oldName="")
         {
-            return DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, name, StringComparison.OrdinalIgnoreCase) == 0);
+            return (DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, newName, StringComparison.OrdinalIgnoreCase) == 0)&& newName!=oldName);
         }
 
         public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment)
@@ -79,7 +79,7 @@ namespace Moggles.Domain
             if (env == null)
                 throw new InvalidOperationException("Environment does not exist!");
 
-            if (DeployEnvExists(newName))
+            if (DeployEnvExists(newName, oldName))
             {
                 throw new BusinessRuleValidationException("An environment with the same name already exists!");
             }
@@ -92,6 +92,15 @@ namespace Moggles.Domain
                 ft.ChangeEnvironmentnameForFeatureToggleStatus(oldName, newName);
             }
 
+        }
+        public void ChangeEnvironmentDefaultValue(string name, bool newDefaultValue)
+        {
+            var env = DeploymentEnvironments.FirstOrDefault(e => string.Compare(e.EnvName, name, StringComparison.OrdinalIgnoreCase) == 0);
+
+            if (env == null)
+                throw new InvalidOperationException("Environment does not exist!");
+
+            env.DefaultToggleValue = newDefaultValue;
         }
 
         public void RemoveFeatureToggle(Guid id)
