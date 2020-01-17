@@ -145,7 +145,7 @@
                     </div>
                     <div class="col-sm-12 form-group">
                         <label class="col-sm-4 control-label">
-                            Default toggle value
+                            Default value for new toggles
                         </label>
                         <div class="col-sm-6 margin-top-4">
                             <label for="r1" >True</label>
