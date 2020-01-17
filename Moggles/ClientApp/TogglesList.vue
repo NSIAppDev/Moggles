@@ -327,12 +327,16 @@
                     defaultToggleValue: this.defaultToggleValue 
                 }
 
-                axios.put('/api/FeatureToggles/updateenvironment', envUpdateModel)
-                    .then(() => {
-                        this.showEditEnvironmentModal = false
+                 axios.put('/api/FeatureToggles/updateEnvironment', envUpdateModel)
+					.then(() => {
+						this.showEditEnvironmentModal = false
                         this.environmentToEdit = null
                         this.initializeGrid(this.selectedApp);
-                    }).catch(error => window.alert(error))
+                        let index = _.indexOf(this.environmentsToRefresh, envUpdateModel.initialEnvName);
+                        if (index != -1) {
+                            this.environmentsToRefresh.splice(index,1);
+                        }
+					}).catch(error => window.alert(error))
             },
             saveToggle() {
                 this.editFeatureToggleErrors = [];
