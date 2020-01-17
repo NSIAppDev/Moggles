@@ -393,6 +393,17 @@
 							enabled: true,
 							placeholder: 'Filter Toggle Name'
 						}
+                    },
+                    {
+						field: 'workItemIdentifier',
+						label: 'Work Item ID',
+						sortable: true,
+                        thClass: 'sortable',
+                        
+						filterOptions: {
+							enabled: true,
+							placeholder: 'Filter Work Item IDs'
+						}
 					},
 					{
 						field: 'notes',
@@ -565,7 +576,8 @@
 							toggleName: toggle.toggleName,
 							userAccepted: toggle.userAccepted,
 							isPermanent: toggle.isPermanent,
-							notes: toggle.notes,
+                            notes: toggle.notes,
+                            workItemIdentifier: toggle.workItemIdentifier,
 							createdDate: new Date(toggle.createdDate)
 						}
 

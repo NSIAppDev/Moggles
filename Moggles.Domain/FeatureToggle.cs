@@ -12,8 +12,9 @@ namespace Moggles.Domain
         public DateTime CreatedDate { get; set; }
         public bool IsPermanent { get; set; }
         public List<FeatureToggleStatus> FeatureToggleStatuses { get; set; } = new List<FeatureToggleStatus>();
+        public string WorkItemIdentifier { get; set; }
 
-        public static FeatureToggle Create(string name, string notes, bool isPermanent)
+        public static FeatureToggle Create(string name, string notes, bool isPermanent, string workItemIdentifier="")
         {
             return new FeatureToggle
             {
@@ -22,12 +23,13 @@ namespace Moggles.Domain
                 IsPermanent = isPermanent,
                 Notes = notes,
                 ToggleName = name,
+                WorkItemIdentifier = workItemIdentifier
             };
         }
 
-        public static FeatureToggle Create(string name, string notes, bool isPermanent, IEnumerable<DeployEnvironment> deployEnvironments)
+        public static FeatureToggle Create(string name, string notes, bool isPermanent, IEnumerable<DeployEnvironment> deployEnvironments, string workItemIdentifier="")
         {
-            var newToggle = Create(name, notes, isPermanent);
+            var newToggle = Create(name, notes, isPermanent, workItemIdentifier);
 
             foreach (var env in deployEnvironments)
             {
@@ -101,6 +103,11 @@ namespace Moggles.Domain
             {
                 fts.ChangeEnvironmentName(NewEnvName);
             }
+        }
+
+        public void SetWorkItemIdentifier(string workItemIdentifier)
+        {
+            WorkItemIdentifier = workItemIdentifier;
         }
     }
 }

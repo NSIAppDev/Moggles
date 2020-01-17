@@ -15,5 +15,6 @@ namespace Moggles.Models
         public string Notes { get; set; }
 
         public bool IsPermanent { get; set; }
+        public string WorkItemIdentifier { get; set; }
     }
 }

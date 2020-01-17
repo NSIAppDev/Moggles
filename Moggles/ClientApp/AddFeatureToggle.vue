@@ -8,39 +8,44 @@
     </alert>
 
     <div class="panel-body">
-      <div v-for="error in errors" :key="error" class="text-danger">
-        {{ error }}
-      </div>
-      <div class="form-group">
-        <label for="ftname">Feature Toggle Name</label>
-        <input v-model="featureToggleName" class="form-control" type="text"
-               name="ftName" placeholder="Feature toggle name..." maxlength="80">
-      </div>
-      <div class="form-group">
-        <label class="control-label" for="ftnotes">Notes</label>
-        <input v-model="notes" class="form-control" type="text"
-               name="ftNotes" placeholder="Notes..." maxlength="500">
-      </div>
-      <div class="form-group">
-        <label class="control-label" for="ftPerm">Is Permanent </label>
-        <span class="padding-left-5">
-          <p-check v-model="isPermanent" class="p-icon p-fill" name="ftPerm"
-                   color="default">
-            <i slot="extra" class="icon fas fa-check" />
-          </p-check>
-        </span>
-      </div>
-      <div class="form-group">
-        <div class="text-right">
-          <button class="btn btn-default" @click="closeAddToggleModal">
-            Close
-          </button>
-          <button :disabled="applicationId != ''? false : true" class="btn btn-primary" type="button"
-                  @click="addFeatureToggle">
-            Add
-          </button>
+        <div v-for="error in errors" :key="error" class="text-danger">
+            {{ error }}
         </div>
-      </div>
+        <div class="form-group">
+            <label for="ftname">Name</label>
+            <input v-model="featureToggleName" class="form-control" type="text"
+                   name="ftName" placeholder="Feature toggle name..." maxlength="80">
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="workItemId">Work item ID</label>
+            <input v-model="workItemID" class="form-control" type="text"
+                   name="workItemId" placeholder="Work Item ID..." maxlength="50">
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="ftnotes">Notes</label>
+            <input v-model="notes" class="form-control" type="text"
+                   name="ftNotes" placeholder="Notes..." maxlength="500">
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="ftPerm">Is Permanent </label>
+            <span class="padding-left-5">
+                <p-check v-model="isPermanent" class="p-icon p-fill" name="ftPerm"
+                         color="default">
+                    <i slot="extra" class="icon fas fa-check" />
+                </p-check>
+            </span>
+        </div>
+        <div class="form-group">
+            <div class="text-right">
+                <button class="btn btn-default" @click="closeAddToggleModal">
+                    Close
+                </button>
+                <button :disabled="applicationId != ''? false : true" class="btn btn-primary" type="button"
+                        @click="addFeatureToggle">
+                    Add
+                </button>
+            </div>
+        </div>
     </div>
   </div>
 </template>
@@ -64,7 +69,8 @@
 				existingToggles: [],
 				spinner: false,
 				showSuccessAlert: false,
-				alertDuration: 1500
+                alertDuration: 1500,
+                workItemID:''
 			}
         },
         mounted() {
@@ -97,7 +103,8 @@
 					applicationId: this.applicationId,
 					featureToggleName: this.featureToggleName,
 					notes: this.notes,
-					isPermanent: this.isPermanent
+                    isPermanent: this.isPermanent,
+                    workItemIdentifier: this.workItemID
 				}
 
 				Bus.$emit('block-ui')
@@ -106,7 +113,8 @@
 						this.showSuccessAlert = true;
 						this.featureToggleName = '';
 						this.notes = '';
-						this.isPermanent = false;
+                        this.isPermanent = false;
+                        this.workItemID = '';
 						Bus.$emit("toggle-added")
 					}).catch((e) => {
 						this.errors.push(e.response.data);
@@ -120,6 +128,7 @@
             clearFields() {
                 this.featureToggleName = "";
                 this.errors = [];
+                this.workItemID = "";
                 this.notes = '';
                 this.isPermanent = false;
             }

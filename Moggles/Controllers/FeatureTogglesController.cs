@@ -42,6 +42,7 @@ namespace Moggles.Controllers
                     Notes = ft.Notes,
                     CreatedDate = ft.CreatedDate,
                     IsPermanent = ft.IsPermanent,
+                    WorkItemIdentifier = ft.WorkItemIdentifier,
                     Statuses = ft.FeatureToggleStatuses
                         .Select(fts =>
                             new FeatureToggleStatusViewModel
@@ -102,6 +103,10 @@ namespace Moggles.Controllers
                 }
 
             }
+            if (model.WorkItemIdentifier != toggleData.WorkItemIdentifier)
+            {
+                app.UpdateFeaturetoggleWorkItemIdentifier(model.Id, model.WorkItemIdentifier);
+            }
 
             if (model.FeatureToggleName != toggleData.ToggleName)
             {
@@ -139,7 +144,7 @@ namespace Moggles.Controllers
 
             try
             {
-                app.AddFeatureToggle(featureToggleModel.FeatureToggleName, featureToggleModel.Notes, featureToggleModel.IsPermanent);
+                app.AddFeatureToggle(featureToggleModel.FeatureToggleName, featureToggleModel.Notes, featureToggleModel.IsPermanent, featureToggleModel.WorkItemIdentifier);
             }
             catch (BusinessRuleValidationException ex)
             {

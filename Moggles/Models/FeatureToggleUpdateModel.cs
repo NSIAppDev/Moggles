@@ -14,6 +14,7 @@ namespace Moggles.Models
         public string Notes { get; set; }
         public bool IsPermanent { get; set; }
         public List<FeatureToggleStatusUpdateModel> Statuses { get; set; }
+        public string WorkItemIdentifier { get; set; }
     }
 
     public class FeatureToggleStatusUpdateModel

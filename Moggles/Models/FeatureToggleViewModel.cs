@@ -12,6 +12,7 @@ namespace Moggles.Models
         public string Notes { get; set; }
         public DateTime CreatedDate { get; set; }
         public List<FeatureToggleStatusViewModel> Statuses { get; set; }
+        public string WorkItemIdentifier { get; set; }
     }
 
     public class FeatureToggleStatusViewModel
