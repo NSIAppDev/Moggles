@@ -131,49 +131,48 @@
 
         <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false">
             <div v-if="environmentToEdit" class="form-horizontal">
-                <!--<div class="row">-->
-                <div class="col-sm-12">
-                    <div v-for="error in editEnvErrors" :key="error" class="text-danger margin-left-15">
-                        {{ error }}
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div v-for="error in editEnvErrors" :key="error" class="text-danger margin-left-15">
+                            {{ error }}
+                        </div>
                     </div>
-                </div>
-                <div class=" col-sm-12 form-group">
-                    <label class="col-sm-4 control-label">Environment name</label>
-                    <div class="col-sm-8">
-                        <input v-model="editedEnvironmentName" type="text" class="form-control">
+                    <div class=" col-sm-12 form-group">
+                        <label class="col-sm-4 control-label text-left">Environment name</label>
+                        <div class="col-sm-8">
+                            <input v-model="editedEnvironmentName" type="text" class="form-control">
+                        </div>
                     </div>
-                </div>
-                <div class="col-sm-12 form-group">
-                    <label class=" col-sm-4 control-label">
-                        Default toggle value
-                    </label>
-                    <div class="col-sm-4 form-group">
-                        <label for="d1">True</label>
-                        <input id="d1" v-model="defaultToggleValue" type="radio"
-                               :value="true" checked>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-4 control-label">
+                            Default toggle value
+                        </label>
+                        <div class="col-sm-6 margin-top-4">
+                            <label for="r1" >True</label>
+                            <input id="r1" v-model="defaultToggleValue" type="radio"
+                                   :value="true" checked>
 
-                        <label for="d2">False</label>
-                        <input id="d2" v-model="defaultToggleValue" type="radio"
-                               :value="false">
+                            <label for="r2">False</label>
+                            <input id="r2" v-model="defaultToggleValue" type="radio"
+                                   :value="false">
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <div class="col-sm-6">
+                            <button type="button" class="btn btn-danger" @click="confirmDeleteEnvironment">
+                                Delete
+                            </button>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <button type="button" class="btn btn-default" @click="cancelEditEnvName">
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-primary" @click="saveEnvironment">
+                                Save
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="clearfix">
-                    <div class="col-sm-6">
-                        <button type="button" class="btn btn-danger" @click="confirmDeleteEnvironment">
-                            Delete
-                        </button>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <button type="button" class="btn btn-default" @click="cancelEditEnvName">
-                            Cancel
-                        </button>
-                        <button type="button" class="btn btn-primary" :disabled="!enableEditEnvironmentSave"
-                                @click="saveEnvironment">
-                            Save
-                        </button>
-                    </div>
-                </div>
-                <!--</div>-->
             </div>
         </modal>
         <modal v-model="showDeleteEnvironmentConfirmation" title="You are about to delete an environment" :footer="false">
@@ -237,7 +236,7 @@
                 connectionId: null,
                 connection: null,
                 rowsPerPage: 10,
-                defaultToggleValue: false
+                defaultToggleValue: true
             }
         },
         computed: {
@@ -324,7 +323,8 @@
                 let envUpdateModel = {
                     applicationId: this.selectedApp.id,
                     initialEnvName: this.environmentToEdit.initialEnvName,
-                    newEnvName: this.editedEnvironmentName
+                    newEnvName: this.editedEnvironmentName,
+                    defaultToggleValue: this.defaultToggleValue 
                 }
 
                 axios.put('/api/FeatureToggles/updateenvironment', envUpdateModel)

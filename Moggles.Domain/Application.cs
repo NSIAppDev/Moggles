@@ -79,7 +79,7 @@ namespace Moggles.Domain
             if (env == null)
                 throw new InvalidOperationException("Environment does not exist!");
 
-            if (DeployEnvExists(newName))
+            if (DeployEnvExists(newName) && oldName!=newName)
             {
                 throw new BusinessRuleValidationException("An environment with the same name already exists!");
             }
