@@ -32,9 +32,7 @@ namespace Moggles.Domain
 
         private bool DeployEnvExists(string newName, string oldName="")
         {
-
-            var boo =  (DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, newName, StringComparison.OrdinalIgnoreCase) == 0)&& newName!=oldName);
-            return boo;
+            return (DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, newName, StringComparison.OrdinalIgnoreCase) == 0)&& newName!=oldName);
         }
 
         public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment)
