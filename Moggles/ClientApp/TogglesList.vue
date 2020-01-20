@@ -324,7 +324,7 @@
                     applicationId: this.selectedApp.id,
                     initialEnvName: this.environmentToEdit.initialEnvName,
                     newEnvName: this.editedEnvironmentName,
-                    defaultToggleValue: this.defaultToggleValue 
+                    defaultToggleValue: this.defaultToggleValue
                 }
 
                  axios.put('/api/FeatureToggles/updateEnvironment', envUpdateModel)
@@ -344,12 +344,16 @@
                     this.editFeatureToggleErrors.push("Feature toggle name cannot be empty")
                     return;
                 }
-
+                if (this.rowToEdit.workItemIdentifier.length > 50) {
+                    this.editFeatureToggleErrors.push("Work Item ID cannot be longer then 50 characters");
+                    return;
+                }
                 let toggleUpdateModel = {
                     id: this.rowToEdit.id,
                     applicationid: this.selectedApp.id,
                     userAccepted: this.rowToEdit.userAccepted,
                     notes: this.rowToEdit.notes,
+                    workItemIdentifier: this.rowToEdit.workItemIdentifier,
                     featureToggleName: this.rowToEdit.toggleName,
                     isPermanent: this.rowToEdit.isPermanent,
                     statuses: []
@@ -399,6 +403,17 @@
                         filterOptions: {
                             enabled: true,
                             placeholder: 'Filter Toggle Name'
+                        }
+                    },
+                    {
+                        field: 'workItemIdentifier',
+                        label: 'Work Item ID',
+                        width: '180px',
+                        sortable: true,
+                        thClass: 'sortable',
+                        filterOptions: {
+                            enabled: true,
+                            placeholder: 'Filter Work Item ID'
                         }
                     },
                     {
@@ -573,6 +588,7 @@
                             userAccepted: toggle.userAccepted,
                             isPermanent: toggle.isPermanent,
                             notes: toggle.notes,
+                            workItemIdentifier: toggle.workItemIdentifier,
                             createdDate: new Date(toggle.createdDate)
                         }
 

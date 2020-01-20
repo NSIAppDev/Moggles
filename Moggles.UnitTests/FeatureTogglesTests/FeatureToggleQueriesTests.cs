@@ -34,7 +34,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("BCC", "dev", false);
-            app.AddFeatureToggle("TestToggle", "TestNotes", true);
+            app.AddFeatureToggle("TestToggle", "TestNotes", true, "workItemID");
             app.AddFeatureToggle("TestToggle2", "TestNotes2");
 
             await _appRepository.AddAsync(app);
@@ -50,6 +50,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             toggle.CreatedDate.Should().BeCloseTo(DateTime.UtcNow, 200);
             toggle.UserAccepted.Should().Be(false);
             toggle.IsPermanent.Should().Be(true);
+            toggle.WorkItemIdentifier.Should().Be("workItemID");
+
         }
 
         [TestMethod]

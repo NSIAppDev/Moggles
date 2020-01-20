@@ -13,14 +13,21 @@
                     {{ error }}
                 </div>
                 <div class="col-sm-12 form-group">
-                    <label class="col-sm-4 control-label" for="ftname">Feature Toggle Name</label>
+                    <label class="col-sm-4 control-label" for="ftname">Name</label>
                     <div class="col-sm-8">
-                        <input v-model="featureToggleName" class="form-control" type="text"
-                               name="ftName" placeholder="Feature toggle name..." maxlength="80">
+                        <input id="featureToggleName" v-model="featureToggleName" class="form-control" type="text"
+                               name="ftName" placeholder="Feature toggle name..." maxlength="80" autofocus>
                     </div>
                 </div>
                 <div class="col-sm-12 form-group">
-                    <label class="col-sm-4 control-label" for="ftnotes">Notes</label>
+                    <label class="col-sm-4 control-label" for="ftWorkItem">Work Item ID</label>
+                    <div class="col-sm-8">
+                        <input v-model="workItemIdentifier" class="form-control" type="text"
+                               name="ftWorkItem" placeholder="Work Item ID..." maxlength="50">
+                    </div>
+                </div>
+                <div class="col-sm-12 form-group">
+                    <label class="col-sm-4 control-label" for="ftnotes" >Notes</label>
                     <div class="col-sm-8">
                         <input v-model="notes" class="form-control" type="text"
                                name="ftNotes" placeholder="Notes..." maxlength="500">
@@ -53,6 +60,7 @@
     import PrettyCheck from 'pretty-checkbox-vue/check';
     import { Bus } from './event-bus'
     import axios from 'axios'
+    import Vue from 'vue'
 
     export default {
         components: {
@@ -68,7 +76,8 @@
                 existingToggles: [],
                 spinner: false,
                 showSuccessAlert: false,
-                alertDuration: 1500
+                alertDuration: 1500,
+                workItemIdentifier:""
             }
         },
         mounted() {
@@ -82,11 +91,14 @@
                 this.existingToggles = toggles;
             });
             Bus.$on("openAddFeatureToggleModal", () => {
+                           document.getElementById("featureToggleName").focus();
+
                 this.clearFields();
-            })
+            });
+           document.getElementById("featureToggleName").click();
         },
         methods: {
-            addFeatureToggle() {
+            addFeatureToggle() {                 
                 if (this.applicationId === -1)
                     return;
 
@@ -101,7 +113,8 @@
                     applicationId: this.applicationId,
                     featureToggleName: this.featureToggleName,
                     notes: this.notes,
-                    isPermanent: this.isPermanent
+                    isPermanent: this.isPermanent,
+                    workItemIdentifier: this.workItemIdentifier
                 }
 
                 Bus.$emit('block-ui')
@@ -111,6 +124,7 @@
                         this.featureToggleName = '';
                         this.notes = '';
                         this.isPermanent = false;
+                        this.workItemIdentifier = "";
                         Bus.$emit("toggle-added")
                     }).catch((e) => {
                         this.errors.push(e.response.data);
@@ -125,6 +139,7 @@
                 this.featureToggleName = "";
                 this.errors = [];
                 this.notes = '';
+                this.workItemIdentifier = "";
                 this.isPermanent = false;
             }
         }

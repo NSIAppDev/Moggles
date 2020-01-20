@@ -37,7 +37,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("test", "DEV", false);
-            app.AddFeatureToggle("TestToggle", "FirstNote");
+            app.AddFeatureToggle("TestToggle", "FirstNote",false, "WorkItemId");
             await _appRepository.AddAsync(app);
 
             var toggle = app.FeatureToggles.Single();
@@ -49,7 +49,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 Notes = "Update",
                 UserAccepted = true,
                 Statuses = new List<FeatureToggleStatusUpdateModel>(),
-                IsPermanent = true
+                IsPermanent = true,
+                WorkItemIdentifier = "UpdateWorkItemId"
             };
 
             //act
@@ -61,6 +62,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             savedApp.FeatureToggles.FirstOrDefault().Notes.Should().Be("Update");
             savedApp.FeatureToggles.FirstOrDefault().UserAccepted.Should().BeTrue();
             savedApp.FeatureToggles.FirstOrDefault().IsPermanent.Should().BeTrue();
+            savedApp.FeatureToggles.FirstOrDefault().WorkItemIdentifier.Should().Be("UpdateWorkItemId");
         }
 
         [TestMethod]
