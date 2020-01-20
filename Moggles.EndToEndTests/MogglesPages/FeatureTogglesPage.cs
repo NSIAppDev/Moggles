@@ -18,23 +18,23 @@ namespace MogglesEndToEndTests.MogglesPages
             Browser.WebDriver.FindElement(By.CssSelector("#bs-example-navbar-collapse-1 > ul > li > a"));
 
         public IWebElement FeatureToggleNameInput => Browser.WebDriver.FindElement(
-            By.CssSelector("body > div > div.modal.in> div > div> div> div > div> div:nth-child(1)> input"));
-
+            By.CssSelector("div.in > div > div > div > div > div > div > div:nth-child(1) > div > input"));
+    
         public IWebElement NotesInput => Browser.WebDriver.FindElement(
-            By.CssSelector("body > div > div.modal.in> div > div> div> div > div> div:nth-child(2)> input"));
+            By.CssSelector("div.in > div > div > div > div > div > div > div:nth-child(2) > div > input"));
 
         public IWebElement AddFeatureToggleButton => Browser.WebDriver.FindElement(
-            By.CssSelector("body > div:nth-child(1) > div> div > div > div> div > div > div:nth-child(4) > div > button.btn.btn-primary"));
+            By.CssSelector("div.in > div > div > div.modal-body > div > div > div > div > button.btn-primary"));
 
         public IWebElement AddApplicationButton => Browser.WebDriver.FindElement(
-            By.CssSelector("body > div:nth-child(1) > div.in> div > div > div> div > div > div> button.btn.btn-primary"));
+            By.CssSelector("div.in > div > div > div > div > div > div > div> button.btn-primary"));
 
         public IWebElement AddEnvironmentButton => Browser.WebDriver.FindElement(
-            By.CssSelector("body > div:nth-child(1) > div.in > div > div > div> div > div > div> button.btn.btn-primary"));
+            By.CssSelector("div.in > div > div > div > div > div > div > div > button.btn-primary"));
 
         public IWebElement CloseModal =>
             Browser.WebDriver.FindElement(
-                By.CssSelector("body > div:nth-child(1) > div.modal.fade.in> div > div > div.modal-header > button"));
+                By.CssSelector("div.in > div > div > div > div > div > div > div > button.btn-default"));
 
         public IWebElement FeatureTogglesGrid =>
             Browser.WebDriver.FindElement(
@@ -80,18 +80,18 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public IWebElement ApplicationNameInput =>
             Browser.WebDriver.FindElement(
-                By.CssSelector("body > div> div.in> div > div > div> div > div > div> input"));
+                By.CssSelector("div.in > div > div > div > div > div > div > div:nth-child(1) > div > input"));
 
         public IWebElement ApplicationsDropdown =>
             Browser.WebDriver.FindElement(By.CssSelector("#app-sel > div > ul"));
 
         public IWebElement FirstEnvNameInput =>
             Browser.WebDriver.FindElement(
-                By.CssSelector("body > div:nth-child(1) > div.in > div > div > div> div > div > div:nth-child(2) > div > input"));
+                By.CssSelector("div.in > div > div > div > div > div > div > div:nth-child(2) > div > input"));
 
         public IWebElement SecondEnvNameInput =>
             Browser.WebDriver.FindElement(
-                By.CssSelector("body > div:nth-child(1) > div.in > div > div > div> div > div > div:nth-child(1) > input"));
+                By.CssSelector("div.in > div > div > div > div > div > div > div:nth-child(1) > div > input"));
 
         public IWebElement EditApplicationIcon =>
             Browser.WebDriver.FindElement(By.CssSelector("#bs-example-navbar-collapse-1 > ul> li > div > a > i"));
