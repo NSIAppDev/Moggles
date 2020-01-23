@@ -316,8 +316,8 @@
                 }).then((response) => {
                     let dropDownModels = _.map(response.data, env => {
                         return {
-                            value: env,
-                            label: env
+                            value: env.envName,
+                            label: env.envName
                         };
                     });
                     this.allEnvironments = dropDownModels;

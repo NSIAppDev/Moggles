@@ -487,11 +487,16 @@
                 axios.delete(`/api/FeatureToggles/environments`, { data: environmentModel }).then(() => {
                     this.showDeleteEnvironmentConfirmation = false
                     this.showEditEnvironmentModal = false
-                    this.environmentToEdit = null
-                    this.initializeGrid(this.selectedApp);
+                    this.environmentToEdit = null,
+                        this.initializeGrid(this.selectedApp);
+                    let index = _.indexOf(this.environmentsToRefresh, environmentModel.envName);
+                        if (index != -1) {
+                            this.environmentsToRefresh.splice(index,1);
+                        }
                     Bus.$emit("app-changed", this.selectedApp)
                 }).catch(error => window.alert(error))
             },
+
             edit(row) {
                 this.rowToEdit = _.clone(row)
                 this.showEditModal = true
@@ -597,6 +602,7 @@
             },
             initializeGrid(app) {
                 this.environmentsNameList = [];
+                this.environmentsList = [];
                 this.getAllScheduledToggle(app.id);
                 axios.get("/api/FeatureToggles/environments", {
                     params: {
@@ -604,7 +610,7 @@
                     }
                 }).then((response) => {
                     this.environmentsList = response.data;
-                    response.data.forEach(env => this.environmentsNameList.push(env.envName));
+                    response.data.forEach(env => { if (!this.environmentsNameList.includes(env.envName)) { this.environmentsNameList.push(env.envName) } });
                     this.createGridColumns();
                     this.loadGridData(app.id);
                     this.$refs['toggleGrid'].reset()
