@@ -65,7 +65,7 @@ namespace Moggles.Controllers
             var app = await _applicationsRepository.FindByIdAsync(applicationId);
             var envs = app.DeploymentEnvironments.OrderBy(e => e.SortOrder).ToList();
 
-            return Ok(envs);
+            return Ok(envs.Distinct());
         }
 
         [HttpPut]
