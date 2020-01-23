@@ -108,7 +108,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var results = await _featureToggleController.GetEnvironments(app.Id) as OkObjectResult;
 
             //assert
-            results.Value.Should().BeEquivalentTo(expectedEnvNames);
+            var returnedEnvs = (results.Value as IEnumerable<DeployEnvironment>).Select(env => env.EnvName);
+            returnedEnvs.Should().BeEquivalentTo(expectedEnvNames);
         }
 
         [TestMethod]
@@ -117,18 +118,25 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var app = Application.Create("TestApp", "DEV", false);
 
-            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", true);
             app.AddDeployEnvironment("TRN", false);
 
             var expectedEnvNames = new List<string> { "DEV", "QA", "TRN" };
-
+            var expectedDefaultValues = new List<bool> { false, true, false };
+            
             await _appRepository.AddAsync(app);
 
             //act
             var results = await _featureToggleController.GetEnvironments(app.Id) as OkObjectResult;
 
+
             //assert
-            results.Value.Should().BeEquivalentTo(expectedEnvNames);
+            var okObjectresult = results.Value as IEnumerable<DeployEnvironment>;
+            okObjectresult.ToList().Count().Should().Be(3);
+            var returnedEnvs = okObjectresult.Select(env => env.EnvName);
+            returnedEnvs.Should().BeEquivalentTo(expectedEnvNames);
+            var returnedDefaultValues = okObjectresult.Select(env => env.DefaultToggleValue);
+            returnedDefaultValues.Should().BeEquivalentTo(expectedDefaultValues);
         }
 
         [TestMethod]

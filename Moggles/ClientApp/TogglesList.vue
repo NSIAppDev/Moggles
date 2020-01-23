@@ -203,7 +203,7 @@
     import ToggleScheduler from "./ToggleScheduler";
     import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
     export default {
-        environmentsList: [],
+        environmentsNameList: [],
         components: {
             'p-check': PrettyCheck,
             'toggle-scheduler': ToggleScheduler
@@ -236,7 +236,8 @@
                 connectionId: null,
                 connection: null,
                 rowsPerPage: 10,
-                defaultToggleValue: true
+                defaultToggleValue: true,
+                environmentsList:[]
             }
         },
         computed: {
@@ -354,7 +355,7 @@
                     isPermanent: this.rowToEdit.isPermanent,
                     statuses: []
                 }
-                _.forEach(this.environmentsList, envName => {
+                _.forEach(this.environmentsNameList, envName => {
                     toggleUpdateModel.statuses.push({
                         environment: envName,
                         enabled: this.rowToEdit[envName]
@@ -446,7 +447,7 @@
                 ]
 
                 //create the environment columns
-                columns.splice(2, 0, ..._.map(this.environmentsList, envName => {
+                columns.splice(2, 0, ..._.map(this.environmentsNameList, envName => {
                     return {
                         field: envName,
                         label: envName,
@@ -468,9 +469,10 @@
             },
             editEnvName(column) {
                 this.environmentToEdit = {}
-                var environmentFromList = this.environmentsList.find(element => element == column.field)
-                this.environmentToEdit.initialEnvName = environmentFromList
-                this.editedEnvironmentName = environmentFromList
+                var environmentFromList = this.environmentsList.find(element => element.envName == column.field)
+                this.environmentToEdit.initialEnvName = environmentFromList.envName
+                this.editedEnvironmentName = environmentFromList.envName
+                this.defaultToggleValue = environmentFromList.defaultToggleValue
                 this.showEditEnvironmentModal = true
             },
             confirmDeleteEnvironment() {
@@ -576,7 +578,7 @@
                             createdDate: new Date(toggle.createdDate)
                         }
 
-                        this.environmentsList.forEach(env => {
+                        this.environmentsNameList.forEach(env => {
                             let envStatus = _.find(toggle.statuses, status => status.environment === env)
                             rowModel[env] = envStatus ? envStatus.enabled : false;
                             rowModel[env + '_IsDeployed'] = envStatus ? envStatus.isDeployed : false;
@@ -594,7 +596,7 @@
                 });
             },
             initializeGrid(app) {
-                this.environmentsList = [];
+                this.environmentsNameList = [];
                 this.getAllScheduledToggle(app.id);
                 axios.get("/api/FeatureToggles/environments", {
                     params: {
@@ -602,11 +604,12 @@
                     }
                 }).then((response) => {
                     this.environmentsList = response.data;
+                    response.data.forEach(env => this.environmentsNameList.push(env.envName));
                     this.createGridColumns();
                     this.loadGridData(app.id);
                     this.$refs['toggleGrid'].reset()
 
-                    Bus.$emit('env-loaded', response.data)
+                    Bus.$emit('env-loaded', this.environmentsNameList)
                 }).catch((e) => { window.alert(e) });
             },
             environmentEdited(env) {
@@ -658,7 +661,7 @@
                 return !text || /^\s*$/.test(text);
             },
             isEnviroment(env) {
-                return this.environmentsList.includes(env);
+                return this.environmentsNameList.includes(env);
             },
             isEnvironmentColumn(column) {
                 return (column.type == 'boolean' && column.field != 'userAccepted');
