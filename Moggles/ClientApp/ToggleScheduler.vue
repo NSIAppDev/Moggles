@@ -314,12 +314,10 @@
                         applicationId: appId
                     }
                 }).then((response) => {
-                    let envs = [];
-                     response.data.forEach(env => envs.push(env.envName));
-                    let dropDownModels = _.map(envs, env => {
+                    let dropDownModels = _.map(response.data, env => {
                         return {
-                            value: env,
-                            label: env
+                            value: env.envName,
+                            label: env.envName
                         };
                     });
                     this.allEnvironments = dropDownModels;
