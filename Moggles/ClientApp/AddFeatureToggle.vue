@@ -15,8 +15,8 @@
                 <div class="col-sm-12 form-group">
                     <label class="col-sm-4 control-label" for="ftname">Name</label>
                     <div class="col-sm-8">
-                        <input id="featureToggleName" v-model="featureToggleName" class="form-control" type="text"
-                               name="ftName" placeholder="Feature toggle name..." maxlength="80" autofocus>
+                        <input ref="toggleName" id="featureToggleName" v-model="featureToggleName" class="form-control" type="text"
+                               name="ftName" placeholder="Feature toggle name..." maxlength="80" autoFocus>
                     </div>
                 </div>
                 <div class="col-sm-12 form-group">
@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <div class="col-sm-12 form-group">
-                    <label class="col-sm-4 control-label" for="ftnotes" >Notes</label>
+                    <label class="col-sm-4 control-label" for="ftnotes">Notes</label>
                     <div class="col-sm-8">
                         <input v-model="notes" class="form-control" type="text"
                                name="ftNotes" placeholder="Notes..." maxlength="500">
@@ -60,7 +60,6 @@
     import PrettyCheck from 'pretty-checkbox-vue/check';
     import { Bus } from './event-bus'
     import axios from 'axios'
-    import Vue from 'vue'
 
     export default {
         components: {
@@ -77,10 +76,12 @@
                 spinner: false,
                 showSuccessAlert: false,
                 alertDuration: 1500,
-                workItemIdentifier:""
+                workItemIdentifier: "",
+                show: false
             }
         },
         mounted() {
+           
             Bus.$on("app-changed", app => {
                 if (app) {
                     this.applicationId = app.id;
@@ -91,14 +92,13 @@
                 this.existingToggles = toggles;
             });
             Bus.$on("openAddFeatureToggleModal", () => {
-                           document.getElementById("featureToggleName").focus();
-
+                this.$nextTick(() => { this.$refs["toggleName"].focus() });
                 this.clearFields();
             });
-           document.getElementById("featureToggleName").click();
+
         },
         methods: {
-            addFeatureToggle() {                 
+            addFeatureToggle() {
                 if (this.applicationId === -1)
                     return;
 
@@ -125,6 +125,7 @@
                         this.notes = '';
                         this.isPermanent = false;
                         this.workItemIdentifier = "";
+                         this.$nextTick(() => { this.$refs["toggleName"].focus() });
                         Bus.$emit("toggle-added")
                     }).catch((e) => {
                         this.errors.push(e.response.data);

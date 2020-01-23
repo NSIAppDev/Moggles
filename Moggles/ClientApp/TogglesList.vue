@@ -203,7 +203,6 @@
     import ToggleScheduler from "./ToggleScheduler";
     import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
     export default {
-        environmentsNameList: [],
         components: {
             'p-check': PrettyCheck,
             'toggle-scheduler': ToggleScheduler
@@ -237,7 +236,8 @@
                 connection: null,
                 rowsPerPage: 10,
                 defaultToggleValue: true,
-                environmentsList:[]
+                environmentsList: [], 
+                environmentsNameList:[]
             }
         },
         computed: {
@@ -409,7 +409,6 @@
                     {
                         field: 'workItemIdentifier',
                         label: 'Work Item ID',
-                        width: '180px',
                         sortable: true,
                         thClass: 'sortable',
                         filterOptions: {
@@ -503,6 +502,8 @@
                     this.showDeleteEnvironmentConfirmation = false
                     this.showEditEnvironmentModal = false
                     this.environmentToEdit = null
+                    this.environmentsNameList = []
+                    this.environmentsList = []
                     this.initializeGrid(this.selectedApp);
                     Bus.$emit("app-changed", this.selectedApp)
                 }).catch(error => window.alert(error))
@@ -611,8 +612,16 @@
                     //window.alert(error)
                 });
             },
+            addEnvironmentToGrid(env) {
+                if (this.environmentsNameList.includes(env.envName)) {
+                    return;
+                } else {
+                    this.environmentsNameList.push(env.envName);
+                }
+            },
             initializeGrid(app) {
                 this.environmentsNameList = [];
+                this.environmentsList = [];
                 this.getAllScheduledToggle(app.id);
                 axios.get("/api/FeatureToggles/environments", {
                     params: {
@@ -620,7 +629,7 @@
                     }
                 }).then((response) => {
                     this.environmentsList = response.data;
-                    response.data.forEach(env => this.environmentsNameList.push(env.envName));
+                    this.environmentsList.forEach(env => this.environmentsNameList.push(env.envName));
                     this.createGridColumns();
                     this.loadGridData(app.id);
                     this.$refs['toggleGrid'].reset()
