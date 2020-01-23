@@ -93,10 +93,10 @@ namespace Moggles.Tests
 
             var readResponse = _client.GetAsync($"/api/FeatureToggles/environments?applicationId={app.Id}").Result;
             readResponse.EnsureSuccessStatusCode();
-            var envs = await readResponse.Content.ReadAsJsonAsync<List<string>>();
+            var envs = await readResponse.Content.ReadAsJsonAsync<List<DeployEnvironment>>();
 
             //assert
-            envs.Should().BeEquivalentTo("testEnv");
+            envs.FirstOrDefault().EnvName.Should().BeEquivalentTo("testEnv");
         }
 
         [TestCleanup]
