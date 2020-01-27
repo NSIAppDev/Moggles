@@ -1,24 +1,33 @@
 ﻿<template>
-	<div>
-		<alert v-if="showSuccessAlert" :duration="alertDuration" type="success" @dismissed="showSuccessAlert = false">
-			<p>
-				<i class="fas fa-check-circle"></i> Cache Refreshed.
-			</p>
-		</alert>
+  <div>
+    <alert v-if="showSuccessAlert" :duration="alertDuration" type="success"
+           @dismissed="showSuccessAlert = false">
+      <p>
+        <i class="fas fa-check-circle" /> Cache Refreshed.
+      </p>
+    </alert>
 
-		<div class="panel-body">
-			<div class="form-group">
-				<label>Select environment for which to refresh the cache:</label>
-				<select class="form-control" v-model="envName" required id="environmentSelect">
-					<option v-for="env in existingEnvs">{{ env }}</option>
-				</select>
-			</div>
-			<div class="text-right">
-				<button class="btn btn-default" @click="closeRefreshModal">Close</button>
-				<button id="refreshBtn" :disabled="applicationId > 0 && envName ? false : true" class="btn btn-primary" v-on:click="refresh" type="button">Refresh</button>
-			</div>
-		</div>
-	</div>
+    <div class="panel-body">
+      <div class="form-group">
+        <label>Select environment for which to refresh the cache:</label>
+        <select id="environmentSelect" v-model="envName" class="form-control"
+                required>
+          <option v-for="env in existingEnvs" :key="env">
+            {{ env }}
+          </option>
+        </select>
+      </div>
+      <div class="text-right">
+        <button class="btn btn-default" @click="closeRefreshModal">
+          Close
+        </button>
+        <button id="refreshBtn" :disabled="applicationId != '' && envName ? false : true" class="btn btn-primary"
+                type="button" @click="refresh">
+          Refresh
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -36,6 +45,17 @@
 				alertDuration: 1500
 			};
 		},
+		mounted() {
+			Bus.$on("app-changed", app => {
+				if (app) {
+					this.applicationId = app.id;
+				}
+			});
+
+			Bus.$on("env-loaded", envs => {
+				this.existingEnvs = envs;
+			});
+		},
 		methods: {
 			refresh() {
 				if (this.applicationId === -1)
@@ -48,7 +68,7 @@
 
 				Bus.$emit('block-ui')
 				axios.post('api/CacheRefresh', param)
-					.then((response) => {
+					.then(() => {
 						this.showSuccessAlert = true;
 						this.envName = null;
 					}).catch((e) => {
@@ -60,17 +80,6 @@
 			closeRefreshModal() {
 				Bus.$emit('close-refresh');
 			}
-		},
-		mounted() {
-			Bus.$on("app-changed", app => {
-				if (app) {
-					this.applicationId = app.id;
-				}
-			});
-
-			Bus.$on("env-loaded", envs => {
-				this.existingEnvs = envs;
-			});
 		}
 	}
 </script>

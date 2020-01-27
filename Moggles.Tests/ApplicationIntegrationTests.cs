@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using FluentAssertions;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Domain;
 using Moggles.Models;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Moggles.Tests
 {
@@ -19,77 +24,86 @@ namespace Moggles.Tests
         public void BeforeEach()
         {
             _factory = new MogglesApplicationFactory<TestStartup>();
-            _client = _factory.CreateClient();
+            var factory = _factory.WithWebHostBuilder(b =>
+            {
+                b.UseSolutionRelativeContentRoot(Environment.CurrentDirectory);
+                b.ConfigureTestServices(services =>
+                {
+                    services.AddControllersWithViews().AddApplicationPart(typeof(Startup).Assembly);
+                });
+            });
+            _client = factory.CreateClient();
         }
 
         [TestMethod]
-        public void WillRejectRequestWithEmptyAppName()
+        public async Task WillRejectRequestWithEmptyAppName()
         {
             //arrange
             var appModel = new AddApplicationModel { ApplicationName = "" };
 
             //act
-            var response = Utils.PostAsJsonAsync(_client, "/api/applications/add", appModel).Result;
+            var response = await _client.PostAsJsonAsync("/api/applications/add", appModel);
 
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [TestMethod]
-        public void WillRejectRequestWithAppNameBiggerThan100Chars()
+        public async Task WillRejectRequestWithAppNameBiggerThan100Chars()
         {
             //arrange
             var appModel = new AddApplicationModel { ApplicationName = string.Join("", Enumerable.Repeat("x", 101)) };
 
             //act
-            var response = Utils.PostAsJsonAsync(_client, "/api/applications/add", appModel).Result;
-      
+            var response = await _client.PostAsJsonAsync("/api/applications/add", appModel);
+
             //assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [TestMethod]
-        public void CreateAppSuccessfully()
+        public async Task CreateAppSuccessfully()
         {
-            //arrange
-            var appModel = new AddApplicationModel { ApplicationName = "test", EnvironmentName = "testEnv", DefaultToggleValue = false};
+
+            var appModel = new AddApplicationModel { ApplicationName = "tst", EnvironmentName = "testEnv", DefaultToggleValue = false };
 
             //act
-            var response = Utils.PostAsJsonAsync(_client, "/api/applications/add", appModel).Result;
+            var response = await _client.PostAsJsonAsync("/api/applications/add", appModel);
             response.EnsureSuccessStatusCode();
 
             var readResponse = _client.GetAsync("/api/applications").Result;
-            var apps = readResponse.Content.ReadAsJsonAsync<List<Application>>().Result;
+            var apps = await readResponse.Content.ReadAsJsonAsync<List<Application>>();
 
             //assert
-            var app = apps.FirstOrDefault(a => a.AppName == "test");
+            var app = apps.FirstOrDefault(a => a.AppName == "tst");
             app.Should().NotBeNull();
-            app.Id.Should().NotBe(0);
+            app.Id.Should().NotBe(Guid.Empty);
         }
 
         [TestMethod]
-        public void CreatingANewAppWillAlsoCreateADefaultEnvironment()
+        public async Task CreatingANewAppWillAlsoCreateADefaultEnvironment()
         {
             //arrange
-            var appModel = new AddApplicationModel { ApplicationName = "test", EnvironmentName = "testEnv", DefaultToggleValue = false };
+            var appModel = new AddApplicationModel { ApplicationName = "tst", EnvironmentName = "testEnv", DefaultToggleValue = false };
 
             //act
-            var response = Utils.PostAsJsonAsync(_client, "/api/applications/add", appModel).Result;
+            var response = await _client.PostAsJsonAsync("/api/applications/add", appModel);
             response.EnsureSuccessStatusCode();
-            var app = response.Content.ReadAsJsonAsync<Application>().Result;
+            var app = await response.Content.ReadAsJsonAsync<Application>();
 
             var readResponse = _client.GetAsync($"/api/FeatureToggles/environments?applicationId={app.Id}").Result;
             readResponse.EnsureSuccessStatusCode();
-            var envs = readResponse.Content.ReadAsJsonAsync<List<string>>().Result;
+            var envs = await readResponse.Content.ReadAsJsonAsync<List<DeployEnvironment>>();
 
             //assert
-            envs.Should().BeEquivalentTo("testEnv");
+            envs.FirstOrDefault().EnvName.Should().BeEquivalentTo("testEnv");
         }
 
         [TestCleanup]
         public void Cleanup()
         {
             _factory.Dispose();
+            Utils.ClearStorage();
         }
     }
 }

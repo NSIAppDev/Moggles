@@ -4,13 +4,19 @@ using MassTransit.ExtensionsDependencyInjectionIntegration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.IISIntegration;
-using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Moggles.BackgroundServices;
 using Moggles.Consumers;
-using Moggles.Data;
+using Moggles.Data.SQL;
+using Moggles.Data.NoDb;
+using NoDb;
+using Moggles.Domain;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SpaServices.Webpack;
+using Moggles.Hubs;
 
 namespace Moggles
 {
@@ -28,14 +34,35 @@ namespace Moggles
         {
             ConfigureAuthServices(services);
 
-            services.AddMvc();
+            services.AddSignalR(o =>
+            {
+                //The recommended value is double the KeepAliveInterval value, as per documentation
+                o.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
+
+                //The recommended value for KeepAliveInterval is half the serverTimeoutInMilliseconds on the client
+                o.KeepAliveInterval = TimeSpan.FromSeconds(60);
+
+                o.EnableDetailedErrors = true;
+                o.HandshakeTimeout = TimeSpan.FromSeconds(20);
+            });
+
+            services.AddControllersWithViews();
+
+            services.AddApplicationInsightsTelemetry();
 
             ConfigureDatabaseServices(services);
 
-            if (Boolean.TryParse(Configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
+            if (bool.TryParse(Configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
             {
                 ConfigureMassTransitAndMessageBus(services);
             }
+
+            services.AddNoDb<Application>();
+            services.AddNoDb<ToggleSchedule>();
+            services.AddScoped<IRepository<Application>, ApplicationsRepository>();
+            services.AddScoped<IRepository<ToggleSchedule>, ToggleSchedulesRepository>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddHostedService<ScheduledFeatureTogglesService>();
         }
 
         public virtual void ConfigureDatabaseServices(IServiceCollection services)
@@ -53,12 +80,15 @@ namespace Moggles
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env, Microsoft.AspNetCore.Hosting.IApplicationLifetime appLifetime, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+#pragma warning disable CS0618 // Type or member is obsolete
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
+#pragma warning restore CS0618 // Type or member is obsolete
                 {
                     HotModuleReplacement = true
                 });
@@ -70,18 +100,28 @@ namespace Moggles
             else
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseExceptionHandler("/Home/Error");
             }
 
             app.UseStaticFiles();
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllers();
+                endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapFallbackToController("Index", "Home");
+                endpoints.MapHub<IsDueHub>("/isDueHub", options => {
+                    options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.LongPolling;
+                });
+                
             });
+
         }
+        
 
         private void ConfigureMassTransitAndMessageBus(IServiceCollection services)
         {

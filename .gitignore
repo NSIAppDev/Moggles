@@ -281,3 +281,4 @@ __pycache__/
 # tools/
 /Automation/VisualSeleniumProject/com/pages/nsafety/LPOP/LpopMaterialListingScreenPage.cs
 /Moggles/wwwroot/dist/
+/Moggles/nodb_storage/projects/moggles

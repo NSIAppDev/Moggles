@@ -1,57 +1,84 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
-using Moggles.Data;
 using Moggles.Models;
 using Moq;
+using System;
+using System.Threading.Tasks;
+using Moggles.Domain;
+using MogglesContracts;
 
 namespace Moggles.UnitTests.CacheTests
 {
     [TestClass]
     public class CacheTests
     {
-        public TestContext TestContext { get; set; }
-        private static TogglesContext _context;
+        private IRepository<Application> _appRepository;
+        private Mock<IServiceProvider> _mockServiceProvider;
+        private Mock<IBus> _busMock;
 
         [TestInitialize]
         public void BeforeTest()
         {
-            _context = Fixture.GetTogglesContext(TestContext.TestName);
+            _appRepository = new InMemoryApplicationRepository();
+            _mockServiceProvider = new Mock<IServiceProvider>();
+            _busMock = new Mock<IBus>();
+            _mockServiceProvider.Setup(x => x.GetService(typeof(IBus))).Returns(_busMock.Object);
         }
 
         [TestCleanup]
         public void AfterTest()
         {
-            //Different scopes sharing the same Incrementing Key
-
-            //EnsureDeleted does not reset "identity" columns for InMemory database provider
-            //Do not provide id's unless required,failing to do so will result in "failed to track .." error
-            //see https://github.com/aspnet/EntityFrameworkCore/issues/4096 and https://github.com/aspnet/EntityFrameworkCore/issues/6872
-
-            _context.Database.EnsureDeleted();
         }
 
         [TestMethod]
-        public void RefreshCache_ReturnBadRequestResult_WhenModelStateIsInvalid()
+        public async Task RefreshCache_ReturnBadRequestResult_WhenModelStateIsInvalid()
         {
             //arrange
-            var mockServiceProvider = new Mock<IServiceProvider>();
-            mockServiceProvider.Setup(x => x.GetService(typeof(IBus))).Returns(new Mock<IBus>().Object);
-            var controller = new CacheRefreshController(_context, new Mock<IConfiguration>().Object, mockServiceProvider.Object);
-
+            var controller = new CacheRefreshController(_appRepository, new Mock<IConfiguration>().Object, _mockServiceProvider.Object);
             controller.ModelState.AddModelError("error", "some error");
-            
+
             //act
-            var result = controller.RefreshCache(new RefreshCacheModel());
-            
+            var result = await controller.RefreshCache(new RefreshCacheModel());
+
             //assert
             var badRequestResult = result as BadRequestObjectResult;
             badRequestResult.Should().NotBe(null);
         }
 
+        [TestMethod]
+        public async Task RefreshCache_ThrowsException_WhenProvidedInvalidAppId()
+        {
+            //arrange
+            var app = Application.Create("tst", "dev", false);
+            await _appRepository.AddAsync(app);
+            var controller = new CacheRefreshController(_appRepository, new Mock<IConfiguration>().Object, _mockServiceProvider.Object);
+
+            //act
+            Func<Task> result = async () => await controller.RefreshCache(new RefreshCacheModel { ApplicationId = Guid.NewGuid() });
+
+            //assert
+            result.Should().Throw<InvalidOperationException>();
+        }
+
+        [TestMethod]
+        public async Task RefreshCacheEventIsPublished_WithTheCorrectAppNameAndEnvironmentInformation()
+        {
+            //arrange
+            var app = Application.Create("tst", "dev", false);
+            await _appRepository.AddAsync(app);
+           
+            var controller = new CacheRefreshController(_appRepository, new Mock<IConfiguration>().Object, _mockServiceProvider.Object);
+
+            //act
+            await controller.RefreshCache(new RefreshCacheModel {ApplicationId = app.Id, EnvName = "DEV"});
+
+            //assert
+            _busMock.Verify(x => x.Publish(It.Is<RefreshTogglesCache>(e => e.ApplicationName == "tst" && e.Environment == "DEV"), default),
+                Times.Once);
+        }
     }
 }

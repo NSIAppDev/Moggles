@@ -1,16 +1,20 @@
 <template>
+  <div>
     <div>
-        <div>
-            Are you sure you want to delete the application?
-            <br />
-            All associated feature toggles will be removed.
-        </div>
-        <br />
-        <div class="text-right">
-            <button type="button" class="btn btn-default" @click="cancel">Cancel</button>
-            <button type="button" class="btn btn-primary" @click="deleteApp">Delete</button>
-        </div>
+      Are you sure you want to delete the application?
+      <br>
+      All associated feature toggles will be removed.
     </div>
+    <br>
+    <div class="text-right">
+      <button type="button" class="btn btn-default" @click="cancel">
+        Cancel
+      </button>
+      <button type="button" class="btn btn-primary" @click="deleteApp">
+        Delete
+      </button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -32,14 +36,14 @@
         },
         methods: {
             deleteApp() {
-                axios.delete(`/api/applications?id=${this.selectedApp.id}`).then((result) => {
+                axios.delete(`/api/applications?id=${this.selectedApp.id}`).then(() => {
                     this.cancel();
                     this.deleteAppCompleted();
                     Bus.$emit("refresh-apps");    
                 })
                 .catch(e => {
                     window.alert(e)
-                }).finally(e => {
+                }).finally(() => {
                     Bus.$emit('unblock-ui')
                 });
             },

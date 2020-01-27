@@ -1,13 +1,13 @@
 ﻿<template>
-	<div>
-		<transition name="block-fade">
-			<div class="block-backdrop" v-if="block">
-				<div class="block-message">
-					<i class="fas fa-spinner fa-pulse fa-5x"></i>
-				</div>
-			</div>
-		</transition>
-	</div>
+  <div>
+    <transition name="block-fade">
+      <div v-if="block" class="block-backdrop">
+        <div class="block-message">
+          <i class="fas fa-spinner fa-pulse fa-5x" />
+        </div>
+      </div>
+    </transition>
+  </div>
 </template>
 
 <script>

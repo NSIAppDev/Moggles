@@ -69,9 +69,17 @@ module.exports = (env) => {
             filename: '[name].js',
             publicPath: 'dist/'
         },
-
+        //node: {
+        //    fs: 'empty'
+        //},
         module: {
 			rules: [
+                {
+                    enforce: 'pre',
+                    test: /\.(js|vue)$/,
+                    loader: 'eslint-loader',
+                    exclude: /node_modules/
+                },
 				{
 					test: /\.css$/,
 					use: ['vue-style-loader', 'css-loader']

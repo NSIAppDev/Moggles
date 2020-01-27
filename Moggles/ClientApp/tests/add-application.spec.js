@@ -1,4 +1,4 @@
-﻿import { shallowMount, mount } from '@vue/test-utils'
+﻿import { shallowMount } from '@vue/test-utils'
 import AddApplication from '../AddApplication.vue'
 import flushPromises from 'flush-promises'
 import axios from 'axios';

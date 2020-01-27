@@ -1,39 +1,54 @@
 <template>
-	<div>
-		<div v-if="showSuccessAlert" class="alert alert-success" @dismissed="showSuccessAlert = false">
-			<p>
-				<i class="fas fa-check-circle"></i> Application added succesfully.
-			</p>
-		</div>
-		<div class="panel-body">
-			<div v-for="error in errors" :key="error" class="text-danger margin-bottom-10">{{error}}</div>
-			<div class="form-group">
-				<label class="control-label" for="appname">Application name</label>
-				<input class="form-control" v-model="applicationName" type="text" name="appName" placeholder="Application name..." maxlength="100">
-			</div>
-			<div class="form-group">
-				<label class="control-label" for="envname">Add a first environment</label>
-				<div class="form-group">
-					<input class="form-control" v-model="environmentName" type="text" name="envName" placeholder="Environment name..." maxlength="100">
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="control-label">Default toggle value</label>
-				<div class="form-inline">
-					<label for="d1">
-						<input id="d1" v-model="defaultToggleValue" type="radio" :value="true"> True
-					</label>
-					<label for="d2">
-						<input id="d2" v-model="defaultToggleValue" type="radio" :value="false"> False
-					</label>
-				</div>
-			</div>
-			<div class="text-right">
-				<button class="btn btn-default" @click="closeAddApplicationModal">Close</button>
-				<button class="btn btn-primary" v-on:click="addApplication" type="button">Add</button>
-			</div>
-		</div>
-	</div>
+  <div>
+    <div v-if="showSuccessAlert" class="alert alert-success" @dismissed="showSuccessAlert = false">
+      <p>
+        <i class="fas fa-check-circle" /> Application added succesfully.
+      </p>
+    </div>
+    <div class="form-horizontal">
+        <div class="row">
+            <div v-for="error in errors" :key="error" class="text-danger margin-bottom-10">
+                {{ error }}
+            </div>
+            <div class="col-sm-12 form-group">
+                <label class="col-sm-4 control-label" for="appname">Application name</label>
+                <div class="col-sm-8">
+                    <input v-model="applicationName" class="form-control" type="text"
+                           name="appName" placeholder="Application name..." maxlength="100">
+                </div>
+            </div>
+            <div class="col-sm-12 form-group">
+                <label class="col-sm-4 control-label" for="envname">Add a first environment</label>
+                <div class="col-sm-8">
+                    <input v-model="environmentName" class="form-control" type="text"
+                           name="envName" placeholder="Environment name..." maxlength="100">
+                </div>
+            </div>
+            <div class="col-sm-12 form-group">
+                <label class="col-sm-4 control-label">
+                    Default toggle value
+                </label>
+                <div class="col-sm-6 margin-top-4">
+                    <label for="d1">True</label>
+                    <input id="d1" v-model="defaultToggleValue" type="radio"
+                           :value="true" checked>
+
+                    <label for="d2">False</label>
+                    <input id="d2" v-model="defaultToggleValue" type="radio"
+                           :value="false">
+                </div>
+            </div>
+            <div class="col-sm-12 text-right">
+                <button class="btn btn-default" @click="closeAddApplicationModal">
+                    Close
+                </button>
+                <button class="btn btn-primary" type="button" @click="addApplication">
+                    Add
+                </button>
+            </div>
+        </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -50,6 +65,11 @@
                 errors: [],
 				alertDuration: 1500
             }
+        },
+        mounted() {
+            Bus.$on('openAddAppModal', () => {
+                this.clearFields();
+            })
         },
         methods: {
             addApplication() {
@@ -73,7 +93,7 @@
                     applicationName: this.applicationName,
                     environmentName: this.environmentName,
                     defaultToggleValue: this.defaultToggleValue
-                }).then((response) => {
+                }).then(() => {
                     this.applicationName = '';
                     this.environmentName = '';
                     this.defaultToggleValue = true;
@@ -83,14 +103,20 @@
                         this.showSuccessAlert = false;
                     }, this.alertDuration)
                 }).catch(e => {
-					this.errors.push(e.response.data);
-                }).finally(e => {
+                    this.errors.push(e.response.data);
+                }).finally(() => {
 					Bus.$emit('unblock-ui')
                 });
             },
 			closeAddApplicationModal() {
 				Bus.$emit('close-add-application');
-			}
+            },
+            clearFields() {
+                this.applicationName = "";
+                this.environmentName = "";
+                this.errors = [];
+                this.defaultToggleValue = true;
+            }
         }
     }
 </script>
