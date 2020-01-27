@@ -148,7 +148,7 @@
                             Default value for new toggles
                         </label>
                         <div class="col-sm-6 margin-top-4">
-                            <label for="r1" >True</label>
+                            <label for="r1">True</label>
                             <input id="r1" v-model="defaultToggleValue" type="radio"
                                    :value="true" checked>
 
@@ -203,7 +203,6 @@
     import ToggleScheduler from "./ToggleScheduler";
     import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
     export default {
-        environmentsNameList: [],
         components: {
             'p-check': PrettyCheck,
             'toggle-scheduler': ToggleScheduler
@@ -237,7 +236,9 @@
                 connection: null,
                 rowsPerPage: 10,
                 defaultToggleValue: true,
-                environmentsList:[]
+                environmentsList: [],
+                environmentsNameList: [],
+
             }
         },
         computed: {
@@ -325,19 +326,19 @@
                     applicationId: this.selectedApp.id,
                     initialEnvName: this.environmentToEdit.initialEnvName,
                     newEnvName: this.editedEnvironmentName,
-                    defaultToggleValue: this.defaultToggleValue 
+                    defaultToggleValue: this.defaultToggleValue
                 }
 
-                 axios.put('/api/FeatureToggles/updateEnvironment', envUpdateModel)
-					.then(() => {
-						this.showEditEnvironmentModal = false
+                axios.put('/api/FeatureToggles/updateEnvironment', envUpdateModel)
+                    .then(() => {
+                        this.showEditEnvironmentModal = false
                         this.environmentToEdit = null
                         this.initializeGrid(this.selectedApp);
                         let index = _.indexOf(this.environmentsToRefresh, envUpdateModel.initialEnvName);
                         if (index != -1) {
-                            this.environmentsToRefresh.splice(index,1);
+                            this.environmentsToRefresh.splice(index, 1);
                         }
-					}).catch(error => window.alert(error))
+                    }).catch(error => window.alert(error))
             },
             saveToggle() {
                 this.editFeatureToggleErrors = [];
@@ -351,6 +352,7 @@
                     applicationid: this.selectedApp.id,
                     userAccepted: this.rowToEdit.userAccepted,
                     notes: this.rowToEdit.notes,
+                    workItemIdentifier: this.rowToEdit.workItemIdentifier,
                     featureToggleName: this.rowToEdit.toggleName,
                     isPermanent: this.rowToEdit.isPermanent,
                     statuses: []
@@ -400,6 +402,17 @@
                         filterOptions: {
                             enabled: true,
                             placeholder: 'Filter Toggle Name'
+                        }
+                    },
+                    {
+                        field: 'workItemIdentifier',
+                        label: 'Work Item ID',
+                        sortable: true,
+                        width: '140px',
+                        thClass: 'sortable',
+                        filterOptions: {
+                            enabled: true,
+                            placeholder: 'Filter Work Item ID'
                         }
                     },
                     {
@@ -490,9 +503,9 @@
                     this.environmentToEdit = null,
                         this.initializeGrid(this.selectedApp);
                     let index = _.indexOf(this.environmentsToRefresh, environmentModel.envName);
-                        if (index != -1) {
-                            this.environmentsToRefresh.splice(index,1);
-                        }
+                    if (index != -1) {
+                        this.environmentsToRefresh.splice(index, 1);
+                    }
                     Bus.$emit("app-changed", this.selectedApp)
                 }).catch(error => window.alert(error))
             },
@@ -580,6 +593,7 @@
                             userAccepted: toggle.userAccepted,
                             isPermanent: toggle.isPermanent,
                             notes: toggle.notes,
+                            workItemIdentifier: toggle.workItemIdentifier,
                             createdDate: new Date(toggle.createdDate)
                         }
 
