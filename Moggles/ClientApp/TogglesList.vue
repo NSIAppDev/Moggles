@@ -203,6 +203,7 @@
     import ToggleScheduler from "./ToggleScheduler";
     import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
     export default {
+        environmentsNameList: [],
         components: {
             'p-check': PrettyCheck,
             'toggle-scheduler': ToggleScheduler
@@ -236,8 +237,7 @@
                 connection: null,
                 rowsPerPage: 10,
                 defaultToggleValue: true,
-                environmentsList: [], 
-                environmentsNameList:[]
+                environmentsList:[]
             }
         },
         computed: {
@@ -325,7 +325,7 @@
                     applicationId: this.selectedApp.id,
                     initialEnvName: this.environmentToEdit.initialEnvName,
                     newEnvName: this.editedEnvironmentName,
-                    defaultToggleValue: this.defaultToggleValue
+                    defaultToggleValue: this.defaultToggleValue 
                 }
 
                  axios.put('/api/FeatureToggles/updateEnvironment', envUpdateModel)
@@ -345,16 +345,12 @@
                     this.editFeatureToggleErrors.push("Feature toggle name cannot be empty")
                     return;
                 }
-                if (this.rowToEdit.workItemIdentifier.length > 50) {
-                    this.editFeatureToggleErrors.push("Work Item ID cannot be longer then 50 characters");
-                    return;
-                }
+
                 let toggleUpdateModel = {
                     id: this.rowToEdit.id,
                     applicationid: this.selectedApp.id,
                     userAccepted: this.rowToEdit.userAccepted,
                     notes: this.rowToEdit.notes,
-                    workItemIdentifier: this.rowToEdit.workItemIdentifier,
                     featureToggleName: this.rowToEdit.toggleName,
                     isPermanent: this.rowToEdit.isPermanent,
                     statuses: []
@@ -404,16 +400,6 @@
                         filterOptions: {
                             enabled: true,
                             placeholder: 'Filter Toggle Name'
-                        }
-                    },
-                    {
-                        field: 'workItemIdentifier',
-                        label: 'Work Item ID',
-                        sortable: true,
-                        thClass: 'sortable',
-                        filterOptions: {
-                            enabled: true,
-                            placeholder: 'Filter Work Item ID'
                         }
                     },
                     {
@@ -501,13 +487,16 @@
                 axios.delete(`/api/FeatureToggles/environments`, { data: environmentModel }).then(() => {
                     this.showDeleteEnvironmentConfirmation = false
                     this.showEditEnvironmentModal = false
-                    this.environmentToEdit = null
-                    this.environmentsNameList = []
-                    this.environmentsList = []
-                    this.initializeGrid(this.selectedApp);
+                    this.environmentToEdit = null,
+                        this.initializeGrid(this.selectedApp);
+                    let index = _.indexOf(this.environmentsToRefresh, environmentModel.envName);
+                        if (index != -1) {
+                            this.environmentsToRefresh.splice(index,1);
+                        }
                     Bus.$emit("app-changed", this.selectedApp)
                 }).catch(error => window.alert(error))
             },
+
             edit(row) {
                 this.rowToEdit = _.clone(row)
                 this.showEditModal = true
@@ -591,7 +580,6 @@
                             userAccepted: toggle.userAccepted,
                             isPermanent: toggle.isPermanent,
                             notes: toggle.notes,
-                            workItemIdentifier: toggle.workItemIdentifier,
                             createdDate: new Date(toggle.createdDate)
                         }
 
@@ -612,13 +600,6 @@
                     //window.alert(error)
                 });
             },
-            addEnvironmentToGrid(env) {
-                if (this.environmentsNameList.includes(env.envName)) {
-                    return;
-                } else {
-                    this.environmentsNameList.push(env.envName);
-                }
-            },
             initializeGrid(app) {
                 this.environmentsNameList = [];
                 this.environmentsList = [];
@@ -629,7 +610,7 @@
                     }
                 }).then((response) => {
                     this.environmentsList = response.data;
-                    this.environmentsList.forEach(env => this.environmentsNameList.push(env.envName));
+                    response.data.forEach(env => { if (!this.environmentsNameList.includes(env.envName)) { this.environmentsNameList.push(env.envName) } });
                     this.createGridColumns();
                     this.loadGridData(app.id);
                     this.$refs['toggleGrid'].reset()
