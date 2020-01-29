@@ -43,8 +43,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             var app = Application.Create("tst", "DEV", false);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1", null);
-            app.AddFeatureToggle("t2", null);
+            app.AddFeatureToggle("t1", null, "workItemId1");
+            app.AddFeatureToggle("t2", null, "workItemId2");
             await _appRepository.AddAsync(app);
 
             //act
@@ -107,8 +107,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             var app = Application.Create("tst", "DEV", false);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1", null);
-            app.AddFeatureToggle("t2", null);
+            app.AddFeatureToggle("t1", null, "workItemId1");
+            app.AddFeatureToggle("t2", null, "workItemId2");
             await _appRepository.AddAsync(app);
             await _sut.ScheduleToggles(new ScheduleTogglesModel
             {
@@ -134,8 +134,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             var app = Application.Create("tst", "DEV", false);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1", null);
-            app.AddFeatureToggle("t2", null);
+            app.AddFeatureToggle("t1", null, "workItemId1");
+            app.AddFeatureToggle("t2", null, "workItemId2");
             await _appRepository.AddAsync(app);
 
 
@@ -155,8 +155,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             var app = Application.Create("tst", "DEV", false);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1", null);
-            app.AddFeatureToggle("t2", null);
+            app.AddFeatureToggle("t1", null, "workItemId1");
+            app.AddFeatureToggle("t2", null, "workItemId2");
             await _appRepository.AddAsync(app);
             await _sut.ScheduleToggles(new ScheduleTogglesModel
             {
@@ -195,8 +195,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             var app = Application.Create("tst", "DEV", false);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1", null);
-            app.AddFeatureToggle("t2", null);
+            app.AddFeatureToggle("t1", null, "workItemId1");
+            app.AddFeatureToggle("t2", null, "workItemId2");
             await _appRepository.AddAsync(app);
             await _sut.ScheduleToggles(new ScheduleTogglesModel
             {
@@ -225,8 +225,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             var app = Application.Create("tst", "DEV", false);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1", null);
-            app.AddFeatureToggle("t2", null);
+            app.AddFeatureToggle("t1", null, "workItemId1");
+            app.AddFeatureToggle("t2", null, "workItemId2");
             await _appRepository.AddAsync(app);
             await _sut.ScheduleToggles(new ScheduleTogglesModel
             {

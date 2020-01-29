@@ -77,8 +77,8 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         {
             //arrange
             var app = Application.Create("tst", "DEV", false);
-            app.AddFeatureToggle("offToggle", null);
-            app.AddFeatureToggle("onToggle", null);
+            app.AddFeatureToggle("offToggle", null, "workItemId1");
+            app.AddFeatureToggle("onToggle", null, "workItemId1");
             app.SetToggle(app.FeatureToggles.Single(f => f.ToggleName == "offToggle").Id, "DEV", false, "username");
             app.SetToggle(app.FeatureToggles.Single(f => f.ToggleName == "onToggle").Id, "DEV", true, "username");
             await _appRepository.AddAsync(app);
@@ -105,7 +105,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         {
             //arrange
             var app = Application.Create("tst", "DEV", false);
-            app.AddFeatureToggle("t1", null);
+            app.AddFeatureToggle("t1", null, "workItemId1");
             await _appRepository.AddAsync(app);
 
             var schedule = ToggleSchedule.Create("tst", "t1", new[] { "DEV" }, true, _dateInThePast, "updatedBy");
@@ -124,7 +124,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         {
             //arrange
             var app = Application.Create("tst", "DEV", false);
-            app.AddFeatureToggle("t1", null);
+            app.AddFeatureToggle("t1", null, "workItemId1");
             await _appRepository.AddAsync(app);
 
             //act
@@ -160,7 +160,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         {
             //arrange
             var app = Application.Create("tst", "DEV", false);
-            app.AddFeatureToggle("t1", null);
+            app.AddFeatureToggle("t1", null, "workItemId1");
 
             await _appRepository.AddAsync(app);
 

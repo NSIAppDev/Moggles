@@ -15,7 +15,7 @@
                 <div class="col-sm-12 form-group">
                     <label class="col-sm-4 control-label" for="envname">Environment name</label>
                     <div class="col-sm-7">
-                        <input v-model="envName" class="col-sm-8 form-control" type="text"
+                        <input ref="envName" v-model="envName" class="col-sm-8 form-control" type="text"
                                name="envName" placeholder="Env name..." maxlength="50">
                     </div>
                 </div>
@@ -76,6 +76,7 @@
             });
 
             Bus.$on('openAddEnvModal', () => {
+                this.$nextTick(() => { this.$refs["envName"].focus() });
                 this.clearFields();
             })
         },
@@ -114,6 +115,7 @@
                         this.showSuccessAlert = true;
                         this.envName = '';
                         this.defaultToggleValue = false;
+                        this.$nextTick(() => { this.$refs["envName"].focus() });
                         Bus.$emit("env-added")
                     }).catch((e) => {
                         window.alert(e)
