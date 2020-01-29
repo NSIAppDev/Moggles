@@ -106,8 +106,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var app = Application.Create("TestApp", "DEV", true);
             await _appRepository.AddAsync(app);
-            app.AddFeatureToggle("t1", string.Empty);
-            app.AddFeatureToggle("t2", string.Empty);
+            app.AddFeatureToggle("t1", string.Empty, "workItemId1");
+            app.AddFeatureToggle("t2", string.Empty, "workItemId2");
             var t1 = app.FeatureToggles.ToList().FirstOrDefault(ft => ft.ToggleName == "t1");
             app.SetToggle(t1.Id, "DEV", false, "bla");
 
@@ -141,8 +141,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var app = Application.Create("TestApp", "DEV", true);
             await _appRepository.AddAsync(app);
-            app.AddFeatureToggle("t1", string.Empty);
-            app.AddFeatureToggle("t2", string.Empty);
+            app.AddFeatureToggle("t1", string.Empty, "workItemId1");
+            app.AddFeatureToggle("t2", string.Empty, "workItemId2");
             var t1 = app.FeatureToggles.ToList().FirstOrDefault(ft => ft.ToggleName == "t1");
             app.SetToggle(t1.Id, "DEV", false, "bla");
             var schedule = ToggleSchedule.Create("TestApp", "t1", new[] { "DEV" }, true, new DateTime(2018, 1, 1, 15, 30, 0), "updatedBy", true);
@@ -171,7 +171,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             var app = Application.Create("TestApp", "DEV", true);
             await _appRepository.AddAsync(app);
-            app.AddFeatureToggle("t1", string.Empty);
+            app.AddFeatureToggle("t1", string.Empty, "workItemId1");
             var t1 = app.FeatureToggles.ToList().FirstOrDefault(ft => ft.ToggleName == "t1");
 
             var updatedEnvironment = new UpdateEnvironmentModel
@@ -186,7 +186,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var result = await _featureToggleController.UpdateEnvironment(updatedEnvironment);
 
             //assert
-            app.AddFeatureToggle("t2", string.Empty);
+            app.AddFeatureToggle("t2", string.Empty, "workItemId1");
             var t2 = app.FeatureToggles.ToList().FirstOrDefault(ft => ft.ToggleName == "t2");
             t1.GetFeatureToggleStatusForEnv("DEV").Enabled.Should().Be(true);
             t2.GetFeatureToggleStatusForEnv("DEV").Enabled.Should().Be(false);

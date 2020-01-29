@@ -237,7 +237,7 @@
                 rowsPerPage: 10,
                 defaultToggleValue: true,
                 environmentsList: [],
-                environmentsNameList: [],
+                environmentsNameList: []
 
             }
         },

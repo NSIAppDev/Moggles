@@ -34,8 +34,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("BCC", "dev", false);
-            app.AddFeatureToggle("TestToggle", "TestNotes", true, "workItemID");
-            app.AddFeatureToggle("TestToggle2", "TestNotes2");
+            app.AddFeatureToggle("TestToggle", "TestNotes", "workItemID", true);
+            app.AddFeatureToggle("TestToggle2", "TestNotes2", "workItemID2");
 
             await _appRepository.AddAsync(app);
 
@@ -60,7 +60,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var app = Application.Create("tst", "DEV", false);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1", "");
+            app.AddFeatureToggle("t1", "", "workItemId1");
             var toggle = app.FeatureToggles.Single();
             app.SetToggle(toggle.Id, "DEV", true, "username");
             app.SetToggle(toggle.Id, "QA", true, "username");
@@ -147,7 +147,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var app = Application.Create("TestApp", "DEV", false);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1", "");
+            app.AddFeatureToggle("t1", "", "workItemId1");
             var toggle = app.FeatureToggles.FirstOrDefault(f => f.ToggleName == "t1");
             app.SetToggle(toggle.Id, "DEV", true, "username");
             app.SetToggle(toggle.Id, "QA", false, "username");
@@ -170,7 +170,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var app = Application.Create("TestApp", "DEV", false);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1", "");
+            app.AddFeatureToggle("t1", "", "workItemId1");
             var toggle = app.FeatureToggles.FirstOrDefault(f => f.ToggleName == "t1");
             app.SetToggle(toggle.Id, "DEV", false, "username");
             app.SetToggle(toggle.Id, "QA", true, "username");

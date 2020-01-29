@@ -49,7 +49,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("bcc", "dev", false);
-            app.AddFeatureToggle("TestToggle", string.Empty);
+            app.AddFeatureToggle("TestToggle", string.Empty, "workItemId1");
 
             var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
 

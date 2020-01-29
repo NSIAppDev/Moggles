@@ -76,8 +76,7 @@
                 spinner: false,
                 showSuccessAlert: false,
                 alertDuration: 1500,
-                workItemIdentifier: "",
-                show: false
+                workItemIdentifier: ""
             }
         },
         mounted() {

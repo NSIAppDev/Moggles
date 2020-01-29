@@ -41,9 +41,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("TestApp", "TestEnv", false);
-            app.AddFeatureToggle("t1", "");
-            app.AddFeatureToggle("t2", "");
-            app.AddFeatureToggle("t3", "");
+            app.AddFeatureToggle("t1", "", "workItemId1");
+            app.AddFeatureToggle("t2", "", "workItemId2");
+            app.AddFeatureToggle("t3", "", "workItemId3");
             await _appRepository.AddAsync(app);
 
 
@@ -68,9 +68,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("TestApp", "TestEnv", false);
-            app.AddFeatureToggle("t1", "");
-            app.AddFeatureToggle("t2", "");
-            app.AddFeatureToggle("t3", "");
+            app.AddFeatureToggle("t1", "", "workItemId1");
+            app.AddFeatureToggle("t2", "", "workItemId2");
+            app.AddFeatureToggle("t3", "", "workItemId3");
             await _appRepository.AddAsync(app);
 
             var environmentToRemove = new DeleteEnvironmentModel
@@ -116,7 +116,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             var app = Application.Create("tst", "DEV", false);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1", null);
+            app.AddFeatureToggle("t1", null, "workItemId1");
             var toggle = app.FeatureToggles.Single();
             await _appRepository.AddAsync(app);
             await _toggleSchedulerConstroller.ScheduleToggles(new ScheduleTogglesModel

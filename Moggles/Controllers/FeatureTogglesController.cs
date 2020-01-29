@@ -142,7 +142,7 @@ namespace Moggles.Controllers
 
             try
             {
-                app.AddFeatureToggle(featureToggleModel.FeatureToggleName, featureToggleModel.Notes, featureToggleModel.IsPermanent, featureToggleModel.WorkItemIdentifier);
+                app.AddFeatureToggle(featureToggleModel.FeatureToggleName, featureToggleModel.Notes, featureToggleModel.WorkItemIdentifier, featureToggleModel.IsPermanent);
             }
             catch (BusinessRuleValidationException ex)
             {

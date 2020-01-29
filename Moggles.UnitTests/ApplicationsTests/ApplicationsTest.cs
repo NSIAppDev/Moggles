@@ -257,8 +257,8 @@ namespace Moggles.UnitTests.ApplicationsTests
 
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1", null);
-            app.AddFeatureToggle("t2", null);
+            app.AddFeatureToggle("t1", null, "workItemID1");
+            app.AddFeatureToggle("t2", null, "workItemID2");
             await _appApplicationRepository.AddAsync(app);
             var schedule = ToggleSchedule.Create("TestApp", "t1", new[] { "dev" }, true, date, "updatedBy", true);
             await _toggleScheduleRepository.AddAsync(schedule);

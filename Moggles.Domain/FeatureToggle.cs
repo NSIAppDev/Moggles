@@ -14,7 +14,7 @@ namespace Moggles.Domain
         public List<FeatureToggleStatus> FeatureToggleStatuses { get; set; } = new List<FeatureToggleStatus>();
         public string WorkItemIdentifier { get; set; }
 
-        public static FeatureToggle Create(string name, string notes, bool isPermanent, string workItemIdentifier="")
+        public static FeatureToggle Create(string name, string notes, bool isPermanent, string workItemIdentifier)
         {
             return new FeatureToggle
             {
@@ -27,7 +27,7 @@ namespace Moggles.Domain
             };
         }
 
-        public static FeatureToggle Create(string name, string notes, bool isPermanent, IEnumerable<DeployEnvironment> deployEnvironments, string workItemIdentifier="")
+        public static FeatureToggle Create(string name, string notes, bool isPermanent, IEnumerable<DeployEnvironment> deployEnvironments, string workItemIdentifier)
         {
             var newToggle = Create(name, notes, isPermanent, workItemIdentifier);
 

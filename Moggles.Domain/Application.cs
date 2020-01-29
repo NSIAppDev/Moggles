@@ -46,7 +46,7 @@ namespace Moggles.Domain
             return app;
         }
 
-        public void AddFeatureToggle(string toggleName, string notes, bool isPermanent = false, string workItemIdentifier="")
+        public void AddFeatureToggle(string toggleName, string notes, string workItemIdentifier, bool isPermanent = false)
         {
             if (FeatureToggles.Exists(f => string.Compare(f.ToggleName, toggleName, StringComparison.OrdinalIgnoreCase) == 0))
             {

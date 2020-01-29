@@ -37,7 +37,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("test", "DEV", false);
-            app.AddFeatureToggle("TestToggle", "FirstNote",false, "WorkItemId");
+            app.AddFeatureToggle("TestToggle", "FirstNote", "WorkItemId", false);
             await _appRepository.AddAsync(app);
 
             var toggle = app.FeatureToggles.Single();
@@ -70,8 +70,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("test", "DEV", false);
-            app.AddFeatureToggle("t1", "");
-            app.AddFeatureToggle("t2", "");
+            app.AddFeatureToggle("t1", "", "workItemId1");
+            app.AddFeatureToggle("t2", "", "workItemId1");
             await _appRepository.AddAsync(app);
 
             var toggle = app.FeatureToggles.FirstOrDefault(t => t.ToggleName == "t1");
@@ -92,7 +92,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var app = Application.Create("test", "DEV", false);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1", "");
+            app.AddFeatureToggle("t1", "", "workItemId1");
             await _appRepository.AddAsync(app);
 
             var toggle = app.FeatureToggles.Single();
@@ -133,7 +133,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var app = Application.Create("test", "DEV", false);
             app.AddDeployEnvironment("QA", false);
-            app.AddFeatureToggle("t1", "");
+            app.AddFeatureToggle("t1", "", "workItemId1");
             await _appRepository.AddAsync(app);
 
             var toggle = app.FeatureToggles.Single();
