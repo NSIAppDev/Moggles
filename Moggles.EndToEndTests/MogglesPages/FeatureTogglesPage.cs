@@ -21,7 +21,7 @@ namespace MogglesEndToEndTests.MogglesPages
             By.CssSelector("div.in > div > div > div > div > div > div > div:nth-child(1) > div > input"));
     
         public IWebElement NotesInput => Browser.WebDriver.FindElement(
-            By.CssSelector("div.in > div > div > div > div > div > div > div:nth-child(2) > div > input"));
+            By.CssSelector("div.in > div > div > div > div > div > div > div:nth-child(3) > div > input"));
 
         public IWebElement AddFeatureToggleButton => Browser.WebDriver.FindElement(
             By.CssSelector("div.in > div > div > div.modal-body > div > div > div > div > button.btn-primary"));
@@ -48,7 +48,7 @@ namespace MogglesEndToEndTests.MogglesPages
         public IWebElement IsPermanentCheckbox =>
             Browser.WebDriver.FindElement(
                 By.CssSelector(
-                    "body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div> div > div:nth-child(9) > div > div> div > div > input[type=checkbox]"));
+                    "body > div:nth-child(1) > div> div > div > div > div.in > div > div > div> div> div > div:nth-child(10) > div > div> div > div > input[type=checkbox]"));
 
         public IWebElement DevEnvironmentCheckbox =>
             Browser.WebDriver.FindElement(
@@ -68,7 +68,7 @@ namespace MogglesEndToEndTests.MogglesPages
         public IWebElement IsAcceptedByUserCheckbox =>
             Browser.WebDriver.FindElement(
                 By.CssSelector(
-                    "body > div:nth-child(1) > div> div > div > div > div> div > div > div> div > div:nth-child(10) > div > div> div > div > input[type=checkbox]"));
+                    "body > div:nth-child(1) > div> div > div > div > div> div > div > div> div > div:nth-child(11) > div > div> div > div > input[type=checkbox]"));
 
         public IWebElement SaveButton =>
             Browser.WebDriver.FindElement(
