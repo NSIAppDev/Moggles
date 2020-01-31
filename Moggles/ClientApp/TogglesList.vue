@@ -346,6 +346,10 @@
                     this.editFeatureToggleErrors.push("Feature toggle name cannot be empty")
                     return;
                 }
+                if (this.rowToEdit.workItemIdentifier.length > 50) {
+                     this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
+                    return;
+                }
 
                 let toggleUpdateModel = {
                     id: this.rowToEdit.id,
