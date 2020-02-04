@@ -6,5 +6,6 @@
         public bool UserAccepted { get; set; }
         public string Notes { get; set; }
         public bool IsPermanent { get; set; }
+        public string WorkItemIdentifier { get; set; }
     }
 }

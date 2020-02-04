@@ -49,7 +49,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("bcc", "dev", false);
-            app.AddFeatureToggle("TestToggle", string.Empty);
+            app.AddFeatureToggle("TestToggle", string.Empty, "workItemId1");
 
             var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
 
@@ -83,7 +83,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var app = Application.Create("tst", "dev", false);
             await _appRepository.AddAsync(app);
-            var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
+            var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle", WorkItemIdentifier = "1234" };
+
 
             //act
             var result = await _featureToggleController.AddFeatureToggle(newFeatureToggle);
@@ -93,6 +94,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var toggle = (await _appRepository.FindByIdAsync(app.Id)).FeatureToggles.FirstOrDefault();
             toggle.Should().NotBeNull();
             toggle.ToggleName.Should().Be("TestToggle");
+            toggle.WorkItemIdentifier.Should().Be("1234");
         }
 
         [TestMethod]

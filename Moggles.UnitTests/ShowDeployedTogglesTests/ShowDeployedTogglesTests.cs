@@ -26,8 +26,8 @@ namespace Moggles.UnitTests.ShowDeployedTogglesTests
         {
             //arrange
             var app = Application.Create("TestApp", "DEV", false);
-            app.AddFeatureToggle("TestToggle-1", "TestNotes-1");
-            app.AddFeatureToggle("TestToggle-2", "TestNotes-2");
+            app.AddFeatureToggle("TestToggle-1", "TestNotes-1", "workItemId1");
+            app.AddFeatureToggle("TestToggle-2", "TestNotes-2", "workItemId2");
 
             await _appRepository.AddAsync(app);
 

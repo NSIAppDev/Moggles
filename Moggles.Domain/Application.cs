@@ -46,14 +46,14 @@ namespace Moggles.Domain
             return app;
         }
 
-        public void AddFeatureToggle(string toggleName, string notes, bool isPermanent = false)
+        public void AddFeatureToggle(string toggleName, string notes, string workItemIdentifier, bool isPermanent = false)
         {
             if (FeatureToggles.Exists(f => string.Compare(f.ToggleName, toggleName, StringComparison.OrdinalIgnoreCase) == 0))
             {
                 throw new BusinessRuleValidationException("Feature toggle with the same name already exists for this application!");
             }
 
-            var ft = FeatureToggle.Create(toggleName, notes, isPermanent, DeploymentEnvironments);
+            var ft = FeatureToggle.Create(toggleName, notes, isPermanent, DeploymentEnvironments, workItemIdentifier);
             FeatureToggles.Add(ft);
         }
 
@@ -117,7 +117,8 @@ namespace Moggles.Domain
                 ToggleName = toggle.ToggleName,
                 IsPermanent = toggle.IsPermanent,
                 Notes = toggle.Notes,
-                UserAccepted = toggle.UserAccepted
+                UserAccepted = toggle.UserAccepted,
+                WorkItemIdentifier = toggle.WorkItemIdentifier
             };
         }
 
@@ -131,6 +132,11 @@ namespace Moggles.Domain
         {
             var toggle = FeatureToggles.Find(f => f.Id == toggleId);
             toggle.SetNotes(notes);
+        }
+        public void UpdateFeaturetoggleWorkItemIdentifier(Guid toggleId, string workItemIdentifier)
+        {
+            var toggle = FeatureToggles.Find(ft => ft.Id == toggleId);
+            toggle.SetWorkItemIdentifier(workItemIdentifier);
         }
 
         public void FeatureAcceptedByUser(Guid toggleId)

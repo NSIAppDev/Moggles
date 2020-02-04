@@ -13,10 +13,17 @@
                     {{ error }}
                 </div>
                 <div class="col-sm-12 form-group">
-                    <label class="col-sm-4 control-label" for="ftname">Feature Toggle Name</label>
+                    <label class="col-sm-4 control-label" for="ftname">Name</label>
                     <div class="col-sm-8">
-                        <input v-model="featureToggleName" class="form-control" type="text"
-                               name="ftName" placeholder="Feature toggle name..." maxlength="80">
+                        <input ref="toggleName" id="featureToggleName" v-model="featureToggleName" class="form-control" type="text"
+                               name="ftName" placeholder="Feature toggle name..." maxlength="80" autoFocus>
+                    </div>
+                </div>
+                <div class="col-sm-12 form-group">
+                    <label class="col-sm-4 control-label" for="ftWorkItem">Work Item ID</label>
+                    <div class="col-sm-8">
+                        <input v-model="workItemIdentifier" class="form-control" type="text"
+                               name="ftWorkItem" placeholder="Work Item ID..." maxlength="50">
                     </div>
                 </div>
                 <div class="col-sm-12 form-group">
@@ -68,10 +75,12 @@
                 existingToggles: [],
                 spinner: false,
                 showSuccessAlert: false,
-                alertDuration: 1500
+                alertDuration: 1500,
+                workItemIdentifier: ""
             }
         },
         mounted() {
+           
             Bus.$on("app-changed", app => {
                 if (app) {
                     this.applicationId = app.id;
@@ -82,8 +91,10 @@
                 this.existingToggles = toggles;
             });
             Bus.$on("openAddFeatureToggleModal", () => {
+                this.$nextTick(() => { this.$refs["toggleName"].focus() });
                 this.clearFields();
-            })
+            });
+
         },
         methods: {
             addFeatureToggle() {
@@ -101,7 +112,8 @@
                     applicationId: this.applicationId,
                     featureToggleName: this.featureToggleName,
                     notes: this.notes,
-                    isPermanent: this.isPermanent
+                    isPermanent: this.isPermanent,
+                    workItemIdentifier: this.workItemIdentifier
                 }
 
                 Bus.$emit('block-ui')
@@ -111,6 +123,8 @@
                         this.featureToggleName = '';
                         this.notes = '';
                         this.isPermanent = false;
+                        this.workItemIdentifier = "";
+                         this.$nextTick(() => { this.$refs["toggleName"].focus() });
                         Bus.$emit("toggle-added")
                     }).catch((e) => {
                         this.errors.push(e.response.data);
@@ -125,6 +139,7 @@
                 this.featureToggleName = "";
                 this.errors = [];
                 this.notes = '';
+                this.workItemIdentifier = "";
                 this.isPermanent = false;
             }
         }
