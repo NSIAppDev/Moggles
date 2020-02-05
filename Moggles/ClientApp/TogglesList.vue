@@ -346,7 +346,8 @@
                     this.editFeatureToggleErrors.push("Feature toggle name cannot be empty")
                     return;
                 }
-                if (this.rowToEdit.workItemIdentifier.length > 50) {
+
+                if (!this.workItemIdentifierIsValid(this.rowToEdit.workItemIdentifier)) {
                      this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
                     return;
                 }
@@ -380,6 +381,9 @@
                         this.environmentsEdited = []
                         Bus.$emit("app-changed", this.selectedApp)
                     }).catch(error => window.alert(error))
+            },
+            workItemIdentifierIsValid(workItemIdentifier) {
+                return workItemIdentifier == null || (workItemIdentifier != null && workItemIdentifier.length <= 50);
             },
             cancelEditEnvName() {
                 this.showEditEnvironmentModal = false
