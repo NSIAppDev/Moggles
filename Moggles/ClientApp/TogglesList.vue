@@ -395,8 +395,7 @@
                 this.showEditModal = false
                 this.rowToEdit = null
                 this.environmentsEdited = [];
-                                this.editFeatureToggleErrors=[]
-
+                this.editFeatureToggleErrors = []
             },
             createGridColumns() {
                 let columns = [
@@ -494,6 +493,7 @@
             },
             editEnvName(column) {
                 this.environmentToEdit = {}
+                this.editEnvErrors = []
                 var environmentFromList = this.environmentsList.find(element => element.envName == column.field)
                 this.environmentToEdit.initialEnvName = environmentFromList.envName
                 this.editedEnvironmentName = environmentFromList.envName
