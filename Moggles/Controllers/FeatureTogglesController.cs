@@ -233,7 +233,7 @@ namespace Moggles.Controllers
             var featureTogglesSchedulers = await _toggleScheduleRepository.GetAllAsync();
             try
             {
-                app.ChangeEnvironmentValuestoRequireReasonFor(environmentModel.InitialEnvName, environmentModel.RequireReasonForChangeWhenTrue, environmentModel.RequireReasonForChangeWhenFalse);
+                app.ChangeEnvironmentValuesToRequireReasonFor(environmentModel.InitialEnvName, environmentModel.RequireReasonForChangeWhenTrue, environmentModel.RequireReasonForChangeWhenFalse);
                 app.ChangeDeployEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
                 app.ChangeEnvironmentDefaultValue(environmentModel.NewEnvName, environmentModel.DefaultToggleValue);
                 foreach(var fts in featureTogglesSchedulers)

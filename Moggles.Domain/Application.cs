@@ -94,7 +94,7 @@ namespace Moggles.Domain
 
         }
 
-        public void ChangeEnvironmentValuestoRequireReasonFor(string name, bool requireWhenTrue, bool requireWhenFalse)
+        public void ChangeEnvironmentValuesToRequireReasonFor(string name, bool requireWhenTrue, bool requireWhenFalse)
         {
             var env = DeploymentEnvironments.FirstOrDefault(e => string.Compare(e.EnvName, name, StringComparison.OrdinalIgnoreCase) == 0);
 
