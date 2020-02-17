@@ -347,8 +347,8 @@
                     return;
                 }
 
-                if (!this.workItemIdentifierIsValid(this.rowToEdit.workItemIdentifier)) {
-                     this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
+                if (!this.workItemIdentifierIsValid(this.rowToEdit.workItemIdentifier.trim())) {
+                    this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
                     return;
                 }
 
@@ -357,7 +357,7 @@
                     applicationid: this.selectedApp.id,
                     userAccepted: this.rowToEdit.userAccepted,
                     notes: this.rowToEdit.notes,
-                    workItemIdentifier: this.rowToEdit.workItemIdentifier,
+                    workItemIdentifier: this.rowToEdit.workItemIdentifier.trim(),
                     featureToggleName: this.rowToEdit.toggleName,
                     isPermanent: this.rowToEdit.isPermanent,
                     statuses: []
@@ -388,11 +388,14 @@
             cancelEditEnvName() {
                 this.showEditEnvironmentModal = false
                 this.environmentToEdit = null
+                this.editFeatureToggleErrors = []
+
             },
             cancelEdit() {
                 this.showEditModal = false
                 this.rowToEdit = null
                 this.environmentsEdited = [];
+                this.editFeatureToggleErrors = []
             },
             createGridColumns() {
                 let columns = [
@@ -490,6 +493,7 @@
             },
             editEnvName(column) {
                 this.environmentToEdit = {}
+                this.editEnvErrors = []
                 var environmentFromList = this.environmentsList.find(element => element.envName == column.field)
                 this.environmentToEdit.initialEnvName = environmentFromList.envName
                 this.editedEnvironmentName = environmentFromList.envName
