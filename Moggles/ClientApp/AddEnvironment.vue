@@ -33,6 +33,27 @@
                                :value="false">
                     </div>
                 </div>
+                <div class="col-sm-12 form-group">
+                    <label class="col-sm-4 control-label">
+                        Require a reason when toggle state changes to 
+                    </label>
+                    <div class="col-sm-6 margin-top-4">
+                        <label for="requireReasonWhenTrue">True</label>
+                        <p-check v-if="requireReasonWhenTrue" v-model="requireReasonWhenTrue" class="p-icon p-fill" color="success">
+                            <i slot="extra" class="icon fas fa-check" />
+                        </p-check>
+                        <p-check v-if="!requireReasonWhenTrue" v-model="requireReasonWhenTrue" class="p-icon p-fill" color="default">
+                            <i slot="extra" class="icon fas fa-check" />
+                        </p-check>
+                        <label for="requireReasonWhenFalse">False</label>
+                        <p-check v-if="requireReasonWhenFalse" v-model="requireReasonWhenFalse" class="p-icon p-fill" color="success">
+                            <i slot="extra" class="icon fas fa-check" />
+                        </p-check>
+                        <p-check v-if="!requireReasonWhenFalse" v-model="requireReasonWhenFalse" class="p-icon p-fill" color="default">
+                            <i slot="extra" class="icon fas fa-check" />
+                        </p-check>
+                    </div>
+                </div>
                 <div class="col-sm-12 text-right">
                     <button class="btn btn-default" @click="closeAddEnvironmentModal">
                         Close
@@ -50,8 +71,12 @@
 <script>
     import { Bus } from './event-bus'
     import axios from 'axios'
+    import PrettyCheck from 'pretty-checkbox-vue/check'
 
     export default {
+        components: {
+            'p-check': PrettyCheck
+        },
         data() {
             return {
                 applicationId: -1,
@@ -61,7 +86,9 @@
                 existingEnvs: [],
                 errors: [],
                 showSuccessAlert: false,
-                alertDuration: 1500
+                alertDuration: 1500,
+                requireReasonWhenTrue: false,
+                requireReasonWhenFalse:false
             }
         },
         mounted() {
@@ -101,12 +128,14 @@
                     this.errors.push("Environment name cannot be empty")
                     return;
                 }
-
+              
                 let param = {
                     applicationId: this.applicationId,
                     envName: this.envName,
                     sortOrder: this.sortOrder,
-                    defaultToggleValue: this.defaultToggleValue
+                    defaultToggleValue: this.defaultToggleValue,
+                    requireReasonToChangeWhenTrue: this.requireReasonWhenTrue,
+                    requireReasonToChangeWhenFalse: this.requireReasonWhenFalse
                 }
 
                 Bus.$emit('block-ui')

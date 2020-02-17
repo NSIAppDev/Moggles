@@ -15,5 +15,8 @@ namespace Moggles.Models
         public string NewEnvName { get; set; }
 
         public bool DefaultToggleValue { get; set; }
+
+        public bool RequireReasonForChangeWhenTrue { get; set; }
+        public bool RequireReasonForChangeWhenFalse { get; set; }
     }
 }

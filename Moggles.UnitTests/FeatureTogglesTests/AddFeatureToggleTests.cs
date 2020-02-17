@@ -48,7 +48,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task ReturnBadRequestResult_WhenFeatureAlreadyExists()
         {
             //arrange
-            var app = Application.Create("bcc", "dev", false);
+            var app = Application.Create("bcc", "dev", false, false, false);
             app.AddFeatureToggle("TestToggle", string.Empty, "workItemId1");
 
             var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
@@ -81,7 +81,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task FeatureToggleIsCreated()
         {
             //arrange
-            var app = Application.Create("tst", "dev", false);
+            var app = Application.Create("tst", "dev", false, false, false);
             await _appRepository.AddAsync(app);
             var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle", WorkItemIdentifier = "1234" };
 
@@ -101,8 +101,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task FeatureToggleStatus_IsCreated_ForEveryEnvironment()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            var app = Application.Create("TestApp", "DEV", false, false, false);
+            app.AddDeployEnvironment("QA", false, false, false);
 
             var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
 
@@ -120,8 +120,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task FeatureToggleStatus_IsCreated_WithDefaultUsername()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            var app = Application.Create("TestApp", "DEV", false, false, false);
+            app.AddDeployEnvironment("QA", false, false, false);
 
             var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
 

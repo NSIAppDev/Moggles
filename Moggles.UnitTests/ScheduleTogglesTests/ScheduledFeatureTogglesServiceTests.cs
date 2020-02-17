@@ -76,7 +76,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         public async Task FlipToggles_HavingSheduledTimeInThePast()
         {
             //arrange
-            var app = Application.Create("tst", "DEV", false);
+            var app = Application.Create("tst", "DEV", false, false, false);
             app.AddFeatureToggle("offToggle", null, "workItemId1");
             app.AddFeatureToggle("onToggle", null, "workItemId1");
             app.SetToggle(app.FeatureToggles.Single(f => f.ToggleName == "offToggle").Id, "DEV", false, "username");
@@ -104,7 +104,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         public async Task OnceToggleIsSet_TheScheduleIsRemoved()
         {
             //arrange
-            var app = Application.Create("tst", "DEV", false);
+            var app = Application.Create("tst", "DEV", false, false, false);
             app.AddFeatureToggle("t1", null, "workItemId1");
             await _appRepository.AddAsync(app);
 
@@ -123,7 +123,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         public async Task WhenThereAreNoSchedulesDoNothing()
         {
             //arrange
-            var app = Application.Create("tst", "DEV", false);
+            var app = Application.Create("tst", "DEV", false, false, false);
             app.AddFeatureToggle("t1", null, "workItemId1");
             await _appRepository.AddAsync(app);
 
@@ -141,7 +141,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         public async Task IfFeatureToggleIsDeleted_BeforeScheduledDate_RemovesTheSchedule()
         {
             //arrange
-            var app = Application.Create("tst", "DEV", false);
+            var app = Application.Create("tst", "DEV", false, false, false);
             await _appRepository.AddAsync(app);
 
             var schedule = ToggleSchedule.Create("tst", "DeletedToggle", new[] { "DEV" }, true, _dateInThePast, "updatedBy");
@@ -159,7 +159,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
         public async Task ForceCacheRefresh_OnToggleSchedule_IfEnabled()
         {
             //arrange
-            var app = Application.Create("tst", "DEV", false);
+            var app = Application.Create("tst", "DEV", false, false, false);
             app.AddFeatureToggle("t1", null, "workItemId1");
 
             await _appRepository.AddAsync(app);

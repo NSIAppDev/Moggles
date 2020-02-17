@@ -41,7 +41,7 @@ namespace Moggles.Controllers
             if (app != null)
                 return BadRequest("Application with same name already exists!");
 
-            var application = Application.Create(applicationModel.ApplicationName, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue);
+            var application = Application.Create(applicationModel.ApplicationName, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue, applicationModel.RequireReasonForChangeWhenTrue, applicationModel.RequireReasonForChangeWhenFalse);
 
             await _applicationsRepository.AddAsync(application);
 

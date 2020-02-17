@@ -17,12 +17,12 @@ namespace Moggles.Domain
             AppName = newName;
         }
 
-        public void AddDeployEnvironment(string name, bool defaultToggleValue,  int sortOrder = 1)
+        public void AddDeployEnvironment(string name, bool defaultToggleValue, bool requireReasonWhenTrue, bool requireReasonWhenFalse,  int sortOrder = 1)
         {
             if (DeployEnvExists(name))
                 throw new BusinessRuleValidationException("Environment with the same name already exists for this application!");
 
-            DeploymentEnvironments.Add(DeployEnvironment.Create(name, defaultToggleValue, sortOrder));
+            DeploymentEnvironments.Add(DeployEnvironment.Create(name, defaultToggleValue, requireReasonWhenTrue, requireReasonWhenFalse, sortOrder));
 
             foreach (var ft in FeatureToggles)
             {
@@ -35,14 +35,14 @@ namespace Moggles.Domain
             return (DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, newName, StringComparison.OrdinalIgnoreCase) == 0)&& newName!=oldName);
         }
 
-        public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment)
+        public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment, bool requireReasonWhenTrue, bool requireReasonWhenFalse)
         {
             var app = new Application
             {
                 Id = Guid.NewGuid(),
                 AppName = appName
             };
-            app.AddDeployEnvironment(defaultEnvironmentName, defaultToggleValueForEnvironment);
+            app.AddDeployEnvironment(defaultEnvironmentName, defaultToggleValueForEnvironment, requireReasonWhenTrue, requireReasonWhenFalse);
             return app;
         }
 
@@ -92,6 +92,19 @@ namespace Moggles.Domain
                 ft.ChangeEnvironmentnameForFeatureToggleStatus(oldName, newName);
             }
 
+        }
+
+        public void ChangeEnvironmentValuestoRequireReasonFor(string name, bool requireWhenTrue, bool requireWhenFalse)
+        {
+            var env = DeploymentEnvironments.FirstOrDefault(e => string.Compare(e.EnvName, name, StringComparison.OrdinalIgnoreCase) == 0);
+
+            if(env==null)
+            {
+                throw new InvalidOperationException("Environment does not exist!");
+            }
+
+            env.RequireReasonForChangeWhenFalse = requireWhenFalse;
+            env.RequireReasonForChangeWhenTrue = requireWhenTrue;
         }
         public void ChangeEnvironmentDefaultValue(string name, bool newDefaultValue)
         {

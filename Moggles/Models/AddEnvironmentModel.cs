@@ -11,5 +11,7 @@ namespace Moggles.Models
         public string EnvName { get; set; }
         public bool DefaultToggleValue { get; set; }
         public int SortOrder { get; set; }
+        public bool RequireReasonToChangeWhenTrue { get; set; }
+        public bool RequireReasonToChangeWhenFalse { get; set; }
     }
 }

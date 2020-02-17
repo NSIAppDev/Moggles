@@ -34,7 +34,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task EnvironmentIsBeingModified()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", "DEV", false, true, false);
             await _appRepository.AddAsync(app);
 
             var updatedEnvironmentName = "QA";
@@ -43,7 +43,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             {
                 ApplicationId = app.Id,
                 InitialEnvName = "DEV",
-                NewEnvName = updatedEnvironmentName
+                NewEnvName = updatedEnvironmentName,
+                RequireReasonForChangeWhenFalse = false,
+                RequireReasonForChangeWhenTrue = true
             };
 
             //act
@@ -58,7 +60,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task WhenNewInvironmentName_MatchesAnExistingEnvrionment_TheChangeIsRejected()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", "DEV", false, false, false);
             await _appRepository.AddAsync(app);
 
             var updatedEnvironment = new UpdateEnvironmentModel
@@ -81,7 +83,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task WhenEnvironmentIsModifiedWithInvalidID_ThrowsInvalidOperationException()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", "DEV", false, false, false);
             await _appRepository.AddAsync(app);
 
             var updatedEnvironmentName = "QA";
@@ -104,7 +106,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task WhenEnvironmentIsModified_EnvironmentNameForFeatureToggleStatusesUpdated()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", true);
+            var app = Application.Create("TestApp", "DEV", true, false, false);
             await _appRepository.AddAsync(app);
             app.AddFeatureToggle("t1", string.Empty, "workItemId1");
             app.AddFeatureToggle("t2", string.Empty, "workItemId2");
@@ -139,7 +141,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task WhenEnvironmentNameIsChanged_EnvironmentNameForToggleSchedulersIsChanged()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", true);
+            var app = Application.Create("TestApp", "DEV", true, false, false);
             await _appRepository.AddAsync(app);
             app.AddFeatureToggle("t1", string.Empty, "workItemId1");
             app.AddFeatureToggle("t2", string.Empty, "workItemId2");
@@ -169,7 +171,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         [TestMethod]
         public async Task DefaultToggleValueChanged_NextToggleHasDefaultValue()
         {
-            var app = Application.Create("TestApp", "DEV", true);
+            var app = Application.Create("TestApp", "DEV", true, false, false);
             await _appRepository.AddAsync(app);
             app.AddFeatureToggle("t1", string.Empty, "workItemId1");
             var t1 = app.FeatureToggles.ToList().FirstOrDefault(ft => ft.ToggleName == "t1");

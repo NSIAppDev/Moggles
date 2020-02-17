@@ -25,7 +25,7 @@ namespace Moggles.UnitTests.ShowDeployedTogglesTests
         public async Task FeatureToggleShowDeployedEnvironmentIsUpdatedCorrectly()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", "DEV", false, false, false);
             app.AddFeatureToggle("TestToggle-1", "TestNotes-1", "workItemId1");
             app.AddFeatureToggle("TestToggle-2", "TestNotes-2", "workItemId2");
 

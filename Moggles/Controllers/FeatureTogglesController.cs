@@ -188,7 +188,7 @@ namespace Moggles.Controllers
 
             try
             {
-                app.AddDeployEnvironment(environmentModel.EnvName, environmentModel.DefaultToggleValue, environmentModel.SortOrder);
+                app.AddDeployEnvironment(environmentModel.EnvName, environmentModel.DefaultToggleValue,environmentModel.RequireReasonToChangeWhenTrue, environmentModel.RequireReasonToChangeWhenFalse, environmentModel.SortOrder);
             }
             catch (BusinessRuleValidationException ex)
             {
@@ -233,6 +233,7 @@ namespace Moggles.Controllers
             var featureTogglesSchedulers = await _toggleScheduleRepository.GetAllAsync();
             try
             {
+                app.ChangeEnvironmentValuestoRequireReasonFor(environmentModel.InitialEnvName, environmentModel.RequireReasonForChangeWhenTrue, environmentModel.RequireReasonForChangeWhenFalse);
                 app.ChangeDeployEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
                 app.ChangeEnvironmentDefaultValue(environmentModel.NewEnvName, environmentModel.DefaultToggleValue);
                 foreach(var fts in featureTogglesSchedulers)
@@ -323,7 +324,7 @@ namespace Moggles.Controllers
             if (app == null)
                 throw new InvalidOperationException("Application does not exist");
 
-            app.AddDeployEnvironment(model.EnvName, false, 500);
+            app.AddDeployEnvironment(model.EnvName, false,false, false, 500);
 
             await _applicationsRepository.UpdateAsync(app);
             return Ok();
