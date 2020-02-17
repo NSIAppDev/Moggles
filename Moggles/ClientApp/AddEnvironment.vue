@@ -38,14 +38,14 @@
                         Require a reason when toggle state changes to 
                     </label>
                     <div class="col-sm-6 margin-top-4">
-                        <label for="requireReasonWhenTrue">True</label>
+                        <label for="requireReasonWhenTrue">Enabled</label>
                         <p-check v-if="requireReasonWhenTrue" v-model="requireReasonWhenTrue" class="p-icon p-fill" color="success">
                             <i slot="extra" class="icon fas fa-check" />
                         </p-check>
                         <p-check v-if="!requireReasonWhenTrue" v-model="requireReasonWhenTrue" class="p-icon p-fill" color="default">
                             <i slot="extra" class="icon fas fa-check" />
                         </p-check>
-                        <label for="requireReasonWhenFalse">False</label>
+                        <label for="requireReasonWhenFalse">Disabled</label>
                         <p-check v-if="requireReasonWhenFalse" v-model="requireReasonWhenFalse" class="p-icon p-fill" color="success">
                             <i slot="extra" class="icon fas fa-check" />
                         </p-check>
