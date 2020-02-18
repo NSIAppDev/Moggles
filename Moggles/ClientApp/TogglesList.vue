@@ -347,7 +347,6 @@
                     requireReasonForChangeWhenToggleEnabled: this.requireReasonWhenToggleEnabled,
                     requireReasonForChangeWhenToggleDisabled: this.requireReasonWhenToggleDisabled
                 }
-                console.log(envUpdateModel);
 
                 axios.put('/api/FeatureToggles/updateEnvironment', envUpdateModel)
                     .then(() => {
