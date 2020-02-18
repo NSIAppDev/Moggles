@@ -42,7 +42,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             //arrange
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             var app = Application.Create("tst", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", null, "workItemId1");
             app.AddFeatureToggle("t2", null, "workItemId2");
             await _appRepository.AddAsync(app);
@@ -106,7 +106,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             //arrange
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             var app = Application.Create("tst", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", null, "workItemId1");
             app.AddFeatureToggle("t2", null, "workItemId2");
             await _appRepository.AddAsync(app);
@@ -133,7 +133,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             //arrange
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             var app = Application.Create("tst", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", null, "workItemId1");
             app.AddFeatureToggle("t2", null, "workItemId2");
             await _appRepository.AddAsync(app);
@@ -154,7 +154,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             //arrange
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             var app = Application.Create("tst", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", null, "workItemId1");
             app.AddFeatureToggle("t2", null, "workItemId2");
             await _appRepository.AddAsync(app);
@@ -194,7 +194,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             //arrange
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             var app = Application.Create("tst", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", null, "workItemId1");
             app.AddFeatureToggle("t2", null, "workItemId2");
             await _appRepository.AddAsync(app);
@@ -224,7 +224,7 @@ namespace Moggles.UnitTests.ScheduleTogglesTests
             //arrange
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
             var app = Application.Create("tst", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", null, "workItemId1");
             app.AddFeatureToggle("t2", null, "workItemId2");
             await _appRepository.AddAsync(app);

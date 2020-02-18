@@ -43,7 +43,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             {
                 ApplicationId = app.Id,
                 InitialEnvName = "DEV",
-                NewEnvName = updatedEnvironmentName
+                NewEnvName = updatedEnvironmentName,
+                RequireReasonForChangeWhenToggleEnabled = false,
+                RequireReasonForChangeWhenToggleDisabled = true
             };
 
             //act

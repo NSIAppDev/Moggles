@@ -59,7 +59,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("tst", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", "", "workItemId1");
             var toggle = app.FeatureToggles.Single();
             app.SetToggle(toggle.Id, "DEV", true, "username");
@@ -100,10 +100,10 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 "LIVE"
             };
 
-            app.AddDeployEnvironment("QA", false);
-            app.AddDeployEnvironment("SBX", false);
-            app.AddDeployEnvironment("TRN", false);
-            app.AddDeployEnvironment("LIVE", false);
+            app.AddDeployEnvironment("QA", false, false, false);
+            app.AddDeployEnvironment("SBX", false, false, false);
+            app.AddDeployEnvironment("TRN", false, false, false);
+            app.AddDeployEnvironment("LIVE", false, false, false);
             await _appRepository.AddAsync(app);
 
             //act
@@ -120,8 +120,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var app = Application.Create("TestApp", "DEV", false);
 
-            app.AddDeployEnvironment("QA", true);
-            app.AddDeployEnvironment("TRN", false);
+            app.AddDeployEnvironment("QA", true, false, false);
+            app.AddDeployEnvironment("TRN", false, false, false);
 
             var expectedEnvNames = new List<string> { "DEV", "QA", "TRN" };
             var expectedDefaultValues = new List<bool> { false, true, false };
@@ -146,7 +146,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("TestApp", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", "", "workItemId1");
             var toggle = app.FeatureToggles.FirstOrDefault(f => f.ToggleName == "t1");
             app.SetToggle(toggle.Id, "DEV", true, "username");
@@ -169,7 +169,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("TestApp", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", "", "workItemId1");
             var toggle = app.FeatureToggles.FirstOrDefault(f => f.ToggleName == "t1");
             app.SetToggle(toggle.Id, "DEV", false, "username");

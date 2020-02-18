@@ -157,6 +157,21 @@
                                    :value="false">
                         </div>
                     </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-4 control-label">
+                            Require a reason when toggle state changes to
+                        </label>
+                        <div class="col-sm-6 margin-top-8">
+                            <label for="requireReasonWhenToggleEnabled">Enabled</label>
+                            <p-check v-model="requireReasonWhenToggleEnabled" class="p-icon p-fill" :color="requireReasonWhenToggleEnabled ==true ? 'success' : 'default' ">
+                                <i slot="extra" class="icon fas fa-check" />
+                            </p-check>
+                            <label for="requireReasonWhenToggleDisabled">Disabled</label>
+                            <p-check v-model="requireReasonWhenToggleDisabled" class="p-icon p-fill" :color="requireReasonWhenToggleDisabled == true? 'success' : 'default' ">
+                                <i slot="extra" class="icon fas fa-check" />
+                            </p-check>
+                        </div>
+                    </div>
                     <div class="clearfix">
                         <div class="col-sm-6">
                             <button type="button" class="btn btn-danger" @click="confirmDeleteEnvironment">
@@ -237,7 +252,9 @@
                 rowsPerPage: 10,
                 defaultToggleValue: true,
                 environmentsList: [],
-                environmentsNameList: []
+                environmentsNameList: [],
+                requireReasonWhenToggleEnabled: false,
+                requireReasonWhenToggleDisabled:false
 
             }
         },
@@ -326,7 +343,9 @@
                     applicationId: this.selectedApp.id,
                     initialEnvName: this.environmentToEdit.initialEnvName,
                     newEnvName: this.editedEnvironmentName,
-                    defaultToggleValue: this.defaultToggleValue
+                    defaultToggleValue: this.defaultToggleValue,
+                    requireReasonForChangeWhenToggleEnabled: this.requireReasonWhenToggleEnabled,
+                    requireReasonForChangeWhenToggleDisabled: this.requireReasonWhenToggleDisabled
                 }
 
                 axios.put('/api/FeatureToggles/updateEnvironment', envUpdateModel)
@@ -498,6 +517,8 @@
                 this.environmentToEdit.initialEnvName = environmentFromList.envName
                 this.editedEnvironmentName = environmentFromList.envName
                 this.defaultToggleValue = environmentFromList.defaultToggleValue
+                this.requireReasonWhenToggleDisabled = environmentFromList.requireReasonWhenToggleDisabled
+                this.requireReasonWhenToggleEnabled = environmentFromList.requireReasonWhenToggleEnabled
                 this.showEditEnvironmentModal = true
             },
             confirmDeleteEnvironment() {
