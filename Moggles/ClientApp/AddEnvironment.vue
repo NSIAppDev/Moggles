@@ -38,18 +38,12 @@
                         Require a reason when toggle state changes to 
                     </label>
                     <div class="col-sm-6 margin-top-4">
-                        <label for="requireReasonWhenTrue">Enabled</label>
-                        <p-check v-if="requireReasonWhenTrue" v-model="requireReasonWhenTrue" class="p-icon p-fill" color="success">
+                        <label for="requireReasonWhenToggleEnabled">Enabled</label>
+                        <p-check v-model="requireReasonWhenToggleEnabled" class="p-icon p-fill" :color="requireReasonWhenToggleEnabled==true ? 'success' : 'default' ">
                             <i slot="extra" class="icon fas fa-check" />
                         </p-check>
-                        <p-check v-if="!requireReasonWhenTrue" v-model="requireReasonWhenTrue" class="p-icon p-fill" color="default">
-                            <i slot="extra" class="icon fas fa-check" />
-                        </p-check>
-                        <label for="requireReasonWhenFalse">Disabled</label>
-                        <p-check v-if="requireReasonWhenFalse" v-model="requireReasonWhenFalse" class="p-icon p-fill" color="success">
-                            <i slot="extra" class="icon fas fa-check" />
-                        </p-check>
-                        <p-check v-if="!requireReasonWhenFalse" v-model="requireReasonWhenFalse" class="p-icon p-fill" color="default">
+                        <label for="requireReasonWhenToggleDisabled">Disabled</label>
+                        <p-check v-model="requireReasonWhenToggleDisabled" class="p-icon p-fill" :color="requireReasonWhenToggleDisabled == true? 'success' : 'default' ">
                             <i slot="extra" class="icon fas fa-check" />
                         </p-check>
                     </div>
@@ -87,8 +81,8 @@
                 errors: [],
                 showSuccessAlert: false,
                 alertDuration: 1500,
-                requireReasonWhenTrue: false,
-                requireReasonWhenFalse:false
+                requireReasonWhenToggleEnabled: false,
+                requireReasonWhenToggleDisabled:false
             }
         },
         mounted() {
@@ -128,14 +122,14 @@
                     this.errors.push("Environment name cannot be empty")
                     return;
                 }
-              
+                
                 let param = {
                     applicationId: this.applicationId,
                     envName: this.envName,
                     sortOrder: this.sortOrder,
                     defaultToggleValue: this.defaultToggleValue,
-                    requireReasonToChangeWhenTrue: this.requireReasonWhenTrue,
-                    requireReasonToChangeWhenFalse: this.requireReasonWhenFalse
+                    requireReasonToChangeWhenToggleEnabled: this.requireReasonWhenToggleEnabled,
+                    requireReasonToChangeWhenToggleDisabled: this.requireReasonWhenToggleDisabled
                 }
 
                 Bus.$emit('block-ui')
@@ -144,6 +138,8 @@
                         this.showSuccessAlert = true;
                         this.envName = '';
                         this.defaultToggleValue = false;
+                        this.requireReasonWhenToggleEnabled = false;
+                        this.requireReasonWhenToggleDisabled = false;
                         this.$nextTick(() => { this.$refs["envName"].focus() });
                         Bus.$emit("env-added")
                     }).catch((e) => {

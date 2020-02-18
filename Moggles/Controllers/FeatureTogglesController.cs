@@ -188,7 +188,7 @@ namespace Moggles.Controllers
 
             try
             {
-                app.AddDeployEnvironment(environmentModel.EnvName, environmentModel.DefaultToggleValue,environmentModel.RequireReasonToChangeWhenTrue, environmentModel.RequireReasonToChangeWhenFalse, environmentModel.SortOrder);
+                app.AddDeployEnvironment(environmentModel.EnvName, environmentModel.DefaultToggleValue,environmentModel.RequireReasonToChangeWhenToggleEnabled, environmentModel.RequireReasonToChangeWhenToggleDisabled, environmentModel.SortOrder);
             }
             catch (BusinessRuleValidationException ex)
             {
@@ -233,7 +233,8 @@ namespace Moggles.Controllers
             var featureTogglesSchedulers = await _toggleScheduleRepository.GetAllAsync();
             try
             {
-                app.ChangeEnvironmentValuesToRequireReasonFor(environmentModel.InitialEnvName, environmentModel.RequireReasonForChangeWhenTrue, environmentModel.RequireReasonForChangeWhenFalse);
+                app.ChangeEnvironmentValuesToRequireReasonFor(environmentModel.InitialEnvName, environmentModel.RequireReasonForChangeWhenToggleEnabled, environmentModel.RequireReasonForChangeWhenToggleDisabled);
+                app.ChangeEnvironmentValuesToRequireReasonFor(environmentModel.InitialEnvName, environmentModel.RequireReasonForChangeWhenToggleEnabled, environmentModel.RequireReasonForChangeWhenToggleDisabled);
                 app.ChangeDeployEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
                 app.ChangeEnvironmentDefaultValue(environmentModel.NewEnvName, environmentModel.DefaultToggleValue);
                 foreach(var fts in featureTogglesSchedulers)

@@ -13,7 +13,5 @@ namespace Moggles.Models
         [Required]
         public bool DefaultToggleValue { get; set; }
         public string UpdatedByUser { get; set; }
-        public bool RequireReasonForChangeWhenTrue { get; set; }
-        public bool RequireReasonForChangeWhenFalse { get; set; }
     }
 }

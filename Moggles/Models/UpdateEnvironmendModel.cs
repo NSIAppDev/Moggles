@@ -16,7 +16,7 @@ namespace Moggles.Models
 
         public bool DefaultToggleValue { get; set; }
 
-        public bool RequireReasonForChangeWhenTrue { get; set; }
-        public bool RequireReasonForChangeWhenFalse { get; set; }
+        public bool RequireReasonForChangeWhenToggleEnabled{ get; set; }
+        public bool RequireReasonForChangeWhenToggleDisabled { get; set; }
     }
 }

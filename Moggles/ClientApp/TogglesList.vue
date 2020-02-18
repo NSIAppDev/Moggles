@@ -162,18 +162,12 @@
                             Require a reason when toggle state changes to
                         </label>
                         <div class="col-sm-6 margin-top-8">
-                            <label for="requireReasonWhenTrue">Enabled</label>
-                            <p-check v-if="requireReasonWhenTrue" v-model="requireReasonWhenTrue" class="p-icon p-fill" color="success">
+                            <label for="requireReasonWhenToggleEnabled">Enabled</label>
+                            <p-check v-model="requireReasonWhenToggleEnabled" class="p-icon p-fill" :color="requireReasonWhenToggleEnabled ==true ? 'success' : 'default' ">
                                 <i slot="extra" class="icon fas fa-check" />
                             </p-check>
-                            <p-check v-if="!requireReasonWhenTrue" v-model="requireReasonWhenTrue" class="p-icon p-fill" color="default">
-                                <i slot="extra" class="icon fas fa-check" />
-                            </p-check>
-                            <label for="requireReasonWhenFalse">Disabled</label>
-                            <p-check v-if="requireReasonWhenFalse" v-model="requireReasonWhenFalse" class="p-icon p-fill" color="success">
-                                <i slot="extra" class="icon fas fa-check" />
-                            </p-check>
-                            <p-check v-if="!requireReasonWhenFalse" v-model="requireReasonWhenFalse" class="p-icon p-fill" color="default">
+                            <label for="requireReasonWhenToggleDisabled">Disabled</label>
+                            <p-check v-model="requireReasonWhenToggleDisabled" class="p-icon p-fill" :color="requireReasonWhenToggleDisabled == true? 'success' : 'default' ">
                                 <i slot="extra" class="icon fas fa-check" />
                             </p-check>
                         </div>
@@ -259,8 +253,8 @@
                 defaultToggleValue: true,
                 environmentsList: [],
                 environmentsNameList: [],
-                requireReasonWhenTrue: false,
-                requireReasonWhenFalse:false
+                requireReasonWhenToggleEnabled: false,
+                requireReasonWhenToggleDisabled:false
 
             }
         },
@@ -350,9 +344,10 @@
                     initialEnvName: this.environmentToEdit.initialEnvName,
                     newEnvName: this.editedEnvironmentName,
                     defaultToggleValue: this.defaultToggleValue,
-                    requireReasonForChangeWhenTrue: this.requireReasonWhenTrue,
-                    requireReasonForChangeWhenFalse: this.requireReasonWhenFalse
+                    requireReasonForChangeWhenToggleEnabled: this.requireReasonWhenToggleEnabled,
+                    requireReasonForChangeWhenToggleDisabled: this.requireReasonWhenToggleDisabled
                 }
+                console.log(envUpdateModel);
 
                 axios.put('/api/FeatureToggles/updateEnvironment', envUpdateModel)
                     .then(() => {
@@ -519,8 +514,8 @@
                 this.environmentToEdit.initialEnvName = environmentFromList.envName
                 this.editedEnvironmentName = environmentFromList.envName
                 this.defaultToggleValue = environmentFromList.defaultToggleValue
-                this.requireReasonWhenFalse = environmentFromList.requireReasonForChangeWhenFalse
-                this.requireReasonWhenTrue = environmentFromList.requireReasonForChangeWhenTrue
+                this.requireReasonWhenToggleDisabled = environmentFromList.requireReasonWhenToggleDisabled
+                this.requireReasonWhenToggleEnabled = environmentFromList.requireReasonWhenToggleEnabled
                 this.showEditEnvironmentModal = true
             },
             confirmDeleteEnvironment() {

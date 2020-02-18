@@ -40,7 +40,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task RemoveFeatureToggle_FeatureToggleIsDeleted()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false, false, false);
+            var app = Application.Create("TestApp", "DEV", false);
             app.AddFeatureToggle("t1", "", "workItemId1");
             var theToggle = app.FeatureToggles.Single();
             await _appRepository.AddAsync(app);
@@ -58,7 +58,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
-            var app = Application.Create("tst", "DEV", false, false, false);
+            var app = Application.Create("tst", "DEV", false);
             app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", null, "workItemId1");
             var toggle = app.FeatureToggles.Single();

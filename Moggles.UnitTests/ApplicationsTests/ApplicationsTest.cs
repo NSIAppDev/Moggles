@@ -32,8 +32,8 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task GetApplications_ReturnsAllExistingApplications()
         {
             //arrange
-            var bccApp = Application.Create("BCC", "dev", false, false, false);
-            var cmmApp = Application.Create("CMM", "dev", false, false, false);
+            var bccApp = Application.Create("BCC", "dev", false);
+            var cmmApp = Application.Create("CMM", "dev", false);
 
             await _appApplicationRepository.AddAsync(bccApp);
             await _appApplicationRepository.AddAsync(cmmApp);
@@ -83,7 +83,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task AddApplication_ApplicationIsNotAdded_WhenOneWithTheSameNameAlreadyExists_CaseInsensitive()
         {
             //arrange
-            var app = Application.Create("bcc", "dev", false, false, false);
+            var app = Application.Create("bcc", "dev", false);
             await _appApplicationRepository.AddAsync(app);
             var appModel = new AddApplicationModel { ApplicationName = "BCC" };
             var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
@@ -100,7 +100,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task AddApplication_DefaultEnvironmentIsAdded()
         {
             //arrange
-            var appModel = new AddApplicationModel { ApplicationName = "BCC", EnvironmentName = "Test", DefaultToggleValue = false, RequireReasonForChangeWhenTrue = false, RequireReasonForChangeWhenFalse=true};
+            var appModel = new AddApplicationModel { ApplicationName = "BCC", EnvironmentName = "Test", DefaultToggleValue = false};
             var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
 
             //act
@@ -114,8 +114,8 @@ namespace Moggles.UnitTests.ApplicationsTests
             results.Count.Should().Be(1);
             results[0].EnvName.Should().Be("Test");
             results[0].DefaultToggleValue.Should().BeFalse();
-            results[0].RequireReasonForChangeWhenTrue.Should().BeFalse();
-            results[0].RequireReasonForChangeWhenFalse.Should().BeTrue();
+            results[0].RequireReasonWhenToggleEnabled.Should().BeFalse();
+            results[0].RequireReasonWhenToggleDisabled.Should().BeFalse();
         }
 
         #endregion
@@ -126,7 +126,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task EditApp_AppIsBeingModified()
         {
             //arrange
-            var app = Application.Create("TestApp", "dev", false, false, false);
+            var app = Application.Create("TestApp", "dev", false);
             await _appApplicationRepository.AddAsync(app);
 
             var updatedAppName = "TestAppUpdated";
@@ -152,7 +152,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task EditApp_WithInvalidID_ThrowsInvalidOperationException()
         {
             //arrange
-            var app = Application.Create("TestApp", "dev", false, false, false);
+            var app = Application.Create("TestApp", "dev", false);
             await _appApplicationRepository.AddAsync(app);
 
             var updatedAppName = "TestAppUpdated";
@@ -190,8 +190,8 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task EditApp_WhenAlreadyExistsAppWithTheSameName_RejectTheEdit()
         {
             //arrange
-            var app = Application.Create("TestApp", "dev", false, false, false);
-            var app2 = Application.Create("TestAppUpdated", "dev", false, false, false);
+            var app = Application.Create("TestApp", "dev", false);
+            var app2 = Application.Create("TestAppUpdated", "dev", false);
             await _appApplicationRepository.AddAsync(app);
             await _appApplicationRepository.AddAsync(app2);
 
@@ -218,7 +218,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task DeleteApp_AppIsDeleted()
         {
             //arrange
-            var app = Application.Create("test", "dev", false, false, false);
+            var app = Application.Create("test", "dev", false);
 
             await _appApplicationRepository.AddAsync(app);
 
@@ -238,7 +238,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task DeleteApp_WithInvalidID_ThrowsInvalidOperationException()
         {
             //arrange
-            var app = Application.Create("TestApp", "dev", false, false, false);
+            var app = Application.Create("TestApp", "dev", false);
             await _appApplicationRepository.AddAsync(app);
 
             var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
@@ -254,7 +254,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task DeleteApp_SchedulersForAppAreDeleted()
         {
             //arrange
-            var app = Application.Create("TestApp", "dev", false, false, false);
+            var app = Application.Create("TestApp", "dev", false);
             await _appApplicationRepository.AddAsync(app);
 
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
