@@ -163,11 +163,11 @@
                         </label>
                         <div class="col-sm-6 margin-top-8">
                             <label for="requireReasonWhenToggleEnabled">Enabled</label>
-                            <p-check v-model="requireReasonWhenToggleEnabled" class="p-icon p-fill" :color="requireReasonWhenToggleEnabled ==true ? 'success' : 'default' ">
+                            <p-check v-model="requireReasonWhenToggleEnabled" class="p-icon p-fill" color="default">
                                 <i slot="extra" class="icon fas fa-check" />
                             </p-check>
                             <label for="requireReasonWhenToggleDisabled">Disabled</label>
-                            <p-check v-model="requireReasonWhenToggleDisabled" class="p-icon p-fill" :color="requireReasonWhenToggleDisabled == true? 'success' : 'default' ">
+                            <p-check v-model="requireReasonWhenToggleDisabled" class="p-icon p-fill" color="default">
                                 <i slot="extra" class="icon fas fa-check" />
                             </p-check>
                         </div>
