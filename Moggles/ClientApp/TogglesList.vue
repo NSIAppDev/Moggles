@@ -366,17 +366,22 @@
                     return;
                 }
 
-                if (!this.workItemIdentifierIsValid(this.rowToEdit.workItemIdentifier.trim())) {
+                if (this.rowToEdit.workItemIdentifier != null) {
+                    this.rowToEdit.workItemIdentifier = this.rowToEdit.workItemIdentifier.trim();
+                }
+
+                if (!this.workItemIdentifierIsValid(this.rowToEdit.workItemIdentifier)) {
                     this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
                     return;
                 }
+                
 
                 let toggleUpdateModel = {
                     id: this.rowToEdit.id,
                     applicationid: this.selectedApp.id,
                     userAccepted: this.rowToEdit.userAccepted,
                     notes: this.rowToEdit.notes,
-                    workItemIdentifier: this.rowToEdit.workItemIdentifier.trim(),
+                    workItemIdentifier: this.rowToEdit.workItemIdentifier,
                     featureToggleName: this.rowToEdit.toggleName,
                     isPermanent: this.rowToEdit.isPermanent,
                     statuses: []
@@ -402,7 +407,7 @@
                     }).catch(error => window.alert(error))
             },
             workItemIdentifierIsValid(workItemIdentifier) {
-                return workItemIdentifier == null || (workItemIdentifier != null && workItemIdentifier.length <= 50);
+                return  workItemIdentifier == null || (workItemIdentifier != null && workItemIdentifier.length <= 50);
             },
             cancelEditEnvName() {
                 this.showEditEnvironmentModal = false
