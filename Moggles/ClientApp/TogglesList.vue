@@ -366,11 +366,10 @@
                     return;
                 }
 
-                if (this.rowToEdit.workItemIdentifier != null) {
-                    this.rowToEdit.workItemIdentifier = this.rowToEdit.workItemIdentifier.trim();
-                }
+                let workItemIdentifier = this.rowToEdit.workItemIdentifier != null ? this.rowToEdit.workItemIdentifier.trim() : this.rowToEdit.workItemIdentifier;
+                
 
-                if (!this.workItemIdentifierIsValid(this.rowToEdit.workItemIdentifier)) {
+                if (!this.workItemIdentifierIsValid(workItemIdentifier)) {
                     this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
                     return;
                 }
@@ -381,7 +380,7 @@
                     applicationid: this.selectedApp.id,
                     userAccepted: this.rowToEdit.userAccepted,
                     notes: this.rowToEdit.notes,
-                    workItemIdentifier: this.rowToEdit.workItemIdentifier,
+                    workItemIdentifier: workItemIdentifier,
                     featureToggleName: this.rowToEdit.toggleName,
                     isPermanent: this.rowToEdit.isPermanent,
                     statuses: []
