@@ -33,6 +33,21 @@
                                :value="false">
                     </div>
                 </div>
+                <div class="col-sm-12 form-group">
+                    <label class="col-sm-4 control-label">
+                        Require a reason when toggle state changes to 
+                    </label>
+                    <div class="col-sm-6 margin-top-4">
+                        <label for="requireReasonWhenToggleEnabled">Enabled</label>
+                        <p-check v-model="requireReasonWhenToggleEnabled" class="p-icon p-fill" color="default">
+                            <i slot="extra" class="icon fas fa-check" />
+                        </p-check>
+                        <label for="requireReasonWhenToggleDisabled">Disabled</label>
+                        <p-check v-model="requireReasonWhenToggleDisabled" class="p-icon p-fill" color="default">
+                            <i slot="extra" class="icon fas fa-check" />
+                        </p-check>
+                    </div>
+                </div>
                 <div class="col-sm-12 text-right">
                     <button class="btn btn-default" @click="closeAddEnvironmentModal">
                         Close
@@ -50,8 +65,12 @@
 <script>
     import { Bus } from './event-bus'
     import axios from 'axios'
+    import PrettyCheck from 'pretty-checkbox-vue/check'
 
     export default {
+        components: {
+            'p-check': PrettyCheck
+        },
         data() {
             return {
                 applicationId: -1,
@@ -61,7 +80,9 @@
                 existingEnvs: [],
                 errors: [],
                 showSuccessAlert: false,
-                alertDuration: 1500
+                alertDuration: 1500,
+                requireReasonWhenToggleEnabled: false,
+                requireReasonWhenToggleDisabled:false
             }
         },
         mounted() {
@@ -101,12 +122,14 @@
                     this.errors.push("Environment name cannot be empty")
                     return;
                 }
-
+                
                 let param = {
                     applicationId: this.applicationId,
                     envName: this.envName,
                     sortOrder: this.sortOrder,
-                    defaultToggleValue: this.defaultToggleValue
+                    defaultToggleValue: this.defaultToggleValue,
+                    requireReasonToChangeWhenToggleEnabled: this.requireReasonWhenToggleEnabled,
+                    requireReasonToChangeWhenToggleDisabled: this.requireReasonWhenToggleDisabled
                 }
 
                 Bus.$emit('block-ui')
@@ -115,6 +138,8 @@
                         this.showSuccessAlert = true;
                         this.envName = '';
                         this.defaultToggleValue = false;
+                        this.requireReasonWhenToggleEnabled = false;
+                        this.requireReasonWhenToggleDisabled = false;
                         this.$nextTick(() => { this.$refs["envName"].focus() });
                         Bus.$emit("env-added")
                     }).catch((e) => {

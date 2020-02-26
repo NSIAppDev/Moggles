@@ -17,12 +17,12 @@ namespace Moggles.Domain
             AppName = newName;
         }
 
-        public void AddDeployEnvironment(string name, bool defaultToggleValue,  int sortOrder = 1)
+        public void AddDeployEnvironment(string name, bool defaultToggleValue, bool requireReasonWhenToggleEnabled, bool requireReasonWhenToggleDisabled,  int sortOrder = 1)
         {
             if (DeployEnvExists(name))
                 throw new BusinessRuleValidationException("Environment with the same name already exists for this application!");
 
-            DeploymentEnvironments.Add(DeployEnvironment.Create(name, defaultToggleValue, sortOrder));
+            DeploymentEnvironments.Add(DeployEnvironment.Create(name, defaultToggleValue, requireReasonWhenToggleEnabled, requireReasonWhenToggleDisabled, sortOrder));
 
             foreach (var ft in FeatureToggles)
             {
@@ -42,7 +42,7 @@ namespace Moggles.Domain
                 Id = Guid.NewGuid(),
                 AppName = appName
             };
-            app.AddDeployEnvironment(defaultEnvironmentName, defaultToggleValueForEnvironment);
+            app.AddDeployEnvironment(defaultEnvironmentName, defaultToggleValueForEnvironment, false, false);
             return app;
         }
 
@@ -92,6 +92,19 @@ namespace Moggles.Domain
                 ft.ChangeEnvironmentnameForFeatureToggleStatus(oldName, newName);
             }
 
+        }
+
+        public void ChangeEnvironmentValuesToRequireReasonFor(string name, bool requireReasonWhenToggleEnabled, bool requireReasonWhenToggleDisabled)
+        {
+            var env = DeploymentEnvironments.FirstOrDefault(e => string.Compare(e.EnvName, name, StringComparison.OrdinalIgnoreCase) == 0);
+
+            if(env==null)
+            {
+                throw new InvalidOperationException("Environment does not exist!");
+            }
+
+            env.RequireReasonWhenToggleDisabled = requireReasonWhenToggleDisabled;
+            env.RequireReasonWhenToggleEnabled = requireReasonWhenToggleEnabled;
         }
         public void ChangeEnvironmentDefaultValue(string name, bool newDefaultValue)
         {

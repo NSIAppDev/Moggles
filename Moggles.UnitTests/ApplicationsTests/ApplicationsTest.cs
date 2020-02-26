@@ -100,7 +100,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task AddApplication_DefaultEnvironmentIsAdded()
         {
             //arrange
-            var appModel = new AddApplicationModel { ApplicationName = "BCC", EnvironmentName = "Test", DefaultToggleValue = false };
+            var appModel = new AddApplicationModel { ApplicationName = "BCC", EnvironmentName = "Test", DefaultToggleValue = false};
             var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
 
             //act
@@ -114,6 +114,8 @@ namespace Moggles.UnitTests.ApplicationsTests
             results.Count.Should().Be(1);
             results[0].EnvName.Should().Be("Test");
             results[0].DefaultToggleValue.Should().BeFalse();
+            results[0].RequireReasonWhenToggleEnabled.Should().BeFalse();
+            results[0].RequireReasonWhenToggleDisabled.Should().BeFalse();
         }
 
         #endregion
@@ -256,7 +258,7 @@ namespace Moggles.UnitTests.ApplicationsTests
             await _appApplicationRepository.AddAsync(app);
 
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
-            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", null, "workItemID1");
             app.AddFeatureToggle("t2", null, "workItemID2");
             await _appApplicationRepository.AddAsync(app);
