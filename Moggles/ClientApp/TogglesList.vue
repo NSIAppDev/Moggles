@@ -103,7 +103,7 @@
                     </div>
                     <div class="panel-body col-sm-12">
                          <label class="control-label">Change reason:</label>
-                        <textarea class="col-sm-12" rows="4" v-model="reasonToChange" name="test1"></textarea>
+                        <textarea class="col-sm-12" rows="4" v-model="reasonToChange"></textarea>
                         <ul class="list-group col-sm-12">
                             <li v-for="reason in rowToEdit.reasonsToChange" :key="reason.createdAt" class="col-sm-12 list-group-item">
                                 <div class="col-sm-4">
@@ -111,7 +111,6 @@
                                     <div>{{reason.createdAt | moment('M/D/YY hh:mm:ss A')}}</div>
                                 </div>
                                 <div class="col-sm-8">{{reason.description}}</div>
-
                             </li>
                         </ul>
                     </div>
