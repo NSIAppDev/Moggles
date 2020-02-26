@@ -382,10 +382,13 @@
                     return;
                 }
 
-                if (!this.workItemIdentifierIsValid(this.rowToEdit.workItemIdentifier.trim())) {
+                let workItemIdentifier = this.rowToEdit.workItemIdentifier != null ? this.rowToEdit.workItemIdentifier.trim() : this.rowToEdit.workItemIdentifier;
+
+                if (!this.workItemIdentifierIsValid(workItemIdentifier)) {
                     this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
                     return;
                 }
+
                 if (this.reasonToChange.length > 500) {
                     this.editFeatureToggleErrors.push("Change reason description cannot have more than 500 characters");
                     return;
@@ -396,7 +399,7 @@
                     applicationid: this.selectedApp.id,
                     userAccepted: this.rowToEdit.userAccepted,
                     notes: this.rowToEdit.notes,
-                    workItemIdentifier: this.rowToEdit.workItemIdentifier.trim(),
+                    workItemIdentifier: workItemIdentifier,
                     featureToggleName: this.rowToEdit.toggleName,
                     isPermanent: this.rowToEdit.isPermanent,
                     statuses: [],
