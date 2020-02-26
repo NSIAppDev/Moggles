@@ -53,7 +53,15 @@ namespace Moggles.Controllers
                                 LastUpdated = fts.LastUpdated,
                                 FirstTimeDeployDate = fts.FirstTimeDeployDate,
                                 UpdatedByUser = fts.UpdatedbyUser
-                            }).ToList()
+                            }).ToList(),
+                    ReasonsToChange = ft.ReasonsToChange
+                        .Select(ftr => 
+                        new FeatureToggleReasonToChangeViewModel
+                        {
+                            AddedByUser = ftr.AddedByUser,
+                            CreatedAt = ftr.DateAdded,
+                            Description = ftr.Description
+                        }).ToList()
                 }).OrderByDescending(ft => ft.CreatedDate);
             return Ok(toggles);
 
@@ -75,9 +83,14 @@ namespace Moggles.Controllers
         {
             var app = await _applicationsRepository.FindByIdAsync(model.ApplicationId);
             var toggleData = app.GetFeatureToggleBasicData(model.Id);
+            toggleData.ReasonsToChanges = null;
 
             var updatedBy = _httpContextAccessor.HttpContext.User.Identity.Name;
 
+            foreach(var newReasonsToChange in model.ReasonsToChange)
+            {
+                app.UpdateFeatureToggleReasonsToChange(model.Id, updatedBy, newReasonsToChange.Description);
+            }
 
             if (model.IsPermanent != toggleData.IsPermanent)
             {

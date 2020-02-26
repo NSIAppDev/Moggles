@@ -131,8 +131,15 @@ namespace Moggles.Domain
                 IsPermanent = toggle.IsPermanent,
                 Notes = toggle.Notes,
                 UserAccepted = toggle.UserAccepted,
-                WorkItemIdentifier = toggle.WorkItemIdentifier
+                WorkItemIdentifier = toggle.WorkItemIdentifier,
+                ReasonsToChanges = toggle.ReasonsToChange
             };
+        }
+
+        public void UpdateFeatureToggleReasonsToChange(Guid toggleId, string addedByUser, string description)
+        {
+            var toggle = FeatureToggles.Find(ft => ft.Id == toggleId);
+            toggle.AddReasonToChange(addedByUser, description);
         }
 
         public void UpdateFeatureTogglePermanentStatus(Guid toggleId, bool isPermanent)
