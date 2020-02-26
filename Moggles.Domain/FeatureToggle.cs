@@ -14,6 +14,8 @@ namespace Moggles.Domain
         public List<FeatureToggleStatus> FeatureToggleStatuses { get; set; } = new List<FeatureToggleStatus>();
         public string WorkItemIdentifier { get; set; }
 
+        public List<ReasonToChange> ReasonsToChange { get; set; } = new List<ReasonToChange>();
+
         public static FeatureToggle Create(string name, string notes, bool isPermanent, string workItemIdentifier)
         {
             return new FeatureToggle
@@ -23,7 +25,7 @@ namespace Moggles.Domain
                 IsPermanent = isPermanent,
                 Notes = notes,
                 ToggleName = name,
-                WorkItemIdentifier = workItemIdentifier
+                WorkItemIdentifier = workItemIdentifier,
             };
         }
 
@@ -109,5 +111,11 @@ namespace Moggles.Domain
         {
             WorkItemIdentifier = workItemIdentifier;
         }
+
+        public void AddReasonToChange(string addedByUser, string description)
+        {
+            ReasonsToChange.Add(ReasonToChange.Create(addedByUser, description));
+        }
+
     }
 }

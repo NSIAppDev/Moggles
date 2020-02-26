@@ -101,6 +101,20 @@
                             </div>
                         </div>
                     </div>
+                    <div class="panel-body col-sm-12">
+                         <label class="control-label">Change reason:</label>
+                        <textarea class="col-sm-12" rows="4" v-model="reasonToChange" name="test1"></textarea>
+                        <ul class="list-group col-sm-12">
+                            <li v-for="reason in rowToEdit.reasonsToChange" :key="reason.createdAt" class="col-sm-12 list-group-item">
+                                <div class="col-sm-4">
+                                    <strong>{{reason.addedByUser}}</strong>
+                                    <div>{{reason.createdAt | moment('M/D/YY hh:mm:ss A')}}</div>
+                                </div>
+                                <div class="col-sm-8">{{reason.description}}</div>
+
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="text-right">
@@ -254,8 +268,9 @@
                 environmentsList: [],
                 environmentsNameList: [],
                 requireReasonWhenToggleEnabled: false,
-                requireReasonWhenToggleDisabled:false
-
+                requireReasonWhenToggleDisabled: false,
+                reasonToChange: "",
+                toggleStatuses: []
             }
         },
         computed: {
@@ -361,6 +376,7 @@
             },
             saveToggle() {
                 this.editFeatureToggleErrors = [];
+                this.reasonsToChange = [];
                 if (this.stringIsNullOrEmpty(this.rowToEdit.toggleName)) {
                     this.editFeatureToggleErrors.push("Feature toggle name cannot be empty")
                     return;
@@ -368,6 +384,10 @@
 
                 if (!this.workItemIdentifierIsValid(this.rowToEdit.workItemIdentifier.trim())) {
                     this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
+                    return;
+                }
+                if (this.reasonToChange.length > 500) {
+                    this.editFeatureToggleErrors.push("Change reason description cannot have more than 500 characters");
                     return;
                 }
 
@@ -379,27 +399,64 @@
                     workItemIdentifier: this.rowToEdit.workItemIdentifier.trim(),
                     featureToggleName: this.rowToEdit.toggleName,
                     isPermanent: this.rowToEdit.isPermanent,
-                    statuses: []
+                    statuses: [],
+                    reasonsToChange: []
                 }
+
+                this.reasonToChange != "" ? toggleUpdateModel.reasonsToChange.push({ description: this.reasonToChange }) : "";
+                let changes = [];
+                let toggle = this.toggleStatuses.find(_ => _.id == toggleUpdateModel.id);
                 _.forEach(this.environmentsNameList, envName => {
                     toggleUpdateModel.statuses.push({
                         environment: envName,
                         enabled: this.rowToEdit[envName]
                     });
+                    let env = toggle.statuses.find(_ => _.environment == envName);
+                    if (env.enabled != this.rowToEdit[envName]) {
+                        changes.push({
+                            envName: envName,
+                            oldValue: env.enabled,
+                            newValue: this.rowToEdit[envName]
+                        });
+                    }
                 });
+
+                let requiredErrorMessages = [];
+                _.forEach(changes, change => {
+                    let env = this.environmentsList.find(_ => _.envName == change.envName);
+                    if (this.reasonToChangeWhenToggleDisabledIsValid(env, change) || this.reasonToChangeWhenToggleEnabledIsValid(env, change)) {
+                        requiredErrorMessages.push(env.envName);
+                    }
+                });
+
+                if (requiredErrorMessages.length > 0) {
+                    _.forEach(requiredErrorMessages, status => {
+                        this.editFeatureToggleErrors.push("Change reason is mandatory when state is modified for environment " + status);
+                    });
+                    return;
+                }
+
                 if (this.isCacheRefreshEnabled) {
                     _.forEach(this.environmentsEdited, envName => {
                         this.addEnvironemntToRefreshList(envName);
                     });
                 }
+
                 axios.put('/api/featuretoggles', toggleUpdateModel)
                     .then(() => {
                         this.showEditModal = false
                         this.rowToEdit = null
                         this.loadGridData(this.selectedApp.id)
                         this.environmentsEdited = []
+                        this.reasonToChange = ""
                         Bus.$emit("app-changed", this.selectedApp)
                     }).catch(error => window.alert(error))
+            },
+            reasonToChangeWhenToggleDisabledIsValid(env, change) {
+                return env.requireReasonWhenToggleDisabled == true && change.oldValue == true && change.newValue == false && this.reasonToChange == "";
+            },
+            reasonToChangeWhenToggleEnabledIsValid(env, change) {
+                return env.requireReasonWhenToggleEnabled == true && change.oldValue == false && change.newValue == true && this.reasonToChange == "";
             },
             workItemIdentifierIsValid(workItemIdentifier) {
                 return workItemIdentifier == null || (workItemIdentifier != null && workItemIdentifier.length <= 50);
@@ -415,6 +472,7 @@
                 this.rowToEdit = null
                 this.environmentsEdited = [];
                 this.editFeatureToggleErrors = []
+                this.reasonToChange = "";
             },
             createGridColumns() {
                 let columns = [
@@ -545,6 +603,8 @@
 
             edit(row) {
                 this.rowToEdit = _.clone(row)
+                this.editFeatureToggleErrors = [];
+                this.reasonToChange = "";
                 this.showEditModal = true
             },
             confirmDelete(row) {
@@ -617,6 +677,7 @@
                         applicationId: appId
                     }
                 }).then((response) => {
+                    this.toggleStatuses = response.data;
 
                     //create the flattened row models
                     let gridRowModels = _.map(response.data, toggle => {
@@ -627,7 +688,8 @@
                             isPermanent: toggle.isPermanent,
                             notes: toggle.notes,
                             workItemIdentifier: toggle.workItemIdentifier,
-                            createdDate: new Date(toggle.createdDate)
+                            createdDate: new Date(toggle.createdDate),
+                            reasonsToChange: toggle.reasonsToChange.reverse()
                         }
 
                         this.environmentsNameList.forEach(env => {
@@ -722,3 +784,12 @@
         }
     }
 </script>
+
+<style>
+    .list-group {
+        max-height: 200px;
+        margin-bottom: 10px;
+        overflow: scroll;
+        -webkit-overflow-scrolling: touch;
+    }
+</style>

@@ -193,5 +193,6 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             t1.GetFeatureToggleStatusForEnv("DEV").Enabled.Should().Be(true);
             t2.GetFeatureToggleStatusForEnv("DEV").Enabled.Should().Be(false);
         }
+
     }
 }
