@@ -157,6 +157,21 @@
                                    :value="false">
                         </div>
                     </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-4 control-label">
+                            Require a reason when toggle state changes to
+                        </label>
+                        <div class="col-sm-6 margin-top-8">
+                            <label for="requireReasonWhenToggleEnabled">Enabled</label>
+                            <p-check v-model="requireReasonWhenToggleEnabled" class="p-icon p-fill" color="default">
+                                <i slot="extra" class="icon fas fa-check" />
+                            </p-check>
+                            <label for="requireReasonWhenToggleDisabled">Disabled</label>
+                            <p-check v-model="requireReasonWhenToggleDisabled" class="p-icon p-fill" color="default">
+                                <i slot="extra" class="icon fas fa-check" />
+                            </p-check>
+                        </div>
+                    </div>
                     <div class="clearfix">
                         <div class="col-sm-6">
                             <button type="button" class="btn btn-danger" @click="confirmDeleteEnvironment">
@@ -237,7 +252,9 @@
                 rowsPerPage: 10,
                 defaultToggleValue: true,
                 environmentsList: [],
-                environmentsNameList: []
+                environmentsNameList: [],
+                requireReasonWhenToggleEnabled: false,
+                requireReasonWhenToggleDisabled:false
 
             }
         },
@@ -326,7 +343,9 @@
                     applicationId: this.selectedApp.id,
                     initialEnvName: this.environmentToEdit.initialEnvName,
                     newEnvName: this.editedEnvironmentName,
-                    defaultToggleValue: this.defaultToggleValue
+                    defaultToggleValue: this.defaultToggleValue,
+                    requireReasonForChangeWhenToggleEnabled: this.requireReasonWhenToggleEnabled,
+                    requireReasonForChangeWhenToggleDisabled: this.requireReasonWhenToggleDisabled
                 }
 
                 axios.put('/api/FeatureToggles/updateEnvironment', envUpdateModel)
@@ -347,17 +366,21 @@
                     return;
                 }
 
-                if (!this.workItemIdentifierIsValid(this.rowToEdit.workItemIdentifier)) {
-                     this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
+                let workItemIdentifier = this.rowToEdit.workItemIdentifier != null ? this.rowToEdit.workItemIdentifier.trim() : this.rowToEdit.workItemIdentifier;
+                
+
+                if (!this.workItemIdentifierIsValid(workItemIdentifier)) {
+                    this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
                     return;
                 }
+                
 
                 let toggleUpdateModel = {
                     id: this.rowToEdit.id,
                     applicationid: this.selectedApp.id,
                     userAccepted: this.rowToEdit.userAccepted,
                     notes: this.rowToEdit.notes,
-                    workItemIdentifier: this.rowToEdit.workItemIdentifier,
+                    workItemIdentifier: workItemIdentifier,
                     featureToggleName: this.rowToEdit.toggleName,
                     isPermanent: this.rowToEdit.isPermanent,
                     statuses: []
@@ -385,14 +408,20 @@
             workItemIdentifierIsValid(workItemIdentifier) {
                 return workItemIdentifier == null || (workItemIdentifier != null && workItemIdentifier.length <= 50);
             },
+            workItemIdentifierIsValid(workItemIdentifier) {
+                return  workItemIdentifier == null || (workItemIdentifier != null && workItemIdentifier.length <= 50);
+            },
             cancelEditEnvName() {
                 this.showEditEnvironmentModal = false
                 this.environmentToEdit = null
+                this.editFeatureToggleErrors = []
+
             },
             cancelEdit() {
                 this.showEditModal = false
                 this.rowToEdit = null
                 this.environmentsEdited = [];
+                this.editFeatureToggleErrors = []
             },
             createGridColumns() {
                 let columns = [
@@ -490,10 +519,13 @@
             },
             editEnvName(column) {
                 this.environmentToEdit = {}
+                this.editEnvErrors = []
                 var environmentFromList = this.environmentsList.find(element => element.envName == column.field)
                 this.environmentToEdit.initialEnvName = environmentFromList.envName
                 this.editedEnvironmentName = environmentFromList.envName
                 this.defaultToggleValue = environmentFromList.defaultToggleValue
+                this.requireReasonWhenToggleDisabled = environmentFromList.requireReasonWhenToggleDisabled
+                this.requireReasonWhenToggleEnabled = environmentFromList.requireReasonWhenToggleEnabled
                 this.showEditEnvironmentModal = true
             },
             confirmDeleteEnvironment() {

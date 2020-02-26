@@ -102,7 +102,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("TestApp", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", false, false, false);
 
             var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
 
@@ -121,7 +121,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var app = Application.Create("TestApp", "DEV", false);
-            app.AddDeployEnvironment("QA", false);
+            app.AddDeployEnvironment("QA", false, false, false);
 
             var newFeatureToggle = new AddFeatureToggleModel { ApplicationId = app.Id, FeatureToggleName = "TestToggle" };
 

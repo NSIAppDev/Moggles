@@ -38,7 +38,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //arrange
             var app = Application.Create("TestApp", "DEV", false);
             await _appRepository.AddAsync(app);
-            var createdEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "QA", DefaultToggleValue = true, SortOrder = 99 };
+            var createdEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "QA", DefaultToggleValue = true, RequireReasonToChangeWhenToggleEnabled = true, RequireReasonToChangeWhenToggleDisabled=false,SortOrder = 99 };
 
             //act
             var result = await _featureToggleController.AddEnvironment(createdEnvironment);
@@ -51,6 +51,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             qaEnv.Should().NotBeNull();
             qaEnv.DefaultToggleValue.Should().BeTrue();
             qaEnv.SortOrder.Should().Be(99);
+            qaEnv.RequireReasonWhenToggleDisabled.Should().BeFalse();
+            qaEnv.RequireReasonWhenToggleEnabled.Should().BeTrue();
         }
 
         [TestMethod]

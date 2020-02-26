@@ -113,7 +113,7 @@
                     featureToggleName: this.featureToggleName,
                     notes: this.notes,
                     isPermanent: this.isPermanent,
-                    workItemIdentifier: this.workItemIdentifier
+                    workItemIdentifier: this.workItemIdentifier.trim()
                 }
 
                 Bus.$emit('block-ui')
