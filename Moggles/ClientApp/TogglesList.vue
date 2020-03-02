@@ -65,7 +65,7 @@
                             {{ error }}
                         </div>
                     </div>
-                    <div v-for="col in gridColumns" :key="col.field" class="form-group">
+                    <div v-for="col in gridColumns" :key="col.field" class="form-group margin-bottom-4">
                         <div v-if="col.type == 'boolean'">
                             <label class="col-sm-4 control-label">{{ col.label }}</label>
                             <div class="col-sm-1 margin-top-8">
@@ -101,10 +101,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="panel-body col-sm-12">
-                         <label class="control-label">Change reason:</label>
-                        <textarea class="col-sm-12" rows="4" v-model="reasonToChange"></textarea>
-                        <ul class="list-group col-sm-12">
+                    <div class="col-sm-12 margin-top-0">
+                        <label class="control-label margin-top-4">Change reason:</label>
+                        <textarea class="col-sm-12" rows="2" v-model="reasonToChange"></textarea>
+                        <ul class="list-group col-sm-12 margin-top-6">
                             <li v-for="reason in rowToEdit.reasonsToChange" :key="reason.createdAt" class="col-sm-12 list-group-item">
                                 <div class="col-sm-4">
                                     <strong>{{reason.addedByUser}}</strong>
@@ -569,6 +569,7 @@
 
 
                 this.gridColumns = columns
+
             },
             editEnvName(column) {
                 this.environmentToEdit = {}
@@ -793,5 +794,15 @@
         margin-bottom: 10px;
         overflow: scroll;
         -webkit-overflow-scrolling: touch;
+        overflow-x:hidden;
+        word-break: break-word;
     }
+
+    textarea {
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+    }
+    
+    
 </style>
