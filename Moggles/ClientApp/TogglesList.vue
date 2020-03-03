@@ -405,7 +405,10 @@
                     reasonsToChange: []
                 }
 
-                this.reasonToChange != "" ? toggleUpdateModel.reasonsToChange.push({ description: this.reasonToChange }) : "";
+                if (!this.reasonIsNullorEmpty()) {
+                    toggleUpdateModel.reasonsToChange.push({ description: this.reasonToChange });
+                }
+
                 let changes = [];
                 let toggle = this.toggleStatuses.find(_ => _.id == toggleUpdateModel.id);
                 _.forEach(this.environmentsNameList, envName => {
@@ -437,7 +440,6 @@
                     });
                     return;
                 }
-
                 if (this.isCacheRefreshEnabled) {
                     _.forEach(this.environmentsEdited, envName => {
                         this.addEnvironemntToRefreshList(envName);
@@ -454,11 +456,15 @@
                         Bus.$emit("app-changed", this.selectedApp)
                     }).catch(error => window.alert(error))
             },
+            reasonIsNullorEmpty() {
+                return !this.reasonToChange || /^\s*$/.test(this.reasonToChange);
+            },
+
             reasonToChangeWhenToggleDisabledIsValid(env, change) {
-                return env.requireReasonWhenToggleDisabled == true && change.oldValue == true && change.newValue == false && this.reasonToChange == "";
+                return env.requireReasonWhenToggleDisabled == true && change.oldValue == true && change.newValue == false && this.reasonIsNullorEmpty();
             },
             reasonToChangeWhenToggleEnabledIsValid(env, change) {
-                return env.requireReasonWhenToggleEnabled == true && change.oldValue == false && change.newValue == true && this.reasonToChange == "";
+                return env.requireReasonWhenToggleEnabled == true && change.oldValue == false && change.newValue == true && this.reasonIsNullorEmpty();
             },
             workItemIdentifierIsValid(workItemIdentifier) {
                 return workItemIdentifier == null || (workItemIdentifier != null && workItemIdentifier.length <= 50);
