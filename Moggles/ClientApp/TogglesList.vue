@@ -404,7 +404,7 @@
                     statuses: [],
                     reasonsToChange: []
                 }
-
+                this.reasonToChange = this.reasonToChange.trim();
                 this.reasonToChange != "" ? toggleUpdateModel.reasonsToChange.push({ description: this.reasonToChange }) : "";
                 let changes = [];
                 let toggle = this.toggleStatuses.find(_ => _.id == toggleUpdateModel.id);
