@@ -404,7 +404,7 @@
                     statuses: [],
                     reasonsToChange: []
                 }
-                console.log(this.reasonIsNullorEmpty());
+
                 if (!this.reasonIsNullorEmpty()) {
                     toggleUpdateModel.reasonsToChange.push({ description: this.reasonToChange });
                 }
