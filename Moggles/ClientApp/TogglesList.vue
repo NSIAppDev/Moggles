@@ -56,170 +56,18 @@
                 <a v-if="isEnvironmentColumn(props.column)" @click="editEnvName(props.column)"><i class="fas fa-edit" /></a>
             </template>
         </vue-good-table>
-
-        <modal v-model="showEditModal" title="Edit Feature Flags" :footer="false">
-            <div v-if="rowToEdit" class="form-horizontal">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div v-for="error in editFeatureToggleErrors" :key="error" class="text-danger margin-left-15">
-                            {{ error }}
-                        </div>
-                    </div>
-                    <div v-for="col in gridColumns" :key="col.field" class="form-group margin-bottom-4">
-                        <div v-if="col.type == 'boolean'">
-                            <label class="col-sm-4 control-label">{{ col.label }}</label>
-                            <div class="col-sm-1 margin-top-8">
-                                <div @click="environmentEdited(col.field)">
-                                    <p-check v-if="rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" class="p-icon p-fill"
-                                             color="success">
-                                        <i slot="extra" class="icon fas fa-check" />
-                                    </p-check>
-                                    <p-check v-if="!rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" class="p-icon p-fill"
-                                             color="default">
-                                        <i slot="extra" class="icon fas fa-check" />
-                                    </p-check>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 margin-top-8">
-                                <div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null">
-                                    <strong>Deployed:</strong> {{ rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('M/D/YY hh:mm:ss A') }}
-                                </div>
-                                <div v-if="isEnviroment(col.field)">
-                                    <strong>Last Updated:</strong> {{ rowToEdit[col.field + '_LastUpdated'] | moment('M/D/YY hh:mm:ss A') }}
-                                </div>
-                                <div v-if="isEnviroment(col.field)">
-                                    <strong>Updated by:</strong> {{ rowToEdit[col.field + '_UpdatedByUser'] }}
-                                </div>
-                            </div>
-                        </div>
-                        <div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">{{ col.label }}</label>
-                                <div class="col-sm-7">
-                                    <input v-model="rowToEdit[col.field]" type="text" class="form-control">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 margin-top-0">
-                        <label class="control-label margin-top-4">Change reason:</label>
-                        <textarea class="col-sm-12" rows="2" v-model="reasonToChange"></textarea>
-                        <ul class="list-group col-sm-12 margin-top-6">
-                            <li v-for="reason in rowToEdit.reasonsToChange" :key="reason.createdAt" class="col-sm-12 list-group-item">
-                                <div class="col-sm-4">
-                                    <strong>{{reason.addedByUser}}</strong>
-                                    <div>{{reason.createdAt | moment('M/D/YY hh:mm:ss A')}}</div>
-                                </div>
-                                <div class="col-sm-8">{{reason.description}}</div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="text-right">
-                <button type="button" class="btn btn-default" @click="cancelEdit">
-                    Cancel
-                </button>
-                <button type="button" class="btn btn-primary" @click="saveToggle">
-                    Save
-                </button>
-            </div>
-        </modal>
         <modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle" :footer="false">
-            <div v-if="toggleIsDeployed">
-                <strong>{{ rowDataToDelete ? rowDataToDelete.toggleName: "" }}</strong> feature toggle is active on at least one environment. Are you sure you want to delete it?
-            </div>
-            <div v-else>
-                Are you sure you want to delete this feature toggle?
-            </div>
-            <div class="text-right">
-                <button type="button" class="btn btn-default" @click="showDeleteConfirmation = false">
-                    Cancel
-                </button>
-                <button type="button" class="btn btn-primary" @click="deleteToggle">
-                    Delete
-                </button>
-            </div>
+            <delete-FeatureToggle/>
         </modal>
-
-        <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false">
-            <div v-if="environmentToEdit" class="form-horizontal">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div v-for="error in editEnvErrors" :key="error" class="text-danger margin-left-15">
-                            {{ error }}
-                        </div>
-                    </div>
-                    <div class=" col-sm-12 form-group">
-                        <label class="col-sm-4 control-label text-left">Environment name</label>
-                        <div class="col-sm-8">
-                            <input v-model="editedEnvironmentName" type="text" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-sm-12 form-group">
-                        <label class="col-sm-4 control-label">
-                            Default value for new toggles
-                        </label>
-                        <div class="col-sm-6 margin-top-4">
-                            <label for="r1">True</label>
-                            <input id="r1" v-model="defaultToggleValue" type="radio"
-                                   :value="true" checked>
-
-                            <label for="r2">False</label>
-                            <input id="r2" v-model="defaultToggleValue" type="radio"
-                                   :value="false">
-                        </div>
-                    </div>
-                    <div class="col-sm-12 form-group">
-                        <label class="col-sm-4 control-label">
-                            Require a reason when toggle state changes to
-                        </label>
-                        <div class="col-sm-6 margin-top-8">
-                            <label for="requireReasonWhenToggleEnabled">Enabled</label>
-                            <p-check v-model="requireReasonWhenToggleEnabled" class="p-icon p-fill" color="default">
-                                <i slot="extra" class="icon fas fa-check" />
-                            </p-check>
-                            <label for="requireReasonWhenToggleDisabled">Disabled</label>
-                            <p-check v-model="requireReasonWhenToggleDisabled" class="p-icon p-fill" color="default">
-                                <i slot="extra" class="icon fas fa-check" />
-                            </p-check>
-                        </div>
-                    </div>
-                    <div class="clearfix">
-                        <div class="col-sm-6">
-                            <button type="button" class="btn btn-danger" @click="confirmDeleteEnvironment">
-                                Delete
-                            </button>
-                        </div>
-                        <div class="col-sm-6 text-right">
-                            <button type="button" class="btn btn-default" @click="cancelEditEnvName">
-                                Cancel
-                            </button>
-                            <button type="button" class="btn btn-primary" @click="saveEnvironment">
-                                Save
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </modal>
-        <modal v-model="showDeleteEnvironmentConfirmation" title="You are about to delete an environment" :footer="false">
-            <div>
-                Are you sure you want to delete the environment?
-                <br>
-                All associated applications and feature toggles will be removed.
-            </div>
-            <div class="text-right">
-                <button type="button" class="btn btn-default" @click="showDeleteEnvironmentConfirmation = false">
-                    Cancel
-                </button>
-                <button type="button" class="btn btn-primary" @click="deleteEnvironment">
-                    Delete
-                </button>
-            </div>
-        </modal>
+      
         <modal v-model="showScheduler" title="Schedule Toggles" :footer="false">
             <toggle-scheduler />
+        </modal>
+        <modal v-model="showEditModal" title="Edit Feature Flags" :footer="false">
+            <edit-FeatureToggle />
+        </modal>
+        <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false">
+            <edit-Environment />
         </modal>
     </div>
 </template>
@@ -230,10 +78,16 @@
     import { Bus } from './event-bus';
     import ToggleScheduler from "./ToggleScheduler";
     import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+    import EditFeatureToggle from './EditFeatureToggle';
+    import EditEnvironment from './EditEnvironment';
+    import DeleteFeatureToggle from './DeleteFeatureToggle';
     export default {
         components: {
             'p-check': PrettyCheck,
-            'toggle-scheduler': ToggleScheduler
+            'toggle-scheduler': ToggleScheduler,
+            'edit-FeatureToggle': EditFeatureToggle,
+            'edit-Environment': EditEnvironment,
+            'delete-FeatureToggle': DeleteFeatureToggle
         },
         data() {
 
@@ -242,43 +96,26 @@
                 gridColumns: [],
                 selectedApp: {},
                 rowToEdit: null,
-                environmentToEdit: null,
                 showEditEnvironmentModal: false,
-                showDeleteEnvironmentConfirmation: false,
                 showEditModal: false,
-                showAcceptedFeatures: false,
                 showDeleteConfirmation: false,
-                rowDataToDelete: null,
-                toggleIsDeployed: false,
-                environmentsEdited: [],
                 environmentsToRefresh: [],
                 refreshAlertVisible: false,
                 isCacheRefreshEnabled: false,
-                editFeatureToggleErrors: [],
-                editEnvErrors: [],
-                editedEnvironmentName: "",
-                editFeatureToggleScheduler: [],
                 scheduledToggles: [],
                 showScheduler: false,
                 connectionId: null,
                 connection: null,
                 rowsPerPage: 10,
-                defaultToggleValue: true,
                 environmentsList: [],
-                environmentsNameList: [],
-                requireReasonWhenToggleEnabled: false,
-                requireReasonWhenToggleDisabled: false,
-                reasonToChange: "",
-                toggleStatuses: []
+                environmentsNameList: []
             }
         },
         computed: {
             showRefreshAlert() {
                 return this.environmentsToRefresh.length > 0 ? this.refreshAlertVisible : false;
             },
-            enableEditEnvironmentSave() {
-                return this.environmentToEdit.initialEnvName !== this.editedEnvironmentName;
-            },
+            
             getPaginationOptions() {
                 return { enabled: true, perPage: parseInt(this.getRowsPerPage()) };
             }
@@ -311,16 +148,33 @@
 
             Bus.$on('close-scheduler', () => {
                 this.showScheduler = false;
-                this.initializeGrid(this.selectedApp);
+                this.loadData();
                 this.getAllScheduledToggle(this.selectedApp.id);
             })
-
-
+            Bus.$on('close-editEnvironment', () => {
+                this.showEditEnvironmentModal = false;
+                this.loadData();
+                
+            })
+            Bus.$on('close-editFeatureFlag', (environmentsToRefresh, refreshAlertVisible) => {
+                this.showEditModal = false;
+                this.loadData();
+                this.environmentsToRefresh = environmentsToRefresh;
+                this.refreshAlertVisible = refreshAlertVisible;
+            })
+            Bus.$on('close-deleteToggle', () => {
+                this.showDeleteConfirmation = false;
+                this.loadData();
+            })
         },
         mounted() {
             this.start();
         },
         methods: {
+            loadData() {
+                this.initializeGrid(this.selectedApp);
+                this.loadGridData(this.selectedApp.id);
+            },
             getRowsPerPage() {
                 if (localStorage.getItem('rowsPerPage') != null) {
                     this.rowsPerPage = localStorage.getItem('rowsPerPage');
@@ -345,142 +199,6 @@
                 this.scheduledToggles = [];
                 this.loadGridData(this.selectedApp.id);
                 this.getAllScheduledToggle(this.selectedApp.id);
-            },
-            saveEnvironment() {
-                this.editEnvErrors = []
-                if (this.stringIsNullOrEmpty(this.editedEnvironmentName)) {
-                    this.editEnvErrors.push("Environment name cannot be empty")
-                    return;
-                }
-
-                let envUpdateModel = {
-                    applicationId: this.selectedApp.id,
-                    initialEnvName: this.environmentToEdit.initialEnvName,
-                    newEnvName: this.editedEnvironmentName,
-                    defaultToggleValue: this.defaultToggleValue,
-                    requireReasonForChangeWhenToggleEnabled: this.requireReasonWhenToggleEnabled,
-                    requireReasonForChangeWhenToggleDisabled: this.requireReasonWhenToggleDisabled
-                }
-
-                axios.put('/api/FeatureToggles/updateEnvironment', envUpdateModel)
-                    .then(() => {
-                        this.showEditEnvironmentModal = false
-                        this.environmentToEdit = null
-                        this.initializeGrid(this.selectedApp);
-                        let index = _.indexOf(this.environmentsToRefresh, envUpdateModel.initialEnvName);
-                        if (index != -1) {
-                            this.environmentsToRefresh.splice(index, 1);
-                        }
-                    }).catch(error => window.alert(error))
-            },
-            saveToggle() {
-                this.editFeatureToggleErrors = [];
-                this.reasonsToChange = [];
-                if (this.stringIsNullOrEmpty(this.rowToEdit.toggleName)) {
-                    this.editFeatureToggleErrors.push("Feature toggle name cannot be empty")
-                    return;
-                }
-
-                let workItemIdentifier = this.rowToEdit.workItemIdentifier != null ? this.rowToEdit.workItemIdentifier.trim() : this.rowToEdit.workItemIdentifier;
-
-                if (!this.workItemIdentifierIsValid(workItemIdentifier)) {
-                    this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
-                    return;
-                }
-
-                if (this.reasonToChange.length > 500) {
-                    this.editFeatureToggleErrors.push("Change reason description cannot have more than 500 characters");
-                    return;
-                }
-
-                let toggleUpdateModel = {
-                    id: this.rowToEdit.id,
-                    applicationid: this.selectedApp.id,
-                    userAccepted: this.rowToEdit.userAccepted,
-                    notes: this.rowToEdit.notes,
-                    workItemIdentifier: workItemIdentifier,
-                    featureToggleName: this.rowToEdit.toggleName,
-                    isPermanent: this.rowToEdit.isPermanent,
-                    statuses: [],
-                    reasonsToChange: []
-                }
-
-                if (!this.reasonIsNullorEmpty()) {
-                    toggleUpdateModel.reasonsToChange.push({ description: this.reasonToChange });
-                }
-
-                let changes = [];
-                let toggle = this.toggleStatuses.find(_ => _.id == toggleUpdateModel.id);
-                _.forEach(this.environmentsNameList, envName => {
-                    toggleUpdateModel.statuses.push({
-                        environment: envName,
-                        enabled: this.rowToEdit[envName]
-                    });
-                    let env = toggle.statuses.find(_ => _.environment == envName);
-                    if (env.enabled != this.rowToEdit[envName]) {
-                        changes.push({
-                            envName: envName,
-                            oldValue: env.enabled,
-                            newValue: this.rowToEdit[envName]
-                        });
-                    }
-                });
-
-                let requiredErrorMessages = [];
-                _.forEach(changes, change => {
-                    let env = this.environmentsList.find(_ => _.envName == change.envName);
-                    if (this.reasonToChangeWhenToggleDisabledIsValid(env, change) || this.reasonToChangeWhenToggleEnabledIsValid(env, change)) {
-                        requiredErrorMessages.push(env.envName);
-                    }
-                });
-
-                if (requiredErrorMessages.length > 0) {
-                    _.forEach(requiredErrorMessages, status => {
-                        this.editFeatureToggleErrors.push("Change reason is mandatory when state is modified for environment " + status);
-                    });
-                    return;
-                }
-                if (this.isCacheRefreshEnabled) {
-                    _.forEach(this.environmentsEdited, envName => {
-                        this.addEnvironemntToRefreshList(envName);
-                    });
-                }
-
-                axios.put('/api/featuretoggles', toggleUpdateModel)
-                    .then(() => {
-                        this.showEditModal = false
-                        this.rowToEdit = null
-                        this.loadGridData(this.selectedApp.id)
-                        this.environmentsEdited = []
-                        this.reasonToChange = ""
-                        Bus.$emit("app-changed", this.selectedApp)
-                    }).catch(error => window.alert(error))
-            },
-            reasonIsNullorEmpty() {
-                return !this.reasonToChange || /^\s*$/.test(this.reasonToChange);
-            },
-
-            reasonToChangeWhenToggleDisabledIsValid(env, change) {
-                return env.requireReasonWhenToggleDisabled == true && change.oldValue == true && change.newValue == false && this.reasonIsNullorEmpty();
-            },
-            reasonToChangeWhenToggleEnabledIsValid(env, change) {
-                return env.requireReasonWhenToggleEnabled == true && change.oldValue == false && change.newValue == true && this.reasonIsNullorEmpty();
-            },
-            workItemIdentifierIsValid(workItemIdentifier) {
-                return workItemIdentifier == null || (workItemIdentifier != null && workItemIdentifier.length <= 50);
-            },
-            cancelEditEnvName() {
-                this.showEditEnvironmentModal = false
-                this.environmentToEdit = null
-                this.editFeatureToggleErrors = []
-
-            },
-            cancelEdit() {
-                this.showEditModal = false
-                this.rowToEdit = null
-                this.environmentsEdited = [];
-                this.editFeatureToggleErrors = []
-                this.reasonToChange = "";
             },
             createGridColumns() {
                 let columns = [
@@ -578,63 +296,26 @@
 
             },
             editEnvName(column) {
-                this.environmentToEdit = {}
-                this.editEnvErrors = []
                 var environmentFromList = this.environmentsList.find(element => element.envName == column.field)
-                this.environmentToEdit.initialEnvName = environmentFromList.envName
-                this.editedEnvironmentName = environmentFromList.envName
-                this.defaultToggleValue = environmentFromList.defaultToggleValue
-                this.requireReasonWhenToggleDisabled = environmentFromList.requireReasonWhenToggleDisabled
-                this.requireReasonWhenToggleEnabled = environmentFromList.requireReasonWhenToggleEnabled
                 this.showEditEnvironmentModal = true
+                Bus.$emit('edit-Environment', this.selectedApp, environmentFromList)
             },
-            confirmDeleteEnvironment() {
-                this.showDeleteEnvironmentConfirmation = true
-            },
-            deleteEnvironment() {
-                let environmentModel = {
-                    applicationId: this.selectedApp.id,
-                    envName: this.environmentToEdit.initialEnvName
-                }
-
-                axios.delete(`/api/FeatureToggles/environments`, { data: environmentModel }).then(() => {
-                    this.showDeleteEnvironmentConfirmation = false
-                    this.showEditEnvironmentModal = false
-                    this.environmentToEdit = null,
-                        this.initializeGrid(this.selectedApp);
-                    let index = _.indexOf(this.environmentsToRefresh, environmentModel.envName);
-                    if (index != -1) {
-                        this.environmentsToRefresh.splice(index, 1);
-                    }
-                    Bus.$emit("app-changed", this.selectedApp)
-                }).catch(error => window.alert(error))
-            },
-
             edit(row) {
                 this.rowToEdit = _.clone(row)
-                this.editFeatureToggleErrors = [];
-                this.reasonToChange = "";
-                this.showEditModal = true
+                this.showEditModal = true;
+                let toggle = {
+                    appId : this.selectedApp.id,
+                    rowToEdit : this.rowToEdit
+                }
+                Bus.$emit('open-editFeatureToggle', toggle, this.gridColumns);
             },
             confirmDelete(row) {
-                this.rowDataToDelete = row
-                this.toggleIsDeployed = this.isToggleActive(this.rowDataToDelete)
                 this.showDeleteConfirmation = true
-            },
-            deleteToggle() {
-                axios.delete(`/api/FeatureToggles?id=${this.rowDataToDelete.id}&applicationid=${this.selectedApp.id}`).then(() => {
-                    this.showDeleteConfirmation = false
-                    this.rowDataToDelete = null
-                    this.toggleIsDeployed = false
-                    this.loadGridData(this.selectedApp.id)
-                }).catch(error => window.alert(error))
-            },
-            isToggleActive(toggleData) {
-                for (var propertyName in toggleData) {
-                    if (propertyName.endsWith("_IsDeployed") && toggleData[propertyName] === true)
-                        return true;
+                let toggleToDelete = {
+                    appId: this.selectedApp.id,
+                    toggle: row
                 }
-                return false;
+                Bus.$emit('delete-featureToggle', toggleToDelete);
             },
             getAllScheduledToggle(appId) {
 
@@ -658,7 +339,6 @@
                     this.scheduledToggles = models;
                 });
             },
-
             getScheduled(toggleName) {
                 let filtered = _.map(this.scheduledToggles.filter(ft => ft.toggleName == toggleName), sch => {
                     return {
@@ -677,8 +357,6 @@
                 Bus.$emit("edit-schedule", toggle.toggleId);
                 this.showScheduler = true;
             },
-
-
             loadGridData(appId) {
                 this.getAllScheduledToggle(appId);
                 axios.get("/api/FeatureToggles", {
@@ -686,8 +364,6 @@
                         applicationId: appId
                     }
                 }).then((response) => {
-                    this.toggleStatuses = response.data;
-
                     //create the flattened row models
                     let gridRowModels = _.map(response.data, toggle => {
                         let rowModel = {
@@ -736,12 +412,6 @@
                     Bus.$emit('env-loaded', this.environmentsNameList)
                 }).catch((e) => { window.alert(e) });
             },
-            environmentEdited(env) {
-                let index = _.indexOf(this.environmentsEdited, env);
-                if (index === -1) {
-                    this.environmentsEdited.push(env);
-                }
-            },
             refreshEnvironment(env, index) {
                 if (!this.selectedApp)
                     return;
@@ -771,13 +441,6 @@
                         Bus.$emit('unblock-ui')
                     });
             },
-            addEnvironemntToRefreshList(env) {
-                let index = _.indexOf(this.environmentsToRefresh, env);
-                if (index === -1 && this.isEnviroment(env)) {
-                    this.environmentsToRefresh.push(env);
-                    this.refreshAlertVisible = true;
-                }
-            },
             closeRefreshAlert() {
                 this.refreshAlertVisible = false;
             },
@@ -800,7 +463,7 @@
         margin-bottom: 10px;
         overflow: scroll;
         -webkit-overflow-scrolling: touch;
-        overflow-x:hidden;
+        overflow-x: hidden;
         word-break: break-word;
     }
 
@@ -809,6 +472,4 @@
         -moz-border-radius: 5px;
         border-radius: 5px;
     }
-    
-    
 </style>

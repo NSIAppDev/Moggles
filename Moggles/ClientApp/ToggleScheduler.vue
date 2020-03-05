@@ -103,17 +103,7 @@
         </div>
         <modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle schedule" :footer="false"
                append-to-body>
-            <div>
-                Are you sure you want to delete this feature toggle schedule?
-            </div>
-            <div class="text-right">
-                <button type="button" class="btn btn-default" @click="showDeleteConfirmation = false">
-                    Cancel
-                </button>
-                <button type="button" class="btn btn-primary" @click="deleteScheduler">
-                    Delete
-                </button>
-            </div>
+            <deleteToggleScheduler/>
         </modal>
     </div>
 </template>
@@ -124,10 +114,12 @@
     import moment from 'moment';
     import _ from 'lodash';
     import PrettyCheck from 'pretty-checkbox-vue/check';
+    import DeleteToggleScheduler from './DeleteToggleScheduler'
 
     export default {
         components: {
-            'p-check': PrettyCheck
+            'p-check': PrettyCheck,
+            'deleteToggleScheduler': DeleteToggleScheduler
         },
         data() {
             return {
@@ -178,6 +170,12 @@
                 this.toggle = null;
             })
 
+            Bus.$on('close-deleteScheduler', () => {
+                this.showDeleteConfirmation = false;
+                this.loadToggles(this.selectedAppId);
+                this.loadEnvironments(this.selectedAppId);
+            })
+
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
             }).catch(error => { window.alert(error) });
@@ -185,12 +183,7 @@
         methods: {
             showConfirmDeleteModal() {
                 this.showDeleteConfirmation = true;
-            },
-            deleteScheduler() {
-                axios.delete(`/api/ToggleScheduler?id=${this.toggle.id}`).then(() => {
-                    this.showDeleteConfirmation = false;
-                    Bus.$emit('close-scheduler');
-                }).catch(error => window.alert(error));
+                Bus.$emit('delete-scheduler', this.toggle);
             },
             existsTogggleSchedule(toggle) {
                 return toggle === null ? true : false;
