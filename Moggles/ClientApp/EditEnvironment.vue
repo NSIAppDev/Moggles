@@ -83,7 +83,12 @@
             'deleteEnvironment': DeleteEnvironment
 
         },
-
+        props: {
+            application: {
+                type: Object,
+                required: true
+            }
+        },
         data() {
             return {
                 environmentToEdit: null,
@@ -95,13 +100,11 @@
                 requireReasonWhenToggleEnabled: false,
                 requireReasonWhenToggleDisabled: false,
                 defaultToggleValue: true,
-                selectedApp: null,
                 showDeleteEnvironmentConfirmation: false
             }
         },
         created() {
-            Bus.$on('edit-environment', (selectedApp, environmentFromList) => {
-                this.selectedApp = selectedApp;
+            Bus.$on('edit-environment', (environmentFromList) => {
                 this.environmentToEdit = environmentFromList;
                 this.loadData();
             });
@@ -132,7 +135,7 @@
                 }
 
                 let envUpdateModel = {
-                    applicationId: this.selectedApp.id,
+                    applicationId: this.application.id,
                     initialEnvName: this.environmentToEdit.envName,
                     newEnvName: this.editedEnvironmentName,
                     defaultToggleValue: this.defaultToggleValue,
@@ -153,7 +156,7 @@
             },
             confirmDeleteEnvironment() {
                 this.showDeleteEnvironmentConfirmation = true
-                Bus.$emit('delete-Environment', this.environmentToEdit.envName, this.selectedApp);
+                Bus.$emit('delete-Environment', this.environmentToEdit.envName, this.application);
             },
             
             stringIsNullOrEmpty(text) {

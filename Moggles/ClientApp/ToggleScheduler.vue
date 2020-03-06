@@ -121,6 +121,12 @@
             'p-check': PrettyCheck,
             'deleteToggleScheduler': DeleteToggleScheduler
         },
+        props: {
+            isCacheRefreshEnabled: {
+                type: Boolean,
+                required: true
+            }
+        },
         data() {
             return {
                 environmentName: "",
@@ -135,8 +141,7 @@
                 scheduledTime: new Date(),
                 toggle: null,
                 showDeleteConfirmation: false,
-                forceCacheRefresh: false,
-                isCacheRefreshEnabled: false
+                forceCacheRefresh: false
             }
         },
         created() {
@@ -175,10 +180,6 @@
                 this.loadToggles(this.selectedAppId);
                 this.loadEnvironments(this.selectedAppId);
             })
-
-            axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
-                this.isCacheRefreshEnabled = response.data;
-            }).catch(error => { window.alert(error) });
         },
         methods: {
             showConfirmDeleteModal() {

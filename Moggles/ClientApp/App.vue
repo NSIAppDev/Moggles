@@ -74,7 +74,7 @@
     </modal>
 
     <modal v-model="showScheduler" title="Schedule Toggles" :footer="false">
-      <toggle-scheduler />
+      <toggle-scheduler :is-cache-refresh-enabled="isCacheRefreshEnabled" />
     </modal>
 
     <div class="container-fluid">

@@ -20,23 +20,27 @@
     import axios from 'axios';
     import { Bus } from './event-bus';
     export default {
+        props: {
+            application: {
+                type: Object,
+                required: true
+            }
+        },
         data() {
             return {
                 toggleIsDeployed: false,
-                rowDataToDelete: null,
-                selectedAppId : null
+                rowDataToDelete: null
             }
         },
         created() {
             Bus.$on('delete-featureToggle', toggleToDelete => {
-                this.rowDataToDelete = toggleToDelete.toggle;
-                this.selectedAppId = toggleToDelete.appId;
+                this.rowDataToDelete = toggleToDelete;
                 this.toggleIsDeployed = this.isToggleActive(toggleToDelete);
             })
         },
         methods: {
             deleteToggle() {
-                axios.delete(`/api/FeatureToggles?id=${this.rowDataToDelete.id}&applicationid=${this.selectedAppId}`).then(() => {
+                axios.delete(`/api/FeatureToggles?id=${this.rowDataToDelete.id}&applicationid=${this.application.id}`).then(() => {
                     this.rowDataToDelete = null
                     this.toggleIsDeployed = false
                     Bus.$emit('close-deleteToggle');

@@ -58,16 +58,16 @@
     </vue-good-table>
 
     <modal v-model="showDeleteConfirmationModal" title="You are about to delete a feature toggle" :footer="false">
-      <delete-featureToggle />
+      <delete-featureToggle :application="selectedApp" />
     </modal>
     <modal v-model="showSchedulerModal" title="Schedule Toggles" :footer="false">
-      <toggle-scheduler />
+      <toggle-scheduler :is-cache-refresh-enabled="isCacheRefreshEnabled" />
     </modal>
     <modal v-model="showEditModal" title="Edit Feature Flags" :footer="false">
-      <edit-featureToggle />
+      <edit-featureToggle :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" />
     </modal>
     <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false">
-      <edit-environment />
+      <edit-environment :application="selectedApp" />
     </modal>
   </div>
 </template>
@@ -100,7 +100,6 @@
                 environmentsList: [],
                 scheduledToggles: [],
                 environmentsToRefresh: [],
-                rowToEdit: null,
                 showEditEnvironmentModal: false,
                 showEditModal: false,
                 showDeleteConfirmationModal: false,
@@ -382,24 +381,15 @@
             openEditEnvironmentModal(column) {
                 var environmentFromList = this.environmentsList.find(element => element.envName == column.field);
                 this.showEditEnvironmentModal = true;
-                Bus.$emit('edit-environment', this.selectedApp, environmentFromList);
+                Bus.$emit('edit-environment', environmentFromList);
             },
             openEditFeatureToggleModal(row) {
-                this.rowToEdit = _.clone(row)
                 this.showEditModal = true;
-                let toggle = {
-                    appId: this.selectedApp.id,
-                    rowToEdit: this.rowToEdit
-                }
-                Bus.$emit('open-editFeatureToggle', toggle, this.gridColumns);
+                Bus.$emit('open-editFeatureToggle', _.clone(row), this.gridColumns);
             },
             openDeleteConfirmationModal(row) {
                 this.showDeleteConfirmationModal = true
-                let toggleToDelete = {
-                    appId: this.selectedApp.id,
-                    toggle: row
-                }
-                Bus.$emit('delete-featureToggle', toggleToDelete);
+                Bus.$emit('delete-featureToggle', row);
             },
             refreshEnvironmentToggles(env, index) {
                 if (!this.selectedApp)
@@ -413,7 +403,7 @@
                 })
                     .then(() => {
                         this.environmentsToRefresh.splice(index, 1);
-                        //shouldn't need the below code, but computed value doesn't register the length as 0 without it
+                        ///shouldn't need the below code, but computed value doesn't register the length as 0 without it
                         if (this.environmentsToRefresh.length === 0) {
                             this.environmentsToRefresh = [];
                         }

@@ -81,6 +81,16 @@
         components: {
             'p-check': PrettyCheck,
         },
+        props: {
+            isCacheRefreshEnabled: {
+                type: Boolean,
+                required: true
+            },
+            application: {
+                type: Object,
+                required: true
+            }
+        },
         data() {
             return {
                 editFeatureToggleErrors: [],
@@ -92,25 +102,19 @@
                 reasonToChange: "",
                 toggleStatuses: [],
                 gridColumns: [],
-                selectedAppId: null,
                 environmentsEdited: [],
                 environmentList: [],
                 environmentsNameList: [],
                 refreshAlertVisible: false,
-                isCacheRefreshEnabled: false,
                 environmentsToRefresh: []
             }
         },
         created() {
-            axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
-                this.isCacheRefreshEnabled = response.data;
-            }).catch(error => window.alert(error));
-
+      
             Bus.$on("open-editFeatureToggle", (toggle, gridColumns) => {
                 this.editFeatureToggleErrors = [];
-                this.selectedAppId = toggle.appId;
                 this.gridColumns = gridColumns;
-                this.rowToEdit = toggle.rowToEdit;
+                this.rowToEdit = toggle;
                 this.loadToggleStatuses();
                 this.loadEnvironmentsList();
             });
@@ -139,7 +143,7 @@
 
                 let toggleUpdateModel = {
                     id: this.rowToEdit.id,
-                    applicationid: this.selectedAppId,
+                    applicationid: this.application.id,
                     userAccepted: this.rowToEdit.userAccepted,
                     notes: this.rowToEdit.notes,
                     workItemIdentifier: workItemIdentifier,
@@ -240,7 +244,7 @@
             loadToggleStatuses() {
                 axios.get("/api/FeatureToggles", {
                     params: {
-                        applicationId: this.selectedAppId
+                        applicationId: this.application.id
                     }
                 }).then((response) => {
                     this.toggleStatuses = response.data;
@@ -252,7 +256,7 @@
             loadEnvironmentsList() {
                 axios.get("/api/FeatureToggles/environments", {
                     params: {
-                        applicationId: this.selectedAppId
+                        applicationId: this.application.id
                     }
                 }).then((response) => {
                     this.environmentsList = response.data;
