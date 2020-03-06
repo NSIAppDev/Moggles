@@ -1,70 +1,73 @@
 ﻿<template>
-    <div>
-        <div class="form-horizontal">
-            <div v-if="environmentToEdit">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div v-for="error in editEnvErrors" :key="error" class="text-danger margin-left-15">
-                            {{ error }}
-                        </div>
-                    </div>
-                    <div class=" col-sm-12 form-group">
-                        <label class="col-sm-4 control-label text-left">Environment name</label>
-                        <div class="col-sm-8">
-                            <input v-model="editedEnvironmentName" type="text" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-sm-12 form-group">
-                        <label class="col-sm-4 control-label">
-                            Default value for new toggles
-                        </label>
-                        <div class="col-sm-6 margin-top-4">
-                            <label for="r1">True</label>
-                            <input id="r1" v-model="defaultToggleValue" type="radio"
-                                   :value="true" checked>
-
-                            <label for="r2">False</label>
-                            <input id="r2" v-model="defaultToggleValue" type="radio"
-                                   :value="false">
-                        </div>
-                    </div>
-                    <div class="col-sm-12 form-group">
-                        <label class="col-sm-4 control-label">
-                            Require a reason when toggle state changes to
-                        </label>
-                        <div class="col-sm-6 margin-top-8">
-                            <label for="reasonWhenEnabled">Enabled</label>
-                            <p-check id="reasonWhenEnabled" v-model="requireReasonWhenToggleEnabled" class="p-icon p-fill" color="default">
-                                <i slot="extra" class="icon fas fa-check" />
-                            </p-check>
-                            <label for="reasonWhenDisabled">Disabled</label>
-                            <p-check id="reasonWhenDisabled"  v-model="requireReasonWhenToggleDisabled" class="p-icon p-fill" color="default">
-                                <i slot="extra" class="icon fas fa-check" />
-                            </p-check>
-                        </div>
-                    </div>
-                    <div class="clearfix">
-                        <div class="col-sm-6">
-                            <button type="button" class="btn btn-danger" @click="confirmDeleteEnvironment">
-                                Delete
-                            </button>
-                        </div>
-                        <div class="col-sm-6 text-right">
-                            <button type="button" class="btn btn-default" @click="cancelEditEnvName">
-                                Cancel
-                            </button>
-                            <button type="button" class="btn btn-primary" @click="saveEnvironment">
-                                Save
-                            </button>
-                        </div>
-                    </div>
-                </div>
+  <div>
+    <div class="form-horizontal">
+      <div v-if="environmentToEdit">
+        <div class="row">
+          <div class="col-sm-12">
+            <div v-for="error in editEnvErrors" :key="error" class="text-danger margin-left-15">
+              {{ error }}
             </div>
+          </div>
+          <div class=" col-sm-12 form-group">
+            <label class="col-sm-4 control-label text-left">Environment name</label>
+            <div class="col-sm-8">
+              <input v-model="editedEnvironmentName" type="text" class="form-control">
+            </div>
+          </div>
+          <div class="col-sm-12 form-group">
+            <label class="col-sm-4 control-label">
+              Default value for new toggles
+            </label>
+            <div class="col-sm-6 margin-top-4">
+              <label for="r1">True</label>
+              <input id="r1" v-model="defaultToggleValue" type="radio"
+                     :value="true" checked>
+
+              <label for="r2">False</label>
+              <input id="r2" v-model="defaultToggleValue" type="radio"
+                     :value="false">
+            </div>
+          </div>
+          <div class="col-sm-12 form-group">
+            <label class="col-sm-4 control-label">
+              Require a reason when toggle state changes to
+            </label>
+            <div class="col-sm-6 margin-top-8">
+              <label for="reasonWhenEnabled">Enabled</label>
+              <p-check id="reasonWhenEnabled" v-model="requireReasonWhenToggleEnabled" class="p-icon p-fill"
+                       color="default">
+                <i slot="extra" class="icon fas fa-check" />
+              </p-check>
+              <label for="reasonWhenDisabled">Disabled</label>
+              <p-check id="reasonWhenDisabled" v-model="requireReasonWhenToggleDisabled" class="p-icon p-fill"
+                       color="default">
+                <i slot="extra" class="icon fas fa-check" />
+              </p-check>
+            </div>
+          </div>
+          <div class="clearfix">
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-danger" @click="confirmDeleteEnvironment">
+                Delete
+              </button>
+            </div>
+            <div class="col-sm-6 text-right">
+              <button type="button" class="btn btn-default" @click="cancelEditEnvName">
+                Cancel
+              </button>
+              <button type="button" class="btn btn-primary" @click="saveEnvironment">
+                Save
+              </button>
+            </div>
+          </div>
         </div>
-        <modal v-model="showDeleteEnvironmentConfirmation" title="You are about to delete an environment" :footer="false" append-to-body>
-            <deleteEnvironment />
-        </modal>
+      </div>
     </div>
+    <modal v-model="showDeleteEnvironmentConfirmation" title="You are about to delete an environment" :footer="false"
+           append-to-body>
+      <deleteEnvironment />
+    </modal>
+  </div>
 </template>
 
 <script>
@@ -72,7 +75,7 @@
     import PrettyCheck from 'pretty-checkbox-vue/check';
     import { Bus } from './event-bus';
     import DeleteEnvironment from './DeleteEnvironment';
-
+    import _ from 'lodash';
 
     export default {
         components: {
@@ -97,7 +100,7 @@
             }
         },
         created() {
-            Bus.$on('edit-Environment', (selectedApp, environmentFromList) => {
+            Bus.$on('edit-environment', (selectedApp, environmentFromList) => {
                 this.selectedApp = selectedApp;
                 this.environmentToEdit = environmentFromList;
                 this.loadData();

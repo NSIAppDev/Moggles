@@ -1,65 +1,66 @@
 <template>
-    <div>
-        <alert v-if="showSuccessAlert" :duration="alertDuration" type="success"
-               @dismissed="showSuccessAlert = false">
-            <p>
-                <i class="fas fa-check-circle" /> Environment added.
-            </p>
-        </alert>
+  <div>
+    <alert v-if="showSuccessAlert" :duration="alertDuration" type="success"
+           @dismissed="showSuccessAlert = false">
+      <p>
+        <i class="fas fa-check-circle" /> Environment added.
+      </p>
+    </alert>
 
-        <div class="form-horizontal">
-            <div class="row">
-                <div v-for="error in errors" :key="error" class="text-danger">
-                    {{ error }}
-                </div>
-                <div class="col-sm-12 form-group">
-                    <label class="col-sm-4 control-label" for="envname">Environment name</label>
-                    <div class="col-sm-7">
-                        <input ref="envName" v-model="envName" class="col-sm-8 form-control" type="text"
-                               name="envName" placeholder="Env name..." maxlength="50">
-                    </div>
-                </div>
-                <div class="col-sm-12 form-group">
-                    <label class="col-sm-4 control-label">
-                        Default toggle value
-                    </label>
-                    <div class="col-sm-6 margin-top-4">
-                        <label for="b1">True</label>
-                        <input id="b1" v-model="defaultToggleValue" type="radio"
-                               :value="true" checked>
-
-                        <label for="b2">False</label>
-                        <input id="b2" v-model="defaultToggleValue" type="radio"
-                               :value="false">
-                    </div>
-                </div>
-                <div class="col-sm-12 form-group">
-                    <label class="col-sm-4 control-label">
-                        Require a reason when toggle state changes to 
-                    </label>
-                    <div class="col-sm-6 margin-top-4">
-                        <label for="requireReasonWhenToggleEnabled">Enabled</label>
-                        <p-check v-model="requireReasonWhenToggleEnabled" class="p-icon p-fill" color="default">
-                            <i slot="extra" class="icon fas fa-check" />
-                        </p-check>
-                        <label for="requireReasonWhenToggleDisabled">Disabled</label>
-                        <p-check v-model="requireReasonWhenToggleDisabled" class="p-icon p-fill" color="default">
-                            <i slot="extra" class="icon fas fa-check" />
-                        </p-check>
-                    </div>
-                </div>
-                <div class="col-sm-12 text-right">
-                    <button class="btn btn-default" @click="closeAddEnvironmentModal">
-                        Close
-                    </button>
-                    <button :disabled="applicationId != ''? false : true" class="btn btn-primary" type="button"
-                            @click="addEnv">
-                        Add
-                    </button>
-                </div>
-            </div>
+    <div class="form-horizontal">
+      <div class="row">
+        <div v-for="error in errors" :key="error" class="text-danger">
+          {{ error }}
         </div>
+        <div class="col-sm-12 form-group">
+          <label class="col-sm-4 control-label" for="envname">Environment name</label>
+          <div class="col-sm-7">
+            <input ref="envName" v-model="envName" class="col-sm-8 form-control"
+                   type="text"
+                   name="envName" placeholder="Env name..." maxlength="50">
+          </div>
+        </div>
+        <div class="col-sm-12 form-group">
+          <label class="col-sm-4 control-label">
+            Default toggle value
+          </label>
+          <div class="col-sm-6 margin-top-4">
+            <label for="b1">True</label>
+            <input id="b1" v-model="defaultToggleValue" type="radio"
+                   :value="true" checked>
+
+            <label for="b2">False</label>
+            <input id="b2" v-model="defaultToggleValue" type="radio"
+                   :value="false">
+          </div>
+        </div>
+        <div class="col-sm-12 form-group">
+          <label class="col-sm-4 control-label">
+            Require a reason when toggle state changes to 
+          </label>
+          <div class="col-sm-6 margin-top-4">
+            <label for="requireReasonWhenToggleEnabled">Enabled</label>
+            <p-check v-model="requireReasonWhenToggleEnabled" class="p-icon p-fill" color="default">
+              <i slot="extra" class="icon fas fa-check" />
+            </p-check>
+            <label for="requireReasonWhenToggleDisabled">Disabled</label>
+            <p-check v-model="requireReasonWhenToggleDisabled" class="p-icon p-fill" color="default">
+              <i slot="extra" class="icon fas fa-check" />
+            </p-check>
+          </div>
+        </div>
+        <div class="col-sm-12 text-right">
+          <button class="btn btn-default" @click="closeAddEnvironmentModal">
+            Close
+          </button>
+          <button :disabled="applicationId != ''? false : true" class="btn btn-primary" type="button"
+                  @click="addEnv">
+            Add
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>

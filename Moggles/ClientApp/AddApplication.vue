@@ -1,54 +1,55 @@
 <template>
-    <div>
-        <div v-if="showSuccessAlert" class="alert alert-success" @dismissed="showSuccessAlert = false">
-            <p>
-                <i class="fas fa-check-circle" /> Application added succesfully.
-            </p>
-        </div>
-        <div class="form-horizontal">
-            <div class="row">
-                <div v-for="error in errors" :key="error" class="text-danger margin-bottom-10">
-                    {{ error }}
-                </div>
-                <div class="col-sm-12 form-group">
-                    <label class="col-sm-4 control-label" for="appname">Application name</label>
-                    <div class="col-sm-8">
-                        <input ref="appName" v-model="applicationName" class="form-control" type="text"
-                               name="appName" placeholder="Application name..." maxlength="100">
-                    </div>
-                </div>
-                <div class="col-sm-12 form-group">
-                    <label class="col-sm-4 control-label" for="envname">Add a first environment</label>
-                    <div class="col-sm-8">
-                        <input v-model="environmentName" class="form-control" type="text"
-                               name="envName" placeholder="Environment name..." maxlength="100">
-                    </div>
-                </div>
-                <div class="col-sm-12 form-group">
-                    <label class="col-sm-4 control-label">
-                        Default toggle value
-                    </label>
-                    <div class="col-sm-6 margin-top-4">
-                        <label for="d1">True</label>
-                        <input id="d1" v-model="defaultToggleValue" type="radio"
-                               :value="true" checked>
-
-                        <label for="d2">False</label>
-                        <input id="d2" v-model="defaultToggleValue" type="radio"
-                               :value="false">
-                    </div>
-                </div>
-                <div class="col-sm-12 text-right">
-                    <button class="btn btn-default" @click="closeAddApplicationModal">
-                        Close
-                    </button>
-                    <button class="btn btn-primary" type="button" @click="addApplication">
-                        Add
-                    </button>
-                </div>
-            </div>
-        </div>
+  <div>
+    <div v-if="showSuccessAlert" class="alert alert-success" @dismissed="showSuccessAlert = false">
+      <p>
+        <i class="fas fa-check-circle" /> Application added succesfully.
+      </p>
     </div>
+    <div class="form-horizontal">
+      <div class="row">
+        <div v-for="error in errors" :key="error" class="text-danger margin-bottom-10">
+          {{ error }}
+        </div>
+        <div class="col-sm-12 form-group">
+          <label class="col-sm-4 control-label" for="appname">Application name</label>
+          <div class="col-sm-8">
+            <input ref="appName" v-model="applicationName" class="form-control"
+                   type="text"
+                   name="appName" placeholder="Application name..." maxlength="100">
+          </div>
+        </div>
+        <div class="col-sm-12 form-group">
+          <label class="col-sm-4 control-label" for="envname">Add a first environment</label>
+          <div class="col-sm-8">
+            <input v-model="environmentName" class="form-control" type="text"
+                   name="envName" placeholder="Environment name..." maxlength="100">
+          </div>
+        </div>
+        <div class="col-sm-12 form-group">
+          <label class="col-sm-4 control-label">
+            Default toggle value
+          </label>
+          <div class="col-sm-6 margin-top-4">
+            <label for="d1">True</label>
+            <input id="d1" v-model="defaultToggleValue" type="radio"
+                   :value="true" checked>
+
+            <label for="d2">False</label>
+            <input id="d2" v-model="defaultToggleValue" type="radio"
+                   :value="false">
+          </div>
+        </div>
+        <div class="col-sm-12 text-right">
+          <button class="btn btn-default" @click="closeAddApplicationModal">
+            Close
+          </button>
+          <button class="btn btn-primary" type="button" @click="addApplication">
+            Add
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

@@ -1,20 +1,20 @@
 ﻿<template>
-    <div>
-        <div v-if="toggleIsDeployed">
-            <strong>{{ rowDataToDelete ? rowDataToDelete.toggleName: "" }}</strong> feature toggle is active on at least one environment. Are you sure you want to delete it?
-        </div>
-        <div v-else>
-            Are you sure you want to delete this feature toggle?
-        </div>
-        <div class="text-right">
-            <button type="button" class="btn btn-default" @click="cancelDeleteToggle">
-                Cancel
-            </button>
-            <button type="button" class="btn btn-primary" @click="deleteToggle">
-                Delete
-            </button>
-        </div>
+  <div>
+    <div v-if="toggleIsDeployed">
+      <strong>{{ rowDataToDelete ? rowDataToDelete.toggleName: "" }}</strong> feature toggle is active on at least one environment. Are you sure you want to delete it?
     </div>
+    <div v-else>
+      Are you sure you want to delete this feature toggle?
+    </div>
+    <div class="text-right">
+      <button type="button" class="btn btn-default" @click="cancelDeleteToggle">
+        Cancel
+      </button>
+      <button type="button" class="btn btn-primary" @click="deleteToggle">
+        Delete
+      </button>
+    </div>
+  </div>
 </template>
 <script>
     import axios from 'axios';

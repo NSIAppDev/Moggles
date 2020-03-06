@@ -1,206 +1,197 @@
 ﻿<template>
-    <div>
-        <alert v-if="showRefreshAlert" type="info">
-            <button type="button" class="close" @click="closeRefreshAlert">
-                <span>×</span>
-            </button>
-            <h4>Toggles Have Been Modified, would you like to refresh the environments?</h4>
-            <span v-for="(env, index) in environmentsToRefresh" :key="env" class="env-button">
-                <button class="btn btn-default text-uppercase" @click="refreshEnvironment(env, index)"><strong>{{ env }}</strong></button>
-            </span>
-        </alert>
-        <vue-good-table ref="toggleGrid"
-                        :columns="gridColumns"
-                        :rows="toggles"
-                        :pagination-options="getPaginationOptions"
-                        :sort-options="{
+  <div>
+    <alert v-if="showRefreshAlert" type="info">
+      <button type="button" class="close" @click="closeRefreshAlert">
+        <span>×</span>
+      </button>
+      <h4>Toggles Have Been Modified, would you like to refresh the environments?</h4>
+      <span v-for="(env, index) in environmentsToRefresh" :key="env" class="env-button">
+        <button class="btn btn-default text-uppercase" @click="refreshEnvironmentToggles(env, index)"><strong>{{ env }}</strong></button>
+      </span>
+    </alert>
+    <vue-good-table ref="toggleGrid"
+                    :columns="gridColumns"
+                    :rows="toggles"
+                    :pagination-options="getPaginationOptions"
+                    :sort-options="{
                       enabled: true,
                       initialSortBy: {field: 'toggleName', type: 'asc'}
                     }"
-                        style-class="vgt-table striped condensed bordered"
-                        @on-per-page-change="onPageChange">
-            <div slot="emptystate">
-                <div class="text-center">
-                    There are no toggles for this application or filtered search
-                </div>
-            </div>
-            <template slot="table-row" slot-scope="props">
-                <span v-if="props.column.type == 'boolean'" class="pull-left" :class="{ 'is-deployed': props.row[props.column.field + '_IsDeployed']}">
-                    <p-check v-if="props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
-                             color="success">
-                        <i slot="extra" class="icon fas fa-check" />
-                    </p-check>
-                    <p-check v-if="!props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
-                             color="default">
-                        <i slot="extra" class="icon fas fa-check" />
-                    </p-check>
-                </span>
-                <span v-else-if="props.column.field == 'id'">
-                    <a @click="edit(props.row)"><i class="fas fa-edit" /></a>
-                    <a v-if="!props.row.isPermanent" @click="confirmDelete(props.row)"><i class="fas fa-trash-alt" /></a>
-                    <span v-if="props.row.isPermanent" title="Permanent flags cannot be deleted!" class="disabled-link"><i class="fas fa-trash-alt" /></span>
-                </span>
-                <span v-else-if="props.column.field == 'toggleName' ">
-                    <span>{{ props.row.toggleName }}</span> <span v-if="props.row.isPermanent" class="label label-danger">Permanent</span>
-                    <a v-for="ft in getScheduled(props.row.toggleName)" :key="ft.id" @click="editToggleScheduler(ft)"><i class="fas fa-clock" /> <i /></a>
-                </span>
-                <span v-else-if="props.column.field == 'createdDate'">
-                    {{ props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A') }}
-                </span>
-                <span v-else>
-                    {{ props.formattedRow[props.column.field] }}
-                </span>
-            </template>
-            <template slot="table-column" slot-scope="props">
-                {{ props.column.label }}
-                <a v-if="isEnvironmentColumn(props.column)" @click="editEnvName(props.column)"><i class="fas fa-edit" /></a>
-            </template>
-        </vue-good-table>
-        <modal v-model="showDeleteConfirmation" title="You are about to delete a feature toggle" :footer="false">
-            <delete-FeatureToggle/>
-        </modal>
-      
-        <modal v-model="showScheduler" title="Schedule Toggles" :footer="false">
-            <toggle-scheduler />
-        </modal>
-        <modal v-model="showEditModal" title="Edit Feature Flags" :footer="false">
-            <edit-FeatureToggle />
-        </modal>
-        <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false">
-            <edit-Environment />
-        </modal>
-    </div>
+                    style-class="vgt-table striped condensed bordered"
+                    @on-per-page-change="onPageChange">
+      <div slot="emptystate">
+        <div class="text-center">
+          There are no toggles for this application or filtered search
+        </div>
+      </div>
+      <template slot="table-row" slot-scope="props">
+        <span v-if="props.column.type == 'boolean'" class="pull-left" :class="{ 'is-deployed': props.row[props.column.field + '_IsDeployed']}">
+          <p-check v-if="props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
+                   color="success">
+            <i slot="extra" class="icon fas fa-check" />
+          </p-check>
+          <p-check v-if="!props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
+                   color="default">
+            <i slot="extra" class="icon fas fa-check" />
+          </p-check>
+        </span>
+        <span v-else-if="props.column.field == 'id'">
+          <a @click="openEditFeatureToggleModal(props.row)"><i class="fas fa-edit" /></a>
+          <a v-if="!props.row.isPermanent" @click="openDeleteConfirmationModal(props.row)"><i class="fas fa-trash-alt" /></a>
+          <span v-if="props.row.isPermanent" title="Permanent flags cannot be deleted!" class="disabled-link"><i class="fas fa-trash-alt" /></span>
+        </span>
+        <span v-else-if="props.column.field == 'toggleName' ">
+          <span>{{ props.row.toggleName }}</span> <span v-if="props.row.isPermanent" class="label label-danger">Permanent</span>
+          <a v-for="ft in getSchedulesForToggle(props.row.toggleName)" :key="ft.scheduleId" @click="editToggleSchedule(ft)"><i class="fas fa-clock" /> <i /></a>
+        </span>
+        <span v-else-if="props.column.field == 'createdDate'">
+          {{ props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A') }}
+        </span>
+        <span v-else>
+          {{ props.formattedRow[props.column.field] }}
+        </span>
+      </template>
+      <template slot="table-column" slot-scope="props">
+        {{ props.column.label }}
+        <a v-if="isEnvironmentColumn(props.column)" @click="openEditEnvironmentModal(props.column)"><i class="fas fa-edit" /></a>
+      </template>
+    </vue-good-table>
+
+    <modal v-model="showDeleteConfirmationModal" title="You are about to delete a feature toggle" :footer="false">
+      <delete-featureToggle />
+    </modal>
+    <modal v-model="showSchedulerModal" title="Schedule Toggles" :footer="false">
+      <toggle-scheduler />
+    </modal>
+    <modal v-model="showEditModal" title="Edit Feature Flags" :footer="false">
+      <edit-featureToggle />
+    </modal>
+    <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false">
+      <edit-environment />
+    </modal>
+  </div>
 </template>
 <script>
-    import PrettyCheck from 'pretty-checkbox-vue/check';
     import axios from 'axios';
     import _ from 'lodash';
-    import { Bus } from './event-bus';
-    import ToggleScheduler from "./ToggleScheduler";
     import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+    import { Bus } from './event-bus';
+    import PrettyCheck from 'pretty-checkbox-vue/check';
+    import ToggleScheduler from "./ToggleScheduler";
     import EditFeatureToggle from './EditFeatureToggle';
     import EditEnvironment from './EditEnvironment';
     import DeleteFeatureToggle from './DeleteFeatureToggle';
+
     export default {
         components: {
             'p-check': PrettyCheck,
             'toggle-scheduler': ToggleScheduler,
-            'edit-FeatureToggle': EditFeatureToggle,
-            'edit-Environment': EditEnvironment,
-            'delete-FeatureToggle': DeleteFeatureToggle
+            'edit-featureToggle': EditFeatureToggle,
+            'edit-environment': EditEnvironment,
+            'delete-featureToggle': DeleteFeatureToggle
         },
         data() {
-
             return {
-                toggles: [],
+                signalRConnection: null,
                 gridColumns: [],
+                rowsPerPage: 10,
                 selectedApp: {},
+                toggles: [],
+                environmentsList: [],
+                scheduledToggles: [],
+                environmentsToRefresh: [],
                 rowToEdit: null,
                 showEditEnvironmentModal: false,
                 showEditModal: false,
-                showDeleteConfirmation: false,
-                environmentsToRefresh: [],
-                refreshAlertVisible: false,
-                isCacheRefreshEnabled: false,
-                scheduledToggles: [],
-                showScheduler: false,
-                connectionId: null,
-                connection: null,
-                rowsPerPage: 10,
-                environmentsList: [],
-                environmentsNameList: []
+                showDeleteConfirmationModal: false,
+                showSchedulerModal: false,
+                isRefreshAlertVisible: false,
+                isCacheRefreshEnabled: false
             }
         },
         computed: {
             showRefreshAlert() {
-                return this.environmentsToRefresh.length > 0 ? this.refreshAlertVisible : false;
+                return this.environmentsToRefresh.length > 0 ? this.isRefreshAlertVisible : false;
             },
-            
             getPaginationOptions() {
                 return { enabled: true, perPage: parseInt(this.getRowsPerPage()) };
+            },
+            environmentsNameList() {
+                return _.map(this.environmentsList, (env) => {
+                    return env.envName;
+                });
             }
         },
         created() {
-            this.connection = new HubConnectionBuilder().withUrl("/isDueHub").configureLogging(LogLevel.Trace).build();
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
             }).catch(error => window.alert(error));
-            Bus.$on("app-changed", app => {
-                if (app) {
-                    this.scheduledToggles = [];
-                    this.selectedApp = app;
-                    this.initializeGrid(app);
-                    this.getAllScheduledToggle(this.selectedApp.id);
-                }
-            })
 
-            Bus.$on("env-added", () => {
-                this.initializeGrid(this.selectedApp);
-            })
-
-            Bus.$on("toggle-added", () => {
-                this.loadGridData(this.selectedApp.id)
-            })
-
-            Bus.$on("toggle-scheduled", () => {
-                this.getAllScheduledToggle(this.selectedApp.id);
-            })
-
-            Bus.$on('close-scheduler', () => {
-                this.showScheduler = false;
-                this.loadData();
-                this.getAllScheduledToggle(this.selectedApp.id);
-            })
-            Bus.$on('close-editEnvironment', () => {
-                this.showEditEnvironmentModal = false;
-                this.loadData();
-                
-            })
-            Bus.$on('close-editFeatureFlag', (environmentsToRefresh, refreshAlertVisible) => {
-                this.showEditModal = false;
-                this.loadData();
-                this.environmentsToRefresh = environmentsToRefresh;
-                this.refreshAlertVisible = refreshAlertVisible;
-            })
-            Bus.$on('close-deleteToggle', () => {
-                this.showDeleteConfirmation = false;
-                this.loadData();
-            })
+            this.subscribeToBusEvents();
         },
         mounted() {
-            this.start();
+            this.createSignalRConnection();
         },
         methods: {
-            loadData() {
-                this.initializeGrid(this.selectedApp);
-                this.loadGridData(this.selectedApp.id);
+            subscribeToBusEvents() {
+                Bus.$on("app-changed", app => {
+                    if (app) {
+                        this.selectedApp = app;
+                        this.loadGrid();
+                    }
+                })
+
+                Bus.$on("env-added", () => {
+                    this.loadGrid();
+                })
+
+                Bus.$on("toggle-added", () => {
+                    this.loadGridData()
+                })
+
+                Bus.$on("toggle-scheduled", () => {
+                    this.getAllScheduledToggles();
+                })
+
+                Bus.$on('close-scheduler', () => {
+                    this.showSchedulerModal = false;
+                    this.getAllScheduledToggles();
+                })
+
+                Bus.$on('close-editEnvironment', () => {
+                    this.showEditEnvironmentModal = false;
+                    this.loadGrid();
+                })
+
+                Bus.$on('close-editFeatureFlag', (environmentsToRefresh, isRefreshAlertVisible) => {
+                    this.showEditModal = false;
+                    this.loadGrid();
+                    this.environmentsToRefresh = environmentsToRefresh;
+                    this.isRefreshAlertVisible = isRefreshAlertVisible;
+                })
+
+                Bus.$on('close-deleteToggle', () => {
+                    this.showDeleteConfirmationModal = false;
+                    this.loadGridData();
+                })
             },
-            getRowsPerPage() {
-                if (localStorage.getItem('rowsPerPage') != null) {
-                    this.rowsPerPage = localStorage.getItem('rowsPerPage');
-                }
-                return this.rowsPerPage;
-            },
-            onPageChange(page) {
-                let perPage = page.currentPerPage;
-                this.rowsPerPage = perPage;
-                localStorage.setItem('rowsPerPage', perPage);
-            },
-            start() {
+            createSignalRConnection() {
+                this.signalRConnection = new HubConnectionBuilder().withUrl("/isDueHub").configureLogging(LogLevel.Trace).build();
+
                 try {
-                    this.connection.off('IsDue', this.signal);
-                    this.connection.on('IsDue', this.signal);
-                    this.connection.start();
+                    this.signalRConnection.off('IsDue', this.signalScheduleIsDue);
+                    this.signalRConnection.on('IsDue', this.signalScheduleIsDue);
+                    this.signalRConnection.start();
                 } catch (err) {
-                    setTimeout(() => this.start, 5000);
+                    setTimeout(() => this.createSignalRConnection(), 5000);
                 }
             },
-            signal() {
-                this.scheduledToggles = [];
+            signalScheduleIsDue() {
                 this.loadGridData(this.selectedApp.id);
-                this.getAllScheduledToggle(this.selectedApp.id);
             },
             createGridColumns() {
+                this.$refs['toggleGrid'].reset();
+
                 let columns = [
                     {
                         field: 'id',
@@ -291,77 +282,43 @@
                     }
                 }));
 
-
                 this.gridColumns = columns
-
             },
-            editEnvName(column) {
-                var environmentFromList = this.environmentsList.find(element => element.envName == column.field)
-                this.showEditEnvironmentModal = true
-                Bus.$emit('edit-Environment', this.selectedApp, environmentFromList)
-            },
-            edit(row) {
-                this.rowToEdit = _.clone(row)
-                this.showEditModal = true;
-                let toggle = {
-                    appId : this.selectedApp.id,
-                    rowToEdit : this.rowToEdit
+            getRowsPerPage() {
+                if (localStorage.getItem('rowsPerPage') != null) {
+                    this.rowsPerPage = localStorage.getItem('rowsPerPage');
                 }
-                Bus.$emit('open-editFeatureToggle', toggle, this.gridColumns);
+                return this.rowsPerPage;
             },
-            confirmDelete(row) {
-                this.showDeleteConfirmation = true
-                let toggleToDelete = {
-                    appId: this.selectedApp.id,
-                    toggle: row
-                }
-                Bus.$emit('delete-featureToggle', toggleToDelete);
+            onPageChange(page) {
+                let perPage = page.currentPerPage;
+                this.rowsPerPage = perPage;
+                localStorage.setItem('rowsPerPage', perPage);
             },
-            getAllScheduledToggle(appId) {
+            loadGrid() {
+                this.initializeGrid(this.selectedApp);
+                this.loadGridData();
+            },
+            initializeGrid(app) {
+                this.environmentsList = [];
 
-                axios.get("/api/toggleScheduler", {
+                axios.get("/api/FeatureToggles/environments", {
                     params: {
-                        applicationId: appId
+                        applicationId: app.id
                     }
                 }).then((response) => {
+                    this.environmentsList = response.data;
+                    this.createGridColumns();
 
-                    //create the flattened row models
-                    let models = _.map(response.data, toggle => {
-                        return {
-                            id: toggle.id,
-                            toggleName: toggle.toggleName,
-                            scheduledDate: toggle.scheduledDate,
-                            scheduledState: toggle.scheduledState,
-                            updatedBy: toggle.updatedBy,
-                            environments: toggle.environments
-                        };
-                    });
-                    this.scheduledToggles = models;
-                });
+                    Bus.$emit('env-loaded', this.environmentsNameList)
+                }).catch((e) => { window.alert(e) });
             },
-            getScheduled(toggleName) {
-                let filtered = _.map(this.scheduledToggles.filter(ft => ft.toggleName == toggleName), sch => {
-                    return {
-                        toggleId: sch.id,
-                        toggleName: sch.toggleName,
-                        scheduledDate: sch.scheduledDate,
-                        scheduledState: sch.scheduledState,
-                        updatedBy: sch.updatedBy,
-                        environments: sch.environments
-                    };
+            loadGridData() {
+                this.getAllScheduledToggles(this.selectedApp.id);
 
-                });
-                return filtered;
-            },
-            editToggleScheduler(toggle) {
-                Bus.$emit("edit-schedule", toggle.toggleId);
-                this.showScheduler = true;
-            },
-            loadGridData(appId) {
-                this.getAllScheduledToggle(appId);
                 axios.get("/api/FeatureToggles", {
                     params: {
-                        applicationId: appId
+                        applicationId: this.selectedApp.id
                     }
                 }).then((response) => {
                     //create the flattened row models
@@ -394,38 +351,69 @@
                     //window.alert(error)
                 });
             },
-            initializeGrid(app) {
-                this.environmentsNameList = [];
-                this.environmentsList = [];
-                this.getAllScheduledToggle(app.id);
-                axios.get("/api/FeatureToggles/environments", {
+            getAllScheduledToggles() {
+                this.scheduledToggles = [];
+
+                axios.get("/api/toggleScheduler", {
                     params: {
-                        applicationId: app.id
+                        applicationId: this.selectedApp.id
                     }
                 }).then((response) => {
-                    this.environmentsList = response.data;
-                    response.data.forEach(env => { if (!this.environmentsNameList.includes(env.envName)) { this.environmentsNameList.push(env.envName) } });
-                    this.createGridColumns();
-                    this.loadGridData(app.id);
-                    this.$refs['toggleGrid'].reset()
-
-                    Bus.$emit('env-loaded', this.environmentsNameList)
-                }).catch((e) => { window.alert(e) });
+                    this.scheduledToggles = response.data;
+                });
             },
-            refreshEnvironment(env, index) {
+            getSchedulesForToggle(toggleName) {
+                return _.map(this.scheduledToggles.filter(ft => ft.toggleName == toggleName), sch => {
+                    return {
+                        scheduleId: sch.id,
+                        toggleName: sch.toggleName,
+                        scheduledDate: sch.scheduledDate,
+                        scheduledState: sch.scheduledState,
+                        updatedBy: sch.updatedBy,
+                        environments: sch.environments
+                    };
+
+                });
+            },
+            editToggleSchedule(toggle) {
+                Bus.$emit("edit-schedule", toggle.scheduleId);
+                this.showSchedulerModal = true;
+            },
+            openEditEnvironmentModal(column) {
+                var environmentFromList = this.environmentsList.find(element => element.envName == column.field);
+                this.showEditEnvironmentModal = true;
+                Bus.$emit('edit-environment', this.selectedApp, environmentFromList);
+            },
+            openEditFeatureToggleModal(row) {
+                this.rowToEdit = _.clone(row)
+                this.showEditModal = true;
+                let toggle = {
+                    appId: this.selectedApp.id,
+                    rowToEdit: this.rowToEdit
+                }
+                Bus.$emit('open-editFeatureToggle', toggle, this.gridColumns);
+            },
+            openDeleteConfirmationModal(row) {
+                this.showDeleteConfirmationModal = true
+                let toggleToDelete = {
+                    appId: this.selectedApp.id,
+                    toggle: row
+                }
+                Bus.$emit('delete-featureToggle', toggleToDelete);
+            },
+            refreshEnvironmentToggles(env, index) {
                 if (!this.selectedApp)
                     return;
 
-                let param = {
+                Bus.$emit('block-ui')
+
+                axios.post('api/CacheRefresh', {
                     applicationId: this.selectedApp.id,
                     envName: env
-                };
-
-                Bus.$emit('block-ui')
-                axios.post('api/CacheRefresh', param)
+                })
                     .then(() => {
                         this.environmentsToRefresh.splice(index, 1);
-                        ///shouldn't need the below code, but computed value doesn't register the length as 0 without it
+                        //shouldn't need the below code, but computed value doesn't register the length as 0 without it
                         if (this.environmentsToRefresh.length === 0) {
                             this.environmentsToRefresh = [];
                         }
@@ -442,13 +430,7 @@
                     });
             },
             closeRefreshAlert() {
-                this.refreshAlertVisible = false;
-            },
-            stringIsNullOrEmpty(text) {
-                return !text || /^\s*$/.test(text);
-            },
-            isEnviroment(env) {
-                return this.environmentsNameList.includes(env);
+                this.isRefreshAlertVisible = false;
             },
             isEnvironmentColumn(column) {
                 return (column.type == 'boolean' && column.field != 'userAccepted');

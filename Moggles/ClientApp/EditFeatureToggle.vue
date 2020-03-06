@@ -1,72 +1,74 @@
 ﻿<template>
-    <div>
-        <div v-if="rowToEdit" class="form-horizontal">
-            <div class="row">
-                <div class="col-sm-12">
-                    <div v-for="error in editFeatureToggleErrors" :key="error" class="text-danger margin-left-15">
-                        {{ error }}
-                    </div>
-                </div>
-                <div v-for="col in gridColumns" :key="col.field" class="form-group margin-bottom-4">
-                    <div v-if="col.type == 'boolean'">
-                        <label class="col-sm-4 control-label">{{ col.label }}</label>
-                        <div class="col-sm-1 margin-top-8">
-                            <div @click="environmentEdited(col.field)">
-                                <p-check v-if="rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" class="p-icon p-fill"
-                                         color="success">
-                                    <i slot="extra" class="icon fas fa-check" />
-                                </p-check>
-                                <p-check v-if="!rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" class="p-icon p-fill"
-                                         color="default">
-                                    <i slot="extra" class="icon fas fa-check" />
-                                </p-check>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 margin-top-8">
-                            <div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null">
-                                <strong>Deployed:</strong> {{ rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('M/D/YY hh:mm:ss A') }}
-                            </div>
-                            <div v-if="isEnviroment(col.field)">
-                                <strong>Last Updated:</strong> {{ rowToEdit[col.field + '_LastUpdated'] | moment('M/D/YY hh:mm:ss A') }}
-                            </div>
-                            <div v-if="isEnviroment(col.field)">
-                                <strong>Updated by:</strong> {{ rowToEdit[col.field + '_UpdatedByUser'] }}
-                            </div>
-                        </div>
-                    </div>
-                    <div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">{{ col.label }}</label>
-                            <div class="col-sm-7">
-                                <input v-model="rowToEdit[col.field]" type="text" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12 margin-top-0">
-                    <label class="control-label margin-top-4">Change reason:</label>
-                    <textarea class="col-sm-12" rows="2" v-model="reasonToChange"></textarea>
-                    <ul class="list-group col-sm-12 margin-top-6">
-                        <li v-for="reason in rowToEdit.reasonsToChange" :key="reason.createdAt" class="col-sm-12 list-group-item">
-                            <div class="col-sm-4">
-                                <strong>{{reason.addedByUser}}</strong>
-                                <div>{{reason.createdAt | moment('M/D/YY hh:mm:ss A')}}</div>
-                            </div>
-                            <div class="col-sm-8">{{reason.description}}</div>
-                        </li>
-                    </ul>
-                </div>
+  <div>
+    <div v-if="rowToEdit" class="form-horizontal">
+      <div class="row">
+        <div class="col-sm-12">
+          <div v-for="error in editFeatureToggleErrors" :key="error" class="text-danger margin-left-15">
+            {{ error }}
+          </div>
+        </div>
+        <div v-for="col in gridColumns" :key="col.field" class="form-group margin-bottom-4">
+          <div v-if="col.type == 'boolean'">
+            <label class="col-sm-4 control-label">{{ col.label }}</label>
+            <div class="col-sm-1 margin-top-8">
+              <div @click="environmentEdited(col.field)">
+                <p-check v-if="rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" class="p-icon p-fill"
+                         color="success">
+                  <i slot="extra" class="icon fas fa-check" />
+                </p-check>
+                <p-check v-if="!rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" class="p-icon p-fill"
+                         color="default">
+                  <i slot="extra" class="icon fas fa-check" />
+                </p-check>
+              </div>
             </div>
+            <div class="col-sm-6 margin-top-8">
+              <div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null">
+                <strong>Deployed:</strong> {{ rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('M/D/YY hh:mm:ss A') }}
+              </div>
+              <div v-if="isEnviroment(col.field)">
+                <strong>Last Updated:</strong> {{ rowToEdit[col.field + '_LastUpdated'] | moment('M/D/YY hh:mm:ss A') }}
+              </div>
+              <div v-if="isEnviroment(col.field)">
+                <strong>Updated by:</strong> {{ rowToEdit[col.field + '_UpdatedByUser'] }}
+              </div>
+            </div>
+          </div>
+          <div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">{{ col.label }}</label>
+              <div class="col-sm-7">
+                <input v-model="rowToEdit[col.field]" type="text" class="form-control">
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="text-right">
-            <button type="button" class="btn btn-default" @click="cancelEdit">
-                Cancel
-            </button>
-            <button type="button" class="btn btn-primary" @click="saveToggle">
-                Save
-            </button>
+        <div class="col-sm-12 margin-top-0">
+          <label class="control-label margin-top-4">Change reason:</label>
+          <textarea v-model="reasonToChange" class="col-sm-12" rows="2" />
+          <ul class="list-group col-sm-12 margin-top-6">
+            <li v-for="reason in rowToEdit.reasonsToChange" :key="reason.createdAt" class="col-sm-12 list-group-item">
+              <div class="col-sm-4">
+                <strong>{{ reason.addedByUser }}</strong>
+                <div>{{ reason.createdAt | moment('M/D/YY hh:mm:ss A') }}</div>
+              </div>
+              <div class="col-sm-8">
+                {{ reason.description }}
+              </div>
+            </li>
+          </ul>
         </div>
+      </div>
     </div>
+    <div class="text-right">
+      <button type="button" class="btn btn-default" @click="cancelEdit">
+        Cancel
+      </button>
+      <button type="button" class="btn btn-primary" @click="saveToggle">
+        Save
+      </button>
+    </div>
+  </div>
 </template>
 <script>
     import PrettyCheck from 'pretty-checkbox-vue/check';
