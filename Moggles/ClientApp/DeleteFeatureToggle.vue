@@ -1,7 +1,7 @@
 ﻿<template>
   <div>
-    <div v-if="toggleIsDeployed">
-      <strong>{{ rowDataToDelete ? rowDataToDelete.toggleName: "" }}</strong> feature toggle is active on at least one environment. Are you sure you want to delete it?
+    <div v-if="isToggleDeployedOnAnyEnvironment">
+        <strong>{{ toggleToDelete ? toggleToDelete.toggleName: "" }}</strong> feature toggle is active on at least one environment. Are you sure you want to delete it?
     </div>
     <div v-else>
       Are you sure you want to delete this feature toggle?
@@ -28,33 +28,31 @@
         },
         data() {
             return {
-                toggleIsDeployed: false,
-                rowDataToDelete: null
+                toggleToDelete: null
+            }
+        },
+        computed: {
+            isToggleDeployedOnAnyEnvironment() {
+                for (var propertyName in this.toggleToDelete) {
+                    if (propertyName.endsWith("_IsDeployed") && this.toggleToDelete[propertyName] === true)
+                        return true;
+                }
+                return false;
             }
         },
         created() {
             Bus.$on('delete-featureToggle', toggleToDelete => {
-                this.rowDataToDelete = toggleToDelete;
-                this.toggleIsDeployed = this.isToggleActive(toggleToDelete);
+                this.toggleToDelete = toggleToDelete;
             })
         },
         methods: {
             deleteToggle() {
-                axios.delete(`/api/FeatureToggles?id=${this.rowDataToDelete.id}&applicationid=${this.application.id}`).then(() => {
-                    this.rowDataToDelete = null
-                    this.toggleIsDeployed = false
+                axios.delete(`/api/FeatureToggles?id=${this.toggleToDelete.id}&applicationid=${this.application.id}`).then(() => {
+                    this.toggleToDelete = null
                     Bus.$emit('close-deleteToggle');
                 }).catch(error => window.alert(error))
             },
-            isToggleActive(toggleData) {
-                for (var propertyName in toggleData) {
-                    if (propertyName.endsWith("_IsDeployed") && toggleData[propertyName] === true)
-                        return true;
-                }
-                return false;
-            },
             cancelDeleteToggle() {
-
                 Bus.$emit('close-deleteToggle');
             }
         }

@@ -37,7 +37,7 @@
         </span>
         <span v-else-if="props.column.field == 'id'">
           <a @click="openEditFeatureToggleModal(props.row)"><i class="fas fa-edit" /></a>
-          <a v-if="!props.row.isPermanent" @click="openDeleteConfirmationModal(props.row)"><i class="fas fa-trash-alt" /></a>
+          <a v-if="!props.row.isPermanent" @click="openDeleteFeatureToggleConfirmationModal(props.row)"><i class="fas fa-trash-alt" /></a>
           <span v-if="props.row.isPermanent" title="Permanent flags cannot be deleted!" class="disabled-link"><i class="fas fa-trash-alt" /></span>
         </span>
         <span v-else-if="props.column.field == 'toggleName' ">
@@ -387,7 +387,7 @@
                 this.showEditModal = true;
                 Bus.$emit('open-editFeatureToggle', _.clone(row), this.gridColumns);
             },
-            openDeleteConfirmationModal(row) {
+            openDeleteFeatureToggleConfirmationModal(row) {
                 this.showDeleteConfirmationModal = true
                 Bus.$emit('delete-featureToggle', row);
             },
