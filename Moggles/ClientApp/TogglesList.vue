@@ -379,9 +379,9 @@
                 this.showSchedulerModal = true;
             },
             openEditEnvironmentModal(column) {
-                var environmentFromList = this.environmentsList.find(element => element.envName == column.field);
+                let environment = this.environmentsList.find(element => element.envName == column.field);
                 this.showEditEnvironmentModal = true;
-                Bus.$emit('edit-environment', environmentFromList);
+                Bus.$emit('edit-environment', environment);
             },
             openEditFeatureToggleModal(row) {
                 this.showEditModal = true;
