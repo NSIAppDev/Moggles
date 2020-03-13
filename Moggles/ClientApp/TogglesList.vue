@@ -385,7 +385,7 @@
             },
             openEditFeatureToggleModal(row) {
                 this.showEditModal = true;
-                Bus.$emit('open-editFeatureToggle', _.clone(row), this.gridColumns);
+                Bus.$emit('open-editFeatureToggle', _.clone(row), this.environmentsNameList);
             },
             openDeleteFeatureToggleConfirmationModal(row) {
                 this.showDeleteConfirmationModal = true

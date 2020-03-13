@@ -1,74 +1,98 @@
 ﻿<template>
-  <div>
-    <div v-if="rowToEdit" class="form-horizontal">
-      <div class="row">
-        <div class="col-sm-12">
-          <div v-for="error in editFeatureToggleErrors" :key="error" class="text-danger margin-left-15">
-            {{ error }}
-          </div>
-        </div>
-        <div v-for="col in gridColumns" :key="col.field" class="form-group margin-bottom-4">
-          <div v-if="col.type == 'boolean'">
-            <label class="col-sm-4 control-label">{{ col.label }}</label>
-            <div class="col-sm-1 margin-top-8">
-              <div @click="environmentEdited(col.field)">
-                <p-check v-if="rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" class="p-icon p-fill"
-                         color="success">
-                  <i slot="extra" class="icon fas fa-check" />
-                </p-check>
-                <p-check v-if="!rowToEdit[col.field + '_IsDeployed']" v-model="rowToEdit[col.field]" class="p-icon p-fill"
-                         color="default">
-                  <i slot="extra" class="icon fas fa-check" />
-                </p-check>
-              </div>
+    <div>
+        <div v-if="rowToEdit" class="form-horizontal">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div v-for="error in editFeatureToggleErrors" :key="error" class="text-danger margin-left-15">
+                        {{ error }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div>
+                        <label class="col-sm-4 control-label">Feature Toggle name</label>
+                        <div class="col-sm-7">
+                            <input v-model="rowToEdit.toggleName" type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div v-for="environment in environments" :key="environment" class="form-group">
+                        <label class="col-sm-4 control-label">{{ environment }}</label>
+                        <div class="col-sm-1">
+                            <div>
+                                <p-check  @click="addEnvironmentToRefreshList(environment)" v-model="rowToEdit[environment]" class="p-icon p-fill"
+                                         :color="rowToEdit[environment + '_IsDeployed'] ? 'success' : 'default' ">
+                                    <i slot="extra" class="icon fas fa-check" />
+                                </p-check>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div v-if="rowToEdit[environment + '_FirstTimeDeployDate'] !== null">
+                                <strong>Deployed:</strong> {{ rowToEdit[environment + '_FirstTimeDeployDate'] | moment('M/D/YY hh:mm:ss A') }}
+                            </div>
+                            <div>
+                                <strong>Last Updated:</strong> {{ rowToEdit[environment + '_LastUpdated'] | moment('M/D/YY hh:mm:ss A') }}
+                            </div>
+                            <div>
+                                <strong>Updated by:</strong> {{ rowToEdit[environment + '_UpdatedByUser'] }}
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="col-sm-4 control-label">Work Item ID</label>
+                        <div class="col-sm-7">
+                            <input v-model="rowToEdit.workItemIdentifier" type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="col-sm-4 control-label">Notes</label>
+                        <div class="col-sm-7">
+                            <input v-model="rowToEdit.notes" type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="col-sm-4 control-label">Is Permanent</label>
+                        <div class="col-sm-1">
+                            <p-check v-model="rowToEdit.isPermanent" class="p-icon p-fill"
+                                     color="default">
+                                <i slot="extra" class="icon fas fa-check" />
+                            </p-check>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="col-sm-4 control-label">Accepted by User</label>
+                        <div class="col-sm-1">
+                            <p-check v-model="rowToEdit.userAccepted" class="p-icon p-fill"
+                                     color="default">
+                                <i slot="extra" class="icon fas fa-check" />
+                            </p-check>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <label class="control-label">Change reason:</label>
+                    <textarea v-model="reasonToChange" class="col-sm-12" rows="2" />
+                    <ul class="list-group col-sm-12">
+                        <li v-for="reason in rowToEdit.reasonsToChange" :key="reason.createdAt" class="col-sm-12 list-group-item">
+                            <div class="col-sm-4">
+                                <strong>{{ reason.addedByUser }}</strong>
+                                <div>{{ reason.createdAt | moment('M/D/YY hh:mm:ss A') }}</div>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ reason.description }}
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="col-sm-6 margin-top-8">
-              <div v-if="isEnviroment(col.field) && rowToEdit[col.field + '_FirstTimeDeployDate'] !== null">
-                <strong>Deployed:</strong> {{ rowToEdit[col.field + '_FirstTimeDeployDate'] | moment('M/D/YY hh:mm:ss A') }}
-              </div>
-              <div v-if="isEnviroment(col.field)">
-                <strong>Last Updated:</strong> {{ rowToEdit[col.field + '_LastUpdated'] | moment('M/D/YY hh:mm:ss A') }}
-              </div>
-              <div v-if="isEnviroment(col.field)">
-                <strong>Updated by:</strong> {{ rowToEdit[col.field + '_UpdatedByUser'] }}
-              </div>
-            </div>
-          </div>
-          <div v-else-if="col.field !== 'id' && col.field !== 'createdDate'">
-            <div class="form-group">
-              <label class="col-sm-4 control-label">{{ col.label }}</label>
-              <div class="col-sm-7">
-                <input v-model="rowToEdit[col.field]" type="text" class="form-control">
-              </div>
-            </div>
-          </div>
         </div>
-        <div class="col-sm-12 margin-top-0">
-          <label class="control-label margin-top-4">Change reason:</label>
-          <textarea v-model="reasonToChange" class="col-sm-12" rows="2" />
-          <ul class="list-group col-sm-12 margin-top-6">
-            <li v-for="reason in rowToEdit.reasonsToChange" :key="reason.createdAt" class="col-sm-12 list-group-item">
-              <div class="col-sm-4">
-                <strong>{{ reason.addedByUser }}</strong>
-                <div>{{ reason.createdAt | moment('M/D/YY hh:mm:ss A') }}</div>
-              </div>
-              <div class="col-sm-8">
-                {{ reason.description }}
-              </div>
-            </li>
-          </ul>
+        <div class="text-right">
+            <button type="button" class="btn btn-default" @click="closeModal()">
+                Cancel
+            </button>
+            <button type="button" class="btn btn-primary" @click="saveToggle">
+                Save
+            </button>
         </div>
-      </div>
     </div>
-    <div class="text-right">
-      <button type="button" class="btn btn-default" @click="cancelEdit">
-        Cancel
-      </button>
-      <button type="button" class="btn btn-primary" @click="saveToggle">
-        Save
-      </button>
-    </div>
-  </div>
 </template>
 <script>
     import PrettyCheck from 'pretty-checkbox-vue/check';
@@ -94,49 +118,42 @@
         data() {
             return {
                 editFeatureToggleErrors: [],
-                reasonsToChange: [],
                 rowToEdit: null,
+                initialToggle: null,
+                reasonsToChange: [],
                 showEditModal: false,
                 requireReasonWhenToggleEnabled: false,
                 requireReasonWhenToggleDisabled: false,
                 reasonToChange: "",
-                toggleStatuses: [],
-                gridColumns: [],
-                environmentsEdited: [],
-                environmentList: [],
-                environmentsNameList: [],
+                environments: [],
                 refreshAlertVisible: false,
                 environmentsToRefresh: []
             }
         },
         created() {
-      
-            Bus.$on("open-editFeatureToggle", (toggle, gridColumns) => {
+            Bus.$on("open-editFeatureToggle", (toggle, environments) => {
+                //create initliase method
+                this.reasonsToChange = [];
                 this.editFeatureToggleErrors = [];
-                this.gridColumns = gridColumns;
+                this.environments = environments;
                 this.rowToEdit = toggle;
-                this.loadToggleStatuses();
-                this.loadEnvironmentsList();
+                this.initialToggle = _.cloneDeep(toggle);
             });
-
         },
         methods: {
             saveToggle() {
-                this.editFeatureToggleErrors = [];
-                this.reasonsToChange = [];
                 if (this.stringIsNullOrEmpty(this.rowToEdit.toggleName)) {
                     this.editFeatureToggleErrors.push("Feature toggle name cannot be empty")
                     return;
                 }
 
                 let workItemIdentifier = this.rowToEdit.workItemIdentifier != null ? this.rowToEdit.workItemIdentifier.trim() : this.rowToEdit.workItemIdentifier;
-
                 if (!this.workItemIdentifierIsValid(workItemIdentifier)) {
                     this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
                     return;
                 }
 
-                if (this.reasonToChange.length > 500) {
+                if (!this.reasonToChangeIsValid(this.reasonToChange)) {
                     this.editFeatureToggleErrors.push("Change reason description cannot have more than 500 characters");
                     return;
                 }
@@ -152,23 +169,23 @@
                     statuses: [],
                     reasonsToChange: []
                 }
+
                 if (!this.stringIsNullOrEmpty(this.reasonToChange)) {
                     toggleUpdateModel.reasonsToChange.push({ description: this.reasonToChange });
                 }
 
                 let changes = [];
-                let toggle = this.toggleStatuses.find(_ => _.id == toggleUpdateModel.id);
 
-                _.forEach(this.environmentsNameList, envName => {
+                _.forEach(this.environments, envName => {
                     toggleUpdateModel.statuses.push({
                         environment: envName,
                         enabled: this.rowToEdit[envName]
                     });
-                    let env = toggle.statuses.find(_ => _.environment == envName);
-                    if (env.enabled != this.rowToEdit[envName]) {
+
+                    if (this.initialToggle[envName] != this.rowToEdit[envName]) {
                         changes.push({
                             envName: envName,
-                            oldValue: env.enabled,
+                            oldValue: this.initialToggle[envName],
                             newValue: this.rowToEdit[envName]
                         });
                     }
@@ -176,7 +193,7 @@
 
                 let requiredErrorMessages = [];
                 _.forEach(changes, change => {
-                    let env = this.environmentsList.find(_ => _.envName == change.envName);
+                    let env = this.environments.find(_ => _ == change.envName);
                     if (this.reasonToChangeWhenToggleDisabledIsValid(env, change) || this.reasonToChangeWhenToggleEnabledIsValid(env, change)) {
                         requiredErrorMessages.push(env.envName);
                     }
@@ -188,25 +205,15 @@
                     });
                     return;
                 }
-                if (this.isCacheRefreshEnabled) {
-                    _.forEach(this.environmentsEdited, envName => {
-                        this.addEnvironemntToRefreshList(envName);
-                    });
-                }
 
                 axios.put('/api/featuretoggles', toggleUpdateModel)
                     .then(() => {
-                        this.showEditModal = false
-                        this.rowToEdit = null
-                        this.environmentsEdited = []
-                        this.reasonToChange = ""
-                        Bus.$emit('close-editFeatureFlag', this.environmentsToRefresh, this.refreshAlertVisible);
+                        this.closeModal();
                     }).catch(error => window.alert(error))
             },
             stringIsNullOrEmpty(text) {
                 return !text || /^\s*$/.test(text);
             },
-
             reasonToChangeWhenToggleDisabledIsValid(env, change) {
                 return env.requireReasonWhenToggleDisabled == true && change.oldValue == true && change.newValue == false && this.stringIsNullOrEmpty(this.reasonToChange);
             },
@@ -216,53 +223,24 @@
             workItemIdentifierIsValid(workItemIdentifier) {
                 return workItemIdentifier == null || (workItemIdentifier != null && workItemIdentifier.length <= 50);
             },
-            environmentEdited(env) {
-                let index = _.indexOf(this.environmentsEdited, env);
-                if (index === -1) {
-                    this.environmentsEdited.push(env);
-                }
+            reasonToChangeIsValid(reasonToChange) {
+                return reasonToChange == null || (reasonToChange != null && reasonToChange.length <= 500);
             },
-
-            addEnvironemntToRefreshList(env) {
+            addEnvironmentToRefreshList(env) {
                 let index = _.indexOf(this.environmentsToRefresh, env);
-                if (index === -1 && this.isEnviroment(env)) {
+                if (index === -1) {
                     this.environmentsToRefresh.push(env);
-                    this.refreshAlertVisible = true;
                 }
             },
-            cancelEdit() {
-                this.showEditModal = false
-                this.rowToEdit = null
-                this.environmentsEdited = [];
+            closeModal() {
+                this.showEditModal = false;
+                this.rowToEdit = null;
+                this.initialToggle = null;
                 this.editFeatureToggleErrors = []
                 this.reasonToChange = "";
-                Bus.$emit('close-editFeatureFlag', this.environmentsToRefresh, this.refreshAlertVisible);
-            },
-            isEnviroment(env) {
-                return this.environmentsNameList.includes(env);
-            },
-            loadToggleStatuses() {
-                axios.get("/api/FeatureToggles", {
-                    params: {
-                        applicationId: this.application.id
-                    }
-                }).then((response) => {
-                    this.toggleStatuses = response.data;
-                }).catch(() => {
-                    //do not uncomment this, the null reference exception will return to haunt us !
-                    //window.alert(error)
-                });
-            },
-            loadEnvironmentsList() {
-                axios.get("/api/FeatureToggles/environments", {
-                    params: {
-                        applicationId: this.application.id
-                    }
-                }).then((response) => {
-                    this.environmentsList = response.data;
-                    this.environmentsList.forEach(env => { if (!this.environmentsNameList.includes(env.envName)) { this.environmentsNameList.push(env.envName) } });
-
-                }).catch((e) => { window.alert(e) });
+                this.environmentsToRefresh = [];
+                let isRefreshAlertVisble = this.environmentsToRefresh.length > 0;
+                Bus.$emit('close-editFeatureFlag', this.environmentsToRefresh, isRefreshAlertVisble);
             }
         }
     }
