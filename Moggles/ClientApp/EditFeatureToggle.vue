@@ -14,25 +14,25 @@
                             <input v-model="rowToEdit.toggleName" type="text" class="form-control">
                         </div>
                     </div>
-                    <div v-for="environment in environments" :key="environment" class="form-group">
-                        <label class="col-sm-4 control-label">{{ environment }}</label>
+                    <div v-for="environment in environments" :key="environment.envName" class="form-group">
+                        <label class="col-sm-4 control-label">{{ environment.envName }}</label>
                         <div class="col-sm-1">
                             <div>
-                                <p-check  @click="addEnvironmentToRefreshList(environment)" v-model="rowToEdit[environment]" class="p-icon p-fill"
-                                         :color="rowToEdit[environment + '_IsDeployed'] ? 'success' : 'default' ">
+                                <p-check @click="addEnvironmentToRefreshList(environment.envName)" v-model="rowToEdit[environment.envName]" class="p-icon p-fill"
+                                         :color="rowToEdit[environment.envName + '_IsDeployed'] ? 'success' : 'default' ">
                                     <i slot="extra" class="icon fas fa-check" />
                                 </p-check>
                             </div>
                         </div>
                         <div class="col-sm-6">
-                            <div v-if="rowToEdit[environment + '_FirstTimeDeployDate'] !== null">
-                                <strong>Deployed:</strong> {{ rowToEdit[environment + '_FirstTimeDeployDate'] | moment('M/D/YY hh:mm:ss A') }}
+                            <div v-if="rowToEdit[environment.envName + '_FirstTimeDeployDate'] !== null">
+                                <strong>Deployed:</strong> {{ rowToEdit[environment.envName + '_FirstTimeDeployDate'] | moment('M/D/YY hh:mm:ss A') }}
                             </div>
                             <div>
-                                <strong>Last Updated:</strong> {{ rowToEdit[environment + '_LastUpdated'] | moment('M/D/YY hh:mm:ss A') }}
+                                <strong>Last Updated:</strong> {{ rowToEdit[environment.envName + '_LastUpdated'] | moment('M/D/YY hh:mm:ss A') }}
                             </div>
                             <div>
-                                <strong>Updated by:</strong> {{ rowToEdit[environment + '_UpdatedByUser'] }}
+                                <strong>Updated by:</strong> {{ rowToEdit[environment.envName + '_UpdatedByUser'] }}
                             </div>
                         </div>
                     </div>
@@ -117,31 +117,43 @@
         },
         data() {
             return {
-                editFeatureToggleErrors: [],
                 rowToEdit: null,
                 initialToggle: null,
-                reasonsToChange: [],
-                showEditModal: false,
-                requireReasonWhenToggleEnabled: false,
-                requireReasonWhenToggleDisabled: false,
-                reasonToChange: "",
                 environments: [],
-                refreshAlertVisible: false,
-                environmentsToRefresh: []
+                reasonToChange: "",
+                environmentsToRefresh: [],
+                editFeatureToggleErrors: []
             }
         },
         created() {
-            Bus.$on("open-editFeatureToggle", (toggle, environments) => {
+            Bus.$on("open-editFeatureToggle", (toggle) => {
                 //create initliase method
-                this.reasonsToChange = [];
+                this.rowToEdit = null;
+                this.initialToggle = null;
+                this.editFeatureToggleErrors = []
+                this.reasonToChange = "";
+                this.environmentsToRefresh = [];
                 this.editFeatureToggleErrors = [];
-                this.environments = environments;
                 this.rowToEdit = toggle;
                 this.initialToggle = _.cloneDeep(toggle);
+                this.getEnvironments();
             });
         },
         methods: {
+            getEnvironments() {
+                axios.get("/api/FeatureToggles/environments", {
+                    params: {
+                        applicationId: this.application.id
+                    }
+                }).then((response) => {
+                    this.environments = response.data;
+                }).catch(() => {
+                    window.alert("Error getting list of environments.");
+                });
+            },
             saveToggle() {
+                this.editFeatureToggleErrors = [];
+
                 if (this.stringIsNullOrEmpty(this.rowToEdit.toggleName)) {
                     this.editFeatureToggleErrors.push("Feature toggle name cannot be empty")
                     return;
@@ -174,51 +186,38 @@
                     toggleUpdateModel.reasonsToChange.push({ description: this.reasonToChange });
                 }
 
-                let changes = [];
-
-                _.forEach(this.environments, envName => {
+                _.forEach(this.environments, environment => {
                     toggleUpdateModel.statuses.push({
-                        environment: envName,
-                        enabled: this.rowToEdit[envName]
+                        environment: environment.envName,
+                        enabled: this.rowToEdit[environment.envName]
                     });
-
-                    if (this.initialToggle[envName] != this.rowToEdit[envName]) {
-                        changes.push({
-                            envName: envName,
-                            oldValue: this.initialToggle[envName],
-                            newValue: this.rowToEdit[envName]
-                        });
+                    if (this.environmentStatusHasChanged(environment) && (!this.reasonToChangeWhenToggleDisabledIsValid(environment) || !this.reasonToChangeWhenToggleEnabledIsValid(environment))) {
+                        this.editFeatureToggleErrors.push(`Change reason is mandatory when state is modified for environment ${environment.envName}`);
                     }
                 });
-
-                let requiredErrorMessages = [];
-                _.forEach(changes, change => {
-                    let env = this.environments.find(_ => _ == change.envName);
-                    if (this.reasonToChangeWhenToggleDisabledIsValid(env, change) || this.reasonToChangeWhenToggleEnabledIsValid(env, change)) {
-                        requiredErrorMessages.push(env.envName);
-                    }
-                });
-
-                if (requiredErrorMessages.length > 0) {
-                    _.forEach(requiredErrorMessages, status => {
-                        this.editFeatureToggleErrors.push("Change reason is mandatory when state is modified for environment " + status);
-                    });
-                    return;
-                }
 
                 axios.put('/api/featuretoggles', toggleUpdateModel)
                     .then(() => {
                         this.closeModal();
                     }).catch(error => window.alert(error))
             },
+            environmentStatusHasChanged(environment) {
+                return this.initialToggle[environment.envName] != this.rowToEdit[environment.envName];
+            },
             stringIsNullOrEmpty(text) {
                 return !text || /^\s*$/.test(text);
             },
-            reasonToChangeWhenToggleDisabledIsValid(env, change) {
-                return env.requireReasonWhenToggleDisabled == true && change.oldValue == true && change.newValue == false && this.stringIsNullOrEmpty(this.reasonToChange);
+            reasonToChangeWhenToggleDisabledIsValid(environment) {
+                if (environment.requireReasonWhenToggleDisabled == true && this.initialToggle[environment.envName] == true && this.rowToEdit[environment.envName] == false) {
+                    return !this.stringIsNullOrEmpty(this.reasonToChange);
+                }
+                return true;
             },
-            reasonToChangeWhenToggleEnabledIsValid(env, change) {
-                return env.requireReasonWhenToggleEnabled == true && change.oldValue == false && change.newValue == true && this.stringIsNullOrEmpty(this.reasonToChange);
+            reasonToChangeWhenToggleEnabledIsValid(environment) {
+                if (environment.requireReasonWhenToggleEnabled == true && this.initialToggle[environment.envName] == false && this.rowToEdit[environment.envName] == true) {
+                    return !this.stringIsNullOrEmpty(this.reasonToChange);
+                }
+                return true;
             },
             workItemIdentifierIsValid(workItemIdentifier) {
                 return workItemIdentifier == null || (workItemIdentifier != null && workItemIdentifier.length <= 50);
@@ -233,12 +232,6 @@
                 }
             },
             closeModal() {
-                this.showEditModal = false;
-                this.rowToEdit = null;
-                this.initialToggle = null;
-                this.editFeatureToggleErrors = []
-                this.reasonToChange = "";
-                this.environmentsToRefresh = [];
                 let isRefreshAlertVisble = this.environmentsToRefresh.length > 0;
                 Bus.$emit('close-editFeatureFlag', this.environmentsToRefresh, isRefreshAlertVisble);
             }

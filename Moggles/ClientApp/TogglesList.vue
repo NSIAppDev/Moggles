@@ -9,7 +9,8 @@
         <button class="btn btn-default text-uppercase" @click="refreshEnvironmentToggles(env, index)"><strong>{{ env }}</strong></button>
       </span>
     </alert>
-    <vue-good-table ref="toggleGrid"
+    <vue-good-table v-if="toggles" 
+                    ref="toggleGrid"
                     :columns="gridColumns"
                     :rows="toggles"
                     :pagination-options="getPaginationOptions"
@@ -385,7 +386,7 @@
             },
             openEditFeatureToggleModal(row) {
                 this.showEditModal = true;
-                Bus.$emit('open-editFeatureToggle', _.clone(row), this.environmentsNameList);
+                Bus.$emit('open-editFeatureToggle', _.clone(row));
             },
             openDeleteFeatureToggleConfirmationModal(row) {
                 this.showDeleteConfirmationModal = true
