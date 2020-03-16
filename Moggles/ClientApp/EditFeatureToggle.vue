@@ -18,7 +18,7 @@
                         <label class="col-sm-4 control-label">{{ environment.envName }}</label>
                         <div class="col-sm-1">
                             <div>
-                                <p-check @click="addEnvironmentToRefreshList(environment.envName)" v-model="rowToEdit[environment.envName]" class="p-icon p-fill"
+                                <p-check v-model="rowToEdit[environment.envName]" class="p-icon p-fill"
                                          :color="rowToEdit[environment.envName + '_IsDeployed'] ? 'success' : 'default' ">
                                     <i slot="extra" class="icon fas fa-check" />
                                 </p-check>
@@ -154,50 +154,60 @@
                 });
             },
             saveToggle() {
-                this.editFeatureToggleErrors = [];
-
-                if (this.stringIsNullOrEmpty(this.rowToEdit.toggleName)) {
-                    this.editFeatureToggleErrors.push("Feature toggle name cannot be empty")
+                this.validateEditModel();
+                if (this.editModelHasErrors())
                     return;
-                }
 
-                let workItemIdentifier = this.rowToEdit.workItemIdentifier != null ? this.rowToEdit.workItemIdentifier.trim() : this.rowToEdit.workItemIdentifier;
-                if (!this.workItemIdentifierIsValid(workItemIdentifier)) {
-                    this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
-                    return;
-                }
-
-                if (!this.reasonToChangeIsValid(this.reasonToChange)) {
-                    this.editFeatureToggleErrors.push("Change reason description cannot have more than 500 characters");
-                    return;
-                }
+                let statuses = [];
+                _.forEach(this.environments, environment => {
+                    if (this.environmentStatusHasChanged(environment)) {
+                        statuses.push({
+                                environment: environment.envName,
+                                enabled: this.rowToEdit[environment.envName]
+                            });
+                        this.addEnvironmentToRefreshList(environment.envName);
+                    }
+                });
 
                 let toggleUpdateModel = {
                     id: this.rowToEdit.id,
                     applicationid: this.application.id,
                     userAccepted: this.rowToEdit.userAccepted,
                     notes: this.rowToEdit.notes,
-                    workItemIdentifier: workItemIdentifier,
+                    workItemIdentifier: !this.stringIsNullOrEmpty(this.rowToEdit.workItemIdentifier) ? this.rowToEdit.workItemIdentifier : null,
                     featureToggleName: this.rowToEdit.toggleName,
                     isPermanent: this.rowToEdit.isPermanent,
-                    statuses: [],
+                    statuses: statuses,
                     reasonToChange: !this.stringIsNullOrEmpty(this.reasonToChange) ? this.reasonToChange : null
                 }
-
-                _.forEach(this.environments, environment => {
-                    toggleUpdateModel.statuses.push({
-                        environment: environment.envName,
-                        enabled: this.rowToEdit[environment.envName]
-                    });
-                    if (this.environmentStatusHasChanged(environment) && (!this.reasonToChangeWhenToggleDisabledIsValid(environment) || !this.reasonToChangeWhenToggleEnabledIsValid(environment))) {
-                        this.editFeatureToggleErrors.push(`Change reason is mandatory when state is modified for environment ${environment.envName}`);
-                    }
-                });
 
                 axios.put('/api/featuretoggles', toggleUpdateModel)
                     .then(() => {
                         this.closeModal();
                     }).catch(error => window.alert(error))
+            },
+            validateEditModel() {
+                this.editFeatureToggleErrors = [];
+
+                if (this.stringIsNullOrEmpty(this.rowToEdit.toggleName)) {
+                    this.editFeatureToggleErrors.push("Feature toggle name cannot be empty")
+                }
+
+                if (!this.workItemIdentifierIsValid(this.rowToEdit.workItemIdentifier)) {
+                    this.editFeatureToggleErrors.push("Work Item ID cannot have more than 50 characters")
+                }
+
+                if (!this.reasonToChangeIsValid(this.reasonToChange)) {
+                    this.editFeatureToggleErrors.push("Change reason description cannot have more than 500 characters");
+                }
+
+                _.forEach(this.environments, environment => {
+                    if (this.environmentStatusHasChanged(environment)) {
+                        if ((!this.reasonToChangeWhenToggleDisabledIsValid(environment) || !this.reasonToChangeWhenToggleEnabledIsValid(environment))) {
+                            this.editFeatureToggleErrors.push(`Change reason is mandatory when state is modified for environment ${environment.envName}`);
+                        }
+                    }
+                });
             },
             environmentStatusHasChanged(environment) {
                 return this.initialToggle[environment.envName] != this.rowToEdit[environment.envName];
@@ -218,15 +228,18 @@
                 return true;
             },
             workItemIdentifierIsValid(workItemIdentifier) {
-                return workItemIdentifier == null || (workItemIdentifier != null && workItemIdentifier.length <= 50);
+                return this.stringIsNullOrEmpty(workItemIdentifier) || (!this.stringIsNullOrEmpty(workItemIdentifier) && workItemIdentifier.length <= 50);
             },
             reasonToChangeIsValid(reasonToChange) {
-                return reasonToChange == null || (reasonToChange != null && reasonToChange.length <= 500);
+                return this.stringIsNullOrEmpty(reasonToChange) || (!this.stringIsNullOrEmpty(reasonToChange) && reasonToChange.length <= 500);
             },
-            addEnvironmentToRefreshList(env) {
-                let index = _.indexOf(this.environmentsToRefresh, env);
+            editModelHasErrors() {
+                return this.editFeatureToggleErrors.length > 0;
+            },
+            addEnvironmentToRefreshList(environment) {
+                let index = _.indexOf(this.environmentsToRefresh, environment);
                 if (index === -1) {
-                    this.environmentsToRefresh.push(env);
+                    this.environmentsToRefresh.push(environment);
                 }
             },
             closeModal() {

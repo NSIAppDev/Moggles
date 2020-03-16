@@ -113,7 +113,7 @@ namespace Moggles.Controllers
                 }
 
             }
-            if (model.WorkItemIdentifier != toggleData.WorkItemIdentifier)
+            if (!string.IsNullOrEmpty(model.WorkItemIdentifier) && model.WorkItemIdentifier != toggleData.WorkItemIdentifier)
             {
                 app.UpdateFeaturetoggleWorkItemIdentifier(model.Id, model.WorkItemIdentifier);
             }
