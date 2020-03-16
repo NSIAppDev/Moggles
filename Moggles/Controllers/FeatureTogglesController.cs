@@ -83,13 +83,12 @@ namespace Moggles.Controllers
         {
             var app = await _applicationsRepository.FindByIdAsync(model.ApplicationId);
             var toggleData = app.GetFeatureToggleBasicData(model.Id);
-            toggleData.ReasonsToChanges = null;
 
             var updatedBy = _httpContextAccessor.HttpContext.User.Identity.Name;
 
-            foreach(var newReasonsToChange in model.ReasonsToChange)
+            if (!string.IsNullOrEmpty(model.ReasonToChange))
             {
-                app.UpdateFeatureToggleReasonsToChange(model.Id, updatedBy, newReasonsToChange.Description);
+                app.UpdateFeatureToggleReasonsToChange(model.Id, updatedBy, model.ReasonToChange);
             }
 
             if (model.IsPermanent != toggleData.IsPermanent)

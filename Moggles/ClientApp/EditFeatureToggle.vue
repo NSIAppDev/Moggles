@@ -127,19 +127,21 @@
         },
         created() {
             Bus.$on("open-editFeatureToggle", (toggle) => {
-                //create initliase method
-                this.rowToEdit = null;
-                this.initialToggle = null;
-                this.editFeatureToggleErrors = []
-                this.reasonToChange = "";
-                this.environmentsToRefresh = [];
-                this.editFeatureToggleErrors = [];
+                this.initialiseModal();
                 this.rowToEdit = toggle;
                 this.initialToggle = _.cloneDeep(toggle);
                 this.getEnvironments();
             });
         },
         methods: {
+            initialiseModal() {
+                this.rowToEdit = null;
+                this.initialToggle = null;
+                this.environments = [];
+                this.reasonToChange = "";
+                this.environmentsToRefresh = [];
+                this.editFeatureToggleErrors = [];
+            },
             getEnvironments() {
                 axios.get("/api/FeatureToggles/environments", {
                     params: {
@@ -179,11 +181,7 @@
                     featureToggleName: this.rowToEdit.toggleName,
                     isPermanent: this.rowToEdit.isPermanent,
                     statuses: [],
-                    reasonsToChange: []
-                }
-
-                if (!this.stringIsNullOrEmpty(this.reasonToChange)) {
-                    toggleUpdateModel.reasonsToChange.push({ description: this.reasonToChange });
+                    reasonToChange: !this.stringIsNullOrEmpty(this.reasonToChange) ? this.reasonToChange : null
                 }
 
                 _.forEach(this.environments, environment => {
