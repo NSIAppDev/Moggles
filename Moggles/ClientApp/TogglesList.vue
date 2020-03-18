@@ -9,8 +9,7 @@
         <button class="btn btn-default text-uppercase" @click="refreshEnvironmentToggles(env, index)"><strong>{{ env }}</strong></button>
       </span>
     </alert>
-    <vue-good-table v-if="toggles" 
-                    ref="toggleGrid"
+    <vue-good-table ref="toggleGrid"
                     :columns="gridColumns"
                     :rows="toggles"
                     :pagination-options="getPaginationOptions"
@@ -130,6 +129,7 @@
             this.subscribeToBusEvents();
         },
         mounted() {
+            //this.loadGrid();
             this.createSignalRConnection();
         },
         methods: {
@@ -165,7 +165,7 @@
 
                 Bus.$on('close-editFeatureFlag', (environmentsToRefresh, isRefreshAlertVisible) => {
                     this.showEditModal = false;
-                    this.loadGrid();
+                    this.loadGridData();
                     this.environmentsToRefresh = environmentsToRefresh;
                     this.isRefreshAlertVisible = isRefreshAlertVisible;
                 })
@@ -190,7 +190,7 @@
                 this.loadGridData(this.selectedApp.id);
             },
             createGridColumns() {
-                this.$refs['toggleGrid'].reset();
+                //this.$refs['toggleGrid'].reset();
 
                 let columns = [
                     {
@@ -296,8 +296,8 @@
                 localStorage.setItem('rowsPerPage', perPage);
             },
             loadGrid() {
-                this.initializeGrid(this.selectedApp);
                 this.loadGridData();
+                this.initializeGrid(this.selectedApp);
             },
             initializeGrid(app) {
                 this.environmentsList = [];
