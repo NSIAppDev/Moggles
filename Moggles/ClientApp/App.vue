@@ -73,8 +73,8 @@
       <delete-application @cancel="showDeleteAppConfirmation = false" @deleteAppCompleted="showEditAppModal(false)" />
     </modal>
 
-    <modal v-model="showScheduler" title="Schedule Toggles" :footer="false">
-      <toggle-scheduler :is-cache-refresh-enabled="isCacheRefreshEnabled" />
+    <modal v-if="showScheduler" v-model="showScheduler" title="Schedule Toggles" :footer="false">
+      <add-toggle-schedule :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" />
     </modal>
 
     <div class="container-fluid">
@@ -95,7 +95,7 @@
     import AddFeatureToggle from './AddFeatureToggle'
     import AddEnvironment from './AddEnvironment'
     import ForceCacheRefresh from './ForceCacheRefresh'
-    import ToggleScheduler from './ToggleScheduler'
+    import AddToggleSchedule from './AddToggleSchedule'
     import BlockUi from './BlockUi'
     import { Bus } from './event-bus'
     import axios from 'axios'
@@ -111,7 +111,7 @@
             "add-env": AddEnvironment,
 			'force-cache-refresh': ForceCacheRefresh,
             'block-ui': BlockUi,
-            'toggle-scheduler': ToggleScheduler
+            'add-toggle-schedule': AddToggleSchedule
         },
         data() {
             return {
@@ -122,10 +122,17 @@
                 isCacheRefreshEnabled: false,
                 editAppModalIsActive: false,
                 showDeleteAppConfirmation: false,
-                showScheduler: false
+                showScheduler: false,
+                selectedApp: {}
             }
         },
         created() {
+            Bus.$on("app-changed", app => {
+                    if (app) {
+                        this.selectedApp = app;
+                    }
+                })
+
             Bus.$on("show-app-delete-confirmation", () => {
                 this.showDeleteAppConfirmation = true;
 			})
