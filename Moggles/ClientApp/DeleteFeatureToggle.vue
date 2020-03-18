@@ -1,7 +1,7 @@
 ﻿<template>
   <div>
     <div v-if="isToggleDeployedOnAnyEnvironment">
-        <strong>{{ toggleToDelete ? toggleToDelete.toggleName: "" }}</strong> feature toggle is active on at least one environment. Are you sure you want to delete it?
+      <strong>{{ toggleToDelete ? toggleToDelete.toggleName: "" }}</strong> feature toggle is active on at least one environment. Are you sure you want to delete it?
     </div>
     <div v-else>
       Are you sure you want to delete this feature toggle?
