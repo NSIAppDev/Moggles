@@ -1,75 +1,75 @@
 ﻿<template>
-  <div>
-    <alert v-if="showRefreshAlert" type="info">
-      <button type="button" class="close" @click="closeRefreshAlert">
-        <span>×</span>
-      </button>
-      <h4>Toggles Have Been Modified, would you like to refresh the environments?</h4>
-      <span v-for="(env, index) in environmentsToRefresh" :key="env" class="env-button">
-        <button class="btn btn-default text-uppercase" @click="refreshEnvironmentToggles(env, index)"><strong>{{ env }}</strong></button>
-      </span>
-    </alert>
-    <vue-good-table ref="toggleGrid"
-                    :columns="gridColumns"
-                    :rows="toggles"
-                    :pagination-options="getPaginationOptions"
-                    :sort-options="{
+    <div>
+        <alert v-if="showRefreshAlert" type="info">
+            <button type="button" class="close" @click="closeRefreshAlert">
+                <span>×</span>
+            </button>
+            <h4>Toggles Have Been Modified, would you like to refresh the environments?</h4>
+            <span v-for="(env, index) in environmentsToRefresh" :key="env" class="env-button">
+                <button class="btn btn-default text-uppercase" @click="refreshEnvironmentToggles(env, index)"><strong>{{ env }}</strong></button>
+            </span>
+        </alert>
+        <vue-good-table ref="toggleGrid"
+                        :columns="gridColumns"
+                        :rows="toggles"
+                        :pagination-options="getPaginationOptions"
+                        :sort-options="{
                       enabled: true,
                       initialSortBy: {field: 'toggleName', type: 'asc'}
                     }"
-                    style-class="vgt-table striped condensed bordered"
-                    @on-per-page-change="onPageChange">
-      <div slot="emptystate">
-        <div class="text-center">
-          There are no toggles for this application or filtered search
-        </div>
-      </div>
-      <template slot="table-row" slot-scope="props">
-        <span v-if="props.column.type == 'boolean'" class="pull-left" :class="{ 'is-deployed': props.row[props.column.field + '_IsDeployed']}">
-          <p-check v-if="props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
-                   color="success">
-            <i slot="extra" class="icon fas fa-check" />
-          </p-check>
-          <p-check v-if="!props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
-                   color="default">
-            <i slot="extra" class="icon fas fa-check" />
-          </p-check>
-        </span>
-        <span v-else-if="props.column.field == 'id'">
-          <a @click="openEditFeatureToggleModal(props.row)"><i class="fas fa-edit" /></a>
-          <a v-if="!props.row.isPermanent" @click="openDeleteFeatureToggleConfirmationModal(props.row)"><i class="fas fa-trash-alt" /></a>
-          <span v-if="props.row.isPermanent" title="Permanent flags cannot be deleted!" class="disabled-link"><i class="fas fa-trash-alt" /></span>
-        </span>
-        <span v-else-if="props.column.field == 'toggleName' ">
-          <span>{{ props.row.toggleName }}</span> <span v-if="props.row.isPermanent" class="label label-danger">Permanent</span>
-          <a v-for="ft in getSchedulesForToggle(props.row.toggleName)" :key="ft.scheduleId" @click="editToggleSchedule(ft)"><i class="fas fa-clock" /> <i /></a>
-        </span>
-        <span v-else-if="props.column.field == 'createdDate'">
-          {{ props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A') }}
-        </span>
-        <span v-else>
-          {{ props.formattedRow[props.column.field] }}
-        </span>
-      </template>
-      <template slot="table-column" slot-scope="props">
-        {{ props.column.label }}
-        <a v-if="isEnvironmentColumn(props.column)" @click="openEditEnvironmentModal(props.column)"><i class="fas fa-edit" /></a>
-      </template>
-    </vue-good-table>
+                        style-class="vgt-table striped condensed bordered"
+                        @on-per-page-change="onPageChange">
+            <div slot="emptystate">
+                <div class="text-center">
+                    There are no toggles for this application or filtered search
+                </div>
+            </div>
+            <template slot="table-row" slot-scope="props">
+                <span v-if="props.column.type == 'boolean'" class="pull-left" :class="{ 'is-deployed': props.row[props.column.field + '_IsDeployed']}">
+                    <p-check v-if="props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
+                             color="success">
+                        <i slot="extra" class="icon fas fa-check" />
+                    </p-check>
+                    <p-check v-if="!props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
+                             color="default">
+                        <i slot="extra" class="icon fas fa-check" />
+                    </p-check>
+                </span>
+                <span v-else-if="props.column.field == 'id'">
+                    <a @click="openEditFeatureToggleModal(props.row)"><i class="fas fa-edit" /></a>
+                    <a v-if="!props.row.isPermanent" @click="openDeleteFeatureToggleConfirmationModal(props.row)"><i class="fas fa-trash-alt" /></a>
+                    <span v-if="props.row.isPermanent" title="Permanent flags cannot be deleted!" class="disabled-link"><i class="fas fa-trash-alt" /></span>
+                </span>
+                <span v-else-if="props.column.field == 'toggleName' ">
+                    <span>{{ props.row.toggleName }}</span> <span v-if="props.row.isPermanent" class="label label-danger">Permanent</span>
+                    <a v-for="ft in getSchedulesForToggle(props.row.toggleName)" :key="ft.scheduleId" @click="editToggleSchedule(ft)"><i class="fas fa-clock" /> <i /></a>
+                </span>
+                <span v-else-if="props.column.field == 'createdDate'">
+                    {{ props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A') }}
+                </span>
+                <span v-else>
+                    {{ props.formattedRow[props.column.field] }}
+                </span>
+            </template>
+            <template slot="table-column" slot-scope="props">
+                {{ props.column.label }}
+                <a v-if="isEnvironmentColumn(props.column)" @click="openEditEnvironmentModal(props.column)"><i class="fas fa-edit" /></a>
+            </template>
+        </vue-good-table>
 
-    <modal v-model="showDeleteConfirmationModal" title="You are about to delete a feature toggle" :footer="false">
-      <delete-featureToggle :application="selectedApp" />
-    </modal>
-    <modal v-model="showSchedulerModal" title="Schedule Toggles" :footer="false">
-      <toggle-scheduler :is-cache-refresh-enabled="isCacheRefreshEnabled" />
-    </modal>
-    <modal v-model="showEditModal" title="Edit Feature Flags" :footer="false">
-      <edit-featureToggle :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" />
-    </modal>
-    <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false">
-      <edit-environment :application="selectedApp" />
-    </modal>
-  </div>
+        <modal v-model="showDeleteConfirmationModal" title="You are about to delete a feature toggle" :footer="false">
+            <delete-featureToggle :application="selectedApp" />
+        </modal>
+        <modal v-model="showSchedulerModal" title="Schedule Toggles" :footer="false">
+            <toggle-scheduler :is-cache-refresh-enabled="isCacheRefreshEnabled" />
+        </modal>
+        <modal v-model="showEditModal" title="Edit Feature Flags" :footer="false">
+            <edit-featureToggle :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" />
+        </modal>
+        <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false">
+            <edit-environment :application="selectedApp" />
+        </modal>
+    </div>
 </template>
 <script>
     import axios from 'axios';
@@ -129,7 +129,6 @@
             this.subscribeToBusEvents();
         },
         mounted() {
-            //this.loadGrid();
             this.createSignalRConnection();
         },
         methods: {
@@ -187,10 +186,11 @@
                 }
             },
             signalScheduleIsDue() {
-                this.loadGridData(this.selectedApp.id);
+                this.loadGridData();
             },
             createGridColumns() {
-                //this.$refs['toggleGrid'].reset();
+                this.loadGridData();
+                this.$refs['toggleGrid'].reset();
 
                 let columns = [
                     {
