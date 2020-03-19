@@ -71,7 +71,7 @@
 <script>
     import axios from 'axios';
     import PrettyCheck from 'pretty-checkbox-vue/check';
-    import { Bus } from './event-bus';
+    import { Bus } from '../common/event-bus';
     import DeleteEnvironment from './DeleteEnvironment';
 
     export default {

@@ -31,8 +31,9 @@
 </template>
 
 <script>
-	import { Bus } from './event-bus';
+	import { Bus } from '../common/event-bus';
 	import axios from 'axios';
+	import { events } from '../common/events';
 
 	export default {
 		data() {
@@ -46,13 +47,13 @@
 			};
 		},
 		mounted() {
-			Bus.$on("app-changed", app => {
+			Bus.$on(events.applicationChanged, app => {
 				if (app) {
 					this.applicationId = app.id;
 				}
 			});
 
-			Bus.$on("env-loaded", envs => {
+			Bus.$on(events.environmentsLoaded, envs => {
 				this.existingEnvs = envs;
 			});
 		},
@@ -78,7 +79,7 @@
 					});
 			},
 			closeRefreshModal() {
-				Bus.$emit('close-refresh');
+				Bus.$emit(events.closeForceCacheRefreshModal);
 			}
 		}
 	}

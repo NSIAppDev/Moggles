@@ -53,7 +53,7 @@
           <button class="btn btn-default" @click="closeAddEnvironmentModal">
             Close
           </button>
-          <button :disabled="applicationId != ''? false : true" class="btn btn-primary" type="button"
+          <button :disabled="application.id != ''? false : true" class="btn btn-primary" type="button"
                   @click="addEnv">
             Add
           </button>
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-    import { Bus } from './event-bus'
+    import { Bus } from '../common/event-bus'
     import axios from 'axios'
     import PrettyCheck from 'pretty-checkbox-vue/check'
 
@@ -72,9 +72,14 @@
         components: {
             'p-check': PrettyCheck
         },
+        props: {
+            application: {
+                type: Object,
+                required: true
+            }
+        },
         data() {
             return {
-                applicationId: -1,
                 envName: "",
                 sortOrder: 500,
                 defaultToggleValue: false,
@@ -87,20 +92,12 @@
             }
         },
         mounted() {
-            Bus.$on("app-changed", app => {
-                if (app) {
-                    this.applicationId = app.id;
-                }
-            });
-
             Bus.$on("env-loaded", envs => {
                 this.existingEnvs = envs;
             });
 
-            Bus.$on('openAddEnvModal', () => {
-                this.$nextTick(() => { this.$refs["envName"].focus() });
-                this.clearFields();
-            })
+            this.$nextTick(() => { this.$refs["envName"].focus() });
+            this.clearFields();
         },
         methods: {
             clearFields() {
@@ -109,7 +106,7 @@
                 this.defaultToggleValue = false;
             },
             addEnv() {
-                if (this.applicationId === -1)
+                if (this.application.id === -1)
                     return;
 
                 this.errors = [];
@@ -125,7 +122,7 @@
                 }
                 
                 let param = {
-                    applicationId: this.applicationId,
+                    applicationId: this.application.id,
                     envName: this.envName,
                     sortOrder: this.sortOrder,
                     defaultToggleValue: this.defaultToggleValue,

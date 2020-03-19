@@ -97,7 +97,7 @@
 <script>
     import PrettyCheck from 'pretty-checkbox-vue/check';
     import axios from 'axios';
-    import { Bus } from './event-bus';
+    import { Bus } from '../common/event-bus';
     import _ from 'lodash';
 
 

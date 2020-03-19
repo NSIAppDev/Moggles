@@ -18,7 +18,7 @@
 
 <script>
     import axios from 'axios';
-    import { Bus } from './event-bus';
+    import { Bus } from '../common/event-bus';
 
     export default {
          props: {

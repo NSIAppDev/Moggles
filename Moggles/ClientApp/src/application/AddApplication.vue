@@ -53,8 +53,9 @@
 </template>
 
 <script>
-    import { Bus } from './event-bus'
+    import { Bus } from '../common/event-bus'
     import axios from 'axios'
+    import { events } from '../common/events';
 
     export default {
         data() {
@@ -102,7 +103,7 @@
                     this.showSuccessAlert = true;
                     this.$nextTick(() => { this.$refs["appName"].focus() });
 
-                    Bus.$emit("new-app-added");
+                    Bus.$emit(events.newApplicationAdded);
                     setTimeout(() => {
                         this.showSuccessAlert = false;
                     }, this.alertDuration)

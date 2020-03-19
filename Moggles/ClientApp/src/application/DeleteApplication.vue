@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      Are you sure you want to delete the application?
+      Are you sure you want to delete the {{this.application.appName}} application?
       <br>
       All associated feature toggles will be removed.
     </div>
@@ -18,25 +18,19 @@
 </template>
 
 <script>
-    import { Bus } from './event-bus'
+    import { Bus } from '../common/event-bus'
     import axios from 'axios'
 
     export default {
-        data() {
-            return {
-                selectedApp: {}
+        props: {
+            application: {
+                type: Object,
+                required: true
             }
-        },
-        created() {
-            Bus.$on("app-changed", app => {
-                if (app) {
-                    this.selectedApp = app;
-                }
-            })
         },
         methods: {
             deleteApp() {
-                axios.delete(`/api/applications?id=${this.selectedApp.id}`).then(() => {
+                axios.delete(`/api/applications?id=${this.application.id}`).then(() => {
                     this.cancel();
                     this.deleteAppCompleted();
                     Bus.$emit("refresh-apps");    

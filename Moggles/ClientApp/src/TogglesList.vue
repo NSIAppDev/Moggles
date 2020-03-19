@@ -76,12 +76,12 @@
     import _ from 'lodash';
     import moment from 'moment';
     import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
-    import { Bus } from './event-bus';
+    import { Bus } from './common/event-bus';
     import PrettyCheck from 'pretty-checkbox-vue/check';
-    import EditToggleSchedule from "./EditToggleSchedule";
-    import EditFeatureToggle from './EditFeatureToggle';
-    import EditEnvironment from './EditEnvironment';
-    import DeleteFeatureToggle from './DeleteFeatureToggle';
+    import EditToggleSchedule from "./featureToggleSchedule/EditToggleSchedule";
+    import EditFeatureToggle from './featureToggle/EditFeatureToggle';
+    import EditEnvironment from './environment/EditEnvironment';
+    import DeleteFeatureToggle from './featureToggle/DeleteFeatureToggle';
 
     export default {
         components: {

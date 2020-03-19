@@ -35,24 +35,22 @@
 </template>
 
 <script>
-    import { Bus } from './event-bus'
+    import { Bus } from '../common/event-bus'
     import axios from 'axios'
+    import { events } from '../common/events';
 
     export default {
+       props: {
+            application: {
+                type: Object,
+                required: true
+            }
+        },
         data() {
             return {
-                selectedApp: {},
                 editAppErrors: [],
                 appName: ""
             }
-        },
-        created() {
-            Bus.$on("app-changed", app => {
-                if (app) {
-                    this.selectedApp = app;
-                    this.appName = this.selectedApp.appName;
-                }
-            })
         },
         methods: {
             updateApp() {
@@ -63,20 +61,20 @@
                 }
 
                 let appUpdateModel = {
-                    id: this.selectedApp.id,
+                    id: this.application.id,
                     applicationName: this.appName
                 }
 
                 axios.put('/api/applications/update', appUpdateModel)
                     .then(() => {
                         this.$emit('close-app-edit-modal');
-                        Bus.$emit("new-app-added");
+                        Bus.$emit(events.applicationEdited);
                     }).catch(e => {
                         window.alert(e)
                     })
             },
             cancel() {
-                this.appName = this.selectedApp.appName;
+                this.appName = this.application.appName;
                 this.editAppErrors = [];
                 this.$emit('close-app-edit-modal');
             },

@@ -14,7 +14,7 @@
   </div>
 </template>
 <script>
-    import { Bus } from './event-bus'
+    import { Bus } from '../common/event-bus'
     import axios from 'axios'
 
     export default {

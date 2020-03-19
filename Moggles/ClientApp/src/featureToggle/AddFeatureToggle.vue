@@ -48,7 +48,7 @@
           <button class="btn btn-default" @click="closeAddToggleModal">
             Close
           </button>
-          <button :disabled="applicationId != ''? false : true" class="btn btn-primary" type="button"
+          <button :disabled="application.id != ''? false : true" class="btn btn-primary" type="button"
                   @click="addFeatureToggle">
             Add
           </button>
@@ -60,16 +60,21 @@
 
 <script>
     import PrettyCheck from 'pretty-checkbox-vue/check';
-    import { Bus } from './event-bus'
-    import axios from 'axios'
+    import { Bus } from '../common/event-bus';
+    import axios from 'axios';
 
     export default {
         components: {
             'p-check': PrettyCheck
         },
+        props: {
+            application: {
+                type: Object,
+                required: true
+            }
+        },
         data() {
             return {
-                applicationId: -1,
                 notes: '',
                 featureToggleName: "",
                 isPermanent: false,
@@ -85,7 +90,7 @@
            
             Bus.$on("app-changed", app => {
                 if (app) {
-                    this.applicationId = app.id;
+                    this.application.id = app.id;
                 }
             });
 
@@ -100,7 +105,7 @@
         },
         methods: {
             addFeatureToggle() {
-                if (this.applicationId === -1)
+                if (this.application.id === -1)
                     return;
 
                 this.errors = [];
@@ -111,7 +116,7 @@
                 }
 
                 let param = {
-                    applicationId: this.applicationId,
+                    applicationId: this.application.id,
                     featureToggleName: this.featureToggleName,
                     notes: this.notes,
                     isPermanent: this.isPermanent,
