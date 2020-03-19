@@ -98,7 +98,7 @@
                 rowsPerPage: 10,
                 selectedApp: {},
                 toggles: [],
-                environmentsList: [],
+                environments: [],
                 scheduledToggles: [],
                 scheduleToEdit: {},
                 environmentsToRefresh: [],
@@ -118,7 +118,7 @@
                 return { enabled: true, perPage: parseInt(this.getRowsPerPage()) };
             },
             environmentsNameList() {
-                return _.map(this.environmentsList, (env) => {
+                return _.map(this.environments, (env) => {
                     return env.envName;
                 });
             }
@@ -298,25 +298,24 @@
                 localStorage.setItem('rowsPerPage', perPage);
             },
             loadGrid() {
-                this.loadGridData();
-                this.initializeGrid(this.selectedApp);
+                this.initializeGrid();
             },
-            initializeGrid(app) {
-                this.environmentsList = [];
+            initializeGrid() {
+                this.environments = [];
 
                 axios.get("/api/FeatureToggles/environments", {
                     params: {
-                        applicationId: app.id
+                        applicationId: this.selectedApp.id
                     }
                 }).then((response) => {
-                    this.environmentsList = response.data;
+                    this.environments = response.data;
                     this.createGridColumns();
-
+                    this.loadGridData();
                     Bus.$emit('env-loaded', this.environmentsNameList)
                 }).catch((e) => { window.alert(e) });
             },
             loadGridData() {
-                this.getAllScheduledToggles(this.selectedApp.id);
+                this.getAllScheduledToggles();
 
                 axios.get("/api/FeatureToggles", {
                     params: {
@@ -384,7 +383,7 @@
                 this.showSchedulerModal = true;
             },
             openEditEnvironmentModal(column) {
-                let environment = this.environmentsList.find(element => element.envName == column.field);
+                let environment = this.environments.find(element => element.envName == column.field);
                 this.showEditEnvironmentModal = true;
                 Bus.$emit('edit-environment', environment);
             },

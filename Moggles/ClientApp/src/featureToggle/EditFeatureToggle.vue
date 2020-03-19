@@ -167,6 +167,7 @@
                             });
                         this.addEnvironmentToRefreshList(environment.envName);
                     }
+
                 });
 
                 let toggleUpdateModel = {
