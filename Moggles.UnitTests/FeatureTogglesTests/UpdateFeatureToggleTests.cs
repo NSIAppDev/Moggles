@@ -41,6 +41,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             await _appRepository.AddAsync(app);
 
             var toggle = app.FeatureToggles.Single();
+            toggle.AddReasonToChange("user", "reason 1");
             var updatedValue = new FeatureToggleUpdateModel
             {
                 ApplicationId = app.Id,
@@ -51,16 +52,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 Statuses = new List<FeatureToggleStatusUpdateModel>(),
                 IsPermanent = true,
                 WorkItemIdentifier = "UpdateWorkItemId",
-                ReasonsToChange = new List<FeatureToggleReasonToChangeModel> {
-                    new FeatureToggleReasonToChangeModel
-                    {
-                        Description = "reason1"
-                    },
-                    new FeatureToggleReasonToChangeModel
-                    {
-                        Description = "reason2"
-                    }
-                }
+                ReasonToChange = "reason 2"
             };
 
             //act
@@ -75,9 +67,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             savedApp.FeatureToggles.FirstOrDefault().WorkItemIdentifier.Should().Be("UpdateWorkItemId");
             savedApp.FeatureToggles.FirstOrDefault().ReasonsToChange.Count.Should().Be(2);
             var firstReason = savedApp.FeatureToggles.FirstOrDefault().ReasonsToChange.FirstOrDefault();
-            firstReason.Description.Should().Be("reason1");
+            firstReason.Description.Should().Be("reason 1");
             var secondReason = savedApp.FeatureToggles.FirstOrDefault().ReasonsToChange.LastOrDefault();
-            secondReason.Description.Should().Be("reason2");
+            secondReason.Description.Should().Be("reason 2");
         }
 
         [TestMethod]
@@ -90,7 +82,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             await _appRepository.AddAsync(app);
 
             var toggle = app.FeatureToggles.FirstOrDefault(t => t.ToggleName == "t1");
-            var updatedValue = new FeatureToggleUpdateModel { ApplicationId = app.Id, Id = toggle.Id, FeatureToggleName = "t2", ReasonsToChange = new List<FeatureToggleReasonToChangeModel>() };
+            var updatedValue = new FeatureToggleUpdateModel { ApplicationId = app.Id, Id = toggle.Id, FeatureToggleName = "t2" };
 
             //act
             var result = await _featureToggleController.Update(updatedValue);
@@ -117,19 +109,18 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 Id = toggle.Id,
                 FeatureToggleName = "t1",
                 Statuses = new List<FeatureToggleStatusUpdateModel>
-                {
-                    new FeatureToggleStatusUpdateModel
-                    {
-                        Enabled = true,
-                        Environment = "DEV"
-                    },
-                    new FeatureToggleStatusUpdateModel
-                    {
-                        Enabled = true,
-                        Environment = "QA"
-                    }
-                },
-                ReasonsToChange = new List<FeatureToggleReasonToChangeModel>()
+                        {
+                            new FeatureToggleStatusUpdateModel
+                            {
+                                Enabled = true,
+                                Environment = "DEV"
+                            },
+                            new FeatureToggleStatusUpdateModel
+                            {
+                                Enabled = true,
+                                Environment = "QA"
+                            }
+                        }
             };
 
 
@@ -159,29 +150,19 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 Id = toggle.Id,
                 FeatureToggleName = "t1",
                 Statuses = new List<FeatureToggleStatusUpdateModel>
-                {
-                    new FeatureToggleStatusUpdateModel
-                    {
-                        Enabled = true,
-                        Environment = "DEV",
-                    },
-                    new FeatureToggleStatusUpdateModel
-                    {
-                        Enabled = true,
-                        Environment = "QA",
-                    }
-                },
-                ReasonsToChange = new List<FeatureToggleReasonToChangeModel>
-                {
-                    new FeatureToggleReasonToChangeModel
-                    {
-                        Description="reason1"
-                    },
-                    new FeatureToggleReasonToChangeModel
-                    {
-                        Description = "reason2"
-                    }
-                }
+                        {
+                            new FeatureToggleStatusUpdateModel
+                            {
+                                Enabled = true,
+                                Environment = "DEV",
+                            },
+                            new FeatureToggleStatusUpdateModel
+                            {
+                                Enabled = true,
+                                Environment = "QA",
+                            }
+                        }
+
             };
 
             //act
@@ -193,8 +174,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var basicData = savedApp.GetFeatureToggleBasicData(toggle.Id);
             statuses.Count.Should().Be(2);
             statuses.All(s => s.UpdatedBy == "bla").Should().BeTrue();
-            basicData.ReasonsToChanges.Count.Should().Be(2);
-            basicData.ReasonsToChanges.All(s => s.AddedByUser == "bla").Should().BeTrue();
         }
+
     }
 }

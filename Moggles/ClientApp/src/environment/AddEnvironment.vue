@@ -15,7 +15,8 @@
                 <div class="col-sm-12 form-group">
                     <label class="col-sm-4 control-label" for="envname">Environment name</label>
                     <div class="col-sm-7">
-                        <input ref="envName" v-model="envName" class="col-sm-8 form-control" type="text"
+                        <input ref="envName" v-model="envName" class="col-sm-8 form-control"
+                               type="text"
                                name="envName" placeholder="Env name..." maxlength="50">
                     </div>
                 </div>
@@ -35,7 +36,7 @@
                 </div>
                 <div class="col-sm-12 form-group">
                     <label class="col-sm-4 control-label">
-                        Require a reason when toggle state changes to 
+                        Require a reason when toggle state changes to
                     </label>
                     <div class="col-sm-6 margin-top-4">
                         <label for="requireReasonWhenToggleEnabled">Enabled</label>
@@ -52,7 +53,7 @@
                     <button class="btn btn-default" @click="closeAddEnvironmentModal">
                         Close
                     </button>
-                    <button :disabled="applicationId != ''? false : true" class="btn btn-primary" type="button"
+                    <button :disabled="application.id != ''? false : true" class="btn btn-primary" type="button"
                             @click="addEnv">
                         Add
                     </button>
@@ -63,17 +64,24 @@
 </template>
 
 <script>
-    import { Bus } from './event-bus'
+    import { Bus } from '../common/event-bus'
     import axios from 'axios'
     import PrettyCheck from 'pretty-checkbox-vue/check'
+    import { events } from '../common/events';
+
 
     export default {
         components: {
             'p-check': PrettyCheck
         },
+        props: {
+            application: {
+                type: Object,
+                required: true
+            }
+        },
         data() {
             return {
-                applicationId: -1,
                 envName: "",
                 sortOrder: 500,
                 defaultToggleValue: false,
@@ -82,24 +90,18 @@
                 showSuccessAlert: false,
                 alertDuration: 1500,
                 requireReasonWhenToggleEnabled: false,
-                requireReasonWhenToggleDisabled:false
+                requireReasonWhenToggleDisabled: false
             }
         },
         mounted() {
-            Bus.$on("app-changed", app => {
-                if (app) {
-                    this.applicationId = app.id;
-                }
-            });
-
-            Bus.$on("env-loaded", envs => {
+            Bus.$on(events.environmentsLoaded, envs => {
                 this.existingEnvs = envs;
             });
 
-            Bus.$on('openAddEnvModal', () => {
+            Bus.$on(events.openAddEnvironmentModal, () => {
                 this.$nextTick(() => { this.$refs["envName"].focus() });
                 this.clearFields();
-            })
+            });
         },
         methods: {
             clearFields() {
@@ -108,7 +110,7 @@
                 this.defaultToggleValue = false;
             },
             addEnv() {
-                if (this.applicationId === -1)
+                if (this.application.id === -1)
                     return;
 
                 this.errors = [];
@@ -122,9 +124,9 @@
                     this.errors.push("Environment name cannot be empty")
                     return;
                 }
-                
+
                 let param = {
-                    applicationId: this.applicationId,
+                    applicationId: this.application.id,
                     envName: this.envName,
                     sortOrder: this.sortOrder,
                     defaultToggleValue: this.defaultToggleValue,
@@ -132,7 +134,7 @@
                     requireReasonToChangeWhenToggleDisabled: this.requireReasonWhenToggleDisabled
                 }
 
-                Bus.$emit('block-ui')
+                Bus.$emit(events.blockUI);
                 axios.post('api/FeatureToggles/AddEnvironment', param)
                     .then(() => {
                         this.showSuccessAlert = true;
@@ -141,15 +143,15 @@
                         this.requireReasonWhenToggleEnabled = false;
                         this.requireReasonWhenToggleDisabled = false;
                         this.$nextTick(() => { this.$refs["envName"].focus() });
-                        Bus.$emit("env-added")
+                        Bus.$emit(events.environmentAdded);
                     }).catch((e) => {
                         window.alert(e)
                     }).finally(() => {
-                        Bus.$emit('unblock-ui')
+                        Bus.$emit(events.unblockUI)
                     });
             },
             closeAddEnvironmentModal() {
-                Bus.$emit('close-add-environment');
+                Bus.$emit(events.closeAddEnvironmentModal);
             }
         }
     }

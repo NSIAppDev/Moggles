@@ -15,8 +15,10 @@
                 <div class="col-sm-12 form-group">
                     <label class="col-sm-4 control-label" for="ftname">Name</label>
                     <div class="col-sm-8">
-                        <input ref="toggleName" id="featureToggleName" v-model="featureToggleName" class="form-control" type="text"
-                               name="ftName" placeholder="Feature toggle name..." maxlength="80" autoFocus>
+                        <input id="featureToggleName" ref="toggleName" v-model="featureToggleName"
+                               class="form-control" type="text"
+                               name="ftName" placeholder="Feature toggle name..." maxlength="80"
+                               autoFocus>
                     </div>
                 </div>
                 <div class="col-sm-12 form-group">
@@ -46,7 +48,7 @@
                     <button class="btn btn-default" @click="closeAddToggleModal">
                         Close
                     </button>
-                    <button :disabled="applicationId != ''? false : true" class="btn btn-primary" type="button"
+                    <button :disabled="application.id != ''? false : true" class="btn btn-primary" type="button"
                             @click="addFeatureToggle">
                         Add
                     </button>
@@ -58,16 +60,23 @@
 
 <script>
     import PrettyCheck from 'pretty-checkbox-vue/check';
-    import { Bus } from './event-bus'
-    import axios from 'axios'
+    import { Bus } from '../common/event-bus';
+    import axios from 'axios';
+    import { events } from '../common/events';
+
 
     export default {
         components: {
             'p-check': PrettyCheck
         },
+        props: {
+            application: {
+                type: Object,
+                required: true
+            }
+        },
         data() {
             return {
-                applicationId: -1,
                 notes: '',
                 featureToggleName: "",
                 isPermanent: false,
@@ -80,25 +89,26 @@
             }
         },
         mounted() {
-           
-            Bus.$on("app-changed", app => {
+
+            this.$nextTick(() => { this.$refs["toggleName"].focus() });
+
+            Bus.$on(events.openAddFeatureToggleModal, () => {
+                this.clearFields();
+            });
+            Bus.$on(events.applicationChanged, app => {
                 if (app) {
-                    this.applicationId = app.id;
+                    this.application.id = app.id;
                 }
             });
 
-            Bus.$on("toggles-loaded", toggles => {
+            Bus.$on(events.togglesLoaded, toggles => {
                 this.existingToggles = toggles;
-            });
-            Bus.$on("openAddFeatureToggleModal", () => {
-                this.$nextTick(() => { this.$refs["toggleName"].focus() });
-                this.clearFields();
             });
 
         },
         methods: {
             addFeatureToggle() {
-                if (this.applicationId === -1)
+                if (this.application.id === -1)
                     return;
 
                 this.errors = [];
@@ -109,14 +119,14 @@
                 }
 
                 let param = {
-                    applicationId: this.applicationId,
+                    applicationId: this.application.id,
                     featureToggleName: this.featureToggleName,
                     notes: this.notes,
                     isPermanent: this.isPermanent,
                     workItemIdentifier: this.workItemIdentifier.trim()
                 }
 
-                Bus.$emit('block-ui')
+                Bus.$emit(events.blockUI)
                 axios.post('api/FeatureToggles/addFeatureToggle', param)
                     .then(() => {
                         this.showSuccessAlert = true;
@@ -124,16 +134,16 @@
                         this.notes = '';
                         this.isPermanent = false;
                         this.workItemIdentifier = "";
-                         this.$nextTick(() => { this.$refs["toggleName"].focus() });
-                        Bus.$emit("toggle-added")
+                        this.$nextTick(() => { this.$refs["toggleName"].focus() });
+                        Bus.$emit(events.toggleAdded)
                     }).catch((e) => {
                         this.errors.push(e.response.data);
                     }).finally(() => {
-                        Bus.$emit('unblock-ui')
+                        Bus.$emit(events.unblockUI)
                     });
             },
             closeAddToggleModal() {
-                Bus.$emit('close-add-toggle');
+                Bus.$emit(events.closeAddFeatureToggleModal);
             },
             clearFields() {
                 this.featureToggleName = "";
