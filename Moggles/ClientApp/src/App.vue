@@ -134,27 +134,27 @@
                 }
             });
 
-            Bus.$on("show-app-delete-confirmation", () => {
+            Bus.$on(events.showDeleteApplicationConfirmationModal, () => {
                 this.showDeleteAppConfirmation = true;
             });
 
-            Bus.$on('close-add-toggle', () => {
+            Bus.$on(events.closeAddFeatureToggleModal, () => {
                 this.showAddToggle = false;
             });
 
-            Bus.$on('close-add-application', () => {
+            Bus.$on(events.closeAddApplicationModal, () => {
                 this.showAddApp = false;
             });
 
-            Bus.$on('close-add-environment', () => {
+            Bus.$on(events.closeAddEnvironmentModal, () => {
                 this.showAddEnv = false;
             });
 
-            Bus.$on('close-refresh', () => {
+            Bus.$on(events.closeForceCacheRefreshModal, () => {
                 this.showForceCacheRefresh = false;
             });
 
-            Bus.$on('close-scheduler', () => {
+            Bus.$on(events.closeToggleSchedulerModal, () => {
                 this.showScheduler = false;
             });
 
@@ -165,15 +165,15 @@
         methods: {
             showAddFeatureToggleModal() {
                 this.showAddToggle = true;
-                Bus.$emit('openAddFeatureToggleModal');
+                Bus.$emit(events.openAddFeatureToggleModal);
             },
             showAddAppModal() {
                 this.showAddApp = true;
-                Bus.$emit('openAddAppModal');
+                Bus.$emit(events.openAddApplicationModal);
             },
             showAddEnvModal() {
                 this.showAddEnv = true;
-                Bus.$emit('openAddEnvModal');
+                Bus.$emit(events.openAddEnvironmentModal);
             },
             reloadCurrentApplicationToggles() {
                 Bus.$emit(events.reloadApplicationToggles);
@@ -186,7 +186,7 @@
             },
             showAddFeatureToggleScheduleModal() {
                 this.showScheduler = true;
-                Bus.$emit('add-scheduler');
+                Bus.$emit(events.openAddSchedulerModal);
             }
         }
     }

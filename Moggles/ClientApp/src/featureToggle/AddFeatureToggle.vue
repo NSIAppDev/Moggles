@@ -1,67 +1,69 @@
 <template>
-  <div>
-    <alert v-if="showSuccessAlert" :duration="alertDuration" type="success"
-           @dismissed="showSuccessAlert = false">
-      <p>
-        <i class="fas fa-check-circle" /> Feature toggle added.
-      </p>
-    </alert>
+    <div>
+        <alert v-if="showSuccessAlert" :duration="alertDuration" type="success"
+               @dismissed="showSuccessAlert = false">
+            <p>
+                <i class="fas fa-check-circle" /> Feature toggle added.
+            </p>
+        </alert>
 
-    <div class="form-horizontal">
-      <div class="row">
-        <div v-for="error in errors" :key="error" class="text-danger">
-          {{ error }}
+        <div class="form-horizontal">
+            <div class="row">
+                <div v-for="error in errors" :key="error" class="text-danger">
+                    {{ error }}
+                </div>
+                <div class="col-sm-12 form-group">
+                    <label class="col-sm-4 control-label" for="ftname">Name</label>
+                    <div class="col-sm-8">
+                        <input id="featureToggleName" ref="toggleName" v-model="featureToggleName"
+                               class="form-control" type="text"
+                               name="ftName" placeholder="Feature toggle name..." maxlength="80"
+                               autoFocus>
+                    </div>
+                </div>
+                <div class="col-sm-12 form-group">
+                    <label class="col-sm-4 control-label" for="ftWorkItem">Work Item ID</label>
+                    <div class="col-sm-8">
+                        <input v-model="workItemIdentifier" class="form-control" type="text"
+                               name="ftWorkItem" placeholder="Work Item ID..." maxlength="50">
+                    </div>
+                </div>
+                <div class="col-sm-12 form-group">
+                    <label class="col-sm-4 control-label" for="ftnotes">Notes</label>
+                    <div class="col-sm-8">
+                        <input v-model="notes" class="form-control" type="text"
+                               name="ftNotes" placeholder="Notes..." maxlength="500">
+                    </div>
+                </div>
+                <div class="col-sm-12 form-group">
+                    <label class="col-sm-4 control-label" for="ftPerm">Is Permanent </label>
+                    <span class="col-sm-2 margin-top-5">
+                        <p-check v-model="isPermanent" class="p-icon p-fill" name="ftPerm"
+                                 color="default">
+                            <i slot="extra" class="icon fas fa-check" />
+                        </p-check>
+                    </span>
+                </div>
+                <div class="col-sm-12 text-right">
+                    <button class="btn btn-default" @click="closeAddToggleModal">
+                        Close
+                    </button>
+                    <button :disabled="application.id != ''? false : true" class="btn btn-primary" type="button"
+                            @click="addFeatureToggle">
+                        Add
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="col-sm-12 form-group">
-          <label class="col-sm-4 control-label" for="ftname">Name</label>
-          <div class="col-sm-8">
-            <input id="featureToggleName" ref="toggleName" v-model="featureToggleName"
-                   class="form-control" type="text"
-                   name="ftName" placeholder="Feature toggle name..." maxlength="80"
-                   autoFocus>
-          </div>
-        </div>
-        <div class="col-sm-12 form-group">
-          <label class="col-sm-4 control-label" for="ftWorkItem">Work Item ID</label>
-          <div class="col-sm-8">
-            <input v-model="workItemIdentifier" class="form-control" type="text"
-                   name="ftWorkItem" placeholder="Work Item ID..." maxlength="50">
-          </div>
-        </div>
-        <div class="col-sm-12 form-group">
-          <label class="col-sm-4 control-label" for="ftnotes">Notes</label>
-          <div class="col-sm-8">
-            <input v-model="notes" class="form-control" type="text"
-                   name="ftNotes" placeholder="Notes..." maxlength="500">
-          </div>
-        </div>
-        <div class="col-sm-12 form-group">
-          <label class="col-sm-4 control-label" for="ftPerm">Is Permanent </label>
-          <span class="col-sm-2 margin-top-5">
-            <p-check v-model="isPermanent" class="p-icon p-fill" name="ftPerm"
-                     color="default">
-              <i slot="extra" class="icon fas fa-check" />
-            </p-check>
-          </span>
-        </div>
-        <div class="col-sm-12 text-right">
-          <button class="btn btn-default" @click="closeAddToggleModal">
-            Close
-          </button>
-          <button :disabled="application.id != ''? false : true" class="btn btn-primary" type="button"
-                  @click="addFeatureToggle">
-            Add
-          </button>
-        </div>
-      </div>
     </div>
-  </div>
 </template>
 
 <script>
     import PrettyCheck from 'pretty-checkbox-vue/check';
     import { Bus } from '../common/event-bus';
     import axios from 'axios';
+    import { events } from '../common/events';
+
 
     export default {
         components: {
@@ -87,19 +89,20 @@
             }
         },
         mounted() {
-           
-            Bus.$on("app-changed", app => {
+
+            this.$nextTick(() => { this.$refs["toggleName"].focus() });
+
+            Bus.$on(events.openAddFeatureToggleModal, () => {
+                this.clearFields();
+            });
+            Bus.$on(events.applicationChanged, app => {
                 if (app) {
                     this.application.id = app.id;
                 }
             });
 
-            Bus.$on("toggles-loaded", toggles => {
+            Bus.$on(events.togglesLoaded, toggles => {
                 this.existingToggles = toggles;
-            });
-            Bus.$on("openAddFeatureToggleModal", () => {
-                this.$nextTick(() => { this.$refs["toggleName"].focus() });
-                this.clearFields();
             });
 
         },
@@ -123,7 +126,7 @@
                     workItemIdentifier: this.workItemIdentifier.trim()
                 }
 
-                Bus.$emit('block-ui')
+                Bus.$emit(events.blockUI)
                 axios.post('api/FeatureToggles/addFeatureToggle', param)
                     .then(() => {
                         this.showSuccessAlert = true;
@@ -131,16 +134,16 @@
                         this.notes = '';
                         this.isPermanent = false;
                         this.workItemIdentifier = "";
-                         this.$nextTick(() => { this.$refs["toggleName"].focus() });
-                        Bus.$emit("toggle-added")
+                        this.$nextTick(() => { this.$refs["toggleName"].focus() });
+                        Bus.$emit(events.toggleAdded)
                     }).catch((e) => {
                         this.errors.push(e.response.data);
                     }).finally(() => {
-                        Bus.$emit('unblock-ui')
+                        Bus.$emit(events.unblockUI)
                     });
             },
             closeAddToggleModal() {
-                Bus.$emit('close-add-toggle');
+                Bus.$emit(events.closeAddFeatureToggleModal);
             },
             clearFields() {
                 this.featureToggleName = "";

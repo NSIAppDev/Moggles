@@ -14,8 +14,9 @@
   </div>
 </template>
 <script>
-    import { Bus } from '../common/event-bus'
-    import axios from 'axios'
+    import { Bus } from '../common/event-bus';
+    import axios from 'axios';
+    import { events } from '../common/events';
 
     export default {
        props: {
@@ -27,11 +28,12 @@
         methods: {
             deleteSchedule() {
                 axios.delete(`/api/ToggleScheduler?id=${this.schedule.scheduleId}`).then(() => {
-                    this.closeModal();
+                    Bus.$emit(events.closeDeleteSchedulerModal);
+                    Bus.$emit(events.closeToggleSchedulerModal);
                 }).catch(error => window.alert(error));
             },
             closeModal() {
-                Bus.$emit('close-deleteScheduler');
+                Bus.$emit(events.closeDeleteSchedulerModal);
             }
         }
     }

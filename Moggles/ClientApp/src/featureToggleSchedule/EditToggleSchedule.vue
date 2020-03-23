@@ -21,7 +21,7 @@
                 <div class="col-sm-12 form-group">
                     <label class="col-sm-4 control-label" for="toggleSelect">Toggle name</label>
                     <div class="col-sm-8">
-                        <span>{{this.schedule.toggleName}}</span>
+                        <input v-model="schedule.toggleName" type="text" class="form-control" disabled>
                     </div>
                 </div>
                 <div class="col-sm-12 form-group">
@@ -104,11 +104,13 @@
 
 <script>
     import { Bus } from '../common/event-bus'
+    import { events } from '../common/events';
     import axios from 'axios'
     import moment from 'moment';
     import _ from 'lodash';
     import PrettyCheck from 'pretty-checkbox-vue/check';
-    import DeleteToggleSchedule from './DeleteToggleSchedule'
+    import DeleteToggleSchedule from './DeleteToggleSchedule';
+
 
     export default {
         components: {
@@ -146,9 +148,8 @@
         created() {
             this.loadEnvironments();
 
-            Bus.$on('close-deleteScheduler', () => {
+            Bus.$on(events.closeDeleteSchedulerModal, () => {
                 this.showDeleteConfirmation = false;
-                this.closeModal();
             });
         },
         methods: {
@@ -156,11 +157,11 @@
                 this.showDeleteConfirmation = true;
             },
             editSchedule() {
-                Bus.$emit('block-ui')
+                Bus.$emit(events.blockUI)
 
                 this.validateSchedule();
                 if (this.errors.length > 0) {
-                    Bus.$emit('unblock-ui')
+                    Bus.$emit(events.unblockUI)
                     return;
                 }
 
@@ -179,7 +180,7 @@
                         icon: 'fas fa-check-circle'
                     })
                     this.closeModal();
-                    Bus.$emit('toggle-scheduled');
+                    Bus.$emit(events.toggleScheduled);
                 }).catch(e => {
                     this.$notify({
                         type: "error",
@@ -188,7 +189,7 @@
                         icon: 'fas fa-check-circle'
                     });
                 }).finally(() => {
-                    Bus.$emit('unblock-ui')
+                    Bus.$emit(events.unblockUI)
                 });
             },
             validateSchedule() {
@@ -222,7 +223,7 @@
                 }).catch((e) => { window.alert(e) });
             },
             closeModal() {
-                Bus.$emit('close-scheduler');
+                Bus.$emit(events.closeToggleSchedulerModal);
             }
         }
     }

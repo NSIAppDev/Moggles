@@ -52,6 +52,9 @@
                 appName: ""
             }
         },
+        created() {
+            this.appName = this.application.appName;
+        },
         methods: {
             updateApp() {
                 this.editAppErrors = [];
@@ -68,13 +71,12 @@
                 axios.put('/api/applications/update', appUpdateModel)
                     .then(() => {
                         this.$emit('close-app-edit-modal');
-                        Bus.$emit(events.applicationEdited);
+                        Bus.$emit(events.applicationEdited, appUpdateModel);
                     }).catch(e => {
                         window.alert(e)
                     })
             },
             cancel() {
-                this.appName = this.application.appName;
                 this.editAppErrors = [];
                 this.$emit('close-app-edit-modal');
             },
@@ -82,7 +84,7 @@
                 return !text || /^\s*$/.test(text);
             },
             showDeleteConfirmationMessage() {
-                Bus.$emit("show-app-delete-confirmation");
+                Bus.$emit(events.showDeleteApplicationConfirmationModal);
             }
         }
     }

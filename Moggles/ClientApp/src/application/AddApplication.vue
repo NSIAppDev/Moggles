@@ -69,7 +69,7 @@
             }
         },
         mounted() {
-            Bus.$on('openAddAppModal', () => {
+            Bus.$on(events.openAddApplicationModal, () => {
                 this.$nextTick(() => { this.$refs["appName"].focus() });
                 this.clearFields();
             })
@@ -88,7 +88,7 @@
                 }
 
                 if (this.errors.length > 0) {
-                    Bus.$emit('unblock-ui')
+                    Bus.$emit(events.unblockUI);
                     return;
                 }
 
@@ -110,11 +110,11 @@
                 }).catch(e => {
                     this.errors.push(e.response.data);
                 }).finally(() => {
-                    Bus.$emit('unblock-ui')
+                    Bus.$emit(events.unblockUI)
                 });
             },
             closeAddApplicationModal() {
-                Bus.$emit('close-add-application');
+                Bus.$emit(events.closeAddApplicationModal);
             },
             clearFields() {
                 this.applicationName = "";

@@ -67,15 +67,15 @@
 					envName: this.envName
 				};
 
-				Bus.$emit('block-ui')
+                Bus.$emit(events.blockUI)
 				axios.post('api/CacheRefresh', param)
 					.then(() => {
 						this.showSuccessAlert = true;
 						this.envName = null;
 					}).catch((e) => {
 						window.alert(e);
-					}).finally(() => {
-						Bus.$emit('unblock-ui')
+                    }).finally(() => {
+                        Bus.$emit(events.unblockUI)
 					});
 			},
 			closeRefreshModal() {

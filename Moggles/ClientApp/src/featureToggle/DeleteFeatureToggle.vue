@@ -19,6 +19,8 @@
 <script>
     import axios from 'axios';
     import { Bus } from '../common/event-bus';
+    import { events } from '../common/events';
+
     export default {
         props: {
             application: {
@@ -41,7 +43,7 @@
             }
         },
         created() {
-            Bus.$on('delete-featureToggle', toggleToDelete => {
+            Bus.$on(events.deleteFeatureToggle, toggleToDelete => {
                 this.toggleToDelete = toggleToDelete;
             })
         },
@@ -49,11 +51,11 @@
             deleteToggle() {
                 axios.delete(`/api/FeatureToggles?id=${this.toggleToDelete.id}&applicationid=${this.application.id}`).then(() => {
                     this.toggleToDelete = null
-                    Bus.$emit('close-deleteToggle');
+                    Bus.$emit(events.closeDeleteFeatureToggleModal);
                 }).catch(error => window.alert(error))
             },
             cancelDeleteToggle() {
-                Bus.$emit('close-deleteToggle');
+                Bus.$emit(events.closeDeleteFeatureToggleModal);
             }
         }
     }

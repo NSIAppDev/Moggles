@@ -77,6 +77,7 @@
     import moment from 'moment';
     import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
     import { Bus } from './common/event-bus';
+    import { events } from './common/events';
     import PrettyCheck from 'pretty-checkbox-vue/check';
     import EditToggleSchedule from "./featureToggleSchedule/EditToggleSchedule";
     import EditFeatureToggle from './featureToggle/EditFeatureToggle';
@@ -135,43 +136,47 @@
         },
         methods: {
             subscribeToBusEvents() {
-                Bus.$on("app-changed", app => {
+                Bus.$on(events.applicationChanged, app => {
                     if (app) {
                         this.selectedApp = app;
                         this.loadGrid();
                     }
                 })
 
-                Bus.$on("env-added", () => {
+                Bus.$on(events.applicationEdited, applicationUpdateModel => {
+                    this.selectedApp.appName = applicationUpdateModel.applicationName
+                })
+
+                Bus.$on(events.environmentAdded, () => {
                     this.loadGrid();
                 })
 
-                Bus.$on("toggle-added", () => {
+                Bus.$on(events.toggleAdded, () => {
                     this.loadGridData()
                 })
 
-                Bus.$on("toggle-scheduled", () => {
+                Bus.$on(events.toggleScheduled, () => {
                     this.getAllScheduledToggles();
                 })
 
-                Bus.$on('close-scheduler', () => {
+                Bus.$on(events.closeToggleSchedulerModal, () => {
                     this.showSchedulerModal = false;
                     this.getAllScheduledToggles();
                 })
 
-                Bus.$on('close-editEnvironment', () => {
+                Bus.$on(events.closeEditEnvironmentModal, () => {
                     this.showEditEnvironmentModal = false;
                     this.loadGrid();
                 })
 
-                Bus.$on('close-editFeatureFlag', (environmentsToRefresh, isRefreshAlertVisible) => {
+                Bus.$on(events.closeEditFeatureToggleModal, (environmentsToRefresh, isRefreshAlertVisible) => {
                     this.showEditModal = false;
                     this.loadGridData();
                     this.environmentsToRefresh = environmentsToRefresh;
                     this.isRefreshAlertVisible = isRefreshAlertVisible;
                 })
 
-                Bus.$on('close-deleteToggle', () => {
+                Bus.$on(events.closeDeleteFeatureToggleModal, () => {
                     this.showDeleteConfirmationModal = false;
                     this.loadGridData();
                 })
@@ -311,7 +316,7 @@
                     this.environments = response.data;
                     this.createGridColumns();
                     this.loadGridData();
-                    Bus.$emit('env-loaded', this.environmentsNameList)
+                    Bus.$emit(events.environmentsLoaded, this.environmentsNameList)
                 }).catch((e) => { window.alert(e) });
             },
             loadGridData() {
@@ -346,7 +351,7 @@
                         return rowModel;
                     });
                     this.toggles = gridRowModels;
-                    Bus.$emit('toggles-loaded', gridRowModels);
+                    Bus.$emit(events.togglesLoaded, gridRowModels);
                 }).catch(() => {
                     //do not uncomment this, the null reference exception will return to haunt us !
                     //window.alert(error)
@@ -385,21 +390,21 @@
             openEditEnvironmentModal(column) {
                 let environment = this.environments.find(element => element.envName == column.field);
                 this.showEditEnvironmentModal = true;
-                Bus.$emit('edit-environment', environment);
+                Bus.$emit(events.editEnvironment, environment);
             },
             openEditFeatureToggleModal(row) {
                 this.showEditModal = true;
-                Bus.$emit('open-editFeatureToggle', _.clone(row));
+                Bus.$emit(events.openEditFeatureToggleModal, _.clone(row));
             },
             openDeleteFeatureToggleConfirmationModal(row) {
                 this.showDeleteConfirmationModal = true
-                Bus.$emit('delete-featureToggle', row);
+                Bus.$emit(events.deleteFeatureToggle, row);
             },
             refreshEnvironmentToggles(env, index) {
                 if (!this.selectedApp)
                     return;
 
-                Bus.$emit('block-ui')
+                Bus.$emit(events.blockUI)
 
                 axios.post('api/CacheRefresh', {
                     applicationId: this.selectedApp.id,
@@ -420,7 +425,7 @@
                     }).catch((e) => {
                         window.alert(e);
                     }).finally(() => {
-                        Bus.$emit('unblock-ui')
+                        Bus.$emit(events.unblockUI)
                     });
             },
             closeRefreshAlert() {

@@ -99,7 +99,7 @@
     import axios from 'axios';
     import { Bus } from '../common/event-bus';
     import _ from 'lodash';
-
+    import { events } from '../common/events';
 
     export default {
         components: {
@@ -126,7 +126,7 @@
             }
         },
         created() {
-            Bus.$on("open-editFeatureToggle", (toggle) => {
+            Bus.$on(events.openEditFeatureToggleModal, (toggle) => {
                 this.initialiseModal();
                 this.rowToEdit = toggle;
                 this.initialToggle = _.cloneDeep(toggle);
@@ -245,7 +245,7 @@
             },
             closeModal() {
                 let isRefreshAlertVisble = this.environmentsToRefresh.length > 0;
-                Bus.$emit('close-editFeatureFlag', this.environmentsToRefresh, isRefreshAlertVisble);
+                Bus.$emit(events.closeEditFeatureToggleModal, this.environmentsToRefresh, isRefreshAlertVisble);
             }
         }
     }

@@ -101,6 +101,7 @@
     import moment from 'moment';
     import _ from 'lodash';
     import PrettyCheck from 'pretty-checkbox-vue/check';
+    import { events } from '../common/events';
 
     export default {
         components: {
@@ -172,11 +173,11 @@
                 }).catch((e) => { window.alert(e) });
             },
             addSchedule() {
-                Bus.$emit('block-ui');
+                Bus.$emit(events.blockUI);
 
                 this.validateSchedule();
                 if (this.errors.length > 0) {
-                    Bus.$emit('unblock-ui')
+                    Bus.$emit(events.unblockUI)
                     return;
                 }
 
@@ -196,7 +197,7 @@
 
                     })
                     this.closeModal();
-                    Bus.$emit('toggle-scheduled');
+                    Bus.$emit(events.toggleScheduled);
                 }).catch(e => {
                     this.$notify({
                         type: "error",
@@ -205,7 +206,7 @@
                         icon: 'fas fa-check-circle'
                     });
                 }).finally(() => {
-                    Bus.$emit('unblock-ui')
+                    Bus.$emit(events.unblockUI)
                 });
             },
             validateSchedule() {
@@ -229,7 +230,7 @@
                 }
             },
             closeModal() {
-                Bus.$emit('close-scheduler');
+                Bus.$emit(events.closeToggleSchedulerModal);
             }
         }
     }
