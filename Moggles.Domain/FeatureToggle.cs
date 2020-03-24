@@ -111,9 +111,9 @@ namespace Moggles.Domain
             WorkItemIdentifier = workItemIdentifier;
         }
 
-        public void AddReasonToChange(string addedByUser, string description)
+        public void AddReasonToChange(string addedByUser, string description, List<string> environments)
         {
-            ReasonsToChange.Add(ReasonToChange.Create(addedByUser, description));
+            ReasonsToChange.Add(ReasonToChange.Create(addedByUser, description, environments));
         }
 
     }

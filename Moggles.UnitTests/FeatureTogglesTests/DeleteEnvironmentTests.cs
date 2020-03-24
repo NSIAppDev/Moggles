@@ -136,5 +136,63 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var schedulers = (await _toggleScheduleRepository.GetAllAsync()).Where(ft => ft.Environments.Contains("DEV"));
             schedulers.Count().Should().Be(0);
         }
+
+        [TestMethod]
+        public async Task DeletingAnEnvironment_DeletsEnvironmentNameForAllReasons()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "TestEnv", false);
+            app.AddFeatureToggle("t1", "", "workItemId1");
+            app.AddDeployEnvironment("Env", false, false, true);
+            await _appRepository.AddAsync(app);
+            var featureToggle = app.FeatureToggles.First();
+            app.UpdateFeatureToggleReasonsToChange(featureToggle.Id, "user", "reason1", new List<string> { "TestEnv", "Env" });
+
+            var environmentToRemove = new DeleteEnvironmentModel
+            {
+                ApplicationId = app.Id,
+                EnvName = "TestEnv"
+            };
+            //act
+            var result = await _featureToggleController.RemoveEnvironment(environmentToRemove);
+
+            //assert
+            result.Should().BeOfType<OkResult>();
+            var savedApp = await _appRepository.FindByIdAsync(app.Id);
+            savedApp.DeploymentEnvironments.Count.Should().Be(1);
+            savedApp.FeatureToggles.Count.Should().Be(1);
+            var ft = savedApp.FeatureToggles.First();
+            ft.ReasonsToChange.Single().Environments.Count.Should().Be(1);
+            ft.ReasonsToChange.Single().Environments.First().Should().Be("Env");
+
+        }
+
+        [TestMethod]
+        public async Task DeletingAnEnvironment_WhenReasonHasOnlyOneEnvironment_DeletesReason()
+        {
+            //arrange
+            var app = Application.Create("TestApp", "TestEnv", false);
+            app.AddFeatureToggle("t1", "", "workItemId1");
+            app.AddDeployEnvironment("Env", false, false, true);
+            await _appRepository.AddAsync(app);
+            var featureToggle = app.FeatureToggles.First();
+            app.UpdateFeatureToggleReasonsToChange(featureToggle.Id, "user", "reason1", new List<string> { "TestEnv"});
+
+            var environmentToRemove = new DeleteEnvironmentModel
+            {
+                ApplicationId = app.Id,
+                EnvName = "TestEnv"
+            };
+            //act
+            var result = await _featureToggleController.RemoveEnvironment(environmentToRemove);
+
+            //assert
+            result.Should().BeOfType<OkResult>();
+            var savedApp = await _appRepository.FindByIdAsync(app.Id);
+            savedApp.DeploymentEnvironments.Count.Should().Be(1);
+            savedApp.FeatureToggles.Count.Should().Be(1);
+            var ft = savedApp.FeatureToggles.First();
+            ft.ReasonsToChange.Count.Should().Be(0);
+        }
     }
 }
