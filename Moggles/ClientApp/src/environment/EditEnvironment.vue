@@ -44,6 +44,13 @@
                         </p-check>
                     </div>
                 </div>
+                <div class="col-sm-12 form-group">
+                    <label class="control-label col-sm-4">Position</label>
+                    <i class="fas fa-long-arrow-alt-left col-sm-1 margin-left-0" style="font-size:40px;color:steelblue; text-align:right"></i>
+                    <strong class="col-sm-3 margin-top-5" style="text-align:right">move left</strong>
+                    <strong class="col-sm-3 margin-top-5" style="text-align:left">move right</strong>
+                    <i class="fas fa-long-arrow-alt-right col-sm-1 margin-left-0 margin-top-2" style="font-size:40px;color:steelblue; text-align:left"></i>
+                </div>
                 <div class="clearfix">
                     <div class="col-sm-6">
                         <button type="button" class="btn btn-danger" @click="showDeleteEnvironmentConfirmationModal">
