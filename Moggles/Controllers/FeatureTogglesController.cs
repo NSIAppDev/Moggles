@@ -231,18 +231,11 @@ namespace Moggles.Controllers
 
             foreach (var featureToggle in app.FeatureToggles)
             {
-                foreach (var reason in featureToggle.ReasonsToChange)
-                {
-                    if (reason.Environments.Contains(environmentModel.EnvName))
-                    {
-                        reason.Environments.Remove(environmentModel.EnvName);
-                    }
-                }
+                featureToggle.RemoveEnvironmentFromReasonToChange(environmentModel.EnvName);
             }
-
             foreach (var featureToggle in app.FeatureToggles)
             {
-                featureToggle.ReasonsToChange.RemoveAll(r => r.Environments.Count == 0);
+                featureToggle.RemoveReasonToChange();
             }
 
             app.DeleteDeployEnvironment(environmentModel.EnvName);

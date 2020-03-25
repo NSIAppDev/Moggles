@@ -116,5 +116,20 @@ namespace Moggles.Domain
             ReasonsToChange.Add(ReasonToChange.Create(addedByUser, description, environments));
         }
 
+        public void RemoveReasonToChange()
+        {
+            ReasonsToChange.RemoveAll(reason => reason.Environments!=null &&  reason.Environments.Count == 0);
+        }
+
+        public void RemoveEnvironmentFromReasonToChange(string environment)
+        {
+            foreach(var reason in ReasonsToChange)
+            {
+                if(reason.Environments != null)
+                {
+                    reason.Environments.Remove(environment);
+                }
+            }
+        }
     }
 }
