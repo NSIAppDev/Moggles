@@ -182,10 +182,11 @@
                     featureToggleName: this.rowToEdit.toggleName,
                     isPermanent: this.rowToEdit.isPermanent,
                     statuses: statuses,
-                    reasonToChange: {
-                        description: !this.stringIsNullOrEmpty(this.reasonToChange) ? this.reasonToChange : null,
+                    reasonToChange: !this.stringIsNullOrEmpty(this.reasonToChange) ? {
+                        description: this.reasonToChange,
                         environments: this.environmentsToRefresh
-                    }
+                    } : null
+                    
                 }
 
                 axios.put('/api/featuretoggles', toggleUpdateModel)

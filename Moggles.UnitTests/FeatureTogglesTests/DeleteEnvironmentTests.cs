@@ -138,7 +138,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         }
 
         [TestMethod]
-        public async Task DeletingAnEnvironment_DeletsEnvironmentNameForAllReasons()
+        public async Task DeletingAnEnvironment_DeletesEnvironmentNameForAllReasons()
         {
             //arrange
             var app = Application.Create("TestApp", "TestEnv", false);
@@ -159,8 +159,6 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //assert
             result.Should().BeOfType<OkResult>();
             var savedApp = await _appRepository.FindByIdAsync(app.Id);
-            savedApp.DeploymentEnvironments.Count.Should().Be(1);
-            savedApp.FeatureToggles.Count.Should().Be(1);
             var ft = savedApp.FeatureToggles.First();
             ft.ReasonsToChange.Single().Environments.Count.Should().Be(1);
             ft.ReasonsToChange.Single().Environments.First().Should().Be("Env");
@@ -189,8 +187,6 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             //assert
             result.Should().BeOfType<OkResult>();
             var savedApp = await _appRepository.FindByIdAsync(app.Id);
-            savedApp.DeploymentEnvironments.Count.Should().Be(1);
-            savedApp.FeatureToggles.Count.Should().Be(1);
             var ft = savedApp.FeatureToggles.First();
             ft.ReasonsToChange.Count.Should().Be(0);
         }

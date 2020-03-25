@@ -87,7 +87,7 @@ namespace Moggles.Controllers
 
             var updatedBy = _httpContextAccessor.HttpContext.User.Identity.Name;
 
-            if (!string.IsNullOrEmpty(model.ReasonToChange.Description))
+            if (model.ReasonToChange!=null)
             {
                 app.UpdateFeatureToggleReasonsToChange(model.Id, updatedBy, model.ReasonToChange.Description, model.ReasonToChange.Environments);
             }
