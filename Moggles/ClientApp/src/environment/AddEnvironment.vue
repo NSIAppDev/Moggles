@@ -102,6 +102,7 @@
                 this.$nextTick(() => { this.$refs["envName"].focus() });
                 this.clearFields();
             });
+
         },
         methods: {
             clearFields() {
@@ -110,12 +111,15 @@
                 this.defaultToggleValue = false;
             },
             addEnv() {
+                let lastEnv = this.existingEnvs[this.existingEnvs.length - 1];
+                this.sortOrder = lastEnv != null ? lastEnv.sortOrder + 1: 0;
+
                 if (this.application.id === -1)
                     return;
 
                 this.errors = [];
 
-                if (this.existingEnvs.some(env => env === this.envName)) {
+                if (this.existingEnvs.some(env => env.envName === this.envName)) {
                     this.errors.push("Environment already exists")
                     return;
                 }

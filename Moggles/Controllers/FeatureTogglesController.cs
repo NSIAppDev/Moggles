@@ -248,6 +248,7 @@ namespace Moggles.Controllers
                 app.ChangeEnvironmentValuesToRequireReasonFor(environmentModel.InitialEnvName, environmentModel.RequireReasonForChangeWhenToggleEnabled, environmentModel.RequireReasonForChangeWhenToggleDisabled);
                 app.ChangeEnvironmentValuesToRequireReasonFor(environmentModel.InitialEnvName, environmentModel.RequireReasonForChangeWhenToggleEnabled, environmentModel.RequireReasonForChangeWhenToggleDisabled);
                 app.ChangeDeployEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
+                app.ChangeEnvironmentPosition(environmentModel.NewEnvName, environmentModel.MoveToLeft, environmentModel.MoveToRight);
                 app.ChangeEnvironmentDefaultValue(environmentModel.NewEnvName, environmentModel.DefaultToggleValue);
                 foreach(var fts in featureTogglesSchedulers)
                 {

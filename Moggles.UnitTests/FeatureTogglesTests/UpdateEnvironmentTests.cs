@@ -194,5 +194,110 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             t2.GetFeatureToggleStatusForEnv("DEV").Enabled.Should().Be(false);
         }
 
+        [TestMethod]
+        public async Task EnvironmentSortOrderChanged_WhenPositionChangedToLeft_OrderIsChanged()
+        {
+            var application = Application.Create("Test", "DEV", false);
+            await _appRepository.AddAsync(application);
+            application.DeploymentEnvironments.First().SortOrder = 0;
+            application.AddDeployEnvironment("QA", false, false, false, sortOrder:1);
+            application.AddDeployEnvironment("LIVE", false, false, false, sortOrder:2);
+
+            await _appRepository.UpdateAsync(application);
+
+            var updateEnvironment = new UpdateEnvironmentModel
+            {
+                ApplicationId = application.Id,
+                DefaultToggleValue = false,
+                InitialEnvName = "LIVE",
+                NewEnvName = "LIVE",
+                MoveToLeft = true,
+                MoveToRight = false
+            };
+
+            //act
+            var result = await _featureToggleController.UpdateEnvironment(updateEnvironment);
+            application.DeploymentEnvironments = application.DeploymentEnvironments.OrderBy(e => e.SortOrder).ToList();
+
+            //assert
+            var environment = application.DeploymentEnvironments.FirstOrDefault(e => e.EnvName == "LIVE");
+            environment.SortOrder.Should().Be(1);
+            var leftEnvironmentIndex = application.DeploymentEnvironments.IndexOf(environment) - 1;
+            var leftEnvironment = application.DeploymentEnvironments[leftEnvironmentIndex];
+            leftEnvironment.EnvName.Should().Be("DEV");
+            leftEnvironment.SortOrder.Should().Be(0);
+            var rightEnvironmentIndex = application.DeploymentEnvironments.IndexOf(environment) + 1;
+            var rightEnvironment = application.DeploymentEnvironments[rightEnvironmentIndex];
+            rightEnvironment.EnvName.Should().Be("QA");
+            rightEnvironment.SortOrder.Should().Be(2);
+        }
+
+        [TestMethod]
+        public async Task EnvironmentSortOrderChanged_WhenPositionChangedToRight_OrderIsChanged()
+        {
+            var application = Application.Create("Test", "DEV", false);
+            await _appRepository.AddAsync(application);
+            application.DeploymentEnvironments.First().SortOrder = 0;
+            application.AddDeployEnvironment("QA", false, false, false, sortOrder: 1);
+            application.AddDeployEnvironment("LIVE", false, false, false, sortOrder: 2);
+
+            await _appRepository.UpdateAsync(application);
+
+            var updateEnvironment = new UpdateEnvironmentModel
+            {
+                ApplicationId = application.Id,
+                DefaultToggleValue = false,
+                InitialEnvName = "DEV",
+                NewEnvName = "DEV",
+                MoveToLeft = false,
+                MoveToRight = true
+            };
+
+            //act
+            var result = await _featureToggleController.UpdateEnvironment(updateEnvironment);
+            application.DeploymentEnvironments = application.DeploymentEnvironments.OrderBy(e => e.SortOrder).ToList();
+
+            //assert
+            var environment = application.DeploymentEnvironments.FirstOrDefault(e => e.EnvName == "DEV");
+            environment.SortOrder.Should().Be(1);
+            var leftEnvironmentIndex = application.DeploymentEnvironments.IndexOf(environment) - 1;
+            var leftEnvironment = application.DeploymentEnvironments[leftEnvironmentIndex];
+            leftEnvironment.EnvName.Should().Be("QA");
+            leftEnvironment.SortOrder.Should().Be(0);
+            var rightEnvironmentIndex = application.DeploymentEnvironments.IndexOf(environment) + 1;
+            var rightEnvironment = application.DeploymentEnvironments[rightEnvironmentIndex];
+            rightEnvironment.EnvName.Should().Be("LIVE");
+            rightEnvironment.SortOrder.Should().Be(2);
+        }
+
+        [TestMethod]
+        public async Task WhenMovetoRightAndLeftAreTrue_EnvironmentSortOrderDoesNotChange()
+        {
+            var application = Application.Create("Test", "DEV", false);
+            await _appRepository.AddAsync(application);
+            application.DeploymentEnvironments.First().SortOrder = 0;
+            application.AddDeployEnvironment("QA", false, false, false, sortOrder: 1);
+            application.AddDeployEnvironment("LIVE", false, false, false, sortOrder: 2);
+
+            await _appRepository.UpdateAsync(application);
+
+            var updateEnvironment = new UpdateEnvironmentModel
+            {
+                ApplicationId = application.Id,
+                DefaultToggleValue = false,
+                InitialEnvName = "DEV",
+                NewEnvName = "DEV",
+                MoveToLeft = true,
+                MoveToRight = true
+            };
+
+            //act
+            var result = await _featureToggleController.UpdateEnvironment(updateEnvironment);
+
+            //assert
+            var environments = application.DeploymentEnvironments.OrderBy(e => e.SortOrder).ToList();
+            environments.Should().BeEquivalentTo(application.DeploymentEnvironments);
+        }
+
     }
 }

@@ -196,6 +196,7 @@
                 this.loadGridData();
             },
             createGridColumns() {
+
                 this.loadGridData();
                 this.$refs['toggleGrid'].reset();
 
@@ -316,7 +317,7 @@
                     this.environments = response.data;
                     this.createGridColumns();
                     this.loadGridData();
-                    Bus.$emit(events.environmentsLoaded, this.environmentsNameList)
+                    Bus.$emit(events.environmentsLoaded, this.environments)
                 }).catch((e) => { window.alert(e) });
             },
             loadGridData() {
@@ -390,7 +391,7 @@
             openEditEnvironmentModal(column) {
                 let environment = this.environments.find(element => element.envName == column.field);
                 this.showEditEnvironmentModal = true;
-                Bus.$emit(events.editEnvironment, environment);
+                Bus.$emit(events.editEnvironment, environment, this.environments);
             },
             openEditFeatureToggleModal(row) {
                 this.showEditModal = true;

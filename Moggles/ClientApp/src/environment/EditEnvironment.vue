@@ -1,7 +1,7 @@
 ﻿<template>
     <div>
         <div v-if="environment" class="form-horizontal">
-            <div class="row">
+            <div>
                 <div class="col-sm-12">
                     <div v-for="error in editEnvironmentErrors" :key="error" class="text-danger margin-left-15">
                         {{ error }}
@@ -44,12 +44,14 @@
                         </p-check>
                     </div>
                 </div>
-                <div class="col-sm-12 form-group">
+                <div>
                     <label class="control-label col-sm-4">Position</label>
-                    <i class="fas fa-long-arrow-alt-left col-sm-1 margin-left-0" style="font-size:40px;color:steelblue; text-align:right"></i>
-                    <strong class="col-sm-3 margin-top-5" style="text-align:right">move left</strong>
-                    <strong class="col-sm-3 margin-top-5" style="text-align:left">move right</strong>
-                    <i class="fas fa-long-arrow-alt-right col-sm-1 margin-left-0 margin-top-2" style="font-size:40px;color:steelblue; text-align:left"></i>
+                    <ul style="list-style:none;margin:0px;padding:0px">
+                        <li style="display:inline-block"><a @click="leftMove = true"><i class="fas fa-long-arrow-alt-left" style="font-size:35px;color:steelblue;"></i></a></li>
+                        <li style="display:inline-block"><strong class="margin-bottom-15 margin-right-20">move left</strong></li>
+                        <li style="display:inline-block"><strong>move right</strong></li>
+                        <li style="display:inline-block"><a @click="rightMove=true"><i class="fas fa-long-arrow-alt-right" style="font-size:35px;color:steelblue;"></i></a></li>
+                    </ul>
                 </div>
                 <div class="clearfix">
                     <div class="col-sm-6">
@@ -98,19 +100,25 @@
             return {
                 environment: {},
                 initialEnvironmentName: '',
+                leftMove: false,
+                rightMove: false,
                 editEnvironmentErrors: [],
-                showDeleteEnvironmentConfirmation: false
+                showDeleteEnvironmentConfirmation: false,
+                environments: []
             }
         },
         created() {
-            Bus.$on(events.editEnvironment, (environment) => {
+            Bus.$on(events.editEnvironment, (environment, environments) => {
                 this.environment = environment;
+                this.environments = environments;
+                this.clearData();
                 this.initialEnvironmentName = environment.envName;
             });
 
             Bus.$on(events.closeDeleteEnvironmentModal, () => {
                 this.showDeleteEnvironmentConfirmation = false;
             })
+
         },
         methods: {
             saveEnvironment() {
@@ -125,9 +133,12 @@
                     applicationId: this.application.id,
                     initialEnvName: this.initialEnvironmentName,
                     newEnvName: this.environment.envName,
+                    sortOrder: this.environment.sortOrder,
                     defaultToggleValue: this.environment.defaultToggleValue,
                     requireReasonForChangeWhenToggleEnabled: this.environment.requireReasonWhenToggleEnabled,
-                    requireReasonForChangeWhenToggleDisabled: this.environment.requireReasonWhenToggleDisabled
+                    requireReasonForChangeWhenToggleDisabled: this.environment.requireReasonWhenToggleDisabled,
+                    moveToLeft: this.leftMove,
+                    moveToRight: this.rightMove
                 }
 
                 axios.put('/api/FeatureToggles/updateEnvironment', environmentUpdateModel)
@@ -144,6 +155,11 @@
             cancelEditEnvironment() {
                 Bus.$emit(events.closeEditEnvironmentModal);
             },
+            clearData() {
+                this.leftMove = false;
+                this.rightMove = false;
+            }
         }
     }
 </script>
+
