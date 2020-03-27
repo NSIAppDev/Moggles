@@ -18,9 +18,9 @@
                         <label class="col-sm-4 margin-top-8 control-label">{{ environment.envName }}</label>
                         <div class="col-sm-1 margin-top-14">
                             <div>
-                                <p-check v-model="rowToEdit[environment.envName]" class="p-icon p-fill"
+                                <p-check  v-model="rowToEdit[environment.envName]" class="p-icon p-fill"
                                          :color="rowToEdit[environment.envName + '_IsDeployed'] ? 'success' : 'default' ">
-                                    <i slot="extra" class="icon fas fa-check" />
+                                    <i slot="extra" class="icon fas fa-check"></i>
                                 </p-check>
                             </div>
                         </div>
@@ -69,14 +69,14 @@
                 </div>
                 <div class="col-sm-12">
                     <label class="control-label">Change reason:</label>
-                    <textarea v-model="reasonToChange" class="col-sm-12" rows="2" />
+                    <textarea :disabled="!confirm" v-model="reasonToChange" class="col-sm-12" rows="2" />
                     <ul class="list-group col-sm-12 margin-top-4">
                         <li v-for="reason in rowToEdit.reasonsToChange" :key="reason.createdAt" class="col-sm-12 list-group-item">
                             <div class="col-sm-4">
                                 <strong>{{ reason.addedByUser }}</strong>
                                 <div>{{ reason.createdAt | moment('M/D/YY hh:mm:ss A') }}</div>
                                 <div>
-                                    <span v-for="environment in reason.environments" class="margin-right-5"><label >{{environment}}</label></span>
+                                    <span v-for="environment in reason.environments" class="margin-right-5"><label>{{environment}}</label></span>
                                 </div>
                             </div>
                             <div class="col-sm-8">
@@ -136,6 +136,18 @@
                 this.getEnvironments();
             });
         },
+        computed: {
+            confirm() {
+                let environmentsEditedNumber = 0;
+                _.forEach(this.environments, environment => {
+                    if (this.environmentStatusHasChanged(environment)) {
+                        environmentsEditedNumber++;
+                    }
+                });
+
+                return environmentsEditedNumber > 0 ? true : false;
+            }
+        },
         methods: {
             initialiseModal() {
                 this.rowToEdit = null;
@@ -186,7 +198,7 @@
                         description: this.reasonToChange,
                         environments: this.environmentsToRefresh
                     } : null
-                    
+
                 }
 
                 axios.put('/api/featuretoggles', toggleUpdateModel)
