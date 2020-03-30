@@ -1,20 +1,20 @@
 <template>
+  <div>
     <div>
-        <div>
-            Are you sure you want to delete the {{this.application.appName}} application?
-            <br>
-            All associated feature toggles will be removed.
-        </div>
-        <br>
-        <div class="text-right">
-            <button type="button" class="btn btn-default" @click="cancel">
-                Cancel
-            </button>
-            <button type="button" class="btn btn-primary" @click="deleteApp">
-                Delete
-            </button>
-        </div>
+      Are you sure you want to delete the {{ application.appName }} application?
+      <br>
+      All associated feature toggles will be removed.
     </div>
+    <br>
+    <div class="text-right">
+      <button type="button" class="btn btn-default" @click="cancel">
+        Cancel
+      </button>
+      <button type="button" class="btn btn-primary" @click="deleteApp">
+        Delete
+      </button>
+    </div>
+  </div>
 </template>
 
 <script>

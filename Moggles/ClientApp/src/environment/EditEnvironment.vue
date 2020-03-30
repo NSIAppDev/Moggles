@@ -1,73 +1,78 @@
 ﻿<template>
-	<div>
-		<div v-if="environment" class="form-horizontal">
-			<div>
-				<div class="col-sm-12">
-					<div v-for="error in editEnvironmentErrors" :key="error" class="text-danger margin-left-15">
-						{{ error }}
-					</div>
-				</div>
-				<div class=" col-sm-12 form-group">
-					<label class="col-sm-4 control-label text-left">Environment name</label>
-					<div class="col-sm-8">
-						<input v-model="environment.envName" type="text" class="form-control">
-					</div>
-				</div>
-				<div class="col-sm-12 form-group">
-					<label class="col-sm-4 control-label">
-						Default value for new toggles
-					</label>
-					<div class="col-sm-6 margin-top-4">
-						<label for="r1">True</label>
-						<input id="r1" v-model="environment.defaultToggleValue" type="radio" :value="true" checked>
+  <div>
+    <div v-if="environment" class="form-horizontal">
+      <div>
+        <div class="col-sm-12">
+          <div v-for="error in editEnvironmentErrors" :key="error" class="text-danger margin-left-15">
+            {{ error }}
+          </div>
+        </div>
+        <div class=" col-sm-12 form-group">
+          <label class="col-sm-4 control-label text-left">Environment name</label>
+          <div class="col-sm-8">
+            <input v-model="environment.envName" type="text" class="form-control">
+          </div>
+        </div>
+        <div class="col-sm-12 form-group">
+          <label class="col-sm-4 control-label">
+            Default value for new toggles
+          </label>
+          <div class="col-sm-6 margin-top-4">
+            <label for="r1">True</label>
+            <input id="r1" v-model="environment.defaultToggleValue" type="radio"
+                   :value="true" checked>
 
-						<label for="r2">False</label>
-						<input id="r2" v-model="environment.defaultToggleValue" type="radio" :value="false">
-					</div>
-				</div>
-				<div class="col-sm-12 form-group">
-					<label class="col-sm-4 control-label">
-						Require a reason when toggle state changes to
-					</label>
-					<div class="col-sm-6 margin-top-8">
-						<label for="reasonWhenEnabled">Enabled</label>
-						<p-check id="reasonWhenEnabled" v-model="environment.requireReasonWhenToggleEnabled" class="p-icon p-fill" color="default">
-							<i slot="extra" class="icon fas fa-check" />
-						</p-check>
-						<label for="reasonWhenDisabled">Disabled</label>
-						<p-check id="reasonWhenDisabled" v-model="environment.requireReasonWhenToggleDisabled" class="p-icon p-fill" color="default">
-							<i slot="extra" class="icon fas fa-check" />
-						</p-check>
-					</div>
-				</div>
-				<div class="col-sm-12 form-group">
-					<label class="control-label col-sm-4">Position</label>
-					<div class="col-sm-6 margin-top-8">
-						<a @click="leftMove=true"><i class="fas fa-fw fa-caret-left" /> <strong>Move Left</strong></a>
-						<a class="pull-right" @click="rightMove=true"><strong>Move Right</strong> <i class="fas fa-fw fa-caret-right" /></a>
-					</div>
-				</div>
-				<div class="clearfix">
-					<div class="col-sm-6">
-						<button type="button" class="btn btn-danger" @click="showDeleteEnvironmentConfirmationModal">
-							Delete
-						</button>
-					</div>
-					<div class="col-sm-6 text-right">
-						<button type="button" class="btn btn-default" @click="cancelEditEnvironment">
-							Cancel
-						</button>
-						<button type="button" class="btn btn-primary" @click="saveEnvironment">
-							Save
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		<modal v-model="showDeleteEnvironmentConfirmation" title="You are about to delete an environment" :footer="false" append-to-body>
-			<deleteEnvironment :application="application" :environment="environment" />
-		</modal>
-	</div>
+            <label for="r2">False</label>
+            <input id="r2" v-model="environment.defaultToggleValue" type="radio"
+                   :value="false">
+          </div>
+        </div>
+        <div class="col-sm-12 form-group">
+          <label class="col-sm-4 control-label">
+            Require a reason when toggle state changes to
+          </label>
+          <div class="col-sm-6 margin-top-8">
+            <label for="reasonWhenEnabled">Enabled</label>
+            <p-check id="reasonWhenEnabled" v-model="environment.requireReasonWhenToggleEnabled" class="p-icon p-fill"
+                     color="default">
+              <i slot="extra" class="icon fas fa-check" />
+            </p-check>
+            <label for="reasonWhenDisabled">Disabled</label>
+            <p-check id="reasonWhenDisabled" v-model="environment.requireReasonWhenToggleDisabled" class="p-icon p-fill"
+                     color="default">
+              <i slot="extra" class="icon fas fa-check" />
+            </p-check>
+          </div>
+        </div>
+        <div class="col-sm-12 form-group">
+          <label class="control-label col-sm-4">Position</label>
+          <div class="col-sm-6 margin-top-8">
+            <a @click="leftMove=true"><i class="fas fa-fw fa-caret-left" /> <strong>Move Left</strong></a>
+            <a class="pull-right" @click="rightMove=true"><strong>Move Right</strong> <i class="fas fa-fw fa-caret-right" /></a>
+          </div>
+        </div>
+        <div class="clearfix">
+          <div class="col-sm-6">
+            <button type="button" class="btn btn-danger" @click="showDeleteEnvironmentConfirmationModal">
+              Delete
+            </button>
+          </div>
+          <div class="col-sm-6 text-right">
+            <button type="button" class="btn btn-default" @click="cancelEditEnvironment">
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" @click="saveEnvironment">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <modal v-model="showDeleteEnvironmentConfirmation" title="You are about to delete an environment" :footer="false"
+           append-to-body>
+      <deleteEnvironment :application="application" :environment="environment" />
+    </modal>
+  </div>
 </template>
 
 <script>
@@ -93,17 +98,13 @@
 			return {
 				environment: {},
 				initialEnvironmentName: '',
-				leftMove: false,
-				rightMove: false,
 				editEnvironmentErrors: [],
-				showDeleteEnvironmentConfirmation: false,
-				environments: []
+				showDeleteEnvironmentConfirmation: false
 			}
 		},
 		created() {
-			Bus.$on(events.editEnvironment, (environment, environments) => {
+			Bus.$on(events.editEnvironment, environment => {
 				this.environment = environment;
-				this.environments = environments;
 				this.clearData();
 				this.initialEnvironmentName = environment.envName;
 			});

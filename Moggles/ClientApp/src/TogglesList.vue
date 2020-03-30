@@ -60,8 +60,9 @@
     <modal v-model="showDeleteConfirmationModal" title="You are about to delete a feature toggle" :footer="false">
       <delete-featureToggle :application="selectedApp" />
     </modal>
-    <modal v-if="showSchedulerModal" v-model="showSchedulerModal" title="Edit Feature Toggle Schedule" :footer="false">
-      <edit-toggle-schedule :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" :schedule="scheduleToEdit"/>
+    <modal v-if="showSchedulerModal" v-model="showSchedulerModal" title="Edit Feature Toggle Schedule"
+           :footer="false">
+      <edit-toggle-schedule :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" :schedule="scheduleToEdit" />
     </modal>
     <modal v-model="showEditModal" title="Edit Feature Flags" :footer="false">
       <edit-featureToggle :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" />
@@ -391,7 +392,7 @@
             openEditEnvironmentModal(column) {
                 let environment = this.environments.find(element => element.envName == column.field);
                 this.showEditEnvironmentModal = true;
-                Bus.$emit(events.editEnvironment, environment, this.environments);
+                Bus.$emit(events.editEnvironment, environment);
             },
             openEditFeatureToggleModal(row) {
                 this.showEditModal = true;

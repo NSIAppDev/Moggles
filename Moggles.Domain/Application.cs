@@ -122,7 +122,7 @@ namespace Moggles.Domain
             var env = DeploymentEnvironments.FirstOrDefault(e => string.Compare(e.EnvName, environment, StringComparison.OrdinalIgnoreCase) == 0);
 
             if (env == null)
-                throw new InvalidOperationException("Environment does not exists!");
+                throw new InvalidOperationException("Environment does not exist!");
 
             if (moveToLeft && !moveToRight)
             {
@@ -137,25 +137,37 @@ namespace Moggles.Domain
         private void MoveLeft(DeployEnvironment environment)
         {
             var index = DeploymentEnvironments.IndexOf(environment);
-            if (index > 0)
+            if (!EnvironmentIsInTheFirstPosition(index))
             {
                 var leftEnvironment = DeploymentEnvironments[index - 1];
-                var sortOrder = environment.SortOrder;
-                environment.SortOrder = leftEnvironment.SortOrder;
-                leftEnvironment.SortOrder = sortOrder;
+                SwapEnvironments(environment, leftEnvironment);
             }
+        }
+
+        private bool EnvironmentIsInTheFirstPosition(int index)
+        {
+            return index == 0;
         }
 
         private void MoveRight(DeployEnvironment environment)
         {
             var index = DeploymentEnvironments.IndexOf(environment);
-            if (index < DeploymentEnvironments.Count - 1) 
+            if (!EnvironmentIsInTheLastPosition(index))
             {
                 var rightEnvironment = DeploymentEnvironments[index +1 ];
-                var sortOrder = environment.SortOrder;
-                environment.SortOrder = rightEnvironment.SortOrder;
-                rightEnvironment.SortOrder = sortOrder;
+                SwapEnvironments(environment, rightEnvironment);
             }
+        }
+
+        private void SwapEnvironments(DeployEnvironment firstEnvironmentToSwap, DeployEnvironment secondEnvironmentToSwap)
+        {
+            var sortOrder = firstEnvironmentToSwap.SortOrder;
+            firstEnvironmentToSwap.SortOrder = secondEnvironmentToSwap.SortOrder;
+            secondEnvironmentToSwap.SortOrder = sortOrder;
+        }
+        private bool EnvironmentIsInTheLastPosition(int index)
+        {
+            return index == DeploymentEnvironments.Count - 1;
         }
 
         public void RemoveFeatureToggle(Guid id)
