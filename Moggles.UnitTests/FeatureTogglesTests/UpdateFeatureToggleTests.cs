@@ -41,7 +41,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             await _appRepository.AddAsync(app);
 
             var toggle = app.FeatureToggles.Single();
-            toggle.AddReasonToChange("user", "reason 1");
+            toggle.AddReasonToChange("user", "reason 1", new List<string>());
             var updatedValue = new FeatureToggleUpdateModel
             {
                 ApplicationId = app.Id,
@@ -52,7 +52,11 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 Statuses = new List<FeatureToggleStatusUpdateModel>(),
                 IsPermanent = true,
                 WorkItemIdentifier = "UpdateWorkItemId",
-                ReasonToChange = "reason 2"
+                ReasonToChange = new ReasontoChangeUpdateModel
+                {
+                    Description = "reason 2",
+                    Environments = new List<string> { "DEV" }
+                }
             };
 
             //act
@@ -70,6 +74,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             firstReason.Description.Should().Be("reason 1");
             var secondReason = savedApp.FeatureToggles.FirstOrDefault().ReasonsToChange.LastOrDefault();
             secondReason.Description.Should().Be("reason 2");
+            secondReason.Environments.Contains("DEV");
         }
 
         [TestMethod]
@@ -82,7 +87,20 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             await _appRepository.AddAsync(app);
 
             var toggle = app.FeatureToggles.FirstOrDefault(t => t.ToggleName == "t1");
-            var updatedValue = new FeatureToggleUpdateModel { ApplicationId = app.Id, Id = toggle.Id, FeatureToggleName = "t2" };
+            var updatedValue = new FeatureToggleUpdateModel
+            {
+                ApplicationId = app.Id,
+                Id = toggle.Id,
+                FeatureToggleName = "t2",
+                ReasonToChange = new ReasontoChangeUpdateModel
+                {
+                    Description = "desc",
+                    Environments = new List<string>
+                    {
+                        "DEV"
+                    }
+                }
+            };
 
             //act
             var result = await _featureToggleController.Update(updatedValue);
@@ -120,7 +138,12 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                                 Enabled = true,
                                 Environment = "QA"
                             }
-                        }
+                        },
+                ReasonToChange = new ReasontoChangeUpdateModel
+                {
+                    Description = "reason1",
+                    Environments = new List<string> { "DEV", "QA" }
+                }
             };
 
 
@@ -161,7 +184,15 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                                 Enabled = true,
                                 Environment = "QA",
                             }
-                        }
+                        },
+                ReasonToChange = new ReasontoChangeUpdateModel
+                {
+                    Description = "desc",
+                    Environments = new List<string>
+                    {
+                        "DEV"
+                    }
+                }
 
             };
 

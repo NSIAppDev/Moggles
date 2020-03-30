@@ -31,5 +31,6 @@ namespace Moggles.Models
         public string AddedByUser { get; set; }
         public DateTime CreatedAt { get; set; }
         public string Description { get; set; }
+        public List<string> Environments { get; set; }
     }
 }

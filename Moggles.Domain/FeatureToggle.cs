@@ -111,10 +111,25 @@ namespace Moggles.Domain
             WorkItemIdentifier = workItemIdentifier;
         }
 
-        public void AddReasonToChange(string addedByUser, string description)
+        public void AddReasonToChange(string addedByUser, string description, List<string> environments)
         {
-            ReasonsToChange.Add(ReasonToChange.Create(addedByUser, description));
+            ReasonsToChange.Add(ReasonToChange.Create(addedByUser, description, environments));
         }
 
+        public void RemoveReasonToChangeWithNoEnvironments()
+        {
+            ReasonsToChange.RemoveAll(reason => reason.Environments != null && reason.Environments.Count == 0);
+        }
+
+        public void RemoveEnvironmentFromReasonToChange(string environment)
+        {
+            foreach (var reason in ReasonsToChange)
+            {
+                if (reason.Environments != null)
+                {
+                    reason.Environments.Remove(environment);
+                }
+            }
+        }
     }
 }
