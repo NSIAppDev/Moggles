@@ -190,10 +190,10 @@ namespace Moggles.Domain
             };
         }
 
-        public void UpdateFeatureToggleReasonsToChange(Guid toggleId, string addedByUser, string description)
+        public void UpdateFeatureToggleReasonsToChange(Guid toggleId, string addedByUser, string description, List<string> environments)
         {
             var toggle = FeatureToggles.Find(ft => ft.Id == toggleId);
-            toggle.AddReasonToChange(addedByUser, description);
+            toggle.AddReasonToChange(addedByUser, description, environments);
         }
 
         public void UpdateFeatureTogglePermanentStatus(Guid toggleId, bool isPermanent)
