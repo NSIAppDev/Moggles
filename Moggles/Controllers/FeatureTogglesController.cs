@@ -235,7 +235,7 @@ namespace Moggles.Controllers
             }
             foreach (var featureToggle in app.FeatureToggles)
             {
-                featureToggle.RemoveReasonToChange();
+                featureToggle.RemoveReasonToChangeWithNoEnvironments();
             }
 
             app.DeleteDeployEnvironment(environmentModel.EnvName);
