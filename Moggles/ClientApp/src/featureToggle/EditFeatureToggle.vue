@@ -76,7 +76,7 @@
                                 <strong>{{ reason.addedByUser }}</strong>
                                 <div>{{ reason.createdAt | moment('M/D/YY hh:mm:ss A') }}</div>
                                 <div>
-                                    <span v-for="environment in reason.environments" class="margin-right-5"><label>{{environment}}</label></span>
+                                    <span v-for="environment in reason.environments" :key="environment" class="margin-right-5"><label>{{environment}}</label></span>
                                 </div>
                             </div>
                             <div class="col-sm-8">
