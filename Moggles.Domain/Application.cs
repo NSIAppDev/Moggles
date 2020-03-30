@@ -17,7 +17,7 @@ namespace Moggles.Domain
             AppName = newName;
         }
 
-        public void AddDeployEnvironment(string name, bool defaultToggleValue, bool requireReasonWhenToggleEnabled, bool requireReasonWhenToggleDisabled,  int sortOrder = 1)
+        public void AddDeployEnvironment(string name, bool defaultToggleValue, bool requireReasonWhenToggleEnabled, bool requireReasonWhenToggleDisabled, int sortOrder = 1)
         {
             if (DeployEnvExists(name))
                 throw new BusinessRuleValidationException("Environment with the same name already exists for this application!");
@@ -30,9 +30,9 @@ namespace Moggles.Domain
             }
         }
 
-        private bool DeployEnvExists(string newName, string oldName="")
+        private bool DeployEnvExists(string newName, string oldName = "")
         {
-            return (DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, newName, StringComparison.OrdinalIgnoreCase) == 0)&& newName!=oldName);
+            return (DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, newName, StringComparison.OrdinalIgnoreCase) == 0) && newName != oldName);
         }
 
         public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment)
@@ -98,7 +98,7 @@ namespace Moggles.Domain
         {
             var env = DeploymentEnvironments.FirstOrDefault(e => string.Compare(e.EnvName, name, StringComparison.OrdinalIgnoreCase) == 0);
 
-            if(env==null)
+            if (env == null)
             {
                 throw new InvalidOperationException("Environment does not exist!");
             }
@@ -114,6 +114,60 @@ namespace Moggles.Domain
                 throw new InvalidOperationException("Environment does not exist!");
 
             env.DefaultToggleValue = newDefaultValue;
+        }
+
+        public void ChangeEnvironmentPosition(string environment, bool moveToLeft, bool moveToRight)
+        {
+            DeploymentEnvironments = DeploymentEnvironments.OrderBy(e => e.SortOrder).ToList();
+            var env = DeploymentEnvironments.FirstOrDefault(e => string.Compare(e.EnvName, environment, StringComparison.OrdinalIgnoreCase) == 0);
+
+            if (env == null)
+                throw new InvalidOperationException("Environment does not exist!");
+
+            if (moveToLeft && !moveToRight)
+            {
+                MoveLeft(env);
+            }
+
+            if(moveToRight && !moveToLeft)
+            {
+                MoveRight(env);
+            }
+        }
+        private void MoveLeft(DeployEnvironment environment)
+        {
+            var index = DeploymentEnvironments.IndexOf(environment);
+            if (!EnvironmentIsInTheFirstPosition(index))
+            {
+                var leftEnvironment = DeploymentEnvironments[index - 1];
+                SwapEnvironments(environment, leftEnvironment);
+            }
+        }
+
+        private bool EnvironmentIsInTheFirstPosition(int index)
+        {
+            return index == 0;
+        }
+
+        private void MoveRight(DeployEnvironment environment)
+        {
+            var index = DeploymentEnvironments.IndexOf(environment);
+            if (!EnvironmentIsInTheLastPosition(index))
+            {
+                var rightEnvironment = DeploymentEnvironments[index +1 ];
+                SwapEnvironments(environment, rightEnvironment);
+            }
+        }
+
+        private void SwapEnvironments(DeployEnvironment firstEnvironmentToSwap, DeployEnvironment secondEnvironmentToSwap)
+        {
+            var sortOrder = firstEnvironmentToSwap.SortOrder;
+            firstEnvironmentToSwap.SortOrder = secondEnvironmentToSwap.SortOrder;
+            secondEnvironmentToSwap.SortOrder = sortOrder;
+        }
+        private bool EnvironmentIsInTheLastPosition(int index)
+        {
+            return index == DeploymentEnvironments.Count - 1;
         }
 
         public void RemoveFeatureToggle(Guid id)

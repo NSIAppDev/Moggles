@@ -12,7 +12,7 @@
         <label>Select environment for which to refresh the cache:</label>
         <select id="environmentSelect" v-model="envName" class="form-control"
                 required>
-          <option v-for="env in existingEnvs" :key="env">
+          <option v-for="env in existingEnvs" :key="env.envName">
             {{ env }}
           </option>
         </select>

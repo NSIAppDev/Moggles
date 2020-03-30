@@ -1,19 +1,19 @@
 ﻿<template>
+  <div>
     <div>
-        <div>
-            Are you sure you want to delete the environment?
-            <br>
-            All associated applications and feature toggles will be removed.
-        </div>
-        <div class="text-right">
-            <button type="button" class="btn btn-default" @click="closeModal">
-                Cancel
-            </button>
-            <button type="button" class="btn btn-primary" @click="deleteEnvironment">
-                Delete
-            </button>
-        </div>
+      Are you sure you want to delete the environment?
+      <br>
+      All associated applications and feature toggles will be removed.
     </div>
+    <div class="text-right">
+      <button type="button" class="btn btn-default" @click="closeModal">
+        Cancel
+      </button>
+      <button type="button" class="btn btn-primary" @click="deleteEnvironment">
+        Delete
+      </button>
+    </div>
+  </div>
 </template>
 
 <script>

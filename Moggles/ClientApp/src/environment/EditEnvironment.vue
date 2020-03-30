@@ -1,7 +1,7 @@
 ﻿<template>
     <div>
         <div v-if="environment" class="form-horizontal">
-            <div class="row">
+            <div>
                 <div class="col-sm-12">
                     <div v-for="error in editEnvironmentErrors" :key="error" class="text-danger margin-left-15">
                         {{ error }}
@@ -42,6 +42,13 @@
                                  color="default">
                             <i slot="extra" class="icon fas fa-check" />
                         </p-check>
+                    </div>
+                </div>
+                <div class="col-sm-12 form-group">
+                    <label class="control-label col-sm-4">Position</label>
+                    <div class="col-sm-6 margin-top-8">
+                        <a @click="leftMove=true"><i class="fas fa-fw fa-caret-left" /> <strong>Move Left</strong></a>
+                        <a class="pull-right" @click="rightMove=true"><strong>Move Right</strong> <i class="fas fa-fw fa-caret-right" /></a>
                     </div>
                 </div>
                 <div class="clearfix">
@@ -92,11 +99,14 @@
                 environment: {},
                 initialEnvironmentName: '',
                 editEnvironmentErrors: [],
-                showDeleteEnvironmentConfirmation: false
+                showDeleteEnvironmentConfirmation: false,
+                leftMove: false,
+                rightMove: false
             }
         },
         created() {
-            Bus.$on(events.editEnvironment, (environment) => {
+            Bus.$on(events.editEnvironment, environment => {
+                this.initializeData();
                 this.environment = environment;
                 this.initialEnvironmentName = environment.envName;
             });
@@ -104,8 +114,15 @@
             Bus.$on(events.closeDeleteEnvironmentModal, () => {
                 this.showDeleteEnvironmentConfirmation = false;
             })
+
         },
         methods: {
+            initializeData() {
+                this.rightMove = false;
+                this.leftMove = false;
+                this.showDeleteEnvironmentConfirmation = false;
+                this.editEnvironmentErrors = [];
+            },
             saveEnvironment() {
                 this.editEnvironmentErrors = []
 
@@ -118,9 +135,12 @@
                     applicationId: this.application.id,
                     initialEnvName: this.initialEnvironmentName,
                     newEnvName: this.environment.envName,
+                    sortOrder: this.environment.sortOrder,
                     defaultToggleValue: this.environment.defaultToggleValue,
                     requireReasonForChangeWhenToggleEnabled: this.environment.requireReasonWhenToggleEnabled,
-                    requireReasonForChangeWhenToggleDisabled: this.environment.requireReasonWhenToggleDisabled
+                    requireReasonForChangeWhenToggleDisabled: this.environment.requireReasonWhenToggleDisabled,
+                    moveToLeft: this.leftMove,
+                    moveToRight: this.rightMove
                 }
 
                 axios.put('/api/FeatureToggles/updateEnvironment', environmentUpdateModel)
@@ -136,7 +156,8 @@
             },
             cancelEditEnvironment() {
                 Bus.$emit(events.closeEditEnvironmentModal);
-            },
+            }
         }
     }
 </script>
+
