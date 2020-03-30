@@ -69,7 +69,7 @@
                 </div>
                 <div class="col-sm-12">
                     <label class="control-label">Change reason:</label>
-                    <textarea :disabled="!confirm" v-model="reasonToChange" class="col-sm-12" rows="2" />
+                    <textarea :disabled="!enableAddReason" v-model="reasonToChange" class="col-sm-12" rows="2" />
                     <ul class="list-group col-sm-12 margin-top-4">
                         <li v-for="reason in rowToEdit.reasonsToChange" :key="reason.createdAt" class="col-sm-12 list-group-item">
                             <div class="col-sm-4">
@@ -137,7 +137,7 @@
             });
         },
         computed: {
-            confirm() {
+            enableAddReason() {
                 let environmentsEditedNumber = 0;
                 _.forEach(this.environments, environment => {
                     if (this.environmentStatusHasChanged(environment)) {
