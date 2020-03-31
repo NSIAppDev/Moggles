@@ -71,7 +71,7 @@
 						}
 					})
 					.catch(error => { window.alert(error) })
-			},
+            },
 			refreshApps() {
 				this.selectedApp = [];
 				this.getApplications();
