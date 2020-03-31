@@ -84,7 +84,7 @@
                     .catch(error => { window.alert(error) });
             },
             existsStoredApp() {
-                var app = _.find(this.application, (a) => a.id == localStorage.getItem('selectedApp'));
+                var app = _.find(this.applications, (a) => a.id == localStorage.getItem('selectedApp'));
                 return app != null 
             }
 		}
