@@ -24,7 +24,7 @@
               <div class="vertical-align">
                 <label for="app-sel" class="margin-top-8">Select Application </label>
                 <app-selection />
-                <a class="margin-left-10" @click="showEditAppModal(true)"><i class="fas fa-edit fa-lg" id="editApplicationModal"/></a>
+                <a class="margin-left-10" @click="showEditAppModal(true)"><i class="fas fa-edit fa-lg" id="showEditApplicationModalBtn"/></a>
               </div>
             </li>
           </ul>
