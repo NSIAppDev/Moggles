@@ -24,13 +24,13 @@
               <div class="vertical-align">
                 <label for="app-sel" class="margin-top-8">Select Application </label>
                 <app-selection />
-                <a class="margin-left-10" @click="showEditAppModal(true)"><i class="fas fa-edit fa-lg" id="testingEditApplication"/></a>
+                <a class="margin-left-10" @click="showEditAppModal(true)"><i class="fas fa-edit fa-lg" id="editApplicationModal"/></a>
               </div>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right vertical-align">
             <dropdown tag="li">
-              <a class="dropdown-toggle" role="button" id="testingTools">Tools <span class="caret" /></a>
+              <a class="dropdown-toggle" role="button" id="toolsBtn">Tools <span class="caret" /></a>
               <template slot="dropdown">
                 <li><a role="button" @click="reloadCurrentApplicationToggles()">Reload Application Toggles</a></li>
                 <li><a role="button" @click="showAddFeatureToggleModal()">Add Feature Toggle</a></li>

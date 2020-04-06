@@ -31,7 +31,7 @@
         <div class="col-sm-12 form-group">
           <label class="col-sm-4 control-label" for="ftnotes">Notes</label>
           <div class="col-sm-8">
-            <input v-model="notes" class="form-control" type="text" id="testingNotes"
+            <input v-model="notes" class="form-control" type="text" id="notesInput"
                    name="ftNotes" placeholder="Notes..." maxlength="500">
           </div>
         </div>
@@ -45,10 +45,10 @@
           </span>
         </div>
         <div class="col-sm-12 text-right">
-          <button class="btn btn-default" @click="closeAddToggleModal" id="testingCloseAddToggleModal">
+          <button class="btn btn-default" id="closeAddToggleModalBtn" @click="closeAddToggleModal" >
             Close
           </button>
-          <button :disabled="application.id != ''? false : true" class="btn btn-primary" type="button" id="testingAddFeatureToggle"
+          <button :disabled="application.id != ''? false : true" class="btn btn-primary" type="button" id="addFeatureToggleBtn"
                   @click="addFeatureToggle">
             Add
           </button>

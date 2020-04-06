@@ -16,7 +16,7 @@
           <label class="col-sm-4 control-label" for="envname">Environment name</label>
           <div class="col-sm-7">
             <input ref="envName" v-model="envName" class="col-sm-8 form-control"
-                   type="text" id="testingAddEnvironmentName"
+                   type="text" id="addEnvironmentNameInput"
                    name="envName" placeholder="Env name..." maxlength="50">
           </div>
         </div>
@@ -50,10 +50,10 @@
           </div>
         </div>
         <div class="col-sm-12 text-right">
-          <button class="btn btn-default" @click="closeAddEnvironmentModal" id="testingCloseAddEnvironmentModal">
+          <button class="btn btn-default" id="closeAddEnvironmentModalBtn" @click="closeAddEnvironmentModal" >
             Close
           </button>
-          <button :disabled="application.id != ''? false : true" class="btn btn-primary" type="button" id="testingAddEnvironment"
+          <button :disabled="application.id != ''? false : true" class="btn btn-primary" type="button" id="addEnvironmentBtn"
                   @click="addEnv">
             Add
           </button>

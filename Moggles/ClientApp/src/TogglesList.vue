@@ -6,10 +6,10 @@
       </button>
       <h4>Toggles Have Been Modified, would you like to refresh the environments?</h4>
       <span v-for="(env, index) in environmentsToRefresh" :key="env" class="env-button">
-        <button class="btn btn-default text-uppercase" @click="refreshEnvironmentToggles(env, index)" id="testingRefreshEnvironments"><strong>{{ env }}</strong></button>
+        <button class="btn btn-default text-uppercase" @click="refreshEnvironmentToggles(env, index)" id="refreshEnvironmentsBtn"><strong>{{ env }}</strong></button>
       </span>
     </alert>
-    <vue-good-table ref="toggleGrid" id="testingToggleGrid"
+    <vue-good-table ref="toggleGrid" id="toggleGrid"
                     :columns="gridColumns"
                     :rows="toggles"
                     :pagination-options="getPaginationOptions"

@@ -1,6 +1,6 @@
 ﻿<template>
   <div id="app-sel"> 
-    <multi-select ref="appSelection" v-model="selectedApp" :limit="1" id="testingSelectedApp"
+    <multi-select ref="appSelection" v-model="selectedApp" :limit="1" id="selectedApp"
                   :options="applications" :value-key="'id'" :label-key="'appName'"
                   :selected-icon="'fas fa-check'" class="padding-left-10" @change="changeApp" />
   </div>
