@@ -10,7 +10,7 @@
         <div class=" col-sm-12 form-group">
           <label class="col-sm-4 control-label text-left">Environment name</label>
           <div class="col-sm-8">
-            <input v-model="environment.envName" type="text" class="form-control" id="testingEditEnvironmentName">
+            <input v-model="environment.envName" type="text" class="form-control" id="editEnvironmentNameInput">
           </div>
         </div>
         <div class="col-sm-12 form-group">
@@ -53,7 +53,7 @@
         </div>
         <div class="clearfix">
           <div class="col-sm-6">
-            <button type="button" class="btn btn-danger" @click="showDeleteEnvironmentConfirmationModal" id="testingDeleteEnvironment">
+            <button type="button" class="btn btn-danger" id="deleteEnvironmentBtn" @click="showDeleteEnvironmentConfirmationModal" >
               Delete
             </button>
           </div>
@@ -61,7 +61,7 @@
             <button type="button" class="btn btn-default" @click="cancelEditEnvironment">
               Cancel
             </button>
-            <button type="button" class="btn btn-primary" @click="saveEnvironment" id="testingSaveEditEnvironment">
+            <button type="button" class="btn btn-primary" id="saveEditEnvironmentBtn" @click="saveEnvironment" >
               Save
             </button>
           </div>
