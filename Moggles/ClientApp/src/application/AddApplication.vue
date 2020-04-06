@@ -14,14 +14,14 @@
           <label class="col-sm-4 control-label" for="appname">Application name</label>
           <div class="col-sm-8">
             <input ref="appName" v-model="applicationName" class="form-control"
-                   type="text"
+                   type="text" id="testingAddApplicationName"
                    name="appName" placeholder="Application name..." maxlength="100">
           </div>
         </div>
         <div class="col-sm-12 form-group">
           <label class="col-sm-4 control-label" for="envname">Add a first environment</label>
           <div class="col-sm-8">
-            <input v-model="environmentName" class="form-control" type="text"
+            <input v-model="environmentName" class="form-control" type="text" id="testingAddFirstEnvironment"
                    name="envName" placeholder="Environment name..." maxlength="100">
           </div>
         </div>
@@ -40,10 +40,10 @@
           </div>
         </div>
         <div class="col-sm-12 text-right">
-          <button class="btn btn-default" @click="closeAddApplicationModal">
+          <button class="btn btn-default" @click="closeAddApplicationModal" id="testingCloseAddApplicationModal">
             Close
           </button>
-          <button class="btn btn-primary" type="button" @click="addApplication">
+          <button class="btn btn-primary" type="button" id="testingAddApplication" @click="addApplication">
             Add
           </button>
         </div>
