@@ -28,9 +28,9 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public IWebElement AddApplicationButton => Browser.WebDriver.FindElement(
             By.CssSelector("div.in > div > div > div > div > div > div > div> button.btn-primary"));
-
+                        
         public IWebElement AddEnvironmentButton => Browser.WebDriver.FindElement(
-            By.CssSelector("div.in > div > div > div > div > div > div > div > button.btn-primary"));
+            By.CssSelector("div.in > div > div > div > div > div > div > div> button.btn-primary"));
 
         public IWebElement CloseModal =>
             Browser.WebDriver.FindElement(

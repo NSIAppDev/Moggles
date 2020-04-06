@@ -11,12 +11,12 @@
           <label class="col-sm-4 control-label" for="appName">Application name:</label>
           <div class="col-sm-7">
             <input v-model="appName" type="text" class="form-control"
-                   name="appName">
+                   name="appName"> id="testingEditApplicationName"
           </div>
         </div>
         <div class="clearfix">
           <div class="col-sm-6">
-            <button type="button" class="btn btn-danger" @click="showDeleteConfirmationMessage">
+            <button type="button" class="btn btn-danger" @click="showDeleteConfirmationMessage" id="testingDeleteApplication">
               Delete
             </button>
           </div>
@@ -24,7 +24,7 @@
             <button type="button" class="btn btn-default" @click="cancel">
               Cancel
             </button>
-            <button type="button" class="btn btn-primary" @click="updateApp">
+            <button type="button" class="btn btn-primary" @click="updateApp" id="testingSaveEditApplication">
               Save
             </button>
           </div>
