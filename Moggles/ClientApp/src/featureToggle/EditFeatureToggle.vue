@@ -52,8 +52,8 @@
             <label class="col-sm-4 control-label">Is Permanent</label>
             <div class="col-sm-1 margin-top-10">
               <p-check v-model="rowToEdit.isPermanent" class="p-icon p-fill"
-                       color="default">
-                <i slot="extra" class="icon fas fa-check" id="editIsPermanentCheckbox"/>
+                       color="default" id="editIsPermanentCheckbox">
+                <i slot="extra" class="icon fas fa-check" />
               </p-check>
             </div>
           </div>
@@ -61,8 +61,8 @@
             <label class="col-sm-4 control-label">Accepted by User</label>
             <div class="col-sm-1 margin-top-10">
               <p-check v-model="rowToEdit.userAccepted" class="p-icon p-fill"
-                       color="default">
-                <i slot="extra" class="icon fas fa-check" id="editAcceptedByUserCheckbox"/>
+                       color="default" id="editAcceptedByUserCheckbox">
+                <i slot="extra" class="icon fas fa-check" />
               </p-check>
             </div>
           </div>
