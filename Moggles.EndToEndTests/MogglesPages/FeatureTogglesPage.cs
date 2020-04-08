@@ -5,9 +5,6 @@ using System;
 using System.Threading;
 using NSTestFrameworkDotNetCoreUI.Helpers;
 using NSTestFrameworkDotNetCoreUI.Pages;
-using NSTestFrameworkDotNetCoreUI.KendoHelpers;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MogglesEndToEndTests.MogglesPages
 {
@@ -365,10 +362,7 @@ namespace MogglesEndToEndTests.MogglesPages
         }
 
         public bool IsDevEnvironmentCheckboxChecked()
-        {
-            Thread.Sleep(500);
-
-
+        {         
             return PageHelpers.IsElementSelected(_devCheckbok);
         }
 
