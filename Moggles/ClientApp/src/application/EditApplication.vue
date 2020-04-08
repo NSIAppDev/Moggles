@@ -11,7 +11,7 @@
           <label class="col-sm-4 control-label" for="appName">Application name:</label>
           <div class="col-sm-7">
             <input v-model="appName" type="text" class="form-control"
-                   name="appName"> id="editApplicationNameInput"
+                   name="appName" id="editApplicationNameInput"> 
           </div>
         </div>
         <div class="clearfix">
