@@ -12,126 +12,63 @@ namespace MogglesEndToEndTests.MogglesPages
     {
         public IWebElement ToolsMenuDropdown =>
             Browser.WebDriver.FindElement(By.CssSelector("#bs-example-navbar-collapse-1 > ul > li > ul"));
-
         public IWebElement ToolsButton => Browser.WebDriver.FindElement(By.Id("toolsBtn"));
-
         public IWebElement FeatureToggleNameInput => Browser.WebDriver.FindElement(By.Id("featureToggleName"));
-    
         public IWebElement NotesInput => Browser.WebDriver.FindElement(By.Id("notesInput"));
-
         public IWebElement AddFeatureToggleButton => Browser.WebDriver.FindElement(By.Id("addFeatureToggleBtn"));
-
         public IWebElement AddApplicationButton => Browser.WebDriver.FindElement(By.Id("addApplicationBtn"));
-                        
         public IWebElement AddEnvironmentButton => Browser.WebDriver.FindElement(By.Id("addEnvironmentBtn"));
-
         public IWebElement CloseAddEnvironmentModalBtn => Browser.WebDriver.FindElement(By.Id("closeAddEnvironmentModalBtn"));
         public IWebElement CloseAddToggleModalBtn => Browser.WebDriver.FindElement(By.Id("closeAddToggleModalBtn"));
         public IWebElement CloseAddApplicationModalBtn => Browser.WebDriver.FindElement(By.Id("closeAddApplicationModalBtn"));
         public IWebElement FeatureTogglesGrid => Browser.WebDriver.FindElement(By.Id("toggleGrid"));
-
         public IWebElement DeleteFeatureToggleButton => Browser.WebDriver.FindElement(By.Id("deleteToggleBtn"));
-
-        public IWebElement IsPermanentCheckbox =>
-            Browser.WebDriver.FindElement(By.Id("editIsPermanentCheckbox"));
-
-        public IWebElement DevEnvironmentCheckbox =>
-            Browser.WebDriver.FindElement(
-                By.CssSelector(
-                    "div:nth-child(2) > div.col-sm-1 > div > div > input[type=checkbox]"));
-
+        public IWebElement IsPermanentCheckbox => Browser.WebDriver.FindElement(By.Id("editIsPermanentCheckbox"));
+        public IWebElement DevEnvironmentCheckbox => Browser.WebDriver.FindElement(
+                By.CssSelector("div:nth-child(2) > div.col-sm-1 > div > div > input[type=checkbox]"));
         public IWebElement RefreshEnvironmentButton =>Browser.WebDriver.FindElement(By.Id("refreshEnvironmentsBtn"));
-
         public IWebElement FilterByACriteria =>
-            Browser.WebDriver.FindElement(
-                By.CssSelector(
-                    "body > div > div> div > div > div > div> div > div> table > thead > tr:nth-child(2) > th:nth-child(2) > div > input"));
-
+            Browser.WebDriver.FindElement(By.CssSelector("tr:nth-child(2) > th:nth-child(2) > div > input"));
         public IWebElement IsAcceptedByUserCheckbox => Browser.WebDriver.FindElement(By.Id("editAcceptedByUserCheckbox"));
-
         public IWebElement SaveButton => Browser.WebDriver.FindElement(By.Id("saveEditToggleBtn"));
-
-        public IWebElement SelectApplication =>
-            Browser.WebDriver.FindElement(By.Id("selectedApp"));
-
+        public IWebElement SelectApplication => Browser.WebDriver.FindElement(By.Id("selectedApp"));
         public IWebElement ApplicationNameInput => Browser.WebDriver.FindElement(By.Id("addApplicationNameInput"));
-
-        public IWebElement ApplicationsDropdown =>
-            Browser.WebDriver.FindElement(By.CssSelector("#selectedApp>ul"));
-
-        public IWebElement FirstEnvNameInput =>
-            Browser.WebDriver.FindElement(
-                By.CssSelector("div.in > div > div > div > div > div > div > div:nth-child(2) > div > input"));
-
-        public IWebElement SecondEnvNameInput =>
-            Browser.WebDriver.FindElement(
-                By.CssSelector("div.in > div > div > div > div > div > div > div:nth-child(1) > div > input"));
-
+        public IWebElement ApplicationsDropdown => Browser.WebDriver.FindElement(By.CssSelector("#selectedApp>ul"));
+        public IWebElement FirstEnvNameInput => Browser.WebDriver.FindElement(By.Id("addFirstEnvironmentInput"));
+        public IWebElement SecondEnvNameInput => Browser.WebDriver.FindElement(By.Id("addEnvironmentNameInput"));
         public IWebElement EditApplicationIcon => Browser.WebDriver.FindElement(By.Id("showEditApplicationModalBtn"));
-
         public IWebElement EditApplicationNameInput => Browser.WebDriver.FindElement(By.Id("editApplicationNameInput"));
-
         public IWebElement SaveApplicationChangesButton => Browser.WebDriver.FindElement(By.Id("saveEditApplicationBtn"));
-
         public IWebElement DeleteApplicationButton => Browser.WebDriver.FindElement(By.Id("deleteApplicationBtn"));
-
         public IWebElement AcceptDeleteApplicationButton => Browser.WebDriver.FindElement(By.Id("confirmDeleteApplicationBtn"));
-
         public IWebElement AcceptDeleteEnvironmentButton => Browser.WebDriver.FindElement(By.Id("confirmDeleteEnvironmentBtn"));
-
         public IWebElement SelectedApplication => Browser.WebDriver.FindElement(By.Id("selectedApp"));
-
         public IWebElement EditEnvironmentNameInput => Browser.WebDriver.FindElement(By.Id("editEnvironmentNameInput"));
-
         public IWebElement SaveEnvironmentChangesButton => Browser.WebDriver.FindElement(By.Id("saveEditEnvironmentBtn"));
-
         public IWebElement DeleteEnvironmentButton => Browser.WebDriver.FindElement(By.Id("deleteEnvironmentBtn"));
-
         public IWebElement CancelEditFeatureFlagsModalButton => Browser.WebDriver.FindElement(By.Id("cancelEditToggleBtn"));
-
         private readonly By _rowSelector = By.CssSelector(".vgt-responsive> table > tbody> tr");
-
         private readonly By _statusesDropdown =
             By.CssSelector(
                 "body > div > div> div > div > div > div> div > div> table > thead > tr:nth-child(2) > th:nth-child(8) > div > select");
-
         private readonly By _noFeatureToggleDisplayedText =
-            By.CssSelector("body > div > div> div > div > div > div> div > div> table > tbody > tr > td > div > div");
-
-        private readonly By _deleteFeatureToggleIcon =
-            By.CssSelector(
-                "body > div > div> div > div > div > div> div > div> table > tbody > tr > td:nth-child(1) > span > a:nth-child(2) > i");
-
-        private readonly By _editFeatureToggleIcon =
-            By.CssSelector(
-                "body > div > div> div > div > div > div> div > div> table > tbody > tr > td:nth-child(1) > span > a > i");
-
-        private readonly By _isPermanentFlag =
-            By.CssSelector(
-                "body > div > div> div > div > div > div> div > div> table > tbody > tr > td:nth-child(2) > span > span.label.label-danger");
-
-        private readonly By _editEnvironmentIcon =
-            By.CssSelector(
-                "body > div > div> div > div > div > div> div > div> table > thead > tr:nth-child(1) > th:nth-child(4) > a > i");
-
+            By.CssSelector("#toggleGrid tr td div div");
+        private readonly By _deleteFeatureToggleIcon = By.CssSelector("#toggleGrid span > a:nth-child(2) > i");
+        private readonly By _editFeatureToggleIcon = By.CssSelector("#toggleGrid span > a:nth-child(1) > i");
+        private readonly By _isPermanentFlag = By.CssSelector(".label-danger");
+        private readonly By _editEnvironmentIcon = By.CssSelector("#toggleGrid tr:nth-child(1) > th:nth-child(4) > a > i");
         private readonly By _devCheckbok =
             By.CssSelector("div:nth-child(2) > div.col-sm-1.margin-top-14 > div > div > input[type=checkbox]");
-
         private readonly By _qaCheckbok =
             By.CssSelector("div:nth-child(3) > div.col-sm-1.margin-top-14 > div > div > input[type=checkbox]");
-
         private readonly By _devLastUpdatedDate =
             By.CssSelector("div:nth-child(2) > .margin-top-8 > div:nth-child(1)");
-
         private readonly By _qaLastUpdatedDate =
             By.CssSelector("div:nth-child(3) > .margin-top-8 > div:nth-child(1)");
-
         private readonly By _refreshedEnvMessage =
             By.CssSelector("body > div.fade.alert.alert-success.alert-dismissible.in");
-
         public IWebElement SelectedApplicationName =>
-            Browser.WebDriver.FindElement(
-                By.CssSelector("#app-sel  div  div  div:nth-child(1)"));
+            Browser.WebDriver.FindElement(By.CssSelector("#app-sel  div  div  div:nth-child(1)"));
 
         public void SelectASpecificApplication(string applicationName)
         {
@@ -362,12 +299,14 @@ namespace MogglesEndToEndTests.MogglesPages
         }
 
         public bool IsDevEnvironmentCheckboxChecked()
-        {         
+        {
+            WaitHelpers.WaitForElement(_devCheckbok);
             return PageHelpers.IsElementSelected(_devCheckbok);
         }
 
         public bool IsQaEnvironmentCheckboxChecked()
         {
+            WaitHelpers.WaitForElement(_qaCheckbok);
             return PageHelpers.IsElementSelected(_qaCheckbok);
         }
 
