@@ -13,7 +13,7 @@
         <select id="environmentSelect" v-model="envName" class="form-control"
                 required>
           <option v-for="env in existingEnvs" :key="env.envName">
-            {{ env }}
+            {{ env.envName }}
           </option>
         </select>
       </div>
