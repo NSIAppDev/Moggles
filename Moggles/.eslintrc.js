@@ -5,8 +5,7 @@
         'plugin:vue/recommended'
     ],
     env: {
-        "node": true,
-        "jest": true
+        "node": true
     },
     rules: {
         // override/add rules settings here, such as:
