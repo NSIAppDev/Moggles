@@ -29,9 +29,8 @@ describe('ForceCacheRefresh.vue', () => {
                     }]
             });
             wrapper.find('#environmentSelect').setValue('BAR');
-            wrapper.find('button.btn-primary').trigger('click');
+            wrapper.find('#refreshBtn').trigger('click');
             await flushPromises();
-
 
             mock.verify();
             mock.restore();
