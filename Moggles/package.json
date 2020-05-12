@@ -8,7 +8,6 @@
     "autoprefixer": "^9.6.0",
     "axios-mock-adapter": "^1.15.0",
     "babel-core": "^6.26.3",
-    "babel-jest": "^22.4.3",
     "babel-loader": "^7.1.2",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
@@ -17,15 +16,12 @@
     "css-loader": "^2.1.1",
     "eslint": "^6.5.1",
     "eslint-loader": "^3.0.2",
-    "eslint-plugin-jest": "^22.17.0",
     "eslint-plugin-vue": "^5.2.3",
     "expect": "^24.8.0",
     "extract-loader": "^3.1.0",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.9",
     "flush-promises": "^1.0.0",
-    "jest": "^24.8.0",
-    "jest-serializer-vue": "^1.0.0",
     "jsdom": "^11.7.0",
     "jsdom-global": "^3.0.2",
     "mocha": "^5.0.5",
@@ -38,7 +34,6 @@
     "sinon": "^4.5.0",
     "style-loader": "^0.20.2",
     "url-loader": "^0.6.2",
-    "vue-jest": "^2.5.0",
     "vue-loader": "^14.1.1",
     "vue-template-compiler": "^2.5.13",
     "webpack": "^3.11.0",
@@ -54,7 +49,6 @@
     "prod-full": "cross-env webpack --config webpack.config.vendor.js --env.prod && cross-env webpack --env.prod",
     "test-full": "cross-env NODE_ENV=development webpack --config webpack.config.vendor.js && cross-env mocha-webpack --webpack-config webpack.config.js --webpack-env test --require ClientApp/tests/setup.js ClientApp/tests/**/*.spec.js",
     "test": "cross-env mocha-webpack --webpack-config webpack.config.js --webpack-env test --require ClientApp/tests/setup.js ClientApp/tests/**/*.spec.js",
-    "test-j": "jest",
     "lint": "eslint ClientApp/**/*.{js,vue}",
     "lint-fix": "eslint ClientApp/**/*.{js,vue} --fix"
   },
@@ -72,23 +66,5 @@
     "vue-js-modal": "^1.3.12",
     "vue-moment": "^4.1.0",
     "vue-strap": "github:wffranco/vue-strap"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "vue"
-    ],
-    "transform": {
-      "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
-      ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest"
-    },
-    "testPathIgnorePatterns": [
-      "<rootDir>/ClientApp/tests/",
-      "<rootDir>/node_modules/"
-    ],
-    "snapshotSerializers": [
-      "<rootDir>/node_modules/jest-serializer-vue"
-    ]
   }
 }

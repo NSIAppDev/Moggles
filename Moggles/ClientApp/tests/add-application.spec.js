@@ -1,10 +1,10 @@
 ﻿import { shallowMount } from '@vue/test-utils'
-import AddApplication from '../AddApplication.vue'
+import AddApplication from '../src/application/AddApplication.vue'
 import flushPromises from 'flush-promises'
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import sinon from 'sinon';
-import { Bus} from '../event-bus'
+import { Bus } from '../src/common/event-bus'
 
 
 describe('AddApplication.vue', () => {
@@ -70,7 +70,7 @@ describe('AddApplication.vue', () => {
 		wrapper.find('button.btn-primary').trigger('click');
         await flushPromises();
 
-		expect(spy.calledWithExactly('new-app-added')).toBe(true);
+        expect(spy.calledWithExactly('app-added')).toBe(true);
 
 		spy.restore();
     })
