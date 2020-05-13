@@ -14,9 +14,14 @@ namespace Moggles.Models
         [Required] [MaxLength(50)]
         public string NewEnvName { get; set; }
 
+        public int SortOrder { get; set; }
+
         public bool DefaultToggleValue { get; set; }
 
         public bool RequireReasonForChangeWhenToggleEnabled{ get; set; }
         public bool RequireReasonForChangeWhenToggleDisabled { get; set; }
+
+        public bool MoveToLeft { get; set; }
+        public bool MoveToRight { get; set; }
     }
 }

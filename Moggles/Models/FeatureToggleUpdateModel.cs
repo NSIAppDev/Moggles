@@ -15,6 +15,7 @@ namespace Moggles.Models
         public bool IsPermanent { get; set; }
         public List<FeatureToggleStatusUpdateModel> Statuses { get; set; }
         public string WorkItemIdentifier { get; set; }
+        public ReasontoChangeUpdateModel ReasonToChange { get; set; }
     }
 
     public class FeatureToggleStatusUpdateModel
@@ -22,5 +23,11 @@ namespace Moggles.Models
         public bool Enabled { get; set; }
         public string Environment { get; set; }
         public string UpdatedByUser { get; set; }
+    }
+
+    public class ReasontoChangeUpdateModel
+    {
+        public string Description { get; set; }
+        public List<string> Environments { get; set; }
     }
 }

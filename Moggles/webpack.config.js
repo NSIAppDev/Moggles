@@ -62,7 +62,7 @@ module.exports = (env) => {
         });
 
     return {
-		entry: { 'main': ['./ClientApp/boot.js', './sass/moggles.scss']},
+		entry: { 'main': ['./ClientApp/src/boot.js', './sass/moggles.scss']},
         context: __dirname,
         output: {
             path: path.join(__dirname, bundleOutputDir),

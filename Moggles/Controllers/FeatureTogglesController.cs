@@ -53,7 +53,16 @@ namespace Moggles.Controllers
                                 LastUpdated = fts.LastUpdated,
                                 FirstTimeDeployDate = fts.FirstTimeDeployDate,
                                 UpdatedByUser = fts.UpdatedbyUser
-                            }).ToList()
+                            }).ToList(),
+                    ReasonsToChange = ft.ReasonsToChange
+                        .Select(ftr =>
+                        new FeatureToggleReasonToChangeViewModel
+                        {
+                            AddedByUser = ftr.AddedByUser,
+                            CreatedAt = ftr.DateAdded,
+                            Description = ftr.Description,
+                            Environments = ftr.Environments
+                        }).ToList()
                 }).OrderByDescending(ft => ft.CreatedDate);
             return Ok(toggles);
 
@@ -78,6 +87,11 @@ namespace Moggles.Controllers
 
             var updatedBy = _httpContextAccessor.HttpContext.User.Identity.Name;
 
+            if (model.ReasonToChange!=null)
+            {
+                app.UpdateFeatureToggleReasonsToChange(model.Id, updatedBy, model.ReasonToChange.Description, model.ReasonToChange.Environments);
+            }
+
 
             if (model.IsPermanent != toggleData.IsPermanent)
             {
@@ -101,7 +115,7 @@ namespace Moggles.Controllers
                 }
 
             }
-            if (model.WorkItemIdentifier != toggleData.WorkItemIdentifier)
+            if (!string.IsNullOrEmpty(model.WorkItemIdentifier) && model.WorkItemIdentifier != toggleData.WorkItemIdentifier)
             {
                 app.UpdateFeaturetoggleWorkItemIdentifier(model.Id, model.WorkItemIdentifier);
             }
@@ -160,13 +174,13 @@ namespace Moggles.Controllers
             var toggle = app.GetFeatureToggleBasicData(id);
             var toggleSchedulers = _toggleScheduleRepository.GetAllAsync().Result.Where(ft => ft.ToggleName == toggle.ToggleName);
 
-            foreach(var fts in toggleSchedulers)
+            foreach (var fts in toggleSchedulers)
             {
                 _toggleScheduleRepository.DeleteAsync(fts);
             }
 
             app.RemoveFeatureToggle(id);
-            
+
             await _applicationsRepository.UpdateAsync(app);
             return Ok();
         }
@@ -188,7 +202,7 @@ namespace Moggles.Controllers
 
             try
             {
-                app.AddDeployEnvironment(environmentModel.EnvName, environmentModel.DefaultToggleValue,environmentModel.RequireReasonToChangeWhenToggleEnabled, environmentModel.RequireReasonToChangeWhenToggleDisabled, environmentModel.SortOrder);
+                app.AddDeployEnvironment(environmentModel.EnvName, environmentModel.DefaultToggleValue, environmentModel.RequireReasonToChangeWhenToggleEnabled, environmentModel.RequireReasonToChangeWhenToggleDisabled, environmentModel.SortOrder);
             }
             catch (BusinessRuleValidationException ex)
             {
@@ -205,17 +219,25 @@ namespace Moggles.Controllers
         {
             var app = await _applicationsRepository.FindByIdAsync(environmentModel.ApplicationId);
             var toggleSchedulers = await _toggleScheduleRepository.GetAllAsync();
-            foreach(var fts in toggleSchedulers)
+            foreach (var fts in toggleSchedulers)
             {
                 fts.RemoveEnvironment(environmentModel.EnvName);
                 await _toggleScheduleRepository.UpdateAsync(fts);
-                if(fts.Environments.Count()==0)
+                if (fts.Environments.Count() == 0)
                 {
                     await _toggleScheduleRepository.DeleteAsync(fts);
                 }
-
             }
-            
+
+            foreach (var featureToggle in app.FeatureToggles)
+            {
+                featureToggle.RemoveEnvironmentFromReasonToChange(environmentModel.EnvName);
+            }
+            foreach (var featureToggle in app.FeatureToggles)
+            {
+                featureToggle.RemoveReasonToChangeWithNoEnvironments();
+            }
+
             app.DeleteDeployEnvironment(environmentModel.EnvName);
 
             await _applicationsRepository.UpdateAsync(app);
@@ -236,8 +258,9 @@ namespace Moggles.Controllers
                 app.ChangeEnvironmentValuesToRequireReasonFor(environmentModel.InitialEnvName, environmentModel.RequireReasonForChangeWhenToggleEnabled, environmentModel.RequireReasonForChangeWhenToggleDisabled);
                 app.ChangeEnvironmentValuesToRequireReasonFor(environmentModel.InitialEnvName, environmentModel.RequireReasonForChangeWhenToggleEnabled, environmentModel.RequireReasonForChangeWhenToggleDisabled);
                 app.ChangeDeployEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
+                app.ChangeEnvironmentPosition(environmentModel.NewEnvName, environmentModel.MoveToLeft, environmentModel.MoveToRight);
                 app.ChangeEnvironmentDefaultValue(environmentModel.NewEnvName, environmentModel.DefaultToggleValue);
-                foreach(var fts in featureTogglesSchedulers)
+                foreach (var fts in featureTogglesSchedulers)
                 {
                     fts.ChangeEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
                     await _toggleScheduleRepository.UpdateAsync(fts);
@@ -325,7 +348,7 @@ namespace Moggles.Controllers
             if (app == null)
                 throw new InvalidOperationException("Application does not exist");
 
-            app.AddDeployEnvironment(model.EnvName, false,false, false, 500);
+            app.AddDeployEnvironment(model.EnvName, false, false, false, 500);
 
             await _applicationsRepository.UpdateAsync(app);
             return Ok();

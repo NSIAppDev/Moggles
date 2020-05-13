@@ -13,6 +13,7 @@ namespace Moggles.Models
         public DateTime CreatedDate { get; set; }
         public List<FeatureToggleStatusViewModel> Statuses { get; set; }
         public string WorkItemIdentifier { get; set; }
+        public List<FeatureToggleReasonToChangeViewModel> ReasonsToChange { get; set; }
     }
 
     public class FeatureToggleStatusViewModel
@@ -24,5 +25,12 @@ namespace Moggles.Models
         public DateTime? FirstTimeDeployDate { get; set; }
         public DateTime LastUpdated { get; set; }
         public string UpdatedByUser { get; set; }
+    }
+    public class FeatureToggleReasonToChangeViewModel
+    {
+        public string AddedByUser { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string Description { get; set; }
+        public List<string> Environments { get; set; }
     }
 }
