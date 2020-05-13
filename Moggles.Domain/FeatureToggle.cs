@@ -13,6 +13,7 @@ namespace Moggles.Domain
         public bool IsPermanent { get; set; }
         public List<FeatureToggleStatus> FeatureToggleStatuses { get; set; } = new List<FeatureToggleStatus>();
         public string WorkItemIdentifier { get; set; }
+        public List<ReasonToChange> ReasonsToChange { get; set; } = new List<ReasonToChange>();
 
         public static FeatureToggle Create(string name, string notes, bool isPermanent, string workItemIdentifier)
         {
@@ -108,6 +109,27 @@ namespace Moggles.Domain
         public void SetWorkItemIdentifier(string workItemIdentifier)
         {
             WorkItemIdentifier = workItemIdentifier;
+        }
+
+        public void AddReasonToChange(string addedByUser, string description, List<string> environments)
+        {
+            ReasonsToChange.Add(ReasonToChange.Create(addedByUser, description, environments));
+        }
+
+        public void RemoveReasonToChangeWithNoEnvironments()
+        {
+            ReasonsToChange.RemoveAll(reason => reason.Environments != null && reason.Environments.Count == 0);
+        }
+
+        public void RemoveEnvironmentFromReasonToChange(string environment)
+        {
+            foreach (var reason in ReasonsToChange)
+            {
+                if (reason.Environments != null)
+                {
+                    reason.Environments.Remove(environment);
+                }
+            }
         }
     }
 }

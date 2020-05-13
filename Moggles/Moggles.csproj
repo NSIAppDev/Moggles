@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Configurations>Debug;Release;Staging</Configurations>
     <AssemblyName>Moggles</AssemblyName>
     <RootNamespace>Moggles</RootNamespace>  
@@ -24,8 +24,8 @@
     <PackageReference Include="MassTransit.RabbitMQ" Version="5.5.6" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.8.2" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
     <PackageReference Include="NoDb" Version="1.2.2" />
     <PackageReference Include="NSTestFrameworkDotNetCoreUI" Version="1.19.1028.2" />
@@ -64,6 +64,7 @@
 
   <ItemGroup>
     <Folder Include="ClientApp\assets\" />
+    <Folder Include="ClientApp\__tests__\" />
     <Folder Include="wwwroot\fonts\" />
     <Folder Include="wwwroot\css\" />
     <Folder Include="wwwroot\dist\" />
