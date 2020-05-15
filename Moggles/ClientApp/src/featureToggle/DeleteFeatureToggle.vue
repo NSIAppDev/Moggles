@@ -10,7 +10,8 @@
       <button type="button" class="btn btn-default" @click="cancelDeleteToggle">
         Cancel
       </button>
-      <button type="button" class="btn btn-primary"  id="deleteToggleBtn" @click="deleteToggle">
+      <button id="deleteToggleBtn" type="button" class="btn btn-primary"
+              @click="deleteToggle">
         Delete
       </button>
     </div>

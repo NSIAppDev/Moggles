@@ -9,7 +9,8 @@
       <button type="button" class="btn btn-default" @click="closeModal">
         Cancel
       </button>
-      <button type="button" class="btn btn-primary" id="confirmDeleteEnvironmentBtn" @click="deleteEnvironment" >
+      <button id="confirmDeleteEnvironmentBtn" type="button" class="btn btn-primary"
+              @click="deleteEnvironment">
         Delete
       </button>
     </div>

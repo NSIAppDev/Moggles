@@ -1,7 +1,8 @@
 ﻿const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const { VueLoaderPlugin } = require('vue-loader');
 const bundleOutputDir = './wwwroot/dist';
 
 module.exports = (env) => {
@@ -17,7 +18,7 @@ module.exports = (env) => {
             moduleFilenameTemplate:
                 path.relative(bundleOutputDir,
                     '[resourcePath]') // Point sourcemap entries to the original file locations on disk
-		})
+        })
     ];
 
     let stagingPlugins = [
@@ -30,39 +31,17 @@ module.exports = (env) => {
         })
     ];
 
-    let productionPlugins = [
-        // Plugins that apply in production builds only
-        new webpack.optimize.UglifyJsPlugin({
+    let minimizerUglify =
+        new UglifyJsPlugin({
             sourceMap: true,
-            compress: {
+            uglifyOptions: {
                 warnings: false
             }
-        })
-    ];
-
-    let cssLoaders = isDevBuild
-        ? ['vue-style-loader', 'css-loader']
-        : ExtractTextPlugin.extract({
-            use: isStagingBuild ? 'css-loader' : 'css-loader?minimize',
-            fallback: 'vue-style-loader'
-        });
-
-    let scssLoaders = isDevBuild
-        ? ['vue-style-loader', 'css-loader', 'sass-loader']
-        : ExtractTextPlugin.extract({
-            use: isStagingBuild ? 'css-loader!sass-loader' : 'css-loader?minimize!sass-loader',
-            fallback: 'vue-style-loader'
-        });
-
-    let sassLoaders = isDevBuild
-        ? ['vue-style-loader', 'css-loader', 'sass-loader?indentedSyntax']
-        : ExtractTextPlugin.extract({
-            use: isStagingBuild ? 'css-loader!sass-loader?indentedSyntax' : 'css-loader?minimize!sass-loader?indentedSyntax',
-            fallback: 'vue-style-loader'
         });
 
     return {
-		entry: { 'main': ['./ClientApp/src/boot.js', './sass/moggles.scss']},
+        mode: isDevBuild ? 'development' : "production",
+        entry: { 'main': ['./ClientApp/src/boot.js', './sass/moggles.scss'] },
         context: __dirname,
         output: {
             path: path.join(__dirname, bundleOutputDir),
@@ -73,57 +52,57 @@ module.exports = (env) => {
         //    fs: 'empty'
         //},
         module: {
-			rules: [
+            rules: [
                 {
                     enforce: 'pre',
                     test: /\.(js|vue)$/,
                     loader: 'eslint-loader',
                     exclude: /node_modules/
                 },
-				{
-					test: /\.css$/,
-					use: ['vue-style-loader', 'css-loader']
-				},
-				{
-					test: /\.scss$/,
-					use: [
-						{
-							loader: 'file-loader',
-							options: {
-								name: '[name].css',
-								outputPath: '../css/'
-							}
-						},
-						{
-							loader: 'extract-loader'
-						},
-						{
-							loader: 'css-loader'
-						},
-						{
-							loader: 'postcss-loader'
-						},
-						{
-							loader: 'sass-loader'
-						}
-					]
-				},
-				{
-					test: /\.sass$/,
-					use: [
-						'vue-style-loader',
-						'css-loader',
-						'sass-loader?indentedSyntax'
-					]
-				},
+                {
+                    test: /\.css$/,
+                    use: ['vue-style-loader', 'css-loader']
+                },
+                {
+                    test: /\.scss$/,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                name: '[name].css',
+                                outputPath: '../css/'
+                            }
+                        },
+                        {
+                            loader: 'extract-loader'
+                        },
+                        {
+                            loader: 'css-loader'
+                        },
+                        {
+                            loader: 'postcss-loader'
+                        },
+                        {
+                            loader: 'sass-loader'
+                        }
+                    ]
+                },
+                {
+                    test: /\.sass$/,
+                    use: [
+                        'vue-style-loader',
+                        'css-loader',
+                        'sass-loader?indentedSyntax'
+                    ]
+                },
                 {
                     test: /\.vue$/,
                     loader: 'vue-loader',
                     options: {
                         loaders: {
-							css: ['vue-style-loader', 'css-loader'],
-							'scss': ['vue-style-loader', 'css-loader', 'sass-loader'],
-							'sass': ['vue-style-loader', 'css-loader', 'sass-loader?indentedSyntax']
+                            css: ['vue-style-loader', 'css-loader'],
+                            'scss': ['vue-style-loader', 'css-loader', 'sass-loader'],
+                            'sass': ['vue-style-loader', 'css-loader', 'sass-loader?indentedSyntax']
                         },
                         extractCSS: isDevBuild ? false : true,
                         optimizeSSR: false
@@ -155,6 +134,9 @@ module.exports = (env) => {
         target: isTesting ? 'node' : 'web',
         externals: isTesting ? [nodeExternals()] : [],
         devtool: isTesting ? 'inline-cheap-module-source-map' : undefined,
+        optimization: isProdBuild ? {
+            minimizer: [minimizerUglify]
+        } : undefined,
         plugins: [
             new webpack.DefinePlugin({
                 'process.env': {
@@ -164,9 +146,9 @@ module.exports = (env) => {
             new webpack.DllReferencePlugin({
                 context: __dirname,
                 manifest: require('./wwwroot/dist/vendor-manifest.json')
-            })
+            }),
+            new VueLoaderPlugin()
         ].concat(isDevBuild ? devPlugins : [])
             .concat(isStagingBuild ? stagingPlugins : [])
-            .concat(isProdBuild ? productionPlugins : [])
     }
 };
