@@ -1,6 +1,8 @@
 ﻿const path = require('path');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const { VueLoaderPlugin } = require('vue-loader');
 const libs = require('./package.json');
 
 module.exports = (env) => {
@@ -9,11 +11,12 @@ module.exports = (env) => {
 
     const isDevBuild = !isProdBuild && !isStagingBuild;
 
-    const extractCSS = new ExtractTextPlugin('vendor.css');
+    const extractCSS = new MiniCssExtractPlugin({ filename: 'vendor.css' });
 
     let entries = Object.keys(libs.dependencies);
 
     return [{
+        mode: isDevBuild ? 'development' : "production",
         stats: { modules: false },
         resolve: { extensions: ['.js'] },
         entry: {
@@ -21,7 +24,12 @@ module.exports = (env) => {
         },
         module: {
             rules: [
-                { test: /\.css(\?|$)/, use: extractCSS.extract({ use: 'css-loader' }) },
+                {
+                    test: /\.vue$/,
+                    loader: 'vue-loader',
+                    exclude: /node_modules/
+                },
+                { test: /\.css(\?|$)/, use: [MiniCssExtractPlugin.loader, 'css-loader'] },
                 { test: /\.(png|woff|woff2|eot|ttf|svg)(\?|$)/, use: 'url-loader?limit=100000' }
             ]
         },
@@ -31,6 +39,9 @@ module.exports = (env) => {
             filename: '[name].js',
             library: '[name]_[hash]'
         },
+        optimization: isProdBuild ? {
+            minimizer: [new UglifyJsPlugin()]
+        } : undefined,
         plugins: [
             new webpack.DefinePlugin({
                 'process.env.NODE_ENV': isDevBuild ? '"development"' : '"production"'
@@ -40,9 +51,8 @@ module.exports = (env) => {
             new webpack.DllPlugin({
                 path: path.join(__dirname, 'wwwroot', 'dist', '[name]-manifest.json'),
                 name: '[name]_[hash]'
-            })
-        ].concat(isDevBuild ? [] : [
-            new webpack.optimize.UglifyJsPlugin()
-        ])
+            }),
+            new VueLoaderPlugin()
+        ]
     }];
 };

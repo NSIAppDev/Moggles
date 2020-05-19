@@ -13,15 +13,16 @@
         <div class="col-sm-12 form-group">
           <label class="col-sm-4 control-label" for="appname">Application name</label>
           <div class="col-sm-8">
-            <input ref="appName" v-model="applicationName" class="form-control"
-                   type="text" id="addApplicationNameInput"
+            <input id="addApplicationNameInput" ref="appName" v-model="applicationName"
+                   class="form-control" type="text"
                    name="appName" placeholder="Application name..." maxlength="100">
           </div>
         </div>
         <div class="col-sm-12 form-group">
           <label class="col-sm-4 control-label" for="envname">Add a first environment</label>
           <div class="col-sm-8">
-            <input v-model="environmentName" class="form-control" type="text" id="addFirstEnvironmentInput"
+            <input id="addFirstEnvironmentInput" v-model="environmentName" class="form-control"
+                   type="text"
                    name="envName" placeholder="Environment name..." maxlength="100">
           </div>
         </div>
@@ -40,10 +41,11 @@
           </div>
         </div>
         <div class="col-sm-12 text-right">
-          <button class="btn btn-default" id="closeAddApplicationModalBtn" @click="closeAddApplicationModal" >
+          <button id="closeAddApplicationModalBtn" class="btn btn-default" @click="closeAddApplicationModal">
             Close
           </button>
-          <button class="btn btn-primary" type="button" id="addApplicationBtn" @click="addApplication">
+          <button id="addApplicationBtn" class="btn btn-primary" type="button"
+                  @click="addApplication">
             Add
           </button>
         </div>

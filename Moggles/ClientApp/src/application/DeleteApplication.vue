@@ -10,7 +10,8 @@
       <button type="button" class="btn btn-default" @click="cancel">
         Cancel
       </button>
-      <button type="button" class="btn btn-primary" @click="deleteApp" id="confirmDeleteApplicationBtn">
+      <button id="confirmDeleteApplicationBtn" type="button" class="btn btn-primary"
+              @click="deleteApp">
         Delete
       </button>
     </div>

@@ -8,9 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ClientApp\tests\**" />
     <Compile Remove="nodb_storage\**" />
+    <Content Remove="ClientApp\tests\**" />
     <Content Remove="nodb_storage\**" />
+    <EmbeddedResource Remove="ClientApp\tests\**" />
     <EmbeddedResource Remove="nodb_storage\**" />
+    <None Remove="ClientApp\tests\**" />
     <None Remove="nodb_storage\**" />
   </ItemGroup>
 
@@ -64,7 +68,6 @@
 
   <ItemGroup>
     <Folder Include="ClientApp\assets\" />
-    <Folder Include="ClientApp\__tests__\" />
     <Folder Include="wwwroot\fonts\" />
     <Folder Include="wwwroot\css\" />
     <Folder Include="wwwroot\dist\" />

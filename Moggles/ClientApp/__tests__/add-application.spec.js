@@ -15,13 +15,13 @@ describe('AddApplication.vue', () => {
         mockAdapter.reset();
     });
 
-    it('Shows empty input on show', function () {
+    test('Shows empty input on show', function () {
         const wrapper = shallowMount(AddApplication);
         let txt = wrapper.find('input').text();
         expect(txt).toBe("");
     })
 
-    it('Application name is cleared on successful add', async () => {
+    test('Application name is cleared on successful add', async () => {
         const wrapper = shallowMount(AddApplication);
         wrapper.find('button').trigger('click');
 
@@ -31,9 +31,9 @@ describe('AddApplication.vue', () => {
         expect(wrapper.vm.applicationName).toBe('');
     })
 
-    it('A success alert is shown on successful add and goes away after a while', async () => {
+    test('A success alert is shown on successful add and goes away after a while', async () => {
 
-        let clock = sinon.useFakeTimers();
+        jest.useFakeTimers();
 
         const wrapper = shallowMount(AddApplication);
 
@@ -48,13 +48,16 @@ describe('AddApplication.vue', () => {
         mockAdapter.onPost().reply(200);
         await flushPromises();
 
-        expect(wrapper.find('.alert').exists()).toBe(true);
-        clock.tick(1510);
-        expect(wrapper.find('.alert').exists()).toBe(false);
-        clock.restore();
+        expect(wrapper.find('.alert').exists()).toBeTruthy();
+
+        jest.advanceTimersByTime(1510);
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.find('.alert').exists()).toBeFalsy();
+
     })
 
-    it('Emits app added event on succesfull Add', async () => {
+    test('Emits app added event on succesfull Add', async () => {
 
         let spy = sinon.spy(Bus, '$emit');
 
@@ -75,7 +78,7 @@ describe('AddApplication.vue', () => {
 		spy.restore();
     })
 
-    it('Calls the right URL passing the appName and environment name', async () => {
+    test('Calls the right URL passing the appName and environment name', async () => {
 
         let mock = sinon.mock(axios);
         mock.expects('post').withArgs('api/Applications/add', { applicationName: 'testApp', environmentName: "test", defaultToggleValue: true }).returns(Promise.resolve({}));
@@ -87,9 +90,10 @@ describe('AddApplication.vue', () => {
         await flushPromises();
 
         mock.verify();
+        mock.restore();
     })
 
-    it('Shows a spinner while request is in process', async () => {
+    test('Shows a spinner while request is in process', async () => {
 		const wrapper = shallowMount(AddApplication);
 		let spy = sinon.spy(Bus, '$emit');
 
