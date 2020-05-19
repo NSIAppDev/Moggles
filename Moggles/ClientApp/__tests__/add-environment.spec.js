@@ -3,7 +3,7 @@ import AddEnvironment from '../src/environment/AddEnvironment.vue'
 
 
 describe('AddEnvironment.vue', () => {
-    it('is a Vue instance', ()=> {
+    test('is a Vue instance', ()=> {
         const wrapper = mount(AddEnvironment, {
             propsData: {
                 application: {
@@ -11,6 +11,6 @@ describe('AddEnvironment.vue', () => {
                 }
             }
         })
-        expect(wrapper.isVueInstance()).toBe(true)
+        expect(wrapper.findComponent(AddEnvironment).vm).toBeTruthy()
     })
 })
