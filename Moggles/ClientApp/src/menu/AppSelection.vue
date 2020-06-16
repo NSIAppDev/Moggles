@@ -47,7 +47,8 @@
 		methods: {
             changeApp() {
                 var app =_.find(this.applications, (a) => a.id == this.selectedApp[0]);
-				if (app) {
+                if (app) {
+					Bus.$emit('block-ui')
                     Bus.$emit(events.applicationChanged, app);
                     localStorage.setItem('selectedApp', app.id);
 					this.$refs.appSelection.showDropdown = false;
