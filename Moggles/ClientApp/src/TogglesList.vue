@@ -354,6 +354,7 @@
                     });
                     this.toggles = gridRowModels;
                     Bus.$emit(events.togglesLoaded, gridRowModels);
+                    Bus.$emit('unblock-ui')
                 }).catch(() => {
                     //do not uncomment this, the null reference exception will return to haunt us !
                     //window.alert(error)
