@@ -1,4 +1,4 @@
-﻿using NSTestFrameworkDotNetCoreUI.Helpers;
+﻿using NsTestFrameworkUI.Helpers;
 using OpenQA.Selenium;
 using System;
 using System.Collections.ObjectModel;

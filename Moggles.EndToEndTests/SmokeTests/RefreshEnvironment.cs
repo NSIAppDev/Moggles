@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.TestFramework;
 using MogglesEndToEndTests.TestFramework;
-using NSTestFrameworkDotNetCoreUI.Helpers;
+using NsTestFrameworkUI.Helpers;
 
 namespace Moggles.EndToEndTests.SmokeTests
 {

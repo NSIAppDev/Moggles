@@ -1,10 +1,11 @@
 ﻿using MogglesEndToEndTests.TestFramework;
+using NsTestFrameworkUI.Helpers;
+using NsTestFrameworkUI.Pages;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Threading;
-using NSTestFrameworkDotNetCoreUI.Helpers;
-using NSTestFrameworkDotNetCoreUI.Pages;
+
 
 namespace MogglesEndToEndTests.MogglesPages
 {
