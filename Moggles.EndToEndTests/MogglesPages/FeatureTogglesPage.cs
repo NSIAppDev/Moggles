@@ -4,6 +4,7 @@ using NsTestFrameworkUI.Pages;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
+using System.Linq;
 using System.Threading;
 
 
@@ -11,10 +12,9 @@ namespace MogglesEndToEndTests.MogglesPages
 {
     public class FeatureTogglesPage
     {
-        public IWebElement ToolsMenuDropdown =>
-            Browser.WebDriver.FindElement(By.CssSelector("#bs-example-navbar-collapse-1 > ul > li > ul"));
+        private readonly By _toolsMenuDropdown = By.CssSelector(".dropdown.open li");
         public IWebElement ToolsButton => Browser.WebDriver.FindElement(By.Id("toolsBtn"));
-        public IWebElement FeatureToggleNameInput => Browser.WebDriver.FindElement(By.Id("featureToggleName"));
+        private readonly By _featureToggleNameInput = By.Id("featureToggleName");
         public IWebElement NotesInput => Browser.WebDriver.FindElement(By.Id("notesInput"));
         public IWebElement AddFeatureToggleButton => Browser.WebDriver.FindElement(By.Id("addFeatureToggleBtn"));
         public IWebElement AddApplicationButton => Browser.WebDriver.FindElement(By.Id("addApplicationBtn"));
@@ -32,7 +32,6 @@ namespace MogglesEndToEndTests.MogglesPages
             Browser.WebDriver.FindElement(By.CssSelector("tr:nth-child(2) > th:nth-child(2) > div > input"));
         public IWebElement IsAcceptedByUserCheckbox => Browser.WebDriver.FindElement(By.Id("editAcceptedByUserCheckbox"));
         public IWebElement SaveButton => Browser.WebDriver.FindElement(By.Id("saveEditToggleBtn"));
-        public IWebElement SelectApplication => Browser.WebDriver.FindElement(By.Id("selectedApp"));
         public IWebElement ApplicationNameInput => Browser.WebDriver.FindElement(By.Id("addApplicationNameInput"));
         public IWebElement ApplicationsDropdown => Browser.WebDriver.FindElement(By.CssSelector("#selectedApp>ul"));
         public IWebElement FirstEnvNameInput => Browser.WebDriver.FindElement(By.Id("addFirstEnvironmentInput"));
@@ -43,7 +42,6 @@ namespace MogglesEndToEndTests.MogglesPages
         public IWebElement DeleteApplicationButton => Browser.WebDriver.FindElement(By.Id("deleteApplicationBtn"));
         public IWebElement AcceptDeleteApplicationButton => Browser.WebDriver.FindElement(By.Id("confirmDeleteApplicationBtn"));
         public IWebElement AcceptDeleteEnvironmentButton => Browser.WebDriver.FindElement(By.Id("confirmDeleteEnvironmentBtn"));
-        public IWebElement SelectedApplication => Browser.WebDriver.FindElement(By.Id("selectedApp"));
         public IWebElement EditEnvironmentNameInput => Browser.WebDriver.FindElement(By.Id("editEnvironmentNameInput"));
         public IWebElement SaveEnvironmentChangesButton => Browser.WebDriver.FindElement(By.Id("saveEditEnvironmentBtn"));
         public IWebElement DeleteEnvironmentButton => Browser.WebDriver.FindElement(By.Id("deleteEnvironmentBtn"));
@@ -68,21 +66,16 @@ namespace MogglesEndToEndTests.MogglesPages
             By.CssSelector("div:nth-child(3) > .margin-top-8 > div:nth-child(1)");
         private readonly By _refreshedEnvMessage =
             By.CssSelector("body > div.fade.alert.alert-success.alert-dismissible.in");
+        private readonly By _applicationsDropdown = By.CssSelector("#selectedApp > ul li");
+        private readonly By _selectedApplication = By.Id("selectedApp");
+
+        public string GetSelectedApplicationName() => _selectedApplication.GetText();
         public IWebElement SelectedApplicationName =>
             Browser.WebDriver.FindElement(By.CssSelector("#app-sel  div  div  div:nth-child(1)"));
 
-        public void SelectASpecificApplication(string applicationName)
+        public void SelectApplicationByName(string applicationName)
         {
-            Thread.Sleep(1000);
-            SelectApplication.Click();
-            var applications = PageHelpers.GetDropdownList(ApplicationsDropdown, "li");
-            var applicationsCount = applications.Count;
-            for (var i = 0; i < applicationsCount; i++)
-            {
-                if (applications[i].Text != applicationName) continue;
-                applications[i].Click();
-                break;
-            }
+            _selectedApplication.SelectFromDropdown(_applicationsDropdown, applicationName);     
         }
 
         public void FilterByAcceptedByUser(string status)
@@ -92,13 +85,17 @@ namespace MogglesEndToEndTests.MogglesPages
             statuses.Options[1].Click();
         }
 
+        public void SelectFromDropdown(By dropdownSelector, string state)
+        {
+            var dropdownElements = Browser.WebDriver.FindElements(dropdownSelector);
+            dropdownElements.First(x => string.Equals(x.Text, state)).Click();
+        }
+
         public void AddFeatureToggle(string newFeatureToggleName)
         {
             ToolsButton.Click();
-            var options = PageHelpers.GetDropdownList(ToolsMenuDropdown, "li");
-            Thread.Sleep(1000);
-            options[1].Click();
-            FeatureToggleNameInput.SendKeys(newFeatureToggleName);
+            SelectFromDropdown(_toolsMenuDropdown, "Add Feature Toggle");
+            _featureToggleNameInput.ActionSendKeys(newFeatureToggleName);
             NotesInput.SendKeys("test");
             AddFeatureToggleButton.Click();
             Thread.Sleep(1000);
@@ -108,9 +105,7 @@ namespace MogglesEndToEndTests.MogglesPages
         public void AddNewApplication(string newApplicationName, string firstEnvName)
         {
             ToolsButton.Click();
-            var options = PageHelpers.GetDropdownList(ToolsMenuDropdown, "li");
-            Thread.Sleep(1000);
-            options[2].Click();
+            SelectFromDropdown(_toolsMenuDropdown, "Add New Application");
             ApplicationNameInput.SendKeys(newApplicationName);
             FirstEnvNameInput.SendKeys(firstEnvName);
             AddApplicationButton.Click();
@@ -121,9 +116,7 @@ namespace MogglesEndToEndTests.MogglesPages
         public void AddNewEnvironment(string newEnvironmentName)
         {
             ToolsButton.Click();
-            var options = PageHelpers.GetDropdownList(ToolsMenuDropdown, "li");
-            Thread.Sleep(1000);
-            options[3].Click();
+            SelectFromDropdown(_toolsMenuDropdown, "Add New Environment");
             SecondEnvNameInput.SendKeys(newEnvironmentName);
             AddEnvironmentButton.Click();
             Thread.Sleep(1000);
@@ -237,11 +230,6 @@ namespace MogglesEndToEndTests.MogglesPages
             return SelectedApplication.Text == applicationName;
         }
 
-        public string GetSelectedApplicationName()
-        {
-            return SelectedApplicationName.Text;
-        }
-
         public void DeleteApplication(string expectedApplicationName)
         {
             Thread.Sleep(1000);
@@ -252,19 +240,10 @@ namespace MogglesEndToEndTests.MogglesPages
             AcceptDeleteApplicationButton.Click();
         }
 
-        public bool ApplicationNameExists(string applicationName)
+        public bool IsApplicationListed(string applicationName)
         {
-            Thread.Sleep(1000);
-            SelectApplication.Click();
-            var applications = PageHelpers.GetDropdownList(ApplicationsDropdown, "li");
-            var applicationsCount = applications.Count;
-            for (var i = 0; i < applicationsCount; i++)
-            {
-                if (applications[i].Text.Equals(applicationName))
-                    return true;
-            }
-
-            return false;
+            var dropdownElements = Browser.WebDriver.FindElements(By.CssSelector("#selectedApp ul li"));
+            return dropdownElements.Any(x => x.Text.Equals(applicationName));
         }
 
         public void EditEnvironment(string environmentName)

@@ -2,7 +2,7 @@
 {
     public class Constants
     {
-        public static string BaseUrl = "http://moggles.northernsafety-dev.com/";
+        public static string BaseUrl = "http://lmoga:Parkerpen7.safety@moggles.northernsafety-dev.com/";
 
         public static string FeatureToggleName = "SmokeTestsFeatureToggle";
         public static string SmokeTestsApplication = "SmokeTests";

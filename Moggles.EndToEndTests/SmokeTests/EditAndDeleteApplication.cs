@@ -18,7 +18,7 @@ namespace MogglesEndToEndTests.SmokeTests
             //act
             Browser.Goto(Constants.BaseUrl);
             Pages.FeatureTogglesPage.AddNewApplication(Constants.NewApplicationName, Constants.FirstEnvName);
-            Pages.FeatureTogglesPage.SelectASpecificApplication(Constants.NewApplicationName);
+            Pages.FeatureTogglesPage.SelectApplicationByName(Constants.NewApplicationName);
             Pages.FeatureTogglesPage.ChangeApplicationName(Constants.NewApplicationName,Constants.EditedApplicationName);
 
             //assert
@@ -29,7 +29,7 @@ namespace MogglesEndToEndTests.SmokeTests
             Pages.FeatureTogglesPage.DeleteApplication(Constants.EditedApplicationName);
 
             //assert
-            Pages.FeatureTogglesPage.ApplicationNameExists(Constants.EditedApplicationName).Should().BeFalse();
+            Pages.FeatureTogglesPage.IsApplicationListed(Constants.EditedApplicationName).Should().BeFalse();
         }
     }
 }

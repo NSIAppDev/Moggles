@@ -17,7 +17,7 @@ namespace Moggles.EndToEndTests.SmokeTests
         {
             //act
             Browser.Goto(Constants.BaseUrl);
-            Pages.FeatureTogglesPage.SelectASpecificApplication(Constants.SmokeTestsApplication);
+            Pages.FeatureTogglesPage.SelectApplicationByName(Constants.SmokeTestsApplication);
             Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
             Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
             Pages.FeatureTogglesPage.UpdateDevEnvironment();
