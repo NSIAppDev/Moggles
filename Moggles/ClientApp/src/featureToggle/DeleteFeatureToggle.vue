@@ -53,7 +53,7 @@
                 axios.delete(`/api/FeatureToggles?id=${this.toggleToDelete.id}&applicationid=${this.application.id}`).then(() => {
                     this.toggleToDelete = null
                     Bus.$emit(events.closeDeleteFeatureToggleModal);
-                }).catch(error => window.alert(error))
+                }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             cancelDeleteToggle() {
                 Bus.$emit(events.closeDeleteFeatureToggleModal);

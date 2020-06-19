@@ -45,7 +45,7 @@
                     Bus.$emit(events.applicationChanged, this.application)
                     Bus.$emit(events.closeDeleteEnvironmentModal);
                     Bus.$emit(events.closeEditEnvironmentModal);
-                }).catch(error => window.alert(error))
+                }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             closeModal() {
                 Bus.$emit(events.closeDeleteEnvironmentModal);

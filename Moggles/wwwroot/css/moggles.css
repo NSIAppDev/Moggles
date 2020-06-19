@@ -9471,5 +9471,11 @@ label.checkbox > .icon {
   color: #cccccc;
   cursor: not-allowed; }
 
+.errorDetailsBox {
+  word-wrap: break-word; }
+
+.errorDetailsBtn {
+  margin: 10px 0 10px 0; }
+
 th.vgt-right-align {
   text-align: left; }

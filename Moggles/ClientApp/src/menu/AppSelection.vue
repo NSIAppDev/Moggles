@@ -71,8 +71,9 @@
 								}
 							}
 						}
-					})
-					.catch(error => { window.alert(error) })
+                    }).catch(error => {
+                        Bus.$emit(events.showErrorAlertModal, { 'error': error });
+                    });
             },
 			refreshApps() {
 				this.selectedApp = [];
@@ -83,7 +84,7 @@
                     .then((response) => {
                         this.application = response.data;
                     })
-                    .catch(error => { window.alert(error) });
+                    .catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             existsStoredApp() {
                 var app = _.find(this.applications, (a) => a.id == localStorage.getItem('selectedApp'));

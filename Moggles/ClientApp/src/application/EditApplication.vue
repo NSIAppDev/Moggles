@@ -74,9 +74,7 @@
                     .then(() => {
                         this.$emit('close-app-edit-modal');
                         Bus.$emit(events.applicationEdited, appUpdateModel);
-                    }).catch(e => {
-                        window.alert(e)
-                    })
+                    }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             cancel() {
                 this.editAppErrors = [];

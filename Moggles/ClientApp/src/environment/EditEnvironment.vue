@@ -149,7 +149,7 @@
                 axios.put('/api/FeatureToggles/updateEnvironment', environmentUpdateModel)
                     .then(() => {
                         Bus.$emit(events.closeEditEnvironmentModal);
-                    }).catch(error => window.alert(error))
+                    }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             showDeleteEnvironmentConfirmationModal() {
                 this.showDeleteEnvironmentConfirmation = true;
