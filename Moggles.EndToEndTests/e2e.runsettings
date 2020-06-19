@@ -3,7 +3,7 @@
 
   <!-- Parameters used by tests at runtime -->
   <TestRunParameters>
-    <Parameter name="webAppUrl" value="http://lmoga:Parkerpen7.safety@moggles.northernsafety-dev.com/" />
+    <Parameter name="webAppUrl" value="http://moggles.northernsafety-dev.com/" />
   </TestRunParameters>
 
   </RunSettings>
