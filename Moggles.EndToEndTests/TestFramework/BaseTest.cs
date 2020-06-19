@@ -1,11 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSTestFrameworkDotNetCoreUI.Helpers;
+using NsTestFrameworkUI.Helpers;
 using System.IO;
 using System.Reflection;
 
 namespace Moggles.EndToEndTests.TestFramework
 {
-    public class BaseTest : NSTestFrameworkDotNetCoreUI.BaseTest
+    public class BaseTest : NsTestFrameworkUI.BaseTest
     {
         [TestInitialize]
         public virtual void Before()

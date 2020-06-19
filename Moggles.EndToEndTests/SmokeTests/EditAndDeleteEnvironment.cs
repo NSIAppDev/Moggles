@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.TestFramework;
 using MogglesEndToEndTests.TestFramework;
-using NSTestFrameworkDotNetCoreUI.Helpers;
+using NsTestFrameworkUI.Helpers;
 
 namespace MogglesEndToEndTests.SmokeTests
 {
@@ -18,7 +18,7 @@ namespace MogglesEndToEndTests.SmokeTests
             //act
             Browser.Goto(Constants.BaseUrl);
             Pages.FeatureTogglesPage.AddNewApplication(Constants.NewApplicationName, Constants.FirstEnvName);
-            Pages.FeatureTogglesPage.SelectASpecificApplication(Constants.NewApplicationName);
+            Pages.FeatureTogglesPage.SelectApplicationByName(Constants.NewApplicationName);
             Pages.FeatureTogglesPage.AddNewEnvironment(Constants.SecondEnvName);
             Pages.FeatureTogglesPage.EditEnvironment(Constants.SecondEnvName);
             Pages.FeatureTogglesPage.ChangeEnvironmentName(Constants.EditedSecondEnvName);
