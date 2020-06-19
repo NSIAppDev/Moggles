@@ -30,7 +30,7 @@
                 axios.delete(`/api/ToggleScheduler?id=${this.schedule.scheduleId}`).then(() => {
                     Bus.$emit(events.closeDeleteSchedulerModal);
                     Bus.$emit(events.closeToggleSchedulerModal);
-                }).catch(error => window.alert(error));
+                }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             closeModal() {
                 Bus.$emit(events.closeDeleteSchedulerModal);

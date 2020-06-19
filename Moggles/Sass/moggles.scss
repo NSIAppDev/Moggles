@@ -116,7 +116,16 @@ label.checkbox > .icon {
 	cursor: not-allowed;
 }
 
+.errorDetailsBox {
+	word-wrap: break-word;
+}
+
+.errorDetailsBtn {
+	margin: 10px 0 10px 0;
+}
+
 // override very good table default
 th.vgt-right-align {
 	text-align: left;
 }
+

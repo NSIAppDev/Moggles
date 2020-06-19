@@ -145,8 +145,7 @@
                         this.requireReasonWhenToggleDisabled = false;
                         this.$nextTick(() => { this.$refs["envName"].focus() });
                         Bus.$emit(events.environmentAdded);
-                    }).catch((e) => {
-                        window.alert(e)
+                    }).catch((error) => { Bus.$emit(events.showErrorAlertModal, { 'error': error })
                     }).finally(() => {
                         Bus.$emit(events.unblockUI)
                     });

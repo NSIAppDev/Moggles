@@ -128,8 +128,7 @@
         created() {
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
-            }).catch(error => window.alert(error));
-
+            }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             this.subscribeToBusEvents();
         },
         mounted() {
@@ -319,7 +318,7 @@
                     this.createGridColumns();
                     this.loadGridData();
                     Bus.$emit(events.environmentsLoaded, this.environments)
-                }).catch((e) => { window.alert(e) });
+                }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             loadGridData() {
                 this.getAllScheduledToggles();
@@ -425,8 +424,7 @@
                             offsetY: 70,
                             icon: 'fas fa-check-circle'
                         })
-                    }).catch((e) => {
-                        window.alert(e);
+                    }).catch(error => { Bus.$emit(events.showErrorAlertModal, { 'error': error })
                     }).finally(() => {
                         Bus.$emit(events.unblockUI)
                     });

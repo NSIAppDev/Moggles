@@ -222,7 +222,7 @@
                             label: env.envName
                         };
                     });
-                }).catch((e) => { window.alert(e) });
+                }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             closeModal() {
                 Bus.$emit(events.closeToggleSchedulerModal);

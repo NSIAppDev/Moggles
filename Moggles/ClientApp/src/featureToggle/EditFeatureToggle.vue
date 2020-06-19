@@ -169,9 +169,7 @@
                     }
                 }).then((response) => {
                     this.environments = response.data;
-                }).catch(() => {
-                    window.alert("Error getting list of environments.");
-                });
+                }).catch(() => Bus.$emit(events.showErrorAlertModal, { 'customErrorMessage': 'Error getting list of environments.' }));
             },
             saveToggle() {
                 this.validateEditModel();
@@ -209,7 +207,7 @@
                 axios.put('/api/featuretoggles', toggleUpdateModel)
                     .then(() => {
                         this.closeModal();
-                    }).catch(error => window.alert(error))
+                    }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             validateEditModel() {
                 this.editFeatureToggleErrors = [];
