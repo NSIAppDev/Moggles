@@ -22,7 +22,7 @@ namespace MogglesEndToEndTests.SmokeTests
             Pages.FeatureTogglesPage.ChangeApplicationName(Constants.NewApplicationName,Constants.EditedApplicationName);
 
             //assert
-            Pages.FeatureTogglesPage.ApplicationIsSelected(Constants.EditedApplicationName);
+            Pages.FeatureTogglesPage.GetSelectedApplicationName().Equals(Constants.EditedApplicationName).Should().BeTrue();
             Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
 
             //act

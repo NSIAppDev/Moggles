@@ -12,8 +12,7 @@ namespace MogglesEndToEndTests.MogglesPages
 {
     public class FeatureTogglesPage
     {
-        private readonly By _toolsMenuDropdown = By.CssSelector(".dropdown.open li");
-        public IWebElement ToolsButton => Browser.WebDriver.FindElement(By.Id("toolsBtn"));
+        private readonly By _toolsMenuDropdown = By.CssSelector(".dropdown-menu li");
         private readonly By _featureToggleNameInput = By.Id("featureToggleName");
         public IWebElement NotesInput => Browser.WebDriver.FindElement(By.Id("notesInput"));
         public IWebElement AddFeatureToggleButton => Browser.WebDriver.FindElement(By.Id("addFeatureToggleBtn"));
@@ -68,13 +67,17 @@ namespace MogglesEndToEndTests.MogglesPages
             By.CssSelector("body > div.fade.alert.alert-success.alert-dismissible.in");
         private readonly By _applicationsDropdown = By.CssSelector("#selectedApp > ul li");
         private readonly By _selectedApplication = By.Id("selectedApp");
+        private readonly By _toolsButton =By.CssSelector("li.dropdown");
+        private readonly By _selectedAppName = By.CssSelector("#app-sel  div  div  div:nth-child(1)");
 
-        public string GetSelectedApplicationName() => _selectedApplication.GetText();
+        public string GetSelectedApplicationName() => _selectedAppName.GetText();
+        
         public IWebElement SelectedApplicationName =>
             Browser.WebDriver.FindElement(By.CssSelector("#app-sel  div  div  div:nth-child(1)"));
 
         public void SelectApplicationByName(string applicationName)
         {
+            _selectedApplication.WaitForElementToBeClickable();
             _selectedApplication.SelectFromDropdown(_applicationsDropdown, applicationName);     
         }
 
@@ -93,8 +96,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void AddFeatureToggle(string newFeatureToggleName)
         {
-            ToolsButton.Click();
-            SelectFromDropdown(_toolsMenuDropdown, "Add Feature Toggle");
+            _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "Add Feature Toggle");
             _featureToggleNameInput.ActionSendKeys(newFeatureToggleName);
             NotesInput.SendKeys("test");
             AddFeatureToggleButton.Click();
@@ -104,7 +106,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void AddNewApplication(string newApplicationName, string firstEnvName)
         {
-            ToolsButton.Click();
+            _toolsButton.ActionClick();
             SelectFromDropdown(_toolsMenuDropdown, "Add New Application");
             ApplicationNameInput.SendKeys(newApplicationName);
             FirstEnvNameInput.SendKeys(firstEnvName);
@@ -115,8 +117,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void AddNewEnvironment(string newEnvironmentName)
         {
-            ToolsButton.Click();
-            SelectFromDropdown(_toolsMenuDropdown, "Add New Environment");
+            _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "Add New Environment");
             SecondEnvNameInput.SendKeys(newEnvironmentName);
             AddEnvironmentButton.Click();
             Thread.Sleep(1000);
@@ -213,8 +214,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void ChangeApplicationName(string currentApplicationName,string editedApplicationName)
         {
-            var applicationName = GetSelectedApplicationName();
-            if (currentApplicationName != applicationName) return;
+            if (currentApplicationName != GetSelectedApplicationName()) return;
             EditApplicationIcon.Click();
             
             EditApplicationNameInput.Clear();
@@ -222,22 +222,17 @@ namespace MogglesEndToEndTests.MogglesPages
             EditApplicationNameInput.SendKeys(editedApplicationName);
           
             SaveApplicationChangesButton.Click();
+            WaitHelpers.ExplicitWait();
           
-        }
-
-        public bool ApplicationIsSelected(string applicationName)
-        {
-            return SelectedApplication.Text == applicationName;
         }
 
         public void DeleteApplication(string expectedApplicationName)
         {
-            Thread.Sleep(1000);
-            var applicationName = GetSelectedApplicationName();
-            if (expectedApplicationName != applicationName) return;
+            if (expectedApplicationName != GetSelectedApplicationName()) return;
             EditApplicationIcon.Click();
             DeleteApplicationButton.Click();
             AcceptDeleteApplicationButton.Click();
+            WaitHelpers.ExplicitWait();
         }
 
         public bool IsApplicationListed(string applicationName)
