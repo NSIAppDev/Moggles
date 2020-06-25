@@ -70,7 +70,11 @@ namespace MogglesEndToEndTests.MogglesPages
         private readonly By _toolsButton =By.CssSelector("li.dropdown");
         private readonly By _selectedAppName = By.CssSelector("#app-sel  div  div  div:nth-child(1)");
 
-        public string GetSelectedApplicationName() => _selectedAppName.GetText();
+        public string GetSelectedApplicationName()
+        {
+            WaitHelpers.ExplicitWait();
+            return _selectedAppName.GetText();
+        }
         
         public IWebElement SelectedApplicationName =>
             Browser.WebDriver.FindElement(By.CssSelector("#app-sel  div  div  div:nth-child(1)"));
