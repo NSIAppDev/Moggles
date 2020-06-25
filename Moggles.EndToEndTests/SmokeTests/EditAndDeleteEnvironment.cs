@@ -24,13 +24,13 @@ namespace MogglesEndToEndTests.SmokeTests
             Pages.FeatureTogglesPage.ChangeEnvironmentName(Constants.EditedSecondEnvName);
 
             //assert
-            Pages.FeatureTogglesPage.EnvironmentNameExist(Constants.EditedSecondEnvName).Should().BeTrue();
+            Pages.FeatureTogglesPage.IsEnvironmentNameDisplayed(Constants.EditedSecondEnvName).Should().BeTrue();
 
             //act
             Pages.FeatureTogglesPage.DeleteEnvironment(Constants.EditedSecondEnvName);
 
             //assert
-            Pages.FeatureTogglesPage.EnvironmentNameExist(Constants.EditedSecondEnvName).Should().BeFalse();
+            Pages.FeatureTogglesPage.IsEnvironmentNameDisplayed(Constants.EditedSecondEnvName).Should().BeFalse();
         }
 
         [TestCleanup]

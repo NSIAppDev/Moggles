@@ -21,8 +21,8 @@ namespace MogglesEndToEndTests.SmokeTests
             Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
 
             //assert
-            Pages.FeatureTogglesPage.NewAddedFeatureToggleIsVisible(Constants.FeatureToggleName).Should().BeTrue();
-            Pages.FeatureTogglesPage.CreationDateIsCorrectlyDisplayed(Constants.FeatureToggleName).Should().BeTrue();    
+            Pages.FeatureTogglesPage.IsFeatureToggleDisplayed(Constants.FeatureToggleName).Should().BeTrue();
+            Pages.FeatureTogglesPage.IsCreationDateCorrectlyDisplayed(Constants.FeatureToggleName).Should().BeTrue();    
         }
 
         [TestCleanup]

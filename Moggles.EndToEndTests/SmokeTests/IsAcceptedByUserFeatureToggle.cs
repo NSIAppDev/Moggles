@@ -27,10 +27,10 @@ namespace MogglesEndToEndTests.SmokeTests
                 Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
 
                 //act
-                Pages.FeatureTogglesPage.FilterByAcceptedByUser(Constants.AcceptedByUserStatus);
+                Pages.FeatureTogglesPage.FilterAcceptedByUserColumn(Constants.AcceptedByUserStatus);
 
                 //assert
-                Pages.FeatureTogglesPage.NewAddedFeatureToggleIsVisible(Constants.FeatureToggleName).Should().BeTrue();
+                Pages.FeatureTogglesPage.IsFeatureToggleDisplayed(Constants.FeatureToggleName).Should().BeTrue();
             }
 
             [TestCleanup]
