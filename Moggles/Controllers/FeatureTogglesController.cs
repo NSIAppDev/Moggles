@@ -41,6 +41,7 @@ namespace Moggles.Controllers
                     UserAccepted = ft.UserAccepted,
                     Notes = ft.Notes,
                     CreatedDate = ft.CreatedDate,
+                    ChangedDate = ft.FeatureToggleStatuses.OrderByDescending(_ => _.LastUpdated).FirstOrDefault().LastUpdated,
                     IsPermanent = ft.IsPermanent,
                     WorkItemIdentifier = ft.WorkItemIdentifier,
                     Statuses = ft.FeatureToggleStatuses
