@@ -44,9 +44,6 @@
           <span>{{ props.row.toggleName }}</span> <span v-if="props.row.isPermanent" class="label label-danger">Permanent</span>
           <a v-for="schedule in getSchedulesForToggle(props.row.toggleName)" :key="schedule.scheduleId" @click="editToggleSchedule(schedule)"><i class="fas fa-clock" /> <i /></a>
         </span>
-        <span v-else-if="props.column.field == 'createdDate'">
-          {{ props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A') }}
-        </span>
         <span v-else>
           {{ props.formattedRow[props.column.field] }}
         </span>
@@ -269,6 +266,14 @@
                         field: 'createdDate',
                         label: 'Created',
                         sortable: false,
+                        formatFn: this.formatDate,
+                    },
+                    {
+                        field: 'changedDate',
+                        label: 'Changed',
+                        sortable: true,
+                        thClass: 'sortable',
+                        formatFn: this.formatDate,
                     },
                 ]
 
@@ -292,6 +297,9 @@
 
                 this.gridColumns = columns
             },
+            formatDate(date) {
+                return moment(date).format('M/D/YY hh:mm:ss A');  
+            }, 
             getRowsPerPage() {
                 if (localStorage.getItem('rowsPerPage') != null) {
                     this.rowsPerPage = localStorage.getItem('rowsPerPage');
@@ -338,6 +346,7 @@
                             notes: toggle.notes,
                             workItemIdentifier: toggle.workItemIdentifier,
                             createdDate: new Date(toggle.createdDate),
+                            changedDate: toggle.changedDate,
                             reasonsToChange: toggle.reasonsToChange.reverse()
                         }
 
