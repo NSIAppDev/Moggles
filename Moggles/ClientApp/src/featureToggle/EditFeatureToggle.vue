@@ -194,7 +194,7 @@
                     userAccepted: this.rowToEdit.userAccepted,
                     notes: this.rowToEdit.notes,
                     workItemIdentifier: !this.stringIsNullOrEmpty(this.rowToEdit.workItemIdentifier) ? this.rowToEdit.workItemIdentifier : null,
-                    featureToggleName: this.rowToEdit.toggleName,
+                    featureToggleName: this.rowToEdit.toggleName.trim(),
                     isPermanent: this.rowToEdit.isPermanent,
                     statuses: statuses,
                     reasonToChange: !this.stringIsNullOrEmpty(this.reasonToChange) ? {
