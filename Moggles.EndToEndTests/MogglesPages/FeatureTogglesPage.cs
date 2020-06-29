@@ -43,7 +43,7 @@ namespace MogglesEndToEndTests.MogglesPages
         public IWebElement AcceptDeleteEnvironmentButton => Browser.WebDriver.FindElement(By.Id("confirmDeleteEnvironmentBtn"));
         public IWebElement EditEnvironmentNameInput => Browser.WebDriver.FindElement(By.Id("editEnvironmentNameInput"));
         public IWebElement SaveEnvironmentChangesButton => Browser.WebDriver.FindElement(By.Id("saveEditEnvironmentBtn"));
-        public IWebElement DeleteEnvironmentButton => Browser.WebDriver.FindElement(By.Id("deleteEnvironmentBtn"));
+        private readonly By _deleteEnvironmentButton = By.Id("deleteEnvironmentBtn");
         public IWebElement CancelEditFeatureFlagsModalButton => Browser.WebDriver.FindElement(By.Id("cancelEditToggleBtn"));
         private readonly By _rowSelector = By.CssSelector(".vgt-responsive> table > tbody> tr");
         private readonly By _statusesDropdown =
@@ -272,7 +272,7 @@ namespace MogglesEndToEndTests.MogglesPages
         {
             Thread.Sleep(1000);
             EditEnvironment(editedEnvName);
-            DeleteEnvironmentButton.Click();
+            _deleteEnvironmentButton.ActionClick();
             Thread.Sleep(1000);
             AcceptDeleteEnvironmentButton.Click();
         }
