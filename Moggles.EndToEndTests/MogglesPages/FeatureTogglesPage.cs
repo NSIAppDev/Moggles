@@ -73,11 +73,17 @@ namespace MogglesEndToEndTests.MogglesPages
         private readonly By _selectedAppName = By.CssSelector("#app-sel  div  div  div:nth-child(1)");
         public IWebElement FeatureTogglesGrid => Browser.WebDriver.FindElement(By.Id("toggleGrid"));
         #endregion
-        public string GetSelectedApplicationName() => _selectedAppName.GetText();
+        
         public bool IsGridEmpty() => _noFeatureToggleDisplayedText.IsElementPresent();
         public bool IsDevEnvironmentCheckboxChecked() => _devCheckbok.IsElementSelected();
         public bool IsQaEnvironmentCheckboxChecked() => _qaCheckbok.IsElementSelected();
         public bool IsRefreshedEnvironmentMessageIsDisplayed() => _refreshedEnvMessage.IsElementEnabled();
+
+        public string GetSelectedApplicationName()
+        {
+            WaitHelpers.ExplicitWait();
+            return _selectedAppName.GetText();
+        }
 
         public void SelectApplicationByName(string applicationName)
         {
@@ -121,8 +127,8 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public bool IsFeatureToggleDisplayed(string newFeatureToggleName)
         {
-            Thread.Sleep(1000);
-            var rows = WebElementKendoGridExtensions.GetAllRowsFromGrid(FeatureTogglesGrid, _rowSelector);
+            WaitHelpers.ExplicitWait();
+            var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
             foreach (var row in rows)
             {
                 var cells = row.FindElements(By.TagName("td"));
@@ -278,6 +284,5 @@ namespace MogglesEndToEndTests.MogglesPages
             WaitHelpers.ExplicitWait();
             _refreshEnvironmentButton.ActionClick();
         }
-             
     }
 }
