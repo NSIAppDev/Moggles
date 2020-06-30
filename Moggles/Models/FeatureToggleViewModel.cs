@@ -11,6 +11,7 @@ namespace Moggles.Models
         public bool IsPermanent { get; set; }
         public string Notes { get; set; }
         public DateTime CreatedDate { get; set; }
+        public DateTime ChangedDate { get; set; }
         public List<FeatureToggleStatusViewModel> Statuses { get; set; }
         public string WorkItemIdentifier { get; set; }
         public List<FeatureToggleReasonToChangeViewModel> ReasonsToChange { get; set; }

@@ -122,7 +122,7 @@
 
                 let param = {
                     applicationId: this.application.id,
-                    featureToggleName: this.featureToggleName,
+                    featureToggleName: this.featureToggleName.trim(),
                     notes: this.notes,
                     isPermanent: this.isPermanent,
                     workItemIdentifier: this.workItemIdentifier.trim()
