@@ -24,7 +24,7 @@ namespace MogglesEndToEndTests.SmokeTests
             Pages.FeatureTogglesPage.SetFeatureToggleAsPermanent();
 
             //assert
-            Pages.FeatureTogglesPage.FeatureToggleIsPermanent().Should().BeTrue();
+            Pages.FeatureTogglesPage.IsFeatureTogglePermanent().Should().BeTrue();
         }
 
         [TestCleanup]

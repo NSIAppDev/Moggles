@@ -14,18 +14,6 @@ namespace MogglesEndToEndTests.TestFramework
             var formattedDateValue = DateTime.Parse(dateValue).Date;
             return formattedDateValue == DateTime.Now.Date;
         }
-      
-        public static ReadOnlyCollection<IWebElement> GetAllRowsFromGrid(this IWebElement grid, By rowSelector)
-        {
-            return grid.FindElements(By.CssSelector(".vgt-responsive> table > tbody"));
-        }
-
-        public static IWebElement GetColumnSpecifiedByIndex(this IWebElement grid, By rowSelector, int rowIndex, int columnIndex)
-        {
-            var rows = grid.GetAllRowsFromGrid(rowSelector);
-            var cells = rows[rowIndex].FindElements(By.TagName("td"));
-            return cells[columnIndex];
-        }
 
         public static IWebElement GetHeaderSpecifiedByIndex(this IWebElement grid, int columnIndex)
         {
