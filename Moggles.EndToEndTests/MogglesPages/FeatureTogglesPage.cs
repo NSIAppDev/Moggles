@@ -53,7 +53,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         private readonly By _filterByACriteria = By.CssSelector("tr:nth-child(2) > th:nth-child(2) > div > input");
         private readonly By _refreshEnvironmentButton = By.Id("refreshEnvironmentsBtn");
-        private readonly By _devEnvironmentCheckbox = By.CssSelector("div:nth-child(2) > div.col-sm-1 > div > div > input[type=checkbox]");
+        private IWebElement _devEnvironmentCheckbox => Browser.WebDriver.FindElement(By.CssSelector("div:nth-child(2) > div.col-sm-1 > div > div > input[type=checkbox]"));
         private readonly By _rowSelector = By.CssSelector(".vgt-responsive> table > tbody> tr");
         private readonly By _noFeatureToggleDisplayedText = By.CssSelector("#toggleGrid tr td div div");
         private readonly By _deleteFeatureToggleIcon = By.CssSelector("#toggleGrid span > a:nth-child(2) > i");
@@ -69,15 +69,27 @@ namespace MogglesEndToEndTests.MogglesPages
         private readonly By _refreshedEnvMessage =
             By.CssSelector("body > div.fade.alert.alert-success.alert-dismissible.in");
         private readonly By _selectedApplication = By.Id("selectedApp");
-        private readonly By _toolsButton =By.CssSelector("li.dropdown");
+        private readonly By _toolsButton = By.CssSelector("li.dropdown");
         private readonly By _selectedAppName = By.CssSelector("#app-sel  div  div  div:nth-child(1)");
         public IWebElement FeatureTogglesGrid => Browser.WebDriver.FindElement(By.Id("toggleGrid"));
         #endregion
-        
+
         public bool IsGridEmpty() => _noFeatureToggleDisplayedText.IsElementPresent();
-        public bool IsDevEnvironmentCheckboxChecked() => _devCheckbok.IsElementSelected();
-        public bool IsQaEnvironmentCheckboxChecked() => _qaCheckbok.IsElementSelected();
-        public bool IsRefreshedEnvironmentMessageIsDisplayed() => _refreshedEnvMessage.IsElementEnabled();
+        public bool IsDevEnvironmentCheckboxChecked()
+        {
+            WaitHelpers.ExplicitWait();
+            return _devCheckbok.IsElementSelected();
+        }
+        public bool IsQaEnvironmentCheckboxChecked()
+        {
+            WaitHelpers.ExplicitWait();
+            return _qaCheckbok.IsElementSelected();
+        }
+        public bool IsRefreshedEnvironmentMessageIsDisplayed()
+        {
+            WaitHelpers.ExplicitWait();
+            return _refreshedEnvMessage.IsElementEnabled();
+        }
 
         public string GetSelectedApplicationName()
         {
@@ -88,17 +100,18 @@ namespace MogglesEndToEndTests.MogglesPages
         public void SelectApplicationByName(string applicationName)
         {
             _selectedApplication.WaitForElementToBeClickable();
-            _selectedApplication.SelectFromDropdown(_applicationsDropdown, applicationName);     
+            _selectedApplication.SelectFromDropdown(_applicationsDropdown, applicationName);
         }
 
         public void FilterAcceptedByUserColumn(string status)
         {
             _statusesDropdown.WaitForElementToBeClickable();
             PageHelpers.SelectOptionFromDropdown(_statusesDropdown, status);
-        }     
+        }
 
         public void AddFeatureToggle(string newFeatureToggleName)
         {
+            WaitHelpers.ExplicitWait();
             _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "Add Feature Toggle");
             _featureToggleNameInput.ActionSendKeys(newFeatureToggleName);
             //_workItemIdInput.ActionSendKeys("TESTING PBI 00000");
@@ -110,18 +123,22 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void AddNewApplication(string newApplicationName, string firstEnvName)
         {
+            WaitHelpers.ExplicitWait();
             _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "Add New Application");
             _applicationNameInput.ActionSendKeys(newApplicationName);
             _firstEnvNameInput.ActionSendKeys(firstEnvName);
             _addApplicationButton.ActionClick();
+            WaitHelpers.ExplicitWait();
             _closeAddApplicationModalBtn.ActionClick();
         }
 
         public void AddNewEnvironment(string newEnvironmentName)
         {
+            WaitHelpers.ExplicitWait();
             _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "Add New Environment");
             _environmentNameInput.ActionSendKeys(newEnvironmentName);
             _addEnvironmentButton.ActionClick();
+            WaitHelpers.ExplicitWait();
             _closeAddEnvironmentModalBtn.ActionClick();
         }
 
@@ -159,7 +176,7 @@ namespace MogglesEndToEndTests.MogglesPages
         {
             WaitHelpers.ExplicitWait();
             var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
-            for (var i = 0; i <= rows.Count-1; i++)
+            for (var i = 0; i <= rows.Count - 1; i++)
             {
                 var cells = rows[i].FindElements(By.TagName("td"));
                 if (!cells[1].Text.Contains(newFeatureToggleName)) continue;
@@ -181,11 +198,13 @@ namespace MogglesEndToEndTests.MogglesPages
                     FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_editFeatureToggleIcon)
                         .Click();
                 }
+                WaitHelpers.ExplicitWait();
             }
         }
 
         public void SetFeatureToggleAsPermanent()
         {
+            WaitHelpers.ExplicitWait();
             _isPermanentCheckbox.ActionClick();
             _saveButton.ActionClick();
         }
@@ -198,24 +217,27 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public bool IsFeatureTogglePermanent()
         {
+            WaitHelpers.ExplicitWait();
             _filterByACriteria.ActionSendKeys(Constants.FeatureToggleName);
             return PageHelpers.IsElementPresent(_isPermanentFlag);
         }
 
         public void ChangeApplicationName(string currentApplicationName, string editedApplicationName)
         {
+            WaitHelpers.ExplicitWait();
             if (currentApplicationName != GetSelectedApplicationName()) return;
             _editApplicationIcon.ActionClick();
             _editApplicationNameInput.ClearField();
             _editApplicationNameInput.ActionSendKeys(editedApplicationName);
-            _saveApplicationChangesButton.ActionClick();        
+            _saveApplicationChangesButton.ActionClick();
             WaitHelpers.ExplicitWait();
         }
 
         public void DeleteApplication(string expectedApplicationName)
         {
+            WaitHelpers.ExplicitWait();
             if (expectedApplicationName != GetSelectedApplicationName()) return;
-            _editEnvironmentIcon.ActionClick();
+            _editApplicationIcon.ActionClick();
             _deleteApplicationButton.ActionClick();
             _confirmDeleteApplicationButton.ActionClick();
             WaitHelpers.ExplicitWait();
@@ -229,12 +251,13 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void EditEnvironment(string environmentName)
         {
-            var element = Utils.GetHeaderSpecifiedByIndex(FeatureTogglesGrid,3);
+            WaitHelpers.ExplicitWait();
+            var element = Utils.GetHeaderSpecifiedByIndex(FeatureTogglesGrid, 3);
             WaitHelpers.ExplicitWait();
             if (element.Text.Equals(environmentName))
-                {
-                 element.FindElement(_editEnvironmentIcon).Click();
-                }           
+            {
+                element.FindElement(_editEnvironmentIcon).Click();
+            }
         }
 
         public void ChangeEnvironmentName(string editedEnvName)
@@ -246,6 +269,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public bool IsEnvironmentNameDisplayed(string envName)
         {
+            WaitHelpers.ExplicitWait();
             return Utils.GetHeaderSpecifiedByIndex(FeatureTogglesGrid, 3).Text.Equals(envName);
         }
 
@@ -274,9 +298,8 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void UpdateDevEnvironment()
         {
-            WaitHelpers.ExplicitWait();
-            _devEnvironmentCheckbox.ActionClick();
-            _saveButton.ActionClick();     
+            _devEnvironmentCheckbox.Click();
+            _saveButton.ActionClick();
         }
 
         public void RefreshEnvironment()

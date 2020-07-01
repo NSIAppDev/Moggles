@@ -10,7 +10,6 @@ namespace MogglesEndToEndTests.SmokeTests
         public class IsAcceptedByUserFeatureToggle : BaseTest
         {          
             [TestMethod]
-            [Ignore]
             [TestCategory("IsAcceptedByUser")]
             [TestCategory("SmokeTests")]
 

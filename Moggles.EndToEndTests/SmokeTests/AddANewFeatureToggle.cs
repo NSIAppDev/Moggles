@@ -7,13 +7,13 @@ using NsTestFrameworkUI.Helpers;
 namespace MogglesEndToEndTests.SmokeTests
 {
     [TestClass]
-    public class AddANewFeatureToggle : BaseTest
+    public class AddAndDeleteNewFeatureToggle : BaseTest
     {       
         [TestMethod]
         [TestCategory("AddFeatureToggle")]
         [TestCategory("SmokeTests")]
 
-        public void AddANewFeatureToggle_TheFeatureToggleIsAdded()
+        public void AddAndDeleteANewFeatureToggle_TheFeatureToggleIsAddedAndDeleted()
         {
             //act
             Browser.Goto(Constants.BaseUrl);
@@ -22,14 +22,14 @@ namespace MogglesEndToEndTests.SmokeTests
 
             //assert
             Pages.FeatureTogglesPage.IsFeatureToggleDisplayed(Constants.FeatureToggleName).Should().BeTrue();
-            Pages.FeatureTogglesPage.IsCreationDateCorrectlyDisplayed(Constants.FeatureToggleName).Should().BeTrue();    
+            Pages.FeatureTogglesPage.IsCreationDateCorrectlyDisplayed(Constants.FeatureToggleName).Should().BeTrue();
+
+            //act
+            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName);
+            
+            //assert
+            Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
         }
 
-        [TestCleanup]
-        public override void After()
-        {
-            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName);
-            base.After();
-        }
     }
 }
