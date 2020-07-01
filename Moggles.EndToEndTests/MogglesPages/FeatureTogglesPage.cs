@@ -71,6 +71,7 @@ namespace MogglesEndToEndTests.MogglesPages
         private readonly By _selectedApplication = By.Id("selectedApp");
         private readonly By _toolsButton = By.CssSelector("li.dropdown");
         private readonly By _selectedAppName = By.CssSelector("#app-sel  div  div  div:nth-child(1)");
+        private readonly By _pageSpinner = By.CssSelector(".fa-spinner");
         public IWebElement FeatureTogglesGrid => Browser.WebDriver.FindElement(By.Id("toggleGrid"));
         #endregion
 
@@ -99,6 +100,8 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void SelectApplicationByName(string applicationName)
         {
+            _pageSpinner.WaitForSpinner();
+            WaitHelpers.ExplicitWait();
             _selectedApplication.WaitForElementToBeClickable();
             _selectedApplication.SelectFromDropdown(_applicationsDropdown, applicationName);
         }
@@ -123,6 +126,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void AddNewApplication(string newApplicationName, string firstEnvName)
         {
+            _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "Add New Application");
             _applicationNameInput.ActionSendKeys(newApplicationName);
