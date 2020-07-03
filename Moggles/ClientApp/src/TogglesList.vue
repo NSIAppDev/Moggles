@@ -265,7 +265,8 @@
                     {
                         field: 'createdDate',
                         label: 'Created',
-                        sortable: false,
+                        sortable: true,
+                        thClass: 'sortable',
                         formatFn: this.formatDate,
                     },
                     {
@@ -345,7 +346,7 @@
                             isPermanent: toggle.isPermanent,
                             notes: toggle.notes,
                             workItemIdentifier: toggle.workItemIdentifier,
-                            createdDate: new Date(toggle.createdDate),
+                            createdDate: toggle.createdDate,
                             changedDate: toggle.changedDate,
                             reasonsToChange: toggle.reasonsToChange.reverse()
                         }
