@@ -7,7 +7,7 @@ describe('AddEnvironment.vue', () => {
         const wrapper = mount(AddEnvironment, {
             propsData: {
                 application: {
-                    id:1
+                    id: 1
                 }
             }
         })
