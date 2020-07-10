@@ -28,5 +28,6 @@ export const events = {
     closeDeleteSchedulerModal: "close-deleteScheduler",
     closeForceCacheRefreshModal: "close-refresh",
     unblockUI: "unblock-ui",
-    blockUI: "block-ui"
+    blockUI: "block-ui",
+    showErrorAlertModal: "openErrorAlertModal"
 }

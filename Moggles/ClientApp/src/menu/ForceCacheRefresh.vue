@@ -72,8 +72,7 @@
 					.then(() => {
 						this.showSuccessAlert = true;
 						this.envName = null;
-					}).catch((e) => {
-						window.alert(e);
+                    }).catch(error => { Bus.$emit(events.showErrorAlertModal, { 'error': error });
                     }).finally(() => {
                         Bus.$emit(events.unblockUI)
 					});

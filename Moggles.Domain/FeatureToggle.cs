@@ -95,7 +95,7 @@ namespace Moggles.Domain
         public FeatureToggleStatus GetFeatureToggleStatusForEnv(string envName)
         {
             return FeatureToggleStatuses.FirstOrDefault(fts =>
-                string.Compare(fts.EnvironmentName, envName, StringComparison.OrdinalIgnoreCase) == 0);
+                string.Compare(fts.EnvironmentName, envName.Trim(), StringComparison.OrdinalIgnoreCase) == 0);
         }
         public void ChangeEnvironmentnameForFeatureToggleStatus(string oldEnvName, string NewEnvName)
         {

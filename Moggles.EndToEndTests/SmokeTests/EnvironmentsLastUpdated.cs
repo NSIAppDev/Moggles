@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.TestFramework;
 using MogglesEndToEndTests.TestFramework;
-using NSTestFrameworkDotNetCoreUI.Helpers;
+using NsTestFrameworkUI.Helpers;
 
 namespace MogglesEndToEndTests.SmokeTests
 {
@@ -17,7 +17,7 @@ namespace MogglesEndToEndTests.SmokeTests
         {
             //act
             Browser.Goto(Constants.BaseUrl);
-            Pages.FeatureTogglesPage.SelectASpecificApplication(Constants.SmokeTestsApplication);
+            Pages.FeatureTogglesPage.SelectApplicationByName(Constants.SmokeTestsApplication);
             Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
             Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
 

@@ -6,10 +6,10 @@
       </button>
       <h4>Toggles Have Been Modified, would you like to refresh the environments?</h4>
       <span v-for="(env, index) in environmentsToRefresh" :key="env" class="env-button">
-        <button class="btn btn-default text-uppercase" @click="refreshEnvironmentToggles(env, index)" id="refreshEnvironmentsBtn"><strong>{{ env }}</strong></button>
+        <button id="refreshEnvironmentsBtn" class="btn btn-default text-uppercase" @click="refreshEnvironmentToggles(env, index)"><strong>{{ env }}</strong></button>
       </span>
     </alert>
-    <vue-good-table ref="toggleGrid" id="toggleGrid"
+    <vue-good-table id="toggleGrid" ref="toggleGrid"
                     :columns="gridColumns"
                     :rows="toggles"
                     :pagination-options="getPaginationOptions"
@@ -43,9 +43,6 @@
         <span v-else-if="props.column.field == 'toggleName' ">
           <span>{{ props.row.toggleName }}</span> <span v-if="props.row.isPermanent" class="label label-danger">Permanent</span>
           <a v-for="schedule in getSchedulesForToggle(props.row.toggleName)" :key="schedule.scheduleId" @click="editToggleSchedule(schedule)"><i class="fas fa-clock" /> <i /></a>
-        </span>
-        <span v-else-if="props.column.field == 'createdDate'">
-          {{ props.formattedRow.createdDate | moment('M/D/YY hh:mm:ss A') }}
         </span>
         <span v-else>
           {{ props.formattedRow[props.column.field] }}
@@ -128,8 +125,7 @@
         created() {
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
-            }).catch(error => window.alert(error));
-
+            }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             this.subscribeToBusEvents();
         },
         mounted() {
@@ -269,7 +265,16 @@
                     {
                         field: 'createdDate',
                         label: 'Created',
-                        sortable: false,
+                        sortable: true,
+                        thClass: 'sortable',
+                        formatFn: this.formatDate,
+                    },
+                    {
+                        field: 'changedDate',
+                        label: 'Changed',
+                        sortable: true,
+                        thClass: 'sortable',
+                        formatFn: this.formatDate,
                     },
                 ]
 
@@ -293,6 +298,9 @@
 
                 this.gridColumns = columns
             },
+            formatDate(date) {
+                return moment(date).format('M/D/YY hh:mm:ss A');  
+            }, 
             getRowsPerPage() {
                 if (localStorage.getItem('rowsPerPage') != null) {
                     this.rowsPerPage = localStorage.getItem('rowsPerPage');
@@ -319,7 +327,7 @@
                     this.createGridColumns();
                     this.loadGridData();
                     Bus.$emit(events.environmentsLoaded, this.environments)
-                }).catch((e) => { window.alert(e) });
+                }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             loadGridData() {
                 this.getAllScheduledToggles();
@@ -338,7 +346,8 @@
                             isPermanent: toggle.isPermanent,
                             notes: toggle.notes,
                             workItemIdentifier: toggle.workItemIdentifier,
-                            createdDate: new Date(toggle.createdDate),
+                            createdDate: toggle.createdDate,
+                            changedDate: toggle.changedDate,
                             reasonsToChange: toggle.reasonsToChange.reverse()
                         }
 
@@ -354,6 +363,7 @@
                     });
                     this.toggles = gridRowModels;
                     Bus.$emit(events.togglesLoaded, gridRowModels);
+                    Bus.$emit('unblock-ui')
                 }).catch(() => {
                     //do not uncomment this, the null reference exception will return to haunt us !
                     //window.alert(error)
@@ -424,8 +434,7 @@
                             offsetY: 70,
                             icon: 'fas fa-check-circle'
                         })
-                    }).catch((e) => {
-                        window.alert(e);
+                    }).catch(error => { Bus.$emit(events.showErrorAlertModal, { 'error': error })
                     }).finally(() => {
                         Bus.$emit(events.unblockUI)
                     });

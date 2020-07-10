@@ -24,13 +24,13 @@
               <div class="vertical-align">
                 <label for="app-sel" class="margin-top-8">Select Application </label>
                 <app-selection />
-                <a class="margin-left-10" @click="showEditAppModal(true)"><i class="fas fa-edit fa-lg" id="showEditApplicationModalBtn"/></a>
+                <a class="margin-left-10" @click="showEditAppModal(true)"><i id="showEditApplicationModalBtn" class="fas fa-edit fa-lg" /></a>
               </div>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right vertical-align">
             <dropdown tag="li">
-              <a class="dropdown-toggle" role="button" id="toolsBtn">Tools <span class="caret" /></a>
+              <a id="toolsBtn" class="dropdown-toggle" role="button">Tools <span class="caret" /></a>
               <template slot="dropdown">
                 <li><a role="button" @click="reloadCurrentApplicationToggles()">Reload Application Toggles</a></li>
                 <li><a role="button" @click="showAddFeatureToggleModal()">Add Feature Toggle</a></li>
@@ -88,6 +88,11 @@
         </div>
       </div>
     </div>
+
+    <modal v-if="showErrorAlert" v-model="showErrorAlert" title="Error"
+           :footer="false">
+      <alert-error :error="error" :custom-error-message="customErrorMessage" @cancel="showErrorAlert = false" />
+    </modal>
   </div>
 </template>
 <script>
@@ -104,7 +109,7 @@
     import { Bus } from './common/event-bus'
     import axios from 'axios'
     import { events } from './common/events';
-
+    import AlertError from './alerts/AlertError';
     export default {
         components: {
             "toggles-list": TogglesList,
@@ -116,7 +121,8 @@
             "add-env": AddEnvironment,
             'force-cache-refresh': ForceCacheRefresh,
             'block-ui': BlockUi,
-            'add-toggle-schedule': AddToggleSchedule
+            'add-toggle-schedule': AddToggleSchedule,
+            'alert-error': AlertError
         },
         data() {
             return {
@@ -128,6 +134,9 @@
                 editAppModalIsActive: false,
                 showDeleteAppConfirmation: false,
                 showScheduler: false,
+                showErrorAlert: false,
+                error: null,
+                customErrorMessage: '',
                 selectedApp: {}
             }
         },
@@ -137,34 +146,32 @@
                     this.selectedApp = app;
                 }
             });
-
+            Bus.$on(events.showErrorAlertModal, args => {
+                this.error = args.error != null ? args.error : null;
+                this.customErrorMessage = args.customErrorMessage != null ? args.customErrorMessage : null;
+                this.showErrorAlert = true;
+            });
             Bus.$on(events.showDeleteApplicationConfirmationModal, () => {
                 this.showDeleteAppConfirmation = true;
             });
-
             Bus.$on(events.closeAddFeatureToggleModal, () => {
                 this.showAddToggle = false;
             });
-
             Bus.$on(events.closeAddApplicationModal, () => {
                 this.showAddApp = false;
             });
-
             Bus.$on(events.closeAddEnvironmentModal, () => {
                 this.showAddEnv = false;
             });
-
             Bus.$on(events.closeForceCacheRefreshModal, () => {
                 this.showForceCacheRefresh = false;
             });
-
             Bus.$on(events.closeToggleSchedulerModal, () => {
                 this.showScheduler = false;
             });
-
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
-            }).catch(error => { window.alert(error) });
+            }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
         },
         methods: {
             showAddFeatureToggleModal() {

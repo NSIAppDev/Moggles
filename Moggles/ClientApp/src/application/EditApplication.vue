@@ -10,13 +10,14 @@
         <div class="form-group">
           <label class="col-sm-4 control-label" for="appName">Application name:</label>
           <div class="col-sm-7">
-            <input v-model="appName" type="text" class="form-control"
-                   name="appName" id="editApplicationNameInput"> 
+            <input id="editApplicationNameInput" v-model="appName" type="text"
+                   class="form-control" name="appName"> 
           </div>
         </div>
         <div class="clearfix">
           <div class="col-sm-6">
-            <button type="button" class="btn btn-danger"  id="deleteApplicationBtn" @click="showDeleteConfirmationMessage" >
+            <button id="deleteApplicationBtn" type="button" class="btn btn-danger"
+                    @click="showDeleteConfirmationMessage">
               Delete
             </button>
           </div>
@@ -24,7 +25,8 @@
             <button type="button" class="btn btn-default" @click="cancel">
               Cancel
             </button>
-            <button type="button" class="btn btn-primary"  id="saveEditApplicationBtn" @click="updateApp" >
+            <button id="saveEditApplicationBtn" type="button" class="btn btn-primary"
+                    @click="updateApp">
               Save
             </button>
           </div>
@@ -72,9 +74,7 @@
                     .then(() => {
                         this.$emit('close-app-edit-modal');
                         Bus.$emit(events.applicationEdited, appUpdateModel);
-                    }).catch(e => {
-                        window.alert(e)
-                    })
+                    }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             cancel() {
                 this.editAppErrors = [];

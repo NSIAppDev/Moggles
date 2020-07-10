@@ -10,7 +10,8 @@
       <button type="button" class="btn btn-default" @click="cancel">
         Cancel
       </button>
-      <button type="button" class="btn btn-primary" @click="deleteApp" id="confirmDeleteApplicationBtn">
+      <button id="confirmDeleteApplicationBtn" type="button" class="btn btn-primary"
+              @click="deleteApp">
         Delete
       </button>
     </div>
@@ -21,8 +22,6 @@
     import { Bus } from '../common/event-bus'
     import axios from 'axios'
     import { events } from '../common/events';
-
-
     export default {
         props: {
             application: {
@@ -37,8 +36,8 @@
                     this.deleteAppCompleted();
                     Bus.$emit(events.refreshApplications);
                 })
-                    .catch(e => {
-                        window.alert(e)
+                    .catch(error => {
+                        Bus.$emit(events.showErrorAlertModal, { 'error': error })
                     }).finally(() => {
                         Bus.$emit(events.unblockUI)
                     });
