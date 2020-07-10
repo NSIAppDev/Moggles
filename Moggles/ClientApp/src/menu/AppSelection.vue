@@ -1,10 +1,10 @@
 ﻿<template>
-	<div id="app-sel">
-		<multi-select id="selectedApp" ref="appSelection" v-model="selectedApp"
-					  :limit="1"
-					  :options="applications" :value-key="'id'" :label-key="'appName'"
-					  :selected-icon="'fas fa-check'" class="padding-left-10" @change="changeApp" />
-	</div>
+  <div id="app-sel">
+    <multi-select id="selectedApp" ref="appSelection" v-model="selectedApp"
+                  :limit="1"
+                  :options="applications" :value-key="'id'" :label-key="'appName'"
+                  :selected-icon="'fas fa-check'" class="padding-left-10" @change="changeApp" />
+  </div>
 </template>
 
 <script>
