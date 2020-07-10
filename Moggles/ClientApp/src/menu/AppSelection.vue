@@ -1,9 +1,10 @@
 ﻿<template>
-  <div id="app-sel"> 
-    <multi-select ref="appSelection" v-model="selectedApp" :limit="1" id="selectedApp"
-                  :options="applications" :value-key="'id'" :label-key="'appName'"
-                  :selected-icon="'fas fa-check'" class="padding-left-10" @change="changeApp" />
-  </div>
+	<div id="app-sel">
+		<multi-select id="selectedApp" ref="appSelection" v-model="selectedApp"
+					  :limit="1"
+					  :options="applications" :value-key="'id'" :label-key="'appName'"
+					  :selected-icon="'fas fa-check'" class="padding-left-10" @change="changeApp" />
+	</div>
 </template>
 
 <script>
@@ -47,6 +48,7 @@
             changeApp() {
                 var app =_.find(this.applications, (a) => a.id == this.selectedApp[0]);
 				if (app) {
+                    Bus.$emit('block-ui')
                     Bus.$emit(events.applicationChanged, app);
                     localStorage.setItem('selectedApp', app.id);
 					this.$refs.appSelection.showDropdown = false;
@@ -70,7 +72,9 @@
 							}
 						}
 					})
-					.catch(error => { window.alert(error) })
+            }).catch(error => {
+                Bus.$emit(events.showErrorAlertModal, { 'error': error });
+            });
             },
 			refreshApps() {
 				this.selectedApp = [];
@@ -81,7 +85,7 @@
                     .then((response) => {
                         this.application = response.data;
                     })
-                    .catch(error => { window.alert(error) });
+                    .catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             existsStoredApp() {
                 var app = _.find(this.applications, (a) => a.id == localStorage.getItem('selectedApp'));

@@ -67,7 +67,6 @@
 
   <ItemGroup>
     <Folder Include="ClientApp\assets\" />
-    <Folder Include="ClientApp\__tests__\" />
     <Folder Include="wwwroot\fonts\" />
     <Folder Include="wwwroot\css\" />
     <Folder Include="wwwroot\dist\" />

@@ -53,6 +53,7 @@
     "prod": "cross-env webpack --env.prod",
     "prod-full": "cross-env webpack --config webpack.config.vendor.js --env.prod && cross-env webpack --env.prod",
     "test-full": "cross-env NODE_ENV=development webpack --config webpack.config.vendor.js && cross-env jest",
+    "test-j": "jest",
     "lint": "eslint ClientApp/**/*.{js,vue}",
     "lint-fix": "eslint ClientApp/**/*.{js,vue} --fix"
   },
@@ -70,5 +71,23 @@
     "vue-js-modal": "^1.3.12",
     "vue-moment": "^4.1.0",
     "vue-strap": "github:wffranco/vue-strap"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "vue"
+    ],
+    "transform": {
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
+      ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest"
+    },
+    "testPathIgnorePatterns": [
+      "<rootDir>/ClientApp/tests/",
+      "<rootDir>/node_modules/"
+    ],
+    "snapshotSerializers": [
+      "<rootDir>/node_modules/jest-serializer-vue"
+    ]
   }
 }
