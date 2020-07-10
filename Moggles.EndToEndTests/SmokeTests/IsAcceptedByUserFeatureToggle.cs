@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.TestFramework;
 using MogglesEndToEndTests.TestFramework;
-using NSTestFrameworkDotNetCoreUI.Helpers;
+using NsTestFrameworkUI.Helpers;
 
 namespace MogglesEndToEndTests.SmokeTests
 {
@@ -10,7 +10,6 @@ namespace MogglesEndToEndTests.SmokeTests
         public class IsAcceptedByUserFeatureToggle : BaseTest
         {          
             [TestMethod]
-            [Ignore]
             [TestCategory("IsAcceptedByUser")]
             [TestCategory("SmokeTests")]
 
@@ -18,7 +17,7 @@ namespace MogglesEndToEndTests.SmokeTests
             {
             //act
                 Browser.Goto(Constants.BaseUrl);
-                Pages.FeatureTogglesPage.SelectASpecificApplication(Constants.SmokeTestsApplication);
+                Pages.FeatureTogglesPage.SelectApplicationByName(Constants.SmokeTestsApplication);
                 Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
                 Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
                 Pages.FeatureTogglesPage.SetFeatureToggleAsAcceptedByUser();
@@ -27,10 +26,10 @@ namespace MogglesEndToEndTests.SmokeTests
                 Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
 
                 //act
-                Pages.FeatureTogglesPage.FilterByAcceptedByUser(Constants.AcceptedByUserStatus);
+                Pages.FeatureTogglesPage.FilterAcceptedByUserColumn(Constants.AcceptedByUserStatus);
 
                 //assert
-                Pages.FeatureTogglesPage.NewAddedFeatureToggleIsVisible(Constants.FeatureToggleName).Should().BeTrue();
+                Pages.FeatureTogglesPage.IsFeatureToggleDisplayed(Constants.FeatureToggleName).Should().BeTrue();
             }
 
             [TestCleanup]

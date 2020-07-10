@@ -2,34 +2,34 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.TestFramework;
 using MogglesEndToEndTests.TestFramework;
-using NSTestFrameworkDotNetCoreUI.Helpers;
+using NsTestFrameworkUI.Helpers;
 
 namespace MogglesEndToEndTests.SmokeTests
 {
     [TestClass]
-    public class AddANewFeatureToggle : BaseTest
+    public class AddAndDeleteNewFeatureToggle : BaseTest
     {       
         [TestMethod]
         [TestCategory("AddFeatureToggle")]
         [TestCategory("SmokeTests")]
 
-        public void AddANewFeatureToggle_TheFeatureToggleIsAdded()
+        public void AddAndDeleteANewFeatureToggle_TheFeatureToggleIsAddedAndDeleted()
         {
             //act
             Browser.Goto(Constants.BaseUrl);
-            Pages.FeatureTogglesPage.SelectASpecificApplication(Constants.SmokeTestsApplication);
+            Pages.FeatureTogglesPage.SelectApplicationByName(Constants.SmokeTestsApplication);
             Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
 
             //assert
-            Pages.FeatureTogglesPage.NewAddedFeatureToggleIsVisible(Constants.FeatureToggleName).Should().BeTrue();
-            Pages.FeatureTogglesPage.CreationDateIsCorrectlyDisplayed(Constants.FeatureToggleName).Should().BeTrue();    
+            Pages.FeatureTogglesPage.IsFeatureToggleDisplayed(Constants.FeatureToggleName).Should().BeTrue();
+            Pages.FeatureTogglesPage.IsCreationDateCorrectlyDisplayed(Constants.FeatureToggleName).Should().BeTrue();
+
+            //act
+            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName);
+            
+            //assert
+            Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
         }
 
-        [TestCleanup]
-        public override void After()
-        {
-            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName);
-            base.After();
-        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
+using System.IO;
+using GreenPipes;
 using MassTransit;
-using MassTransit.ExtensionsDependencyInjectionIntegration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.IISIntegration;
@@ -146,9 +147,17 @@ namespace Moggles
                     h.Password(Configuration.GetSection("Messaging")["Password"]);
                 });
 
+                sbc.UseRetry(retryCfg =>
+                {
+                    retryCfg.Handle<IOException>();
+
+                    retryCfg.Interval(10, TimeSpan.FromMinutes(1));
+                });
+
                 sbc.ReceiveEndpoint(host, Configuration.GetSection("Messaging")["QueueName"], e =>
                 {
-                    e.LoadFrom(serviceProvider);
+                    e.Consumer<FeatureToggleDeployStatusConsumer>(serviceProvider);
+                    e.PrefetchCount = 1;
                 });
             });
         }

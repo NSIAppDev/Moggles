@@ -154,9 +154,7 @@
                             label: toggle.toggleName
                         };
                     });
-                }).catch(error => {
-                    window.alert(error)
-                });
+                }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             loadEnvironments() {
                 axios.get("/api/FeatureToggles/environments", {
@@ -170,7 +168,7 @@
                             label: env.envName
                         };
                     });
-                }).catch((e) => { window.alert(e) });
+                }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             addSchedule() {
                 Bus.$emit(events.blockUI);
@@ -233,5 +231,7 @@
                 Bus.$emit(events.closeToggleSchedulerModal);
             }
         }
+    }
+</script>
     }
 </script>

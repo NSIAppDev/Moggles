@@ -8,9 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ClientApp\tests\**" />
     <Compile Remove="nodb_storage\**" />
+    <Content Remove="ClientApp\tests\**" />
     <Content Remove="nodb_storage\**" />
+    <EmbeddedResource Remove="ClientApp\tests\**" />
     <EmbeddedResource Remove="nodb_storage\**" />
+    <None Remove="ClientApp\tests\**" />
     <None Remove="nodb_storage\**" />
   </ItemGroup>
 
@@ -28,7 +32,6 @@
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
     <PackageReference Include="NoDb" Version="1.2.2" />
-    <PackageReference Include="NSTestFrameworkDotNetCoreUI" Version="1.19.1028.2" />
   </ItemGroup>
 
   <ItemGroup>

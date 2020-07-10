@@ -10,7 +10,8 @@
       <button type="button" class="btn btn-default" @click="cancelDeleteToggle">
         Cancel
       </button>
-      <button type="button" class="btn btn-primary"  id="deleteToggleBtn" @click="deleteToggle">
+      <button id="deleteToggleBtn" type="button" class="btn btn-primary"
+              @click="deleteToggle">
         Delete
       </button>
     </div>
@@ -52,7 +53,7 @@
                 axios.delete(`/api/FeatureToggles?id=${this.toggleToDelete.id}&applicationid=${this.application.id}`).then(() => {
                     this.toggleToDelete = null
                     Bus.$emit(events.closeDeleteFeatureToggleModal);
-                }).catch(error => window.alert(error))
+                }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             cancelDeleteToggle() {
                 Bus.$emit(events.closeDeleteFeatureToggleModal);

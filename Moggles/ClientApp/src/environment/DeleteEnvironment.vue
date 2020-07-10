@@ -9,7 +9,8 @@
       <button type="button" class="btn btn-default" @click="closeModal">
         Cancel
       </button>
-      <button type="button" class="btn btn-primary" id="confirmDeleteEnvironmentBtn" @click="deleteEnvironment" >
+      <button id="confirmDeleteEnvironmentBtn" type="button" class="btn btn-primary"
+              @click="deleteEnvironment">
         Delete
       </button>
     </div>
@@ -44,7 +45,7 @@
                     Bus.$emit(events.applicationChanged, this.application)
                     Bus.$emit(events.closeDeleteEnvironmentModal);
                     Bus.$emit(events.closeEditEnvironmentModal);
-                }).catch(error => window.alert(error))
+                }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             closeModal() {
                 Bus.$emit(events.closeDeleteEnvironmentModal);

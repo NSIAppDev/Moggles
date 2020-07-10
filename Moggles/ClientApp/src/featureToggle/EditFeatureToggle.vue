@@ -11,7 +11,8 @@
           <div>
             <label class="col-sm-4 control-label">Feature Toggle name</label>
             <div class="col-sm-7">
-              <input v-model="rowToEdit.toggleName" type="text" class="form-control" id="editToggleNameInput">
+              <input id="editToggleNameInput" v-model="rowToEdit.toggleName" type="text"
+                     class="form-control">
             </div>
           </div>
           <div v-for="environment in environments" :key="environment.envName" class="form-group margin-top-8">
@@ -45,14 +46,15 @@
           <div>
             <label class="col-sm-4 margin-top-8 control-label">Notes</label>
             <div class="col-sm-7 margin-top-8">
-              <input v-model="rowToEdit.notes" type="text" class="form-control" id="editNotesInput">
+              <input id="editNotesInput" v-model="rowToEdit.notes" type="text"
+                     class="form-control">
             </div>
           </div>
           <div class="col-sm-12 margin-top-8">
             <label class="col-sm-4 control-label">Is Permanent</label>
             <div class="col-sm-1 margin-top-10">
-              <p-check v-model="rowToEdit.isPermanent" class="p-icon p-fill"
-                       color="default" id="editIsPermanentCheckbox">
+              <p-check id="editIsPermanentCheckbox" v-model="rowToEdit.isPermanent"
+                       class="p-icon p-fill" color="default">
                 <i slot="extra" class="icon fas fa-check" />
               </p-check>
             </div>
@@ -60,8 +62,8 @@
           <div class="col-sm-12 margin-top-8">
             <label class="col-sm-4 control-label">Accepted by User</label>
             <div class="col-sm-1 margin-top-10">
-              <p-check v-model="rowToEdit.userAccepted" class="p-icon p-fill"
-                       color="default" id="editAcceptedByUserCheckbox">
+              <p-check id="editAcceptedByUserCheckbox" v-model="rowToEdit.userAccepted"
+                       class="p-icon p-fill" color="default">
                 <i slot="extra" class="icon fas fa-check" />
               </p-check>
             </div>
@@ -89,10 +91,12 @@
       </div>
     </div>
     <div class="text-right">
-      <button type="button" class="btn btn-default" id="cancelEditToggleBtn" @click="closeModal()" >
+      <button id="cancelEditToggleBtn" type="button" class="btn btn-default"
+              @click="closeModal()">
         Cancel
       </button>
-      <button type="button" class="btn btn-primary" id="saveEditToggleBtn" @click="saveToggle" >
+      <button id="saveEditToggleBtn" type="button" class="btn btn-primary"
+              @click="saveToggle">
         Save
       </button>
     </div>
@@ -165,9 +169,7 @@
                     }
                 }).then((response) => {
                     this.environments = response.data;
-                }).catch(() => {
-                    window.alert("Error getting list of environments.");
-                });
+                }).catch(() => Bus.$emit(events.showErrorAlertModal, { 'customErrorMessage': 'Error getting list of environments.' }));
             },
             saveToggle() {
                 this.validateEditModel();
@@ -192,7 +194,7 @@
                     userAccepted: this.rowToEdit.userAccepted,
                     notes: this.rowToEdit.notes,
                     workItemIdentifier: !this.stringIsNullOrEmpty(this.rowToEdit.workItemIdentifier) ? this.rowToEdit.workItemIdentifier : null,
-                    featureToggleName: this.rowToEdit.toggleName,
+                    featureToggleName: this.rowToEdit.toggleName.trim(),
                     isPermanent: this.rowToEdit.isPermanent,
                     statuses: statuses,
                     reasonToChange: !this.stringIsNullOrEmpty(this.reasonToChange) ? {
@@ -205,7 +207,7 @@
                 axios.put('/api/featuretoggles', toggleUpdateModel)
                     .then(() => {
                         this.closeModal();
-                    }).catch(error => window.alert(error))
+                    }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             validateEditModel() {
                 this.editFeatureToggleErrors = [];
