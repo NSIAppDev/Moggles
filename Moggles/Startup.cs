@@ -33,6 +33,9 @@ namespace Moggles
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddControllersWithViews();
+
             ConfigureAuthServices(services);
 
             services.AddSignalR(o =>
@@ -47,7 +50,6 @@ namespace Moggles
                 o.HandshakeTimeout = TimeSpan.FromSeconds(20);
             });
 
-            services.AddControllersWithViews();
 
             services.AddApplicationInsightsTelemetry();
 
