@@ -29,6 +29,7 @@ namespace Moggles
         }
 
         public IConfiguration Configuration { get; }
+        private readonly string _myPolicy = "_myPolicy";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -52,6 +53,11 @@ namespace Moggles
 
 
             services.AddApplicationInsightsTelemetry();
+
+            services.AddCors(o =>
+            {
+                o.AddPolicy(_myPolicy, b => { b.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin(); });
+            });
 
             ConfigureDatabaseServices(services);
 
@@ -105,18 +111,20 @@ namespace Moggles
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseAuthentication();
+            app.UseCors(_myPolicy);
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
-                endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapFallbackToController("Index", "Home");
+                endpoints.MapControllers().RequireCors(_myPolicy);
+                endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}").RequireCors(_myPolicy);
+                endpoints.MapFallbackToController("Index", "Home").RequireCors(_myPolicy);
                 endpoints.MapHub<IsDueHub>("/isDueHub", options => {
                     options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.LongPolling;
                 });
