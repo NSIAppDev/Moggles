@@ -114,7 +114,7 @@
                 return this.environmentsToRefresh.length > 0 && this.isCacheRefreshEnabled ? this.isRefreshAlertVisible : false;
             },
             getPaginationOptions() {
-                return { enabled: true, perPage: parseInt(this.getRowsPerPage()) };
+				return { enabled: true, perPage: parseInt(this.getRowsPerPage()), dropdownAllowAll: false };
             },
             environmentsNameList() {
                 return _.map(this.environments, (env) => {
