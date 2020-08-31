@@ -54,17 +54,20 @@
       </template>
     </vue-good-table>
 
-    <modal v-model="showDeleteConfirmationModal" title="You are about to delete a feature toggle" :footer="false">
+    <modal v-model="showDeleteConfirmationModal" title="You are about to delete a feature toggle" :footer="false"
+           append-to-body>
       <delete-featureToggle :application="selectedApp" />
     </modal>
     <modal v-if="showSchedulerModal" v-model="showSchedulerModal" title="Edit Feature Toggle Schedule"
-           :footer="false">
+           :footer="false" append-to-body>
       <edit-toggle-schedule :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" :schedule="scheduleToEdit" />
     </modal>
-    <modal v-model="showEditModal" title="Edit Feature Flags" :footer="false">
+    <modal v-model="showEditModal" title="Edit Feature Flags" :footer="false"
+           append-to-body>
       <edit-featureToggle :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" />
     </modal>
-    <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false">
+    <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false"
+           append-to-body>
       <edit-environment :application="selectedApp" />
     </modal>
   </div>
