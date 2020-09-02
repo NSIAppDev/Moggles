@@ -103,7 +103,7 @@
     </div>
     <div class="row">
       <div class="col-xs-6">
-        <button :disabled="rowToEdit.isPermanent" type="button"
+        <button id="deleteToggleBtnEditModal" :disabled="rowToEdit.isPermanent" type="button"
                 class="btn btn-danger"	
                 @click="openDeleteFeatureToggleConfirmationModal(rowToEdit)">
           Delete
