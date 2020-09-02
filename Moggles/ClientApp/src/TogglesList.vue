@@ -62,7 +62,7 @@
            :footer="false" append-to-body>
       <edit-toggle-schedule :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" :schedule="scheduleToEdit" />
     </modal>
-    <modal v-model="showEditModal" title="Edit Feature Flags" :footer="false"
+    <modal v-model="showEditModal" title="Edit Feature Flag" :footer="false"
            append-to-body>
       <edit-featureToggle :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" />
     </modal>
