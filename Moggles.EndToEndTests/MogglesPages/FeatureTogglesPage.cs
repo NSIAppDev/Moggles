@@ -78,12 +78,12 @@ namespace MogglesEndToEndTests.MogglesPages
         public bool IsDevEnvironmentCheckboxChecked()
         {
             WaitHelpers.ExplicitWait();
-            return _devCheckbok.IsElementSelected();
+            return _devCheckbox.IsElementSelected();
         }
         public bool IsQaEnvironmentCheckboxChecked()
         {
             WaitHelpers.ExplicitWait();
-            return _qaCheckbok.IsElementSelected();
+            return _qaCheckbox.IsElementSelected();
         }
         public bool IsRefreshedEnvironmentMessageIsDisplayed()
         {
@@ -302,7 +302,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void UpdateDevEnvironment()
         {
-            _devCheckbok.ActionClick();
+            _devCheckbox.ActionClick();
             _saveButton.ActionClick();
         }
 
