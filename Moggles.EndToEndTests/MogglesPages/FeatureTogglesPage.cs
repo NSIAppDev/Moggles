@@ -53,19 +53,18 @@ namespace MogglesEndToEndTests.MogglesPages
 
         private readonly By _filterByACriteria = By.CssSelector("tr:nth-child(2) > th:nth-child(2) > div > input");
         private readonly By _refreshEnvironmentButton = By.Id("refreshEnvironmentsBtn");
-        private IWebElement _devEnvironmentCheckbox => Browser.WebDriver.FindElement(By.CssSelector("div:nth-child(2) > div.col-sm-1 > div > div > input[type=checkbox]"));
         private readonly By _rowSelector = By.CssSelector(".vgt-responsive> table > tbody> tr");
         private readonly By _noFeatureToggleDisplayedText = By.CssSelector("#toggleGrid tr td div div");
         private readonly By _deleteFeatureToggleIcon = By.CssSelector("#toggleGrid span > a:nth-child(2) > i");
         private readonly By _isPermanentFlag = By.CssSelector(".label-danger");
         private readonly By _devCheckbok =
-            By.CssSelector("div:nth-child(2) > div.col-sm-1.margin-top-14 > div > div > input[type=checkbox]");
+            By.CssSelector("div:nth-child(4) > div > div > div > input[type=checkbox]");
         private readonly By _qaCheckbok =
-            By.CssSelector("div:nth-child(3) > div.col-sm-1.margin-top-14 > div > div > input[type=checkbox]");
+            By.CssSelector("div:nth-child(5) > div > div > div > input[type=checkbox]");
         private readonly By _devLastUpdatedDate =
-            By.CssSelector("div:nth-child(2) > .margin-top-8 > div:nth-child(1)");
+            By.CssSelector("div:nth-child(4) > .col-sm-8 > div:nth-child(1)");
         private readonly By _qaLastUpdatedDate =
-            By.CssSelector("div:nth-child(3) > .margin-top-8 > div:nth-child(1)");
+            By.CssSelector("div:nth-child(5) > .col-sm-8 > div:nth-child(1)");
         private readonly By _refreshedEnvMessage =
             By.CssSelector("body > div.fade.alert.alert-success.alert-dismissible.in");
         private readonly By _selectedApplication = By.Id("selectedApp");
@@ -186,6 +185,7 @@ namespace MogglesEndToEndTests.MogglesPages
                 if (!cells[1].Text.Contains(newFeatureToggleName)) continue;
                 FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_deleteFeatureToggleIcon)
                     .Click();
+                WaitHelpers.ExplicitWait();
                 _deleteFeatureToggleButton.ActionClick();
             }
         }
@@ -302,7 +302,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void UpdateDevEnvironment()
         {
-            _devEnvironmentCheckbox.Click();
+            _devCheckbok.ActionClick();
             _saveButton.ActionClick();
         }
 
