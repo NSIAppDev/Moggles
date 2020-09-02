@@ -303,7 +303,6 @@ namespace MogglesEndToEndTests.MogglesPages
         public void UpdateDevEnvironment()
         {
             Browser.WebDriver.FindElement(_devCheckbox).Click();
-            //_devCheckbox.ActionClick();
             _saveButton.ActionClick();
         }
 
