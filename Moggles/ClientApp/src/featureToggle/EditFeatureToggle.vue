@@ -12,7 +12,7 @@
             <label class="col-sm-4 control-label">Feature Toggle name</label>
             <div class="col-sm-7">
               <input id="editToggleNameInput" v-model="rowToEdit.toggleName" type="text"
-                     class="form-control">
+                     class="form-control" readonly>
             </div>
           </div>
           <div>
