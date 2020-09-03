@@ -183,9 +183,11 @@ namespace MogglesEndToEndTests.MogglesPages
             {
                 var cells = rows[i].FindElements(By.TagName("td"));
                 if (!cells[1].Text.Contains(newFeatureToggleName)) continue;
+                WaitHelpers.ExplicitWait();
                 FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_deleteFeatureToggleIcon)
                     .Click();
                 WaitHelpers.ExplicitWait();
+                _deleteFeatureToggleButton.WaitForElementToBeClickable();
                 _deleteFeatureToggleButton.ActionClick();
             }
         }
