@@ -37,6 +37,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         private readonly By _editFeatureToggleIcon = By.CssSelector("#toggleGrid span > a:nth-child(1) > i");
         private readonly By _cancelEditToggleButton = By.Id("cancelEditToggleBtn");
+        private readonly By _deleteFeatureToggleButtonOnEdit = By.Id("deleteToggleBtnEditModal");
         private readonly By _deleteFeatureToggleButton = By.Id("deleteToggleBtn");
 
         private readonly By _editApplicationIcon = By.Id("showEditApplicationModalBtn");
@@ -312,6 +313,13 @@ namespace MogglesEndToEndTests.MogglesPages
         {
             WaitHelpers.ExplicitWait();
             _refreshEnvironmentButton.ActionClick();
+        }
+
+        public void DeleteToggleOnEdit()
+        {
+            _deleteFeatureToggleButtonOnEdit.ActionClick();
+            WaitHelpers.ExplicitWait();
+            Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
         }
     }
 }
