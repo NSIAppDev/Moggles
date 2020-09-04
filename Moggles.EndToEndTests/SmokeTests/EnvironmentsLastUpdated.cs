@@ -32,8 +32,7 @@ namespace MogglesEndToEndTests.SmokeTests
         [TestCleanup]
         public override void After()
         {
-            Pages.FeatureTogglesPage.CloseEditFeatureFlagsModal();
-            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName);
+            Pages.FeatureTogglesPage.DeleteToggleOnEdit();
             base.After();
         }
     }
