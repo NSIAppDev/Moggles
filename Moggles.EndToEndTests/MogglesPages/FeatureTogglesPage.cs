@@ -196,6 +196,7 @@ namespace MogglesEndToEndTests.MogglesPages
         public void EditFeatureToggle(string newFeatureToggleName)
         {
             WaitHelpers.ExplicitWait();
+            Thread.Sleep(2000);
             var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
             for (var i = 0; i <= rows.Count - 1; i++)
             {
