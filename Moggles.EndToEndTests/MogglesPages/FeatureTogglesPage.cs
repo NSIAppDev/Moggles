@@ -102,7 +102,7 @@ namespace MogglesEndToEndTests.MogglesPages
         {
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
-            Thread.Sleep(3000);
+            Thread.Sleep(5000);
             _selectedApplication.SelectFromDropdown(_applicationsDropdown, applicationName);
         }
 
@@ -115,6 +115,7 @@ namespace MogglesEndToEndTests.MogglesPages
         public void AddFeatureToggle(string newFeatureToggleName)
         {
             WaitHelpers.ExplicitWait();
+            Thread.Sleep(2000);
             _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "Add Feature Toggle");
             _featureToggleNameInput.ActionSendKeys(newFeatureToggleName);
             //_workItemIdInput.ActionSendKeys("TESTING PBI 00000");
@@ -128,6 +129,7 @@ namespace MogglesEndToEndTests.MogglesPages
         {
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
+            Thread.Sleep(2000);
             _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "Add New Application");
             _applicationNameInput.ActionSendKeys(newApplicationName);
             _firstEnvNameInput.ActionSendKeys(firstEnvName);
@@ -139,6 +141,7 @@ namespace MogglesEndToEndTests.MogglesPages
         public void AddNewEnvironment(string newEnvironmentName)
         {
             WaitHelpers.ExplicitWait();
+            Thread.Sleep(2000);
             _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "Add New Environment");
             _environmentNameInput.ActionSendKeys(newEnvironmentName);
             _addEnvironmentButton.ActionClick();
