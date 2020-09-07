@@ -102,7 +102,7 @@ namespace MogglesEndToEndTests.MogglesPages
         {
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
-            _selectedApplication.WaitForElementToBeClickable();
+            Thread.Sleep(3000);
             _selectedApplication.SelectFromDropdown(_applicationsDropdown, applicationName);
         }
 
