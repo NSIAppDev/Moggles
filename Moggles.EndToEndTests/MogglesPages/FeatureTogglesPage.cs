@@ -321,6 +321,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void DeleteToggleOnEdit()
         {
+            WaitHelpers.ExplicitWait();
             _deleteFeatureToggleButtonOnEdit.ActionClick();
             WaitHelpers.ExplicitWait();
             Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
