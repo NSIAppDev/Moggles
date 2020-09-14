@@ -170,7 +170,7 @@
 					}
 				});
 
-				return numberOfEditedEnvironments > 0 ? true : false;
+				return numberOfEditedEnvironments > 0 || this.acceptedByUserHasChanged() ? true : false;
 			}
 		},
 		created() {
@@ -178,7 +178,7 @@
 				this.initialiseModal();
 				this.rowToEdit = toggle;
 				this.initialToggle = _.cloneDeep(toggle);
-				this.getEnvironments();
+                this.getEnvironments();
 			});
 
 			Bus.$on(events.closeDeleteFeatureToggleModal, () => {
@@ -267,7 +267,10 @@
 			},
 			environmentStatusHasChanged(environment) {
 				return this.initialToggle[environment.envName] != this.rowToEdit[environment.envName];
-			},
+            },
+            acceptedByUserHasChanged() {
+                return this.initialToggle.userAccepted != this.rowToEdit.userAccepted;
+            },
 			stringIsNullOrEmpty(text) {
 				return !text || /^\s*$/.test(text);
 			},
