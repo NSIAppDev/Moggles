@@ -21,11 +21,12 @@
         <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
           <ul class="nav navbar-nav navbar-left">
             <li>
-              <div class="vertical-align">
-                <label for="app-sel" class="margin-top-8">Select Application </label>
-                <app-selection />
-                <a class="margin-left-10" @click="showEditAppModal(true)"><i id="showEditApplicationModalBtn" class="fas fa-edit fa-lg" /></a>
-              </div>
+                <div class="vertical-align">
+                    <label for="app-sel" class="margin-top-8">Select Application </label>
+                    <app-selection />
+                    <a class="margin-left-10" @click="showEditAppModal(true)"><i id="showEditApplicationModalBtn" class="fas fa-edit fa-lg" /></a>
+                    <button id="addApplicationBtn" type="button" class="margin-left-10 btn btn-outline-dark" @click="showAddAppModal()">Add Application</button>
+                </div>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right vertical-align">
@@ -34,7 +35,6 @@
               <template slot="dropdown">
                 <li><a role="button" @click="reloadCurrentApplicationToggles()">Reload Application Toggles</a></li>
                 <li><a role="button" @click="showAddFeatureToggleModal()">Add Feature Toggle</a></li>
-                <li><a role="button" @click="showAddAppModal()">Add New Application</a></li>
                 <li><a role="button" @click="showAddEnvModal()">Add New Environment</a></li>
                 <li><a role="button" @click="showAddFeatureToggleScheduleModal()">Add New Feature Toggle Schedule</a></li>
                 <li v-if="isCacheRefreshEnabled">
