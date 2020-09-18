@@ -17,6 +17,7 @@ namespace MogglesEndToEndTests.MogglesPages
         private readonly By _applicationsDropdown = By.CssSelector("#selectedApp > ul li");
         private readonly By _toolsMenuDropdown = By.CssSelector(".dropdown-menu li");
         private readonly By _statusesDropdown = By.CssSelector("tr:nth-child(2) > th:nth-child(8) > div > select");
+        private readonly By _openAddApplicationModalBtn = By.Id("showAddApplicationModalBtn");
 
         private readonly By _addFeatureToggleButton = By.Id("addFeatureToggleBtn");
         private readonly By _closeAddToggleModalBtn = By.Id("closeAddToggleModalBtn");
@@ -130,7 +131,7 @@ namespace MogglesEndToEndTests.MogglesPages
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             Thread.Sleep(2000);
-            _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "Add New Application");
+            _openAddApplicationModalBtn.ActionClick();
             _applicationNameInput.ActionSendKeys(newApplicationName);
             _firstEnvNameInput.ActionSendKeys(firstEnvName);
             _addApplicationButton.ActionClick();
