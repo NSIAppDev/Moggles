@@ -21,12 +21,15 @@
         <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
           <ul class="nav navbar-nav navbar-left">
             <li>
-                <div class="vertical-align">
-                    <label for="app-sel" class="margin-top-8">Select Application </label>
-                    <app-selection />
-                    <a class="margin-left-10" @click="showEditAppModal(true)"><i id="showEditApplicationModalBtn" class="fas fa-edit fa-lg" /></a>
-                    <button id="showAddApplicationModalBtn" type="button" class="margin-left-10 btn btn-primary" @click="showAddAppModal()">Add Application</button>
-                </div>
+              <div class="vertical-align">
+                <label for="app-sel" class="margin-top-8">Select Application </label>
+                <app-selection />
+                <a class="margin-left-10" @click="showEditAppModal(true)"><i id="showEditApplicationModalBtn" class="fas fa-edit fa-lg" /></a>
+                <button id="showAddApplicationModalBtn" type="button" class="margin-left-10 btn btn-primary"
+                        @click="showAddAppModal()">
+                  Add Application
+                </button>
+              </div>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right vertical-align">
