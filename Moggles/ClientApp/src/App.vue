@@ -25,6 +25,10 @@
                 <label for="app-sel" class="margin-top-8">Select Application </label>
                 <app-selection />
                 <a class="margin-left-10" @click="showEditAppModal(true)"><i id="showEditApplicationModalBtn" class="fas fa-edit fa-lg" /></a>
+                <button id="showAddApplicationModalBtn" type="button" class="margin-left-10 btn btn-primary"
+                        @click="showAddAppModal()">
+                  Add Application
+                </button>
               </div>
             </li>
           </ul>
@@ -34,7 +38,6 @@
               <template slot="dropdown">
                 <li><a role="button" @click="reloadCurrentApplicationToggles()">Reload Application Toggles</a></li>
                 <li><a role="button" @click="showAddFeatureToggleModal()">Add Feature Toggle</a></li>
-                <li><a role="button" @click="showAddAppModal()">Add New Application</a></li>
                 <li><a role="button" @click="showAddEnvModal()">Add New Environment</a></li>
                 <li><a role="button" @click="showAddFeatureToggleScheduleModal()">Add New Feature Toggle Schedule</a></li>
                 <li v-if="isCacheRefreshEnabled">
@@ -110,6 +113,7 @@
     import axios from 'axios'
     import { events } from './common/events';
     import AlertError from './alerts/AlertError';
+
     export default {
         components: {
             "toggles-list": TogglesList,
@@ -146,29 +150,37 @@
                     this.selectedApp = app;
                 }
             });
-            Bus.$on(events.showErrorAlertModal, args => {
+
+            Bus.$on(events.showErrorAlertModal, args => {             
                 this.error = args.error != null ? args.error : null;
                 this.customErrorMessage = args.customErrorMessage != null ? args.customErrorMessage : null;
                 this.showErrorAlert = true;
             });
+
             Bus.$on(events.showDeleteApplicationConfirmationModal, () => {
                 this.showDeleteAppConfirmation = true;
             });
+
             Bus.$on(events.closeAddFeatureToggleModal, () => {
                 this.showAddToggle = false;
             });
+
             Bus.$on(events.closeAddApplicationModal, () => {
                 this.showAddApp = false;
             });
+
             Bus.$on(events.closeAddEnvironmentModal, () => {
                 this.showAddEnv = false;
             });
+
             Bus.$on(events.closeForceCacheRefreshModal, () => {
                 this.showForceCacheRefresh = false;
             });
+
             Bus.$on(events.closeToggleSchedulerModal, () => {
                 this.showScheduler = false;
             });
+
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
             }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));

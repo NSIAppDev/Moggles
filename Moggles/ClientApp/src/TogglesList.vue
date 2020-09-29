@@ -54,17 +54,20 @@
       </template>
     </vue-good-table>
 
-    <modal v-model="showDeleteConfirmationModal" title="You are about to delete a feature toggle" :footer="false">
+    <modal v-model="showDeleteConfirmationModal" title="You are about to delete a feature toggle" :footer="false"
+           append-to-body>
       <delete-featureToggle :application="selectedApp" />
     </modal>
     <modal v-if="showSchedulerModal" v-model="showSchedulerModal" title="Edit Feature Toggle Schedule"
-           :footer="false">
+           :footer="false" append-to-body>
       <edit-toggle-schedule :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" :schedule="scheduleToEdit" />
     </modal>
-    <modal v-model="showEditModal" title="Edit Feature Flags" :footer="false">
+    <modal v-model="showEditModal" title="Edit Feature Flag" :footer="false"
+           append-to-body>
       <edit-featureToggle :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" />
     </modal>
-    <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false">
+    <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false"
+           append-to-body>
       <edit-environment :application="selectedApp" />
     </modal>
   </div>
@@ -114,7 +117,7 @@
                 return this.environmentsToRefresh.length > 0 && this.isCacheRefreshEnabled ? this.isRefreshAlertVisible : false;
             },
             getPaginationOptions() {
-                return { enabled: true, perPage: parseInt(this.getRowsPerPage()) };
+				return { enabled: true, perPage: parseInt(this.getRowsPerPage()), dropdownAllowAll: false };
             },
             environmentsNameList() {
                 return _.map(this.environments, (env) => {
@@ -201,14 +204,15 @@
                     {
                         field: 'id',
                         label: '',
-                        sortable: false,
-                        thClass: 'width-55'
+						sortable: false,
+						width: '45px'
                     },
                     {
                         field: 'toggleName',
                         label: 'Feature Toggle Name',
                         sortable: true,
-                        thClass: 'sortable',
+						thClass: 'sortable',
+						width: '200px',
                         filterOptions: {
                             enabled: true,
                             placeholder: 'Filter Toggle Name'
@@ -218,7 +222,7 @@
                         field: 'workItemIdentifier',
                         label: 'Work Item ID',
                         sortable: true,
-                        width: '140px',
+                        width: '150px',
                         thClass: 'sortable',
                         filterOptions: {
                             enabled: true,
@@ -229,7 +233,8 @@
                         field: 'notes',
                         label: 'Notes',
                         sortable: true,
-                        thClass: 'sortable',
+						thClass: 'sortable',
+						width: '300px',
                         filterOptions: {
                             enabled: true,
                             placeholder: 'Filter Notes'
@@ -249,9 +254,10 @@
                     },
                     {
                         field: 'userAccepted',
-                        label: 'Accepted by User',
+                        label: 'User Accepted',
                         type: 'boolean',
-                        sortable: false,
+						sortable: false,
+						width: '140px',
                         filterOptions: {
                             enabled: true,
                             filterDropdownItems: [
@@ -265,14 +271,16 @@
                     {
                         field: 'createdDate',
                         label: 'Created',
-                        sortable: true,
+						sortable: true,
+						width: '140px',
                         thClass: 'sortable',
                         formatFn: this.formatDate,
                     },
                     {
                         field: 'changedDate',
                         label: 'Changed',
-                        sortable: true,
+						sortable: true,
+						width: '140px',
                         thClass: 'sortable',
                         formatFn: this.formatDate,
                     },
@@ -284,12 +292,13 @@
                         field: envName,
                         label: envName,
                         type: 'boolean',
-                        sortable: false,
+						sortable: false,
+						width: '100px',
                         filterOptions: {
                             enabled: true,
                             filterDropdownItems: [
-                                { value: 'true', text: 'Active' },
-                                { value: 'false', text: 'Inactive' }
+                                { value: 'true', text: 'On' },
+                                { value: 'false', text: 'Off' }
                             ],
                             placeholder: 'All'
                         },

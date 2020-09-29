@@ -3,11 +3,11 @@ import AddEnvironment from '../src/environment/AddEnvironment.vue'
 
 
 describe('AddEnvironment.vue', () => {
-    test('is a Vue instance', () => {
+    test('is a Vue instance', ()=> {
         const wrapper = mount(AddEnvironment, {
             propsData: {
                 application: {
-                    id: 1
+                    id:1
                 }
             }
         })

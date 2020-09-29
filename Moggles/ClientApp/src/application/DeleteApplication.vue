@@ -22,6 +22,8 @@
     import { Bus } from '../common/event-bus'
     import axios from 'axios'
     import { events } from '../common/events';
+
+
     export default {
         props: {
             application: {
