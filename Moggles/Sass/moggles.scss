@@ -26,7 +26,7 @@ body {
 }
 
 .margin-left-10 {
-    margin-left: 10px;
+	margin-left: 10px;
 }
 
 th.sortable, a {
@@ -125,7 +125,10 @@ label.checkbox > .icon {
 }
 
 // override very good table default
+table.vgt-table {
+	font-size: 14px;
+}
+
 th.vgt-right-align {
 	text-align: left;
 }
-
