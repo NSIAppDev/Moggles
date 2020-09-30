@@ -15,7 +15,7 @@
 
     export default {
         data() {
-            return {
+              return {
                 applications: [],
                 selectedAppId: [],
                 selectedAppIdLocalStorageKey: 'selectedAppId'
@@ -24,8 +24,9 @@
         created() {
             this.getApplications();
 
-            Bus.$on(events.newApplicationAdded, () => {
-                this.getApplications();
+            Bus.$on(events.newApplicationAdded, applicationName => {
+                this.getApplications(applicationName);
+                this.refreshApps();
             });
 
             Bus.$on(events.applicationEdited, () => {
@@ -41,13 +42,17 @@
             });
         },
         methods: {
-            getApplications() {
+            getApplications(applicationName = '') {
                 axios.get('/api/applications')
                     .then((response) => {
                         this.applications = response.data;
-
+                        if (!applicationName === '') {
+                            let selectedApp = _.find(this.applications, (application) => application.appName === applicationName);
+                            localStorage.setItem(this.selectedAppIdLocalStorageKey, selectedApp.id);
+                        }
                         if (!this.isApplicationSelected() && this.applications.length > 0) {
                             var localStorageSelectedApp = this.getSelectedAppFromLocalStorage();
+
                             if (localStorageSelectedApp != null) {
                                 this.selectedAppId = [localStorageSelectedApp.id];
                             }
@@ -70,7 +75,7 @@
                 }
             },
             setNewApplicationSelection() {
-                let selectedApp = _.find(this.applications, (application) => application.id == this.selectedAppId[0]);
+                let selectedApp = _.find(this.applications, (application) => application.id === this.selectedAppId[0]);
                 Bus.$emit('block-ui')
                 Bus.$emit(events.applicationChanged, selectedApp);
                 localStorage.setItem(this.selectedAppIdLocalStorageKey, this.selectedAppId[0]);
@@ -81,7 +86,7 @@
                 this.getApplications();
             },
             getApplication(applicationId) {
-                return _.find(this.applications, (application) => application.id == applicationId);
+                return _.find(this.applications, (application) => application.id === applicationId);
             },
             getSelectedAppFromLocalStorage() {
                 var localStorageSelectedAppId = localStorage.getItem(this.selectedAppIdLocalStorageKey);
