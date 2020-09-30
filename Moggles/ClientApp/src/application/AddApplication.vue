@@ -99,13 +99,14 @@
                     environmentName: this.environmentName,
                     defaultToggleValue: this.defaultToggleValue
                 }).then(() => {
+                    Bus.$emit(events.newApplicationAdded, this.applicationName);
                     this.applicationName = '';
                     this.environmentName = '';
                     this.defaultToggleValue = true;
                     this.showSuccessAlert = true;
                     this.$nextTick(() => { this.$refs["appName"].focus() });
 
-                    Bus.$emit(events.newApplicationAdded);
+                    
                     setTimeout(() => {
                         this.showSuccessAlert = false;
                     }, this.alertDuration)
@@ -114,6 +115,7 @@
                 }).finally(() => {
                     Bus.$emit(events.unblockUI)
                 });
+                this.closeAddApplicationModal(); 
             },
             closeAddApplicationModal() {
                 Bus.$emit(events.closeAddApplicationModal);
