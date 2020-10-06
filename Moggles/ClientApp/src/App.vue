@@ -25,7 +25,10 @@
                     <label for="app-sel" class="margin-top-8">Select Application </label>
                     <app-selection />
                     <a class="margin-left-10" @click="showEditAppModal(true)"><i id="showEditApplicationModalBtn" class="fas fa-edit fa-lg" /></a>
-                    <button id="addApplicationBtn" class="margin-left-10 btn btn-primary" @click="showAddAppModal()">Add Application</button>
+                    <button id="showAddApplicationModalBtn" type="button" class="margin-left-10 btn btn-primary"
+                            @click="showAddAppModal()">
+                        Add Application
+                    </button>
                 </div>
             </li>
           </ul>

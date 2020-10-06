@@ -20,6 +20,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         private readonly By _addFeatureToggleButton = By.Id("addFeatureToggleBtn");
         private readonly By _closeAddToggleModalBtn = By.Id("closeAddToggleModalBtn");
+        private readonly By _addApplicationModalButton = By.Id("showAddApplicationModalBtn");
         private readonly By _addApplicationButton = By.Id("addApplicationBtn");
         private readonly By _closeAddApplicationModalBtn = By.Id("closeAddApplicationModalBtn");
         private readonly By _addEnvironmentButton = By.Id("addEnvironmentBtn");
@@ -130,7 +131,7 @@ namespace MogglesEndToEndTests.MogglesPages
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             Thread.Sleep(2000);
-            _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "Add New Application");
+            _addApplicationModalButton.ActionClick();
             _applicationNameInput.ActionSendKeys(newApplicationName);
             _firstEnvNameInput.ActionSendKeys(firstEnvName);
             _addApplicationButton.ActionClick();
