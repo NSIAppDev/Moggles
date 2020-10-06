@@ -204,14 +204,15 @@
                     {
                         field: 'id',
                         label: '',
-                        sortable: false,
-                        thClass: 'width-55'
+						sortable: false,
+						width: '45px'
                     },
                     {
                         field: 'toggleName',
                         label: 'Feature Toggle Name',
                         sortable: true,
-                        thClass: 'sortable',
+						thClass: 'sortable',
+						width: '200px',
                         filterOptions: {
                             enabled: true,
                             placeholder: 'Filter Toggle Name'
@@ -221,7 +222,7 @@
                         field: 'workItemIdentifier',
                         label: 'Work Item ID',
                         sortable: true,
-                        width: '140px',
+                        width: '150px',
                         thClass: 'sortable',
                         filterOptions: {
                             enabled: true,
@@ -232,7 +233,8 @@
                         field: 'notes',
                         label: 'Notes',
                         sortable: true,
-                        thClass: 'sortable',
+						thClass: 'sortable',
+						width: '300px',
                         filterOptions: {
                             enabled: true,
                             placeholder: 'Filter Notes'
@@ -252,9 +254,10 @@
                     },
                     {
                         field: 'userAccepted',
-                        label: 'Accepted by User',
+                        label: 'User Accepted',
                         type: 'boolean',
-                        sortable: false,
+						sortable: false,
+						width: '140px',
                         filterOptions: {
                             enabled: true,
                             filterDropdownItems: [
@@ -268,14 +271,16 @@
                     {
                         field: 'createdDate',
                         label: 'Created',
-                        sortable: true,
+						sortable: true,
+						width: '140px',
                         thClass: 'sortable',
                         formatFn: this.formatDate,
                     },
                     {
                         field: 'changedDate',
                         label: 'Changed',
-                        sortable: true,
+						sortable: true,
+						width: '140px',
                         thClass: 'sortable',
                         formatFn: this.formatDate,
                     },
@@ -287,12 +292,13 @@
                         field: envName,
                         label: envName,
                         type: 'boolean',
-                        sortable: false,
+						sortable: false,
+						width: '100px',
                         filterOptions: {
                             enabled: true,
                             filterDropdownItems: [
-                                { value: 'true', text: 'Active' },
-                                { value: 'false', text: 'Inactive' }
+                                { value: 'true', text: 'On' },
+                                { value: 'false', text: 'Off' }
                             ],
                             placeholder: 'All'
                         },
