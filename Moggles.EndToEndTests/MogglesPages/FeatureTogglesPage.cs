@@ -135,8 +135,6 @@ namespace MogglesEndToEndTests.MogglesPages
             _applicationNameInput.ActionSendKeys(newApplicationName);
             _firstEnvNameInput.ActionSendKeys(firstEnvName);
             _addApplicationButton.ActionClick();
-            WaitHelpers.ExplicitWait();
-            _closeAddApplicationModalBtn.ActionClick();
         }
 
         public void AddNewEnvironment(string newEnvironmentName)
