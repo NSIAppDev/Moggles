@@ -73,7 +73,7 @@ describe('AddApplication.vue', () => {
 		wrapper.find('button.btn-primary').trigger('click');
         await flushPromises();
 
-        expect(spy.calledWithExactly('app-added')).toBe(true);
+        expect(spy.calledWithExactly('app-added', 'App')).toBe(true);
 
 		spy.restore();
     })
