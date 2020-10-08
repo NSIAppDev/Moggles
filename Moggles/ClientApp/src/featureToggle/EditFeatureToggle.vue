@@ -103,11 +103,13 @@
     </div>
     <div class="row">
       <div class="col-xs-6">
-        <button id="deleteToggleBtnEditModal" :disabled="rowToEdit.isPermanent" type="button"
-                class="btn btn-danger"	
-                @click="openDeleteFeatureToggleConfirmationModal(rowToEdit)">
-          Delete
-        </button>
+          <div v-if="rowToEdit">
+            <button id="deleteToggleBtnEditModal" :disabled="rowToEdit.isPermanent" type="button"
+              class="btn btn-danger"
+              @click="openDeleteFeatureToggleConfirmationModal(rowToEdit)">
+              Delete
+            </button>
+          </div>
       </div>
       <div class="col-xs-6 text-right">
         <button id="cancelEditToggleBtn" type="button" class="btn btn-default"
