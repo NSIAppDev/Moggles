@@ -152,17 +152,17 @@
 		},
 		data() {
 			return {
-				rowToEdit: null,
+				rowToEdit: '',
 				initialToggle: null,
 				environments: [],
 				reasonToChange: "",
 				environmentsToRefresh: [],
 				editFeatureToggleErrors: [],
-				showDeleteConfirmationModal: false
+				showDeleteConfirmationModal: false,
 			}
 		},
 		computed: {
-			featureToggleStatusesChanged() {
+			featureToggleStatusesChanged() { 
 				let numberOfEditedEnvironments = 0;
 				_.forEach(this.environments, environment => {
 					if (this.environmentStatusHasChanged(environment)) {
