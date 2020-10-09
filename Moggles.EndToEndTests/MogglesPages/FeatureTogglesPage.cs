@@ -22,7 +22,6 @@ namespace MogglesEndToEndTests.MogglesPages
         private readonly By _addFeatureToggleButton = By.Id("addFeatureToggleBtn");
         private readonly By _closeAddToggleModalBtn = By.Id("closeAddToggleModalBtn");
         private readonly By _addApplicationButton = By.Id("addApplicationBtn");
-        private readonly By _closeAddApplicationModalBtn = By.Id("closeAddApplicationModalBtn");
         private readonly By _addEnvironmentButton = By.Id("addEnvironmentBtn");
         private readonly By _closeAddEnvironmentModalBtn = By.Id("closeAddEnvironmentModalBtn");
 
@@ -131,6 +130,7 @@ namespace MogglesEndToEndTests.MogglesPages
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             Thread.Sleep(2000);
+            WaitHelpers.WaitForElementToBeClickable(_openAddApplicationModalBtn);
             _openAddApplicationModalBtn.ActionClick();
             _applicationNameInput.ActionSendKeys(newApplicationName);
             _firstEnvNameInput.ActionSendKeys(firstEnvName);
@@ -190,7 +190,6 @@ namespace MogglesEndToEndTests.MogglesPages
                 FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_deleteFeatureToggleIcon)
                     .Click();
                 WaitHelpers.ExplicitWait();
-                _deleteFeatureToggleButton.WaitForElementToBeClickable();
                 _deleteFeatureToggleButton.ActionClick();
             }
         }
