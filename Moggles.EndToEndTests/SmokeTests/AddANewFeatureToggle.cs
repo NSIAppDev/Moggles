@@ -25,7 +25,8 @@ namespace MogglesEndToEndTests.SmokeTests
             Pages.FeatureTogglesPage.IsCreationDateCorrectlyDisplayed(Constants.FeatureToggleName).Should().BeTrue();
 
             //act
-            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName);
+            Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
+            Pages.FeatureTogglesPage.DeleteToggleOnEdit();
             
             //assert
             Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
