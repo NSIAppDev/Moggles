@@ -9,7 +9,7 @@
         </div>
         <div class="form-group">
           <div>
-            <label class="col-sm-4 control-label">Feature Toggle name</label>
+            <label class="col-sm-4 control-label">Feature Toggle Name</label>
             <div class="col-sm-7">
               <input id="editToggleNameInput" v-model="rowToEdit.toggleName" type="text"
                      class="form-control" readonly>
@@ -21,13 +21,12 @@
               <input v-model="rowToEdit.workItemIdentifier" type="text" class="form-control">
             </div>
           </div>
-          <div>
-            <label class="col-sm-4 margin-top-8 control-label">Notes</label>
-            <div class="col-sm-7 margin-top-8">
-              <input id="editNotesInput" v-model="rowToEdit.notes" type="text"
-                     class="form-control">
+            <div>
+              <label class="col-sm-4 margin-top-8 control-label">Notes</label>
+              <div class="col-sm-7 margin-top-8">
+                <textarea v-model="rowToEdit.notes" class="form-control" rows="2" />
+              </div>
             </div>
-          </div>
           <div class="col-sm-12 margin-top-8">
             <label class="col-sm-4 control-label">Is Permanent</label>
             <div class="col-sm-1 margin-top-10">
@@ -103,13 +102,13 @@
     </div>
     <div class="row">
       <div class="col-xs-6">
-          <div v-if="rowToEdit">
-            <button id="deleteToggleBtnEditModal" :disabled="rowToEdit.isPermanent" type="button"
-              class="btn btn-danger"
-              @click="openDeleteFeatureToggleConfirmationModal(rowToEdit)">
-              Delete
-            </button>
-          </div>
+        <div v-if="rowToEdit">
+          <button id="deleteToggleBtnEditModal" :disabled="rowToEdit.isPermanent" type="button"
+                  class="btn btn-danger"
+                  @click="openDeleteFeatureToggleConfirmationModal(rowToEdit)">
+            Delete
+          </button>
+        </div>
       </div>
       <div class="col-xs-6 text-right">
         <button id="cancelEditToggleBtn" type="button" class="btn btn-default"
