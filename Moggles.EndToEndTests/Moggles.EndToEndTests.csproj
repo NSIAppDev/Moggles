@@ -37,6 +37,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Moggles\Moggles.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="chromedriver.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
