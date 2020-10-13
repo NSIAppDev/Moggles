@@ -103,6 +103,7 @@ namespace MogglesEndToEndTests.MogglesPages
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             Thread.Sleep(5000);
+            WaitHelpers.WaitForElement(_selectedApplication);
             _selectedApplication.SelectFromDropdown(_applicationsDropdown, applicationName);
         }
 
@@ -190,14 +191,14 @@ namespace MogglesEndToEndTests.MogglesPages
                 FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_deleteFeatureToggleIcon)
                     .Click();
                 WaitHelpers.ExplicitWait();
-                Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
+                _deleteFeatureToggleButton.ActionClick();
             }
         }
 
         public void EditFeatureToggle(string newFeatureToggleName)
         {
             WaitHelpers.ExplicitWait();
-            Thread.Sleep(2000);
+            Thread.Sleep(5000);
             var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
             for (var i = 0; i <= rows.Count - 1; i++)
             {
