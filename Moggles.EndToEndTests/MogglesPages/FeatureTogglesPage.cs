@@ -190,7 +190,7 @@ namespace MogglesEndToEndTests.MogglesPages
                 FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_deleteFeatureToggleIcon)
                     .Click();
                 WaitHelpers.ExplicitWait();
-                _deleteFeatureToggleButton.ActionClick();
+                Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
             }
         }
 

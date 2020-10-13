@@ -18,7 +18,6 @@ namespace MogglesEndToEndTests.SmokeTests
             //act
             Browser.Goto(Constants.BaseUrl);
             Pages.FeatureTogglesPage.AddNewApplication(Constants.NewApplicationName, Constants.FirstEnvName);
-            Pages.FeatureTogglesPage.SelectApplicationByName(Constants.NewApplicationName);
             Pages.FeatureTogglesPage.ChangeApplicationName(Constants.NewApplicationName,Constants.EditedApplicationName);
 
             //assert
