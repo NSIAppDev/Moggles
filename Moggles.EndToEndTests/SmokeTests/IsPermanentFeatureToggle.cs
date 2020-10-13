@@ -18,7 +18,6 @@ namespace MogglesEndToEndTests.SmokeTests
             //act
             Browser.Goto(Constants.BaseUrl);
             Pages.FeatureTogglesPage.SelectApplicationByName(Constants.SmokeTestsApplication);
-
             Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
             Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
             Pages.FeatureTogglesPage.SetFeatureToggleAsPermanent();
