@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moggles.EndToEndTests.Helpers;
 using Moggles.EndToEndTests.TestFramework;
 using MogglesEndToEndTests.TestFramework;
 using NsTestFrameworkUI.Helpers;
@@ -35,8 +36,10 @@ namespace MogglesEndToEndTests.SmokeTests
             [TestCleanup]
             public override void After()
             {
-                Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName);
+                var FeatureToggleProperties = FeatureFlagHandler.GetFeatureToggleProperties(Constants.ApplicationId, Constants.FeatureToggleName);
+                FeatureFlagHandler.DeleteFeatureToggles(Constants.ApplicationId, FeatureToggleProperties.Id.ToString());
                 base.After();
+
             }
         }
 }

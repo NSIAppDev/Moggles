@@ -30,6 +30,18 @@ namespace MogglesEndToEndTests.SmokeTests
             
             //assert
             Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
+
+            // act
+            Pages.FeatureTogglesPage.AddFeatureToggle(Constants.NewFeatureToggleName);
+
+            // assert
+            Pages.FeatureTogglesPage.IsFeatureToggleDisplayed(Constants.NewFeatureToggleName).Should().BeTrue();
+
+            // act
+            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.NewFeatureToggleName);
+
+            //assert
+            Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
         }
 
     }

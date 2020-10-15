@@ -16,6 +16,13 @@ namespace Moggles.EndToEndTests.Helpers
             return request;
         }
 
+        public static RestRequest GetRequest(string resource, object bodyParameter, Method method)
+        {
+            var request = new RestRequest(resource, method) { RequestFormat = DataFormat.Json };
+            request.AddJsonBody(bodyParameter);
+            return request;
+        }
+
         public static RestClient GetRestClient(string url, string user = "", string password = "")
         {
             var client = new RestClient(url);
