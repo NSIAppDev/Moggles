@@ -124,6 +124,7 @@ namespace MogglesEndToEndTests.MogglesPages
             _addFeatureToggleButton.ActionClick();
             WaitHelpers.ExplicitWait();
             _closeAddToggleModalBtn.ActionClick();
+            _pageSpinner.WaitForSpinner();
         }
 
         public void AddNewApplication(string newApplicationName, string firstEnvName)
@@ -136,6 +137,7 @@ namespace MogglesEndToEndTests.MogglesPages
             _applicationNameInput.ActionSendKeys(newApplicationName);
             _firstEnvNameInput.ActionSendKeys(firstEnvName);
             _addApplicationButton.ActionClick();
+            _pageSpinner.WaitForSpinner();
         }
 
         public void AddNewEnvironment(string newEnvironmentName)
@@ -147,10 +149,12 @@ namespace MogglesEndToEndTests.MogglesPages
             _addEnvironmentButton.ActionClick();
             WaitHelpers.ExplicitWait();
             _closeAddEnvironmentModalBtn.ActionClick();
+            _pageSpinner.WaitForSpinner();
         }
 
         public bool IsFeatureToggleDisplayed(string newFeatureToggleName)
         {
+            _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
             foreach (var row in rows)
@@ -164,6 +168,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public bool IsCreationDateCorrectlyDisplayed(string newFeatureToggleName)
         {
+            _pageSpinner.WaitForSpinner();
             var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
             foreach (var row in rows)
             {
@@ -181,6 +186,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void DeleteFeatureToggle(string newFeatureToggleName)
         {
+            _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
             for (var i = 0; i <= rows.Count - 1; i++)
@@ -192,11 +198,13 @@ namespace MogglesEndToEndTests.MogglesPages
                     .Click();
                 WaitHelpers.ExplicitWait();
                 _deleteFeatureToggleButton.ActionClick();
+                _pageSpinner.WaitForSpinner();
             }
         }
 
         public void EditFeatureToggle(string newFeatureToggleName)
         {
+            _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             Thread.Sleep(5000);
             var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
@@ -209,6 +217,7 @@ namespace MogglesEndToEndTests.MogglesPages
                         .Click();
                 }
                 WaitHelpers.ExplicitWait();
+                _pageSpinner.WaitForSpinner();
             }
         }
 
@@ -217,6 +226,7 @@ namespace MogglesEndToEndTests.MogglesPages
             WaitHelpers.ExplicitWait();
             _isPermanentCheckbox.ActionClick();
             _saveButton.ActionClick();
+            _pageSpinner.WaitForSpinner();
         }
 
         public void SetFeatureToggleAsAcceptedByUser()
@@ -245,6 +255,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void DeleteApplication(string expectedApplicationName)
         {
+            _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             if (expectedApplicationName != GetSelectedApplicationName()) return;
             _editApplicationIcon.ActionClick();
@@ -255,6 +266,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public bool IsApplicationListed(string applicationName)
         {
+            _pageSpinner.WaitForSpinner();
             var dropdownElements = Browser.WebDriver.FindElements(By.CssSelector("#selectedApp ul li"));
             return dropdownElements.Any(x => x.Text.Equals(applicationName));
         }
@@ -279,12 +291,15 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public bool IsEnvironmentNameDisplayed(string envName)
         {
+            _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             return Utils.GetHeaderSpecifiedByIndex(FeatureTogglesGrid, 3).Text.Equals(envName);
         }
 
         public void DeleteEnvironment(string editedEnvName)
         {
+            _pageSpinner.WaitForSpinner();
+            WaitHelpers.ExplicitWait();
             EditEnvironment(editedEnvName);
             _deleteEnvironmentButton.ActionClick();
             _confirmDeleteEnvironmentButton.ActionClick();
@@ -320,6 +335,7 @@ namespace MogglesEndToEndTests.MogglesPages
 
         public void DeleteToggleOnEdit()
         {
+            _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             _deleteFeatureToggleButtonOnEdit.ActionClick();
             WaitHelpers.ExplicitWait();
