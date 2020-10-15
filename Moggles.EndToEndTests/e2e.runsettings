@@ -4,8 +4,8 @@
   <!-- Parameters used by tests at runtime -->
   <TestRunParameters>
     <Parameter name="webAppUrl" value="http://moggles.northernsafety-dev.com/" />
-    <Parameter name="user" value ="SmokeTest_MogglesAdm"></Parameter>
-    <Parameter name="password" value="K7fgDAXv4HdX"></Parameter>
+    <Parameter name="user" value =""></Parameter>
+    <Parameter name="password" value=""></Parameter>
   </TestRunParameters>
 
   </RunSettings>
