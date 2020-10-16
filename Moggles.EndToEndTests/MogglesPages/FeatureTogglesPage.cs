@@ -194,6 +194,7 @@ namespace MogglesEndToEndTests.MogglesPages
                 var cells = rows[i].FindElements(By.TagName("td"));
                 if (!cells[1].Text.Contains(newFeatureToggleName)) continue;
                 WaitHelpers.ExplicitWait();
+                WaitHelpers.WaitUntilElementIsVisible(_deleteFeatureToggleIcon);
                 FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_deleteFeatureToggleIcon)
                     .Click();
                 WaitHelpers.ExplicitWait();
@@ -337,6 +338,7 @@ namespace MogglesEndToEndTests.MogglesPages
         {
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
+            WaitHelpers.WaitUntilElementIsVisible(_deleteFeatureToggleButtonOnEdit);
             _deleteFeatureToggleButtonOnEdit.ActionClick();
             WaitHelpers.ExplicitWait();
             Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
