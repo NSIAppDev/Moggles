@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moggles.EndToEndTests.Helpers;
 using Moggles.EndToEndTests.TestFramework;
 using MogglesEndToEndTests.TestFramework;
 using NsTestFrameworkUI.Helpers;
@@ -35,7 +36,8 @@ namespace MogglesEndToEndTests.SmokeTests
         [TestCleanup]
         public override void After()
         {
-            Pages.FeatureTogglesPage.DeleteApplication(Constants.NewApplicationName);
+            var applicationProperties = FeatureFlagHandler.GetApplicationProperties(Constants.NewApplicationName);
+            FeatureFlagHandler.DeleteApplication(applicationProperties.Id.ToString());
             base.After();
         }
     }

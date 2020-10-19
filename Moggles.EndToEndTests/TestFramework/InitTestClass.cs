@@ -13,9 +13,15 @@ namespace Moggles.EndToEndTests.TestFramework
                 return;
 
             var appUrl = context.Properties["webAppUrl"]?.ToString();
+            var user = context.Properties["user"]?.ToString();
+            var password = context.Properties["password"]?.ToString();
 
-            if (!string.IsNullOrEmpty(appUrl))
-                Constants.BaseUrl = appUrl;
+            if (!string.IsNullOrEmpty(appUrl) && !string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(password))
+            {
+                Constants.BaseUrl = "https://" + user + ":" + password + "@" + appUrl;
+                Constants.MogglesUser = user;
+                Constants.MogglesPassword = password;
+            }
         }
 
         [TestMethod]
