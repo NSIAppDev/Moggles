@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MogglesEndToEndTests.TestFramework;
 
 namespace Moggles.EndToEndTests.TestFramework
 {
@@ -16,18 +15,10 @@ namespace Moggles.EndToEndTests.TestFramework
             var user = context.Properties["user"]?.ToString();
             var password = context.Properties["password"]?.ToString();
 
-            if (!string.IsNullOrEmpty(appUrl) && !string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(password))
-            {
-                Constants.BaseUrl = "https://" + user + ":" + password + "@" + appUrl;
-                Constants.MogglesUser = user;
-                Constants.MogglesPassword = password;
-            }
-        }
-
-        [TestMethod]
-        public void WramupTest()
-        {
-
+            if (string.IsNullOrEmpty(appUrl) || string.IsNullOrEmpty(user) || string.IsNullOrEmpty(password)) return;
+            Constants.BaseUrl = "https://" + user + ":" + password + "@" + appUrl;
+            Constants.MogglesUser = user;
+            Constants.MogglesPassword = password;
         }
     }
 }

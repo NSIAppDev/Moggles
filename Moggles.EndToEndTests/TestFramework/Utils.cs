@@ -1,9 +1,8 @@
-﻿using NsTestFrameworkUI.Helpers;
+﻿using System;
+using NsTestFrameworkUI.Helpers;
 using OpenQA.Selenium;
-using System;
-using System.Collections.ObjectModel;
 
-namespace MogglesEndToEndTests.TestFramework
+namespace Moggles.EndToEndTests.TestFramework
 {
     public static class Utils
     {             
