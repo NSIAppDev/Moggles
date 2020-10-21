@@ -2,10 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.Helpers;
 using Moggles.EndToEndTests.TestFramework;
-using MogglesEndToEndTests.TestFramework;
 using NsTestFrameworkUI.Helpers;
 
-namespace MogglesEndToEndTests.SmokeTests
+namespace Moggles.EndToEndTests.SmokeTests
 {
     [TestClass]
     public class EditAndDeleteEnvironment : BaseTest
@@ -17,7 +16,7 @@ namespace MogglesEndToEndTests.SmokeTests
         public void EditAndDeleteEnvironment_TheEnvironmentIsUpdatedAndAfterThatDeleted()
         {
             //act
-            Browser.Goto(Constants.BaseUrl);
+            Pages.FeatureTogglesPage.Navigate();
             Pages.FeatureTogglesPage.AddNewApplication(Constants.NewApplicationName, Constants.FirstEnvName);
             Pages.FeatureTogglesPage.AddNewEnvironment(Constants.SecondEnvName);
             Pages.FeatureTogglesPage.EditEnvironment(Constants.SecondEnvName);

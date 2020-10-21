@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moggles.EndToEndTests.MogglesPages;
 using Moggles.EndToEndTests.TestFramework;
-using MogglesEndToEndTests.TestFramework;
 using NsTestFrameworkUI.Helpers;
 
-namespace MogglesEndToEndTests.SmokeTests
+namespace Moggles.EndToEndTests.SmokeTests
 {
     [TestClass]
     public class EditAndDeleteApplication : BaseTest
@@ -16,7 +16,7 @@ namespace MogglesEndToEndTests.SmokeTests
         public void EditAndDeleteApplication_TheApplicationIsUpdatedAndAfterThatDeleted()
         {
             //act
-            Browser.Goto(Constants.BaseUrl);
+            Pages.FeatureTogglesPage.Navigate();
             Pages.FeatureTogglesPage.AddNewApplication(Constants.NewApplicationName, Constants.FirstEnvName);
             Pages.FeatureTogglesPage.ChangeApplicationName(Constants.NewApplicationName,Constants.EditedApplicationName);
 

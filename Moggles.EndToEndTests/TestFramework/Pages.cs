@@ -1,6 +1,6 @@
-﻿using MogglesEndToEndTests.MogglesPages;
+﻿using Moggles.EndToEndTests.MogglesPages;
 
-namespace MogglesEndToEndTests.TestFramework
+namespace Moggles.EndToEndTests.TestFramework
 {
     public static class Pages
     {

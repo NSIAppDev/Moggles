@@ -1,11 +1,11 @@
 ﻿using Moggles.Domain;
 using Moggles.Models;
-using MogglesEndToEndTests.TestFramework;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Moggles.EndToEndTests.TestFramework;
 
 namespace Moggles.EndToEndTests.Helpers
 {

@@ -2,10 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.Helpers;
 using Moggles.EndToEndTests.TestFramework;
-using MogglesEndToEndTests.TestFramework;
 using NsTestFrameworkUI.Helpers;
 
-namespace MogglesEndToEndTests.SmokeTests
+namespace Moggles.EndToEndTests.SmokeTests
 {
         [TestClass]
         public class IsAcceptedByUserFeatureToggle : BaseTest
@@ -17,7 +16,7 @@ namespace MogglesEndToEndTests.SmokeTests
             public void EditAFeatureToggleToBeAcceptedByUser()
             {
             //act
-                Browser.Goto(Constants.BaseUrl);
+                Pages.FeatureTogglesPage.Navigate();
                 Pages.FeatureTogglesPage.SelectApplicationByName(Constants.SmokeTestsApplication);
                 Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
                 Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
@@ -36,8 +35,8 @@ namespace MogglesEndToEndTests.SmokeTests
             [TestCleanup]
             public override void After()
             {
-                var FeatureToggleProperties = FeatureFlagHandler.GetFeatureToggleProperties(Constants.ApplicationId, Constants.FeatureToggleName);
-                FeatureFlagHandler.DeleteFeatureToggles(Constants.ApplicationId, FeatureToggleProperties.Id.ToString());
+                var featureToggleProperties = FeatureFlagHandler.GetFeatureToggleProperties(Constants.ApplicationId, Constants.FeatureToggleName);
+                FeatureFlagHandler.DeleteFeatureToggles(Constants.ApplicationId, featureToggleProperties.Id.ToString());
                 base.After();
 
             }

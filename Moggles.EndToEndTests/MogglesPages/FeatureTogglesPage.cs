@@ -1,15 +1,13 @@
-﻿using MogglesEndToEndTests.TestFramework;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using Moggles.EndToEndTests.TestFramework;
 using NsTestFrameworkUI.Helpers;
 using NsTestFrameworkUI.KendoHelpers;
 using NsTestFrameworkUI.Pages;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
-using System;
-using System.Linq;
-using System.Threading;
 
-
-namespace MogglesEndToEndTests.MogglesPages
+namespace Moggles.EndToEndTests.MogglesPages
 {
     public class FeatureTogglesPage
     {
@@ -72,8 +70,16 @@ namespace MogglesEndToEndTests.MogglesPages
         private readonly By _toolsButton = By.CssSelector("li.dropdown");
         private readonly By _selectedAppName = By.CssSelector("#app-sel  div  div  div:nth-child(1)");
         private readonly By _pageSpinner = By.CssSelector(".fa-spinner");
+     
         public IWebElement FeatureTogglesGrid => Browser.WebDriver.FindElement(By.Id("toggleGrid"));
         #endregion
+
+        public void Navigate()
+        {
+            Browser.Goto(Constants.BaseUrl);
+            if (!_addApplicationButton.IsElementPresent())
+                Browser.Goto(Constants.BaseUrl);
+        }
 
         public bool IsGridEmpty() => _noFeatureToggleDisplayedText.IsElementPresent();
         public bool IsDevEnvironmentCheckboxChecked()

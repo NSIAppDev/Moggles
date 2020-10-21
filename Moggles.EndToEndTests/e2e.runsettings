@@ -3,9 +3,9 @@
 
   <!-- Parameters used by tests at runtime -->
   <TestRunParameters>
-    <Parameter name="webAppUrl" value="http://moggles.northernsafety-dev.com/" />
-    <Parameter name="user" value ="test"></Parameter>
-    <Parameter name="password" value="test"></Parameter>
+    <Parameter name="webAppUrl" value="moggles.northernsafety-dev.com/" />
+    <Parameter name="user" value ="EnterUserHere" />
+    <Parameter name="password" value ="EnterPasswordHere"></Parameter>
   </TestRunParameters>
 
   </RunSettings>

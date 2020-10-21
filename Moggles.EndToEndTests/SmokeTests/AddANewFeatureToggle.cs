@@ -1,10 +1,9 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.TestFramework;
-using MogglesEndToEndTests.TestFramework;
 using NsTestFrameworkUI.Helpers;
 
-namespace MogglesEndToEndTests.SmokeTests
+namespace Moggles.EndToEndTests.SmokeTests
 {
     [TestClass]
     public class AddAndDeleteNewFeatureToggle : BaseTest
@@ -16,7 +15,7 @@ namespace MogglesEndToEndTests.SmokeTests
         public void AddAndDeleteANewFeatureToggle_TheFeatureToggleIsAddedAndDeleted()
         {
             //act
-            Browser.Goto(Constants.BaseUrl);
+            Pages.FeatureTogglesPage.Navigate();
             Pages.FeatureTogglesPage.SelectApplicationByName(Constants.SmokeTestsApplication);
             Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
 
