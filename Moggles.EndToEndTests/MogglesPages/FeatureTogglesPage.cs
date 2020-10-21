@@ -34,7 +34,6 @@ namespace Moggles.EndToEndTests.MogglesPages
         private readonly By _saveButton = By.Id("saveEditToggleBtn");
 
         private readonly By _editFeatureToggleIcon = By.CssSelector("#toggleGrid span > a:nth-child(1) > i");
-        private readonly By _cancelEditToggleButton = By.Id("cancelEditToggleBtn");
         private readonly By _deleteFeatureToggleButtonOnEdit = By.Id("deleteToggleBtnEditModal");
         private readonly By _deleteFeatureToggleButton = By.Id("deleteToggleBtn");
 
@@ -109,14 +108,14 @@ namespace Moggles.EndToEndTests.MogglesPages
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             Thread.Sleep(5000);
-            WaitHelpers.WaitForElement(_selectedApplication);
+            _selectedApplication.WaitForElement();
             _selectedApplication.SelectFromDropdown(_applicationsDropdown, applicationName);
         }
 
         public void FilterAcceptedByUserColumn(string status)
         {
             _statusesDropdown.WaitForElementToBeClickable();
-            PageHelpers.SelectOptionFromDropdown(_statusesDropdown, status);
+            _statusesDropdown.SelectOptionFromDropdown(status);
         }
 
         public void AddFeatureToggle(string newFeatureToggleName)
@@ -138,7 +137,7 @@ namespace Moggles.EndToEndTests.MogglesPages
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             Thread.Sleep(2000);
-            WaitHelpers.WaitForElementToBeClickable(_openAddApplicationModalBtn);
+            _openAddApplicationModalBtn.WaitForElementToBeClickable();
             _openAddApplicationModalBtn.ActionClick();
             _applicationNameInput.ActionSendKeys(newApplicationName);
             _firstEnvNameInput.ActionSendKeys(firstEnvName);
@@ -200,7 +199,7 @@ namespace Moggles.EndToEndTests.MogglesPages
                 var cells = rows[i].FindElements(By.TagName("td"));
                 if (!cells[1].Text.Contains(newFeatureToggleName)) continue;
                 WaitHelpers.ExplicitWait();
-                WaitHelpers.WaitUntilElementIsVisible(_deleteFeatureToggleIcon);
+                _deleteFeatureToggleIcon.WaitUntilElementIsVisible();
                 FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_deleteFeatureToggleIcon)
                     .Click();
                 WaitHelpers.ExplicitWait();
@@ -246,7 +245,7 @@ namespace Moggles.EndToEndTests.MogglesPages
         {
             WaitHelpers.ExplicitWait();
             _filterByACriteria.ActionSendKeys(Constants.FeatureToggleName);
-            return PageHelpers.IsElementPresent(_isPermanentFlag);
+            return _isPermanentFlag.IsElementPresent();
         }
 
         public void ChangeApplicationName(string currentApplicationName, string editedApplicationName)
@@ -281,7 +280,7 @@ namespace Moggles.EndToEndTests.MogglesPages
         public void EditEnvironment(string environmentName)
         {
             WaitHelpers.ExplicitWait();
-            var element = Utils.GetHeaderSpecifiedByIndex(FeatureTogglesGrid, 3);
+            var element = FeatureTogglesGrid.GetHeaderSpecifiedByIndex(3);
             WaitHelpers.ExplicitWait();
             if (element.Text.Equals(environmentName))
             {
@@ -300,7 +299,7 @@ namespace Moggles.EndToEndTests.MogglesPages
         {
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
-            return Utils.GetHeaderSpecifiedByIndex(FeatureTogglesGrid, 3).Text.Equals(envName);
+            return FeatureTogglesGrid.GetHeaderSpecifiedByIndex(3).Text.Equals(envName);
         }
 
         public void DeleteEnvironment(string editedEnvName)
@@ -322,12 +321,6 @@ namespace Moggles.EndToEndTests.MogglesPages
             return Utils.IsLastUpdatedDateCorrectlyDisplayed(_qaLastUpdatedDate);
         }
 
-        public void CloseEditFeatureFlagsModal()
-        {
-            WaitHelpers.ExplicitWait();
-            _cancelEditToggleButton.ActionClick();
-        }
-
         public void UpdateDevEnvironment()
         {
             Browser.WebDriver.FindElement(_devCheckbox).Click();
@@ -344,7 +337,7 @@ namespace Moggles.EndToEndTests.MogglesPages
         {
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
-            WaitHelpers.WaitUntilElementIsVisible(_deleteFeatureToggleButtonOnEdit);
+            _deleteFeatureToggleButtonOnEdit.WaitUntilElementIsVisible();
             _deleteFeatureToggleButtonOnEdit.ActionClick();
             WaitHelpers.ExplicitWait();
             Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();

@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.TestFramework;
-using NsTestFrameworkUI.Helpers;
 
 namespace Moggles.EndToEndTests.SmokeTests
 {

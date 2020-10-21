@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.Helpers;
 using Moggles.EndToEndTests.TestFramework;
 using Moggles.Models;
-using NsTestFrameworkUI.Helpers;
 
 namespace Moggles.EndToEndTests.SmokeTests
 {
