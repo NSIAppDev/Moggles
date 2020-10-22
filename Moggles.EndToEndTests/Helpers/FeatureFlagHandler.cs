@@ -12,7 +12,7 @@ namespace Moggles.EndToEndTests.Helpers
     public static class FeatureFlagHandler
     {
         private static RestClient Client => RequestHelper.GetRestClient(Constants.BaseUrl, Constants.MogglesUser, Constants.MogglesPassword);
-        public static string SmokeTestsApplicationProperty => FeatureFlagHandler.GetApplicationProperties(Constants.SmokeTestsApplication)?.Id.ToString();
+        public static string SmokeTestsApplicationId => FeatureFlagHandler.GetApplicationProperties(Constants.SmokeTestsApplication)?.Id.ToString();
 
         public static IRestResponse GetApplications()
         {

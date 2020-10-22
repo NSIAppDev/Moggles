@@ -29,8 +29,8 @@ namespace Moggles.EndToEndTests.SmokeTests
         [TestCleanup]
         public override void After()
         {
-            var featureToggleProperties = FeatureFlagHandler.GetFeatureToggleProperties(FeatureFlagHandler.SmokeTestsApplicationProperty, Constants.FeatureToggleName);
-            FeatureFlagHandler.DeleteFeatureToggles(FeatureFlagHandler.SmokeTestsApplicationProperty, featureToggleProperties.Id.ToString());
+            var featureToggleProperties = FeatureFlagHandler.GetFeatureToggleProperties(FeatureFlagHandler.SmokeTestsApplicationId, Constants.FeatureToggleName);
+            FeatureFlagHandler.DeleteFeatureToggles(FeatureFlagHandler.SmokeTestsApplicationId, featureToggleProperties.Id.ToString());
             base.After();
         }
     }
