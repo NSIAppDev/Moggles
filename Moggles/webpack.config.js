@@ -1,7 +1,7 @@
 ﻿const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
 const bundleOutputDir = './wwwroot/dist';
 
@@ -32,12 +32,15 @@ module.exports = (env) => {
     ];
 
     let minimizerUglify =
-        new UglifyJsPlugin({
-            sourceMap: true,
-            uglifyOptions: {
-                warnings: false
+        new TerserPlugin({
+            test: isDevBuild ? /vendor.js$/i : /\.js(\?.*)?$/i,
+            sourceMap: false,
+            terserOptions: {
+                compress: {
+                    inline: false
+                }
             }
-        });
+        })
 
     return {
         mode: isDevBuild ? 'development' : "production",
