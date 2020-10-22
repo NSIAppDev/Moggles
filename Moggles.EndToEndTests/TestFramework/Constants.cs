@@ -16,7 +16,5 @@
 
         public static string MogglesUser;
         public static string MogglesPassword;
-
-        public const string ApplicationId = "1e6ba677-2af3-446d-b747-476542fca042";
     }
 }
