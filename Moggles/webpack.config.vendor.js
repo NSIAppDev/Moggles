@@ -1,7 +1,7 @@
 ﻿const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
 const libs = require('./package.json');
 
@@ -40,7 +40,15 @@ module.exports = (env) => {
             library: '[name]_[hash]'
         },
         optimization: isProdBuild ? {
-            minimizer: [new UglifyJsPlugin()]
+            minimizer: [new TerserPlugin({
+                test: isDevBuild ? /vendor.js$/i : /\.js(\?.*)?$/i,
+                sourceMap: false,
+                terserOptions: {
+                    compress: {
+                        inline: false
+                    }
+                }
+            })]
         } : undefined,
         plugins: [
             new webpack.DefinePlugin({
