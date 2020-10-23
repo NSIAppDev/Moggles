@@ -7,13 +7,11 @@ namespace Moggles
     public class AuthorizationPolicyConvention : IApplicationModelConvention
     {
         private readonly string _defaultPolicy;
-        private readonly string _apiPolicy;
         private readonly bool _useJwt;
 
-        public AuthorizationPolicyConvention(string defaultPolicy, string apiPolicy, bool useJwt)
+        public AuthorizationPolicyConvention(string defaultPolicy, bool useJwt)
         {
             _defaultPolicy = defaultPolicy;
-            _apiPolicy = apiPolicy;
             _useJwt = useJwt;
         }
 
