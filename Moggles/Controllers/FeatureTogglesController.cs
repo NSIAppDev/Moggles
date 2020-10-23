@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Moggles.Controllers
 {
-    [Authorize(Policy = "OnlyAdmins")]
     [Produces("application/json")]
     [Route("api/FeatureToggles")]
     public class FeatureTogglesController : Controller
@@ -19,7 +18,6 @@ namespace Moggles.Controllers
         private readonly IRepository<Application> _applicationsRepository;
         private readonly IRepository<ToggleSchedule> _toggleScheduleRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
 
         public FeatureTogglesController(IRepository<Application> applicationsRepository, IHttpContextAccessor httpContextAccessor, IRepository<ToggleSchedule> toggleScheduleRepository)
         {
@@ -224,7 +222,7 @@ namespace Moggles.Controllers
             {
                 fts.RemoveEnvironment(environmentModel.EnvName);
                 await _toggleScheduleRepository.UpdateAsync(fts);
-                if (fts.Environments.Count() == 0)
+                if (fts.Environments.Count == 0)
                 {
                     await _toggleScheduleRepository.DeleteAsync(fts);
                 }
@@ -282,7 +280,7 @@ namespace Moggles.Controllers
             return apps.FirstOrDefault(a => string.Compare(a.AppName, applicationName, StringComparison.OrdinalIgnoreCase) == 0);
         }
 
-        #region public API
+        #region public API - a new controller is created this should be deleted when moggles client starts using it
 
         [HttpGet]
         [Route("getApplicationFeatureToggles")]
