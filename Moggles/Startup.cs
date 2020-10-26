@@ -71,7 +71,7 @@ namespace Moggles
 
             services.AddMvc(options =>
             {
-                options.Conventions.Add(new AuthorizationPolicyConvention("OnlyAdmins", UseJwt));
+                options.Conventions.Add(new AuthorizationPolicyConvention("OnlyAdmins", UseJwt, JwtBearerDefaults.AuthenticationScheme));
             });
         }
 
