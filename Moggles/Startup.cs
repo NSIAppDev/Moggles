@@ -57,7 +57,7 @@ namespace Moggles
 
             ConfigureDatabaseServices(services);
 
-            if (bool.TryParse(Configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
+            if (bool.TryParse(Configuration["Messaging:UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
             {
                 ConfigureMassTransitAndMessageBus(services);
             }
@@ -71,13 +71,13 @@ namespace Moggles
 
             services.AddMvc(options =>
             {
-                options.Conventions.Add(new AuthorizationPolicyConvention("OnlyAdmins", UseJwt, JwtBearerDefaults.AuthenticationScheme));
+                options.Conventions.Add(new AuthorizationPolicyConvention("OnlyAdmins", Configuration.UseJwt(), JwtBearerDefaults.AuthenticationScheme));
             });
         }
 
         public virtual void ConfigureAuthServices(IServiceCollection services)
         {
-            var admins = Configuration.GetSection("CustomRoles")["Admins"];
+            var admins = Configuration["CustomRoles:Admins"];
 
             services.AddAuthentication(IISDefaults.AuthenticationScheme);
 
@@ -89,11 +89,11 @@ namespace Moggles
             });
         }
 
-        private bool UseJwt => !string.IsNullOrEmpty(Configuration.GetSection("Jwt")["TokenSigningKey"]);
 
         private void RegisterJwtAuthentication(IServiceCollection services)
         {
-            var tokenSigningKey = Configuration.GetSection("Jwt")["TokenSigningKey"];
+            var configKey = Configuration.UseAkv() ? "MogglesTokenSigningKey" : "Jwt:MogglesTokenSigningKey";
+            var tokenSigningKey = Configuration[configKey];
 
             if (string.IsNullOrEmpty(tokenSigningKey))
                 return;
@@ -178,10 +178,10 @@ namespace Moggles
         {
             return Bus.Factory.CreateUsingRabbitMq(sbc =>
             {
-                var host = sbc.Host(new Uri(Configuration.GetSection("Messaging")["Url"]), h =>
+                var host = sbc.Host(new Uri(Configuration["Messaging:Url"]), h =>
                 {
-                    h.Username(Configuration.GetSection("Messaging")["Username"]);
-                    h.Password(Configuration.GetSection("Messaging")["Password"]);
+                    h.Username(Configuration["Messaging:Username"]);
+                    h.Password(Configuration["Messaging:Password"]);
                 });
 
                 sbc.UseRetry(retryCfg =>
@@ -191,7 +191,7 @@ namespace Moggles
                     retryCfg.Interval(10, TimeSpan.FromMinutes(1));
                 });
 
-                sbc.ReceiveEndpoint(host, Configuration.GetSection("Messaging")["QueueName"], e =>
+                sbc.ReceiveEndpoint(host, Configuration["Messaging:QueueName"], e =>
                 {
                     e.Consumer<FeatureToggleDeployStatusConsumer>(serviceProvider);
                     e.PrefetchCount = 1;
