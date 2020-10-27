@@ -5,7 +5,6 @@ namespace Moggles
     public static class ConfigurationExtensions
     {
         public static bool UseJwt(this IConfiguration config) =>
-            UseAkv(config) &&
             !string.IsNullOrEmpty(GetTokenSigningKey(config));
 
         public static bool UseAkv(this IConfiguration config) =>
