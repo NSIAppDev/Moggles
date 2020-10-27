@@ -92,8 +92,7 @@ namespace Moggles
 
         private void RegisterJwtAuthentication(IServiceCollection services)
         {
-            var configKey = Configuration.UseAkv() ? "MogglesTokenSigningKey" : "Jwt:MogglesTokenSigningKey";
-            var tokenSigningKey = Configuration[configKey];
+            var tokenSigningKey = Configuration["MogglesTokenSigningKey"];
 
             if (string.IsNullOrEmpty(tokenSigningKey))
                 return;
