@@ -92,7 +92,7 @@ namespace Moggles
 
         private void RegisterJwtAuthentication(IServiceCollection services)
         {
-            var tokenSigningKey = Configuration["MogglesTokenSigningKey"];
+            var tokenSigningKey = Configuration.GetTokenSigningKey();
 
             if (string.IsNullOrEmpty(tokenSigningKey))
                 return;
