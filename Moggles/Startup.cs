@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using GreenPipes;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,9 @@ using Moggles.Data.NoDb;
 using NoDb;
 using Moggles.Domain;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.SpaServices.Webpack;
+using Microsoft.IdentityModel.Tokens;
 using Moggles.Hubs;
 
 namespace Moggles
@@ -33,7 +36,6 @@ namespace Moggles
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllersWithViews();
 
             ConfigureAuthServices(services);
@@ -55,7 +57,7 @@ namespace Moggles
 
             ConfigureDatabaseServices(services);
 
-            if (bool.TryParse(Configuration.GetSection("Messaging")["UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
+            if (bool.TryParse(Configuration["Messaging:UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
             {
                 ConfigureMassTransitAndMessageBus(services);
             }
@@ -66,20 +68,54 @@ namespace Moggles
             services.AddScoped<IRepository<ToggleSchedule>, ToggleSchedulesRepository>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHostedService<ScheduledFeatureTogglesService>();
+
+            services.AddMvc(options =>
+            {
+                options.Conventions.Add(new AuthorizationPolicyConvention("OnlyAdmins", Configuration.UseJwt(), JwtBearerDefaults.AuthenticationScheme));
+            });
+        }
+
+        public virtual void ConfigureAuthServices(IServiceCollection services)
+        {
+            var admins = Configuration["CustomRoles:Admins"];
+
+            services.AddAuthentication(IISDefaults.AuthenticationScheme);
+
+            RegisterJwtAuthentication(services);
+            
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("OnlyAdmins", policy => policy.RequireRole(admins));
+            });
+        }
+
+
+        private void RegisterJwtAuthentication(IServiceCollection services)
+        {
+            var tokenSigningKey = Configuration.GetTokenSigningKey();
+
+            if (string.IsNullOrEmpty(tokenSigningKey))
+                return;
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(o =>
+                {
+                    o.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSigningKey))
+                    };
+                });
         }
 
         public virtual void ConfigureDatabaseServices(IServiceCollection services)
         {
             services.AddDbContext<TogglesContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("FeatureTogglesConnection")));
-        }
-
-        public virtual void ConfigureAuthServices(IServiceCollection services)
-        {
-            var admins = Configuration.GetSection("CustomRoles")["Admins"];
-
-            services.AddAuthentication(IISDefaults.AuthenticationScheme);
-            services.AddAuthorization(options => { options.AddPolicy("OnlyAdmins", policy => policy.RequireRole(admins)); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -122,9 +158,7 @@ namespace Moggles
                 });
                 
             });
-
         }
-        
 
         private void ConfigureMassTransitAndMessageBus(IServiceCollection services)
         {
@@ -143,10 +177,10 @@ namespace Moggles
         {
             return Bus.Factory.CreateUsingRabbitMq(sbc =>
             {
-                var host = sbc.Host(new Uri(Configuration.GetSection("Messaging")["Url"]), h =>
+                var host = sbc.Host(new Uri(Configuration["Messaging:Url"]), h =>
                 {
-                    h.Username(Configuration.GetSection("Messaging")["Username"]);
-                    h.Password(Configuration.GetSection("Messaging")["Password"]);
+                    h.Username(Configuration["Messaging:Username"]);
+                    h.Password(Configuration["Messaging:Password"]);
                 });
 
                 sbc.UseRetry(retryCfg =>
@@ -156,7 +190,7 @@ namespace Moggles
                     retryCfg.Interval(10, TimeSpan.FromMinutes(1));
                 });
 
-                sbc.ReceiveEndpoint(host, Configuration.GetSection("Messaging")["QueueName"], e =>
+                sbc.ReceiveEndpoint(host, Configuration["Messaging:QueueName"], e =>
                 {
                     e.Consumer<FeatureToggleDeployStatusConsumer>(serviceProvider);
                     e.PrefetchCount = 1;

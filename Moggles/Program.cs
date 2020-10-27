@@ -8,7 +8,7 @@ namespace Moggles
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            CreateHostBuilder(args).ConfigureAppConfiguration((context, config) => AzureKeyVault.Configure(config)).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

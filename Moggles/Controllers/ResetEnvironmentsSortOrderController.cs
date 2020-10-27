@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Moggles.Domain;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Moggles.Controllers
 {
-    [Authorize(Policy = "OnlyAdmins")]
     [Produces("application/json")]
     [Route("api/ResetEnvironmentsSortOrder")]
     public class ResetEnvironmentsSortOrderController :Controller

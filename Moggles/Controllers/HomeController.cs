@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Moggles.Models;
 using System.Diagnostics;
 
 namespace Moggles.Controllers
 {
-    [Authorize(Policy = "OnlyAdmins")]
     public class HomeController : Controller
     {
        
