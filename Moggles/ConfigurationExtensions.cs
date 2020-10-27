@@ -4,8 +4,9 @@ namespace Moggles
 {
     public static class ConfigurationExtensions
     {
-        public static bool UseJwt(this IConfiguration config) => UseAkv(config) ||
-            !string.IsNullOrEmpty(config["MogglesTokenSigningKey"]);
+        public static bool UseJwt(this IConfiguration config) =>
+            UseAkv(config) &&
+            !string.IsNullOrEmpty(GetTokenSigningKey(config));
 
         public static bool UseAkv(this IConfiguration config) =>
             !(string.IsNullOrEmpty(config["Security:AzureADCertThumbprint"])
