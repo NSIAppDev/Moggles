@@ -1,9 +1,10 @@
 ﻿<template>
   <div id="app-sel">
     <multi-select id="selectedApp" ref="appSelection" v-model="selectedAppId"
-                  :limit="1"
+                  :limit="1" filterable
                   :options="applications" :value-key="'id'" :label-key="'appName'"
-                  :selected-icon="'fas fa-check'" class="padding-left-10" @change="changeApp" />
+                  :selected-icon="'fas fa-check'" class="padding-left-10 uiv-multi-select" append-to-body
+                  @change="changeApp" />
   </div>
 </template>
 

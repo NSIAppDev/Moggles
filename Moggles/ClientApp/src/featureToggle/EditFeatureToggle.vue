@@ -21,12 +21,12 @@
               <input v-model="rowToEdit.workItemIdentifier" type="text" class="form-control">
             </div>
           </div>
-            <div>
-              <label class="col-sm-4 margin-top-8 control-label">Notes</label>
-              <div class="col-sm-7 margin-top-8">
-                <textarea v-model="rowToEdit.notes" class="form-control" rows="2" />
-              </div>
+          <div>
+            <label class="col-sm-4 margin-top-8 control-label">Notes</label>
+            <div class="col-sm-7 margin-top-8">
+              <textarea v-model="rowToEdit.notes" class="form-control" rows="2" />
             </div>
+          </div>
           <div class="col-sm-12 margin-top-8">
             <label class="col-sm-4 control-label">Is Permanent</label>
             <div class="col-sm-1 margin-top-10">
