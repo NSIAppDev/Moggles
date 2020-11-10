@@ -132,3 +132,11 @@ table.vgt-table {
 th.vgt-right-align {
 	text-align: left;
 }
+
+// uiv multi-select scrollable dropdow
+.uiv-multi-select {
+	ul {
+		max-height: 350px;
+		overflow-y: auto;
+	}
+}
