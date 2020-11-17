@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NsTestFrameworkUI.Helpers;
 using OpenQA.Selenium;
 
@@ -19,6 +21,12 @@ namespace Moggles.EndToEndTests.TestFramework
             var header = grid.FindElement(By.CssSelector(".vgt-responsive>table>thead> tr:nth-child(1)"));
             var cells = header.FindElements(By.TagName("th"));
             return cells[columnIndex];
+        }
+
+        public static void SelectOptionFromList(this By optionsList, string option)
+        {
+            IList<IWebElement> dropdownList = Browser.WebDriver.FindElements(optionsList);
+            dropdownList.First(x => string.Equals(x.Text, option)).Click();
         }
     }
 }

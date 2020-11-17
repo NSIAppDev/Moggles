@@ -12,7 +12,6 @@ namespace Moggles.EndToEndTests.MogglesPages
     public class FeatureTogglesPage
     {
         #region selectors
-        private readonly By _applicationsDropdown = By.CssSelector("#selectedApp > ul li");
         private readonly By _toolsMenuDropdown = By.CssSelector(".dropdown-menu li");
         private readonly By _statusesDropdown = By.CssSelector("tr:nth-child(2) > th:nth-child(8) > div > select");
         private readonly By _openAddApplicationModalBtn = By.Id("showAddApplicationModalBtn");
@@ -69,7 +68,9 @@ namespace Moggles.EndToEndTests.MogglesPages
         private readonly By _toolsButton = By.CssSelector("li.dropdown");
         private readonly By _selectedAppName = By.CssSelector("#app-sel  div  div  div:nth-child(1)");
         private readonly By _pageSpinner = By.CssSelector(".fa-spinner");
-     
+        private readonly By _applicationsList = By.CssSelector("body > ul > li > a");
+
+
         public IWebElement FeatureTogglesGrid => Browser.WebDriver.FindElement(By.Id("toggleGrid"));
         #endregion
 
@@ -107,9 +108,8 @@ namespace Moggles.EndToEndTests.MogglesPages
         {
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
-            Thread.Sleep(5000);
-            _selectedApplication.WaitForElement();
-            _selectedApplication.SelectFromDropdown(_applicationsDropdown, applicationName);
+            _selectedApplication.ActionClick();
+            _applicationsList.SelectOptionFromList(applicationName);
         }
 
         public void FilterAcceptedByUserColumn(string status)
