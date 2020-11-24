@@ -30,9 +30,11 @@ namespace Moggles.Domain
             }
         }
 
-        private bool DeployEnvExists(string newName, string oldName = "")
+        private bool DeployEnvExists(string newName, string oldName = "", bool ignoreCase = true)
         {
-            return (DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, newName, StringComparison.OrdinalIgnoreCase) == 0) && newName != oldName);
+            var stringComparison = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+
+            return (DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, newName, stringComparison) == 0) && newName != oldName);
         }
 
         public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment)
@@ -79,7 +81,7 @@ namespace Moggles.Domain
             if (env == null)
                 throw new InvalidOperationException("Environment does not exist!");
 
-            if (DeployEnvExists(newName, oldName))
+            if (DeployEnvExists(newName, oldName, false))
             {
                 throw new BusinessRuleValidationException("An environment with the same name already exists!");
             }
