@@ -57,7 +57,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         }
 
         [TestMethod]
-        public async Task WhenNewInvironmentName_MatchesAnExistingEnvrionment_TheChangeIsRejected()
+        public async Task WhenNewInvironmentName_MatchesAnExistingEnvrionmentWithDifferentCase_EnvironmentNameIsChanged()
         {
             //arrange
             var app = Application.Create("TestApp", "DEV", false);
@@ -74,8 +74,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var result = await _featureToggleController.UpdateEnvironment(updatedEnvironment);
 
             //assert
-            result.Should().BeOfType<BadRequestObjectResult>();
-            (await _appRepository.FindByIdAsync(app.Id)).DeploymentEnvironments.First().EnvName.Should().Be("DEV");
+            result.Should().BeOfType<OkResult>();
+            (await _appRepository.FindByIdAsync(app.Id)).DeploymentEnvironments.First().EnvName.Should().Be("dev");
         }
 
         [TestMethod]
