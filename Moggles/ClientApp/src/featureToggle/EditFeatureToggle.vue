@@ -162,18 +162,7 @@
 				showDeleteConfirmationModal: false
 			}
 		},
-		computed: {
-			featureToggleStatusesChanged() {
-				let numberOfEditedEnvironments = 0;
-				_.forEach(this.environments, environment => {
-					if (this.environmentStatusHasChanged(environment)) {
-						numberOfEditedEnvironments++;
-					}
-				});
-
-				return numberOfEditedEnvironments > 0 || this.acceptedByUserHasChanged() ? true : false;
-			}
-		},
+		
 		created() {
 			Bus.$on(events.openEditFeatureToggleModal, (toggle) => {
 				this.initialiseModal();
