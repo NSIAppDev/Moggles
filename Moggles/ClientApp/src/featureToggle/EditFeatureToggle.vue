@@ -78,7 +78,7 @@
             <strong>Change Reasons</strong>
           </h5>
           <hr class="margin-top-1">
-          <textarea v-model="reasonToChange" :disabled="!featureToggleStatusesChanged" class="col-sm-12"
+          <textarea v-model="reasonToChange" class="col-sm-12"
                     rows="2" />
           <ul class="list-group col-sm-12 margin-top-4">
             <li v-for="reason in rowToEdit.reasonsToChange" :key="reason.createdAt" class="col-sm-12 list-group-item">
@@ -162,18 +162,7 @@
 				showDeleteConfirmationModal: false
 			}
 		},
-		computed: {
-			featureToggleStatusesChanged() {
-				let numberOfEditedEnvironments = 0;
-				_.forEach(this.environments, environment => {
-					if (this.environmentStatusHasChanged(environment)) {
-						numberOfEditedEnvironments++;
-					}
-				});
-
-				return numberOfEditedEnvironments > 0 || this.acceptedByUserHasChanged() ? true : false;
-			}
-		},
+		
 		created() {
 			Bus.$on(events.openEditFeatureToggleModal, (toggle) => {
 				this.initialiseModal();
