@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Moggles.Domain;
 using NoDb;
@@ -20,7 +21,12 @@ namespace Moggles.Data.NoDb
 
         async Task<IEnumerable<Application>> IRepository<Application>.GetAllAsync()
         {
-            return await _applicationQueries.GetAllAsync(ProjectId).ConfigureAwait(false);
+            var applications = await _applicationQueries.GetAllAsync(ProjectId).ConfigureAwait(false);
+            return applications.Select(a => new Application
+            {
+                Id = a.Id,
+                AppName = a.AppName
+            }).AsEnumerable();
         }
 
         async Task IRepository<Application>.AddAsync(Application entity)
