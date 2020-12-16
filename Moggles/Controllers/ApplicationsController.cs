@@ -24,7 +24,8 @@ namespace Moggles.Controllers
         public async Task<IActionResult> GetAllApplications()
         {
             var allApps = await _applicationsRepository.GetAllAsync();
-            return Ok(allApps.Select(a => new Application
+
+            return Ok(allApps.Select(a => new ApplicationSummary //return summary objects to avoid sending un-needed data
             {
                 Id = a.Id,
                 AppName = a.AppName
