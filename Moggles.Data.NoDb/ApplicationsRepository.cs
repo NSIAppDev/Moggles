@@ -21,12 +21,7 @@ namespace Moggles.Data.NoDb
 
         async Task<IEnumerable<Application>> IRepository<Application>.GetAllAsync()
         {
-            var applications = await _applicationQueries.GetAllAsync(ProjectId).ConfigureAwait(false);
-            return applications.Select(a => new Application
-            {
-                Id = a.Id,
-                AppName = a.AppName
-            }).AsEnumerable();
+            return await _applicationQueries.GetAllAsync(ProjectId).ConfigureAwait(false);
         }
 
         async Task IRepository<Application>.AddAsync(Application entity)
