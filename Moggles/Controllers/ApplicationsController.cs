@@ -24,7 +24,14 @@ namespace Moggles.Controllers
         public async Task<IActionResult> GetAllApplications()
         {
             var allApps = await _applicationsRepository.GetAllAsync();
-            return Ok(allApps.OrderBy(a => a.AppName).ToList());
+
+            return Ok(allApps.Select(a => new ApplicationSummary //return summary objects to avoid sending un-needed data
+            {
+                Id = a.Id,
+                AppName = a.AppName
+            }).AsEnumerable()
+            .OrderBy(a => a.AppName)
+            .ToList());
         }
 
         [HttpPost]
