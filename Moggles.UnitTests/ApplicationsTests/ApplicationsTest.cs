@@ -38,6 +38,9 @@ namespace Moggles.UnitTests.ApplicationsTests
             await _appApplicationRepository.AddAsync(bccApp);
             await _appApplicationRepository.AddAsync(cmmApp);
 
+            var bccSummary = new ApplicationSummary { Id = bccApp.Id, AppName = bccApp.AppName };
+            var cmmSummary = new ApplicationSummary { Id = cmmApp.Id, AppName = cmmApp.AppName };
+
             var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
 
             //act
@@ -45,7 +48,7 @@ namespace Moggles.UnitTests.ApplicationsTests
 
             //assert
             Debug.Assert(result != null, nameof(result) + " != null");
-            result.Value.As<List<Application>>().Should().BeEquivalentTo(new List<Application> { bccApp, cmmApp });
+            result.Value.As<List<ApplicationSummary>>().Should().BeEquivalentTo(new List<ApplicationSummary> { bccSummary, cmmSummary });
         }
 
         #region Add
