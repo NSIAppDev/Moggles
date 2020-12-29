@@ -29,5 +29,6 @@ export const events = {
     closeForceCacheRefreshModal: "close-refresh",
     unblockUI: "unblock-ui",
     blockUI: "block-ui",
-    showErrorAlertModal: "openErrorAlertModal"
+    showErrorAlertModal: "openErrorAlertModal",
+    environmentMoved: "environmentMoved"
 }

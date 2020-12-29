@@ -207,18 +207,16 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             await _appRepository.UpdateAsync(application);
 
-            var updateEnvironment = new UpdateEnvironmentModel
+            var moveEnvironment = new MoveEnvironmentModel
             {
                 ApplicationId = application.Id,
-                DefaultToggleValue = false,
-                InitialEnvName = "LIVE",
-                NewEnvName = "LIVE",
+                EnvName = "LIVE",
                 MoveToLeft = true,
                 MoveToRight = false
             };
 
             //act
-            var result = await _featureToggleController.UpdateEnvironment(updateEnvironment);
+            var result = await _featureToggleController.MoveEnvironment(moveEnvironment);
             application.DeploymentEnvironments = application.DeploymentEnvironments.OrderBy(e => e.SortOrder).ToList();
 
             //assert
@@ -246,18 +244,16 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             await _appRepository.UpdateAsync(application);
 
-            var updateEnvironment = new UpdateEnvironmentModel
+            var moveEnvironment = new MoveEnvironmentModel
             {
                 ApplicationId = application.Id,
-                DefaultToggleValue = false,
-                InitialEnvName = "DEV",
-                NewEnvName = "DEV",
+                EnvName = "DEV",
                 MoveToLeft = false,
                 MoveToRight = true
             };
 
             //act
-            var result = await _featureToggleController.UpdateEnvironment(updateEnvironment);
+            var result = await _featureToggleController.MoveEnvironment(moveEnvironment);
             application.DeploymentEnvironments = application.DeploymentEnvironments.OrderBy(e => e.SortOrder).ToList();
 
             //assert
@@ -286,18 +282,16 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             await _appRepository.UpdateAsync(application);
 
-            var updateEnvironment = new UpdateEnvironmentModel
+            var updateEnvironment = new MoveEnvironmentModel
             {
                 ApplicationId = application.Id,
-                DefaultToggleValue = false,
-                InitialEnvName = "DEV",
-                NewEnvName = "DEV",
+                EnvName = "DEV",
                 MoveToLeft = true,
                 MoveToRight = true
             };
 
             //act
-            var result = await _featureToggleController.UpdateEnvironment(updateEnvironment);
+            var result = await _featureToggleController.MoveEnvironment(updateEnvironment);
 
             //assert
             var environments = application.DeploymentEnvironments.OrderBy(e => e.SortOrder).ToList();
@@ -316,18 +310,16 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             await _appRepository.UpdateAsync(application);
 
-            var updateEnvironment = new UpdateEnvironmentModel
+            var moveEnvironment = new MoveEnvironmentModel
             {
                 ApplicationId = application.Id,
-                DefaultToggleValue = false,
-                InitialEnvName = "DEV",
-                NewEnvName = "DEV",
+                EnvName = "DEV",
                 MoveToLeft = true,
                 MoveToRight = false
             };
 
             //act
-            var result = await _featureToggleController.UpdateEnvironment(updateEnvironment);
+            var result = await _featureToggleController.MoveEnvironment(moveEnvironment);
 
             //assert
             var environments = application.DeploymentEnvironments.OrderBy(e => e.SortOrder).ToList();
@@ -348,18 +340,16 @@ namespace Moggles.UnitTests.FeatureTogglesTests
 
             await _appRepository.UpdateAsync(application);
 
-            var updateEnvironment = new UpdateEnvironmentModel
+            var moveEnvironment = new MoveEnvironmentModel
             {
                 ApplicationId = application.Id,
-                DefaultToggleValue = false,
-                InitialEnvName = "LIVE",
-                NewEnvName = "LIVE",
+                EnvName = "LIVE",
                 MoveToLeft = false,
                 MoveToRight = true
             };
 
             //act
-            var result = await _featureToggleController.UpdateEnvironment(updateEnvironment);
+            var result = await _featureToggleController.MoveEnvironment(moveEnvironment);
 
             //assert
             var environments = application.DeploymentEnvironments.OrderBy(e => e.SortOrder).ToList();

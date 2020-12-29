@@ -47,9 +47,15 @@
         </div>
         <div class="col-sm-12 form-group">
           <label class="control-label col-sm-4">Position</label>
-          <div class="col-sm-6 margin-top-8">
-            <a @click="leftMove=true"><i class="fas fa-fw fa-caret-left" /> <strong>Move Left</strong></a>
-            <a class="pull-right" @click="rightMove=true"><strong>Move Right</strong> <i class="fas fa-fw fa-caret-right" /></a>
+          <div class="col-sm-3">
+            <button class="btn btn-link" :disabled="!canMoveLeft" @click="moveEnvironment(true, false)">
+              <i class="fas fa-fw fa-caret-left" /> <strong>Move Left</strong>
+            </button>
+          </div>
+          <div class="col-sm-3 text-right">
+            <button class="btn btn-link" :disabled="!canMoveRight" @click="moveEnvironment(false, true)">
+              <strong>Move Right</strong> <i class="fas fa-fw fa-caret-right" />
+            </button>
           </div>
         </div>
         <div class="clearfix">
@@ -95,6 +101,10 @@
             application: {
                 type: Object,
                 required: true
+            },
+            environmentCount: {
+                type: Number,
+                required: true
             }
         },
         data() {
@@ -103,15 +113,23 @@
                 initialEnvironmentName: '',
                 editEnvironmentErrors: [],
                 showDeleteEnvironmentConfirmation: false,
-                leftMove: false,
-                rightMove: false
+                currentSortOrder: 0
             }
-        },
+		},
+		computed: {
+			canMoveLeft() {
+				return this.currentSortOrder > 1;
+			},
+			canMoveRight() {
+				return this.currentSortOrder < this.environmentCount;
+			}
+		},
         created() {
             Bus.$on(events.editEnvironment, environment => {
                 this.initializeData();
                 this.environment = environment;
                 this.initialEnvironmentName = environment.envName;
+                this.currentSortOrder = environment.sortOrder;
             });
 
             Bus.$on(events.closeDeleteEnvironmentModal, () => {
@@ -141,9 +159,7 @@
                     sortOrder: this.environment.sortOrder,
                     defaultToggleValue: this.environment.defaultToggleValue,
                     requireReasonForChangeWhenToggleEnabled: this.environment.requireReasonWhenToggleEnabled,
-                    requireReasonForChangeWhenToggleDisabled: this.environment.requireReasonWhenToggleDisabled,
-                    moveToLeft: this.leftMove,
-                    moveToRight: this.rightMove
+                    requireReasonForChangeWhenToggleDisabled: this.environment.requireReasonWhenToggleDisabled
                 }
 
                 axios.put('/api/FeatureToggles/updateEnvironment', environmentUpdateModel)
@@ -159,6 +175,29 @@
             },
             cancelEditEnvironment() {
                 Bus.$emit(events.closeEditEnvironmentModal);
+            },
+            moveEnvironment(isLeft, isRight) {
+                Bus.$emit(events.blockUI);
+                let moveEnvironmentModel = {
+                    applicationId: this.application.id,
+                    EnvName: this.initialEnvironmentName,
+                    moveToLeft: isLeft,
+                    moveToRight: isRight
+                }
+                if (isLeft) {
+                    this.currentSortOrder--;
+                }
+                if (isRight) {
+                    this.currentSortOrder++;
+                }
+                axios.put('/api/FeatureToggles/moveEnvironment', moveEnvironmentModel)
+                    .then(() => {
+                        Bus.$emit(events.environmentMoved);
+                        Bus.$emit(events.unblockUI);
+                    }).catch(error => {
+                        Bus.$emit(events.showErrorAlertModal, { 'error': error });
+                        Bus.$emit(events.unblockUI);
+                    });
             }
         }
     }

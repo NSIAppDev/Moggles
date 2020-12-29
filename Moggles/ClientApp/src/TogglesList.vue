@@ -68,7 +68,7 @@
     </modal>
     <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false"
            append-to-body>
-      <edit-environment :application="selectedApp" />
+      <edit-environment :application="selectedApp" :environment-count="environments.length" />
     </modal>
   </div>
 </template>
@@ -149,7 +149,11 @@
 
                 Bus.$on(events.environmentAdded, () => {
                     this.loadGrid();
-                })
+				})
+
+				Bus.$on(events.environmentMoved, () => {
+					this.loadGrid();
+				})
 
                 Bus.$on(events.toggleAdded, () => {
                     this.loadGridData()

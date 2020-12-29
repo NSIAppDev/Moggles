@@ -152,7 +152,7 @@
             },
             getSortOrderForAddedEnvironment() {
                 let lastEnv = this.existingEnvs[this.existingEnvs.length - 1];
-                return lastEnv != null ? lastEnv.sortOrder + 1 : 0;
+                return lastEnv != null ? lastEnv.sortOrder + 1 : 1;
                  
             },
             closeAddEnvironmentModal() {
