@@ -20,8 +20,5 @@ namespace Moggles.Models
 
         public bool RequireReasonForChangeWhenToggleEnabled{ get; set; }
         public bool RequireReasonForChangeWhenToggleDisabled { get; set; }
-
-        public bool MoveToLeft { get; set; }
-        public bool MoveToRight { get; set; }
     }
 }

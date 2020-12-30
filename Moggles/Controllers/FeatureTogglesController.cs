@@ -244,6 +244,29 @@ namespace Moggles.Controllers
         }
 
         [HttpPut]
+        [Route("MoveEnvironment")]
+        public async Task<IActionResult> MoveEnvironment([FromBody]MoveEnvironmentModel environmentModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var app = await _applicationsRepository.FindByIdAsync(environmentModel.ApplicationId);
+            var featureTogglesSchedulers = await _toggleScheduleRepository.GetAllAsync();
+            try
+            {
+                app.ChangeEnvironmentPosition(environmentModel.EnvName, environmentModel.MoveToLeft, environmentModel.MoveToRight);
+            }
+
+            catch (BusinessRuleValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            await _applicationsRepository.UpdateAsync(app);
+            return Ok();
+        }
+
+        [HttpPut]
         [Route("UpdateEnvironment")]
         public async Task<IActionResult> UpdateEnvironment([FromBody] UpdateEnvironmentModel environmentModel)
         {
@@ -257,7 +280,6 @@ namespace Moggles.Controllers
                 app.ChangeEnvironmentValuesToRequireReasonFor(environmentModel.InitialEnvName, environmentModel.RequireReasonForChangeWhenToggleEnabled, environmentModel.RequireReasonForChangeWhenToggleDisabled);
                 app.ChangeEnvironmentValuesToRequireReasonFor(environmentModel.InitialEnvName, environmentModel.RequireReasonForChangeWhenToggleEnabled, environmentModel.RequireReasonForChangeWhenToggleDisabled);
                 app.ChangeDeployEnvironmentName(environmentModel.InitialEnvName, environmentModel.NewEnvName);
-                app.ChangeEnvironmentPosition(environmentModel.NewEnvName, environmentModel.MoveToLeft, environmentModel.MoveToRight);
                 app.ChangeEnvironmentDefaultValue(environmentModel.NewEnvName, environmentModel.DefaultToggleValue);
                 foreach (var fts in featureTogglesSchedulers)
                 {
