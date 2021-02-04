@@ -12,11 +12,6 @@ namespace Moggles.Tests
             config["Messaging:UseMessaging"] = "true";
         }
 
-        public override void ConfigureDatabaseServices(IServiceCollection services)
-        {
-            // Do nothing
-        }
-
         public override void ConfigureAuthServices(IServiceCollection services)
         {
             services.AddAuthorization(options => { options.AddPolicy("OnlyAdmins", policy => policy.RequireAssertion(ctx => true)); });
