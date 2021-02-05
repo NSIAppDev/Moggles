@@ -6,13 +6,11 @@ using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moggles.BackgroundServices;
 using Moggles.Consumers;
-using Moggles.Data.SQL;
 using Moggles.Data.NoDb;
 using NoDb;
 using Moggles.Domain;
@@ -54,8 +52,6 @@ namespace Moggles
 
 
             services.AddApplicationInsightsTelemetry();
-
-            ConfigureDatabaseServices(services);
 
             if (bool.TryParse(Configuration["Messaging:UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
             {
@@ -110,12 +106,6 @@ namespace Moggles
                             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSigningKey))
                     };
                 });
-        }
-
-        public virtual void ConfigureDatabaseServices(IServiceCollection services)
-        {
-            services.AddDbContext<TogglesContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("FeatureTogglesConnection")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
