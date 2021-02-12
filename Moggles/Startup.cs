@@ -167,7 +167,7 @@ namespace Moggles
         {
             return Bus.Factory.CreateUsingRabbitMq(sbc =>
             {
-                var host = sbc.Host(new Uri(Configuration["Messaging:Url"]), h =>
+                sbc.Host(new Uri(Configuration["Messaging:Url"]), h =>
                 {
                     h.Username(Configuration["Messaging:Username"]);
                     h.Password(Configuration["Messaging:Password"]);
@@ -180,7 +180,7 @@ namespace Moggles
                     retryCfg.Interval(10, TimeSpan.FromMinutes(1));
                 });
 
-                sbc.ReceiveEndpoint(host, Configuration["Messaging:QueueName"], e =>
+                sbc.ReceiveEndpoint(Configuration["Messaging:QueueName"], e =>
                 {
                     e.Consumer<FeatureToggleDeployStatusConsumer>(serviceProvider);
                     e.PrefetchCount = 1;
