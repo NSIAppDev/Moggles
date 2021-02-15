@@ -1,6 +1,4 @@
-﻿using Microsoft.ApplicationInsights;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moggles.Domain;
 using Moggles.Models;
@@ -14,7 +12,6 @@ namespace Moggles.Controllers
     [Route("api/FeatureToggles")]
     public class FeatureTogglesController : Controller
     {
-        private readonly TelemetryClient _telemetry = new TelemetryClient();
         private readonly IRepository<Application> _applicationsRepository;
         private readonly IRepository<ToggleSchedule> _toggleScheduleRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -251,7 +248,6 @@ namespace Moggles.Controllers
                 return BadRequest(ModelState);
 
             var app = await _applicationsRepository.FindByIdAsync(environmentModel.ApplicationId);
-            var featureTogglesSchedulers = await _toggleScheduleRepository.GetAllAsync();
             try
             {
                 app.ChangeEnvironmentPosition(environmentModel.EnvName, environmentModel.MoveToLeft, environmentModel.MoveToRight);
@@ -295,86 +291,5 @@ namespace Moggles.Controllers
             await _applicationsRepository.UpdateAsync(app);
             return Ok();
         }
-
-        private async Task<Application> GetApplicationByName(string applicationName)
-        {
-            var apps = await _applicationsRepository.GetAllAsync();
-            return apps.FirstOrDefault(a => string.Compare(a.AppName, applicationName, StringComparison.OrdinalIgnoreCase) == 0);
-        }
-
-        #region public API - a new controller is created this should be deleted when moggles client starts using it
-
-        [HttpGet]
-        [Route("getApplicationFeatureToggles")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetApplicationFeatureToggles(string applicationName, string environment)
-        {
-            _telemetry.TrackEvent("OnGetAllToggles");
-
-            var app = await GetApplicationByName(applicationName);
-            if (app != null && app.DeploymentEnvironments.Exists(env => string.Compare(env.EnvName, environment, StringComparison.OrdinalIgnoreCase) == 0))
-            {
-                var featureToggles = app.FeatureToggles
-                    .Select(x => new ApplicationFeatureToggleViewModel
-                    {
-                        FeatureToggleName = x.ToggleName,
-                        IsEnabled = x.FeatureToggleStatuses.FirstOrDefault(fts => string.Compare(fts.EnvironmentName, environment, StringComparison.OrdinalIgnoreCase) == 0).Enabled
-                    });
-
-                return Ok(featureToggles);
-            }
-
-            return BadRequest("Environment or Application does not exist");
-
-        }
-
-        [HttpGet]
-        [Route("getApplicationFeatureToggleValue")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetApplicationFeatureToggleValue(string applicationName, string environment, string featureToggleName)
-        {
-            _telemetry.TrackEvent("OnGetSpecificToggle");
-
-            var app = await GetApplicationByName(applicationName);
-            if (app != null && app.DeploymentEnvironments.Exists(env => string.Compare(env.EnvName, environment, StringComparison.OrdinalIgnoreCase) == 0))
-            {
-                var featureToggle = app.FeatureToggles
-                    .Where(ft => string.Compare(ft.ToggleName, featureToggleName, StringComparison.OrdinalIgnoreCase) == 0)
-                    .Select(x => new ApplicationFeatureToggleViewModel
-                    {
-                        FeatureToggleName = x.ToggleName,
-                        IsEnabled = x.FeatureToggleStatuses.FirstOrDefault(fts => string.Compare(fts.EnvironmentName, environment, StringComparison.OrdinalIgnoreCase) == 0).Enabled
-                    })
-                    .FirstOrDefault();
-
-                if (featureToggle == null)
-                    return NotFound("Feature toggle does not exist!");
-
-                return Ok(featureToggle);
-            }
-
-            return BadRequest("Environment or Application does not exist");
-        }
-
-        [HttpPost]
-        [Route("createEnvironment")]
-        [AllowAnonymous]
-        public async Task<IActionResult> CreateEnvironment([FromBody]AddEnvironmentPublicApiModel model)
-        {
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var app = await GetApplicationByName(model.AppName);
-            if (app == null)
-                throw new InvalidOperationException("Application does not exist");
-
-            app.AddDeployEnvironment(model.EnvName, false, false, false, 500);
-
-            await _applicationsRepository.UpdateAsync(app);
-            return Ok();
-        }
-
-        #endregion
     }
 }
