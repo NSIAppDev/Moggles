@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Moggles.Consumers;
 using System;
 
 namespace Moggles.Tests
@@ -23,7 +24,7 @@ namespace Moggles.Tests
             {
                 sbc.ReceiveEndpoint("test_queue", e =>
                 {
-                    e.LoadFrom(serviceProvider);
+                    e.Consumer<FeatureToggleDeployStatusConsumer>(serviceProvider);
                 });
             });
 
