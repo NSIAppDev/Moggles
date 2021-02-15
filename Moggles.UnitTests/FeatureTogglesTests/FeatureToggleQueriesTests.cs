@@ -19,6 +19,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         private IHttpContextAccessor _httpContextAccessor;
         private IRepository<ToggleSchedule> _toggleScheduleRepository;
         private FeatureTogglesController _featureToggleController;
+        private PublicApiController _publicApiController;
         
 
         [TestInitialize]
@@ -27,6 +28,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             _appRepository = new InMemoryApplicationRepository();
             _toggleScheduleRepository = new InMemoryRepository<ToggleSchedule>();
             _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository);
+            _publicApiController = new  PublicApiController(_appRepository);
         }
 
         [TestMethod]
@@ -155,7 +157,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             await _appRepository.AddAsync(app);
 
             //act
-            var result = await _featureToggleController.GetApplicationFeatureToggles(app.AppName, "DEV") as OkObjectResult;
+            var result = await _publicApiController.GetApplicationFeatureToggles(app.AppName, "DEV") as OkObjectResult;
             var okObjectResult = result.Value as IEnumerable<ApplicationFeatureToggleViewModel>;
 
             //assert
@@ -177,7 +179,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             await _appRepository.AddAsync(app);
 
             //act
-            var result = await _featureToggleController.GetApplicationFeatureToggleValue(app.AppName, "QA", "t1") as OkObjectResult;
+            var result = await _publicApiController.GetApplicationFeatureToggleValue(app.AppName, "QA", "t1") as OkObjectResult;
             var okObjectResult = result.Value as ApplicationFeatureToggleViewModel;
 
             //assert
