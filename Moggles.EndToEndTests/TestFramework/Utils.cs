@@ -28,5 +28,13 @@ namespace Moggles.EndToEndTests.TestFramework
             IList<IWebElement> dropdownList = Browser.WebDriver.FindElements(optionsList);
             dropdownList.First(x => string.Equals(x.Text, option)).Click();
         }
+        public static void SelectFromDropdown(this By dropdown, By optionsList, string option)
+        {
+            var element = Browser.WebDriver.FindElement(dropdown);
+            element.Click();
+            IList<IWebElement> dropdownList = element.FindElements(optionsList);
+            dropdownList.First(x => string.Equals(x.Text, option)).Click();
+        }
+
     }
 }

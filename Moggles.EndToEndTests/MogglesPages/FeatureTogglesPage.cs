@@ -76,9 +76,9 @@ namespace Moggles.EndToEndTests.MogglesPages
 
         public void Navigate()
         {
-            Browser.Goto(Constants.BaseUrl);
+            Browser.GoTo(Constants.BaseUrl);
             if (!_addApplicationButton.IsElementPresent())
-                Browser.Goto(Constants.BaseUrl);
+                Browser.GoTo(Constants.BaseUrl);
         }
 
         public bool IsGridEmpty() => _noFeatureToggleDisplayedText.IsElementPresent();
@@ -115,7 +115,7 @@ namespace Moggles.EndToEndTests.MogglesPages
         public void FilterAcceptedByUserColumn(string status)
         {
             _statusesDropdown.WaitForElementToBeClickable();
-            _statusesDropdown.SelectOptionFromDropdown(status);
+            _statusesDropdown.SelectFromDropdownByText(status);
         }
 
         public void AddFeatureToggle(string newFeatureToggleName)

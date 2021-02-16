@@ -1,7 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NsTestFrameworkUI.Helpers;
-using System.IO;
-using System.Reflection;
 
 namespace Moggles.EndToEndTests.TestFramework
 {
@@ -10,8 +8,7 @@ namespace Moggles.EndToEndTests.TestFramework
         [TestInitialize]
         public virtual void Before()
         {
-            var chromeDriverPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            Browser.InitializeDriver(chromeDriverPath);
+            Browser.InitializeDriver();
         }
     }
 }
