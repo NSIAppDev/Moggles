@@ -6,11 +6,20 @@
     <div v-else>
       Are you sure you want to delete this feature toggle?
     </div>
+    <div class="form-horizontal">
+      <div class="col-sm-12">
+        <h5 class="margin-top-20">
+          <strong>Reason to delete</strong>
+        </h5>
+        <hr class="margin-top-1">
+        <textarea v-model="reasonToChange" class="col-sm-12" rows="2" />
+      </div>
+    </div>
     <div class="text-right">
-      <button type="button" class="btn btn-default" @click="cancelDeleteToggle">
+      <button type="button" class="btn btn-default margin-top-20" @click="cancelDeleteToggle">
         Cancel
       </button>
-      <button id="deleteToggleBtn" type="button" class="btn btn-primary"
+      <button id="deleteToggleBtn" type="button" class="btn btn-primary margin-top-20"
               @click="deleteToggle">
         Delete
       </button>
