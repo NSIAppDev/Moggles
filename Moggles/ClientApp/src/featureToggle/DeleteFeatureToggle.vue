@@ -11,6 +11,9 @@
         <h5 class="margin-top-20">
           <strong>Reason to delete</strong>
         </h5>
+        <div v-if="error" :key="error" class="text-danger">
+          {{ error }}
+        </div>
         <hr class="margin-top-1">
         <textarea v-model="reasonToChange" class="col-sm-12" rows="2" />
       </div>
@@ -40,7 +43,9 @@
         },
         data() {
             return {
-                toggleToDelete: null
+                toggleToDelete: null,
+                reason: null,
+                error: null
             }
         },
         computed: {
@@ -55,18 +60,40 @@
         created() {
             Bus.$on(events.deleteFeatureToggle, toggleToDelete => {
                 this.toggleToDelete = toggleToDelete;
+                this.error = null;
             })
         },
         methods: {
             deleteToggle() {
-                axios.delete(`/api/FeatureToggles?id=${this.toggleToDelete.id}&applicationid=${this.application.id}`).then(() => {
+                this.error = this.stringIsNullOrEmpty(this.reason)
+
+                if (this.stringIsNullOrEmpty(this.reason)) {
+                    this.error = 'Please add a reason to delete';
+                    return;
+                }
+
+                let deleteFeatureToggleModel = {
+                    featureToggleId: this.toggleToDelete.id,
+                    applicationId: this.application.id,
+                    reason: this.reason
+                };
+
+                axios.delete('/api/FeatureToggles',
+                    {
+                        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+                        data: deleteFeatureToggleModel
+                    }
+                ).then(() => {
                     this.toggleToDelete = null
                     Bus.$emit(events.closeDeleteFeatureToggleModal);
                 }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             cancelDeleteToggle() {
                 Bus.$emit(events.closeDeleteFeatureToggleModal);
-            }
+            },
+            stringIsNullOrEmpty(text) {
+                return !text || /^\s*$/.test(text);
+            },
         }
     }
 </script>
