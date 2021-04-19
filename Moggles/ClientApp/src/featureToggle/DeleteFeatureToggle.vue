@@ -15,7 +15,7 @@
           {{ error }}
         </div>
         <hr class="margin-top-1">
-        <textarea v-model="reasonToChange" class="col-sm-12" rows="2" />
+        <textarea v-model="reason" class="col-sm-12" rows="2" />
       </div>
     </div>
     <div class="text-right">
@@ -65,8 +65,6 @@
         },
         methods: {
             deleteToggle() {
-                this.error = this.stringIsNullOrEmpty(this.reason)
-
                 if (this.stringIsNullOrEmpty(this.reason)) {
                     this.error = 'Please add a reason to delete';
                     return;
@@ -93,7 +91,7 @@
             },
             stringIsNullOrEmpty(text) {
                 return !text || /^\s*$/.test(text);
-            },
+            }
         }
     }
 </script>

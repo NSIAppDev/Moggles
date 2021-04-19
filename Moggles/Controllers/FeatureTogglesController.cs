@@ -178,7 +178,7 @@ namespace Moggles.Controllers
                 await _toggleScheduleRepository.DeleteAsync(fts);
             }
 
-            app.RemoveFeatureToggle(featureToggleModel.FeatureToggleId);
+            app.RemoveFeatureToggle(featureToggleModel.FeatureToggleId, toggle.ToggleName, featureToggleModel.Reason);
 
             await _applicationsRepository.UpdateAsync(app);
             return Ok();

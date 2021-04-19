@@ -11,6 +11,7 @@ namespace Moggles.Domain
 
         public List<DeployEnvironment> DeploymentEnvironments { get; set; } = new List<DeployEnvironment>();
         public List<FeatureToggle> FeatureToggles { get; set; } = new List<FeatureToggle>();
+        public List<DeletedFeatureToggle> DeletedFeatureToggles { get; set; } = new List<DeletedFeatureToggle>();
 
         public void UpdateName(string newName)
         {
@@ -172,9 +173,15 @@ namespace Moggles.Domain
             return index == DeploymentEnvironments.Count - 1;
         }
 
-        public void RemoveFeatureToggle(Guid id)
+        public void RemoveFeatureToggle(Guid id, string featureToggleName, string reason)
         {
             FeatureToggles.RemoveAll(t => t.Id == id);
+            DeletedFeatureToggles.Add(new DeletedFeatureToggle
+            {
+                Id = id,
+                ToggleName = featureToggleName,
+                Reason = reason
+            });
         }
 
         public ToggleData GetFeatureToggleBasicData(Guid toggleId)
