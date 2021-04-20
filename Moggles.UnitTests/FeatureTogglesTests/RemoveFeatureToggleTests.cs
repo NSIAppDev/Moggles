@@ -119,7 +119,6 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var deletedFeatureToggle = app.DeletedFeatureToggles.First();
             deletedFeatureToggle.ToggleName.Should().Be("t1");
             deletedFeatureToggle.Reason.Should().Be("Reason");
-
         }
     }
 }
