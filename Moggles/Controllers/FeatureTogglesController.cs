@@ -294,5 +294,13 @@ namespace Moggles.Controllers
             await _applicationsRepository.UpdateAsync(app);
             return Ok();
         }
+
+        [HttpGet]
+        [Route("deletedFeatureToggles")]
+        public async Task<IActionResult> GetDeletedFeatureToggles(Guid applicationId)
+        {
+            var app = await _applicationsRepository.FindByIdAsync(applicationId);
+            return Ok(app.DeletedFeatureToggles.OrderByDescending(x => x.DeletionDate));
+        }
     }
 }
