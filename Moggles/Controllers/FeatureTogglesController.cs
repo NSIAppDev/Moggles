@@ -164,18 +164,21 @@ namespace Moggles.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> RemoveFeatureToggle([FromQuery] Guid id, Guid applicationId)
+        public async Task<IActionResult> RemoveFeatureToggle([FromBody] DeleteFeatureToggleModel featureToggleModel)
         {
-            var app = await _applicationsRepository.FindByIdAsync(applicationId);
-            var toggle = app.GetFeatureToggleBasicData(id);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var app = await _applicationsRepository.FindByIdAsync(featureToggleModel.ApplicationId);
+            var toggle = app.GetFeatureToggleBasicData(featureToggleModel.FeatureToggleId);
             var toggleSchedulers = _toggleScheduleRepository.GetAllAsync().Result.Where(ft => ft.ToggleName == toggle.ToggleName);
 
             foreach (var fts in toggleSchedulers)
             {
-                _toggleScheduleRepository.DeleteAsync(fts);
+                await _toggleScheduleRepository.DeleteAsync(fts);
             }
 
-            app.RemoveFeatureToggle(id);
+            app.RemoveFeatureToggle(featureToggleModel.FeatureToggleId, toggle.ToggleName, featureToggleModel.Reason);
 
             await _applicationsRepository.UpdateAsync(app);
             return Ok();
@@ -290,6 +293,14 @@ namespace Moggles.Controllers
 
             await _applicationsRepository.UpdateAsync(app);
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("deletedFeatureToggles")]
+        public async Task<IActionResult> GetDeletedFeatureToggles(Guid applicationId)
+        {
+            var app = await _applicationsRepository.FindByIdAsync(applicationId);
+            return Ok(app.DeletedFeatureToggles.OrderByDescending(x => x.DeletionDate));
         }
     }
 }

@@ -37,6 +37,7 @@
               <a id="toolsBtn" class="dropdown-toggle" role="button">Tools <span class="caret" /></a>
               <template slot="dropdown">
                 <li><a role="button" @click="reloadCurrentApplicationToggles()">Reload Application Toggles</a></li>
+                <li><a role="button" @click="showDeletedFeatureTogglesModal()">View Deleted Feature Toggles</a></li>
                 <li><a role="button" @click="showAddFeatureToggleModal()">Add Feature Toggle</a></li>
                 <li><a role="button" @click="showAddEnvModal()">Add New Environment</a></li>
                 <li><a role="button" @click="showAddFeatureToggleScheduleModal()">Add New Feature Toggle Schedule</a></li>
@@ -55,6 +56,11 @@
     <modal v-if="showAddToggle" v-model="showAddToggle" title="Add Feature Toggle"
            :footer="false">
       <add-featuretoggle :application="selectedApp" />
+    </modal>
+
+    <modal v-model="showDeletedFeatureToggles" title="Deleted Feature Toggles" :footer="false"
+           class="modal-grid">
+      <deleted-featuretoggles :application="selectedApp" />
     </modal>
 
     <modal v-model="showAddApp" title="Add Application" :footer="false">
@@ -105,6 +111,7 @@
     import EditApplication from './application/EditApplication'
     import DeleteApplication from './application/DeleteApplication'
     import AddFeatureToggle from './featureToggle/AddFeatureToggle'
+    import DeletedFeatureToggles from './featureToggle/DeletedFeatureToggles'
     import AddEnvironment from './environment/AddEnvironment'
     import ForceCacheRefresh from './menu/ForceCacheRefresh'
     import AddToggleSchedule from './featureToggleSchedule/AddToggleSchedule'
@@ -122,6 +129,7 @@
             "edit-application": EditApplication,
             "delete-application": DeleteApplication,
             "add-featuretoggle": AddFeatureToggle,
+            "deleted-featuretoggles": DeletedFeatureToggles,
             "add-env": AddEnvironment,
             'force-cache-refresh': ForceCacheRefresh,
             'block-ui': BlockUi,
@@ -132,6 +140,7 @@
             return {
                 showAddApp: false,
                 showAddEnv: false,
+                showDeletedFeatureToggles : false,
                 showAddToggle: false,
                 showForceCacheRefresh: false,
                 isCacheRefreshEnabled: false,
@@ -151,7 +160,7 @@
                 }
             });
 
-            Bus.$on(events.showErrorAlertModal, args => {             
+            Bus.$on(events.showErrorAlertModal, args => {
                 this.error = args.error != null ? args.error : null;
                 this.customErrorMessage = args.customErrorMessage != null ? args.customErrorMessage : null;
                 this.showErrorAlert = true;
@@ -197,6 +206,10 @@
             showAddEnvModal() {
                 this.showAddEnv = true;
                 Bus.$emit(events.openAddEnvironmentModal);
+            },
+            showDeletedFeatureTogglesModal() {
+                this.showDeletedFeatureToggles = true;
+                Bus.$emit(events.showDeletedFeatureTogglesModal);
             },
             reloadCurrentApplicationToggles() {
                 Bus.$emit(events.reloadApplicationToggles);

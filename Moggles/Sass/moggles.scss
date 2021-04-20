@@ -140,3 +140,7 @@ th.vgt-right-align {
 		overflow-y: auto;
 	}
 }
+
+div.modal.modal-grid .modal-dialog {
+	width: calc(100vw - 400px);
+}
