@@ -1,18 +1,18 @@
 ﻿<template>
-    <div>
-        <vue-good-table id="deletedTogglesGrid" ref="deletedTogglesGrid"
-                        :columns="gridColumns"
-                        :rows="toggles"
-                        :pagination-options="getPaginationOptions"
-                        :sort-options="getSortOptions"
-                        style-class="vgt-table striped condensed bordered">
-            <div slot="emptystate">
-                <div class="text-center">
-                    There are no deleted toggles for this application
-                </div>
-            </div>
-        </vue-good-table>
-    </div>
+  <div>
+    <vue-good-table id="deletedTogglesGrid" ref="deletedTogglesGrid"
+                    :columns="gridColumns"
+                    :rows="toggles"
+                    :pagination-options="getPaginationOptions"
+                    :sort-options="getSortOptions"
+                    style-class="vgt-table striped condensed bordered">
+      <div slot="emptystate">
+        <div class="text-center">
+          There are no deleted toggles for this application
+        </div>
+      </div>
+    </vue-good-table>
+  </div>
 </template>
 <script>
     import axios from 'axios';
