@@ -60,6 +60,7 @@
         created() {
             Bus.$on(events.deleteFeatureToggle, toggleToDelete => {
                 this.toggleToDelete = toggleToDelete;
+                this.reason = null;
                 this.error = null;
             })
         },

@@ -58,7 +58,8 @@
       <add-featuretoggle :application="selectedApp" />
     </modal>
 
-    <modal v-model="showDeletedFeatureToggles" title="Deleted Feature Toggles" :footer="false" >
+    <modal v-model="showDeletedFeatureToggles" title="Deleted Feature Toggles" :footer="false"
+           class="modal-grid">
       <deleted-featuretoggles :application="selectedApp" />
     </modal>
 

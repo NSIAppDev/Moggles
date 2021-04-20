@@ -180,7 +180,8 @@ namespace Moggles.Domain
             {
                 Id = id,
                 ToggleName = featureToggleName,
-                Reason = reason
+                Reason = reason,
+                DeletionDate = DateTime.UtcNow
             });
         }
 

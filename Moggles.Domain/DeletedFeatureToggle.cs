@@ -6,6 +6,6 @@ namespace Moggles.Domain
     {
         public string ToggleName { get; set; }
         public string Reason { get; set; }
-        public DateTime DeletionDate { get; } = DateTime.UtcNow;
+        public DateTime DeletionDate { get; set; }
     }
 }
