@@ -21,7 +21,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
         private IRepository<ToggleSchedule> _toggleScheduleRepository;
         private FeatureTogglesController _featureToggleController;
-        private ToggleSchedulerController _toggleSchedulerConstroller;
+        private ToggleSchedulerController _toggleSchedulerController;
 
         [TestInitialize]
         public void BeforeTest()
@@ -32,7 +32,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             _httpContextAccessor = _mockHttpContextAccessor.Object;
             _toggleScheduleRepository = new InMemoryRepository<ToggleSchedule>();
             _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository);
-            _toggleSchedulerConstroller = new ToggleSchedulerController(_toggleScheduleRepository, _appRepository, _httpContextAccessor);
+            _toggleSchedulerController = new ToggleSchedulerController(_toggleScheduleRepository, _appRepository, _httpContextAccessor);
 
         }
 
@@ -45,8 +45,15 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             var theToggle = app.FeatureToggles.Single();
             await _appRepository.AddAsync(app);
 
+            var model = new DeleteFeatureToggleModel
+            {
+                ApplicationId = app.Id,
+                FeatureToggleId = theToggle.Id,
+                Reason = "Reason"
+            };
+
             //act
-            var result = await _featureToggleController.RemoveFeatureToggle(theToggle.Id, app.Id);
+            var result = await _featureToggleController.RemoveFeatureToggle(model);
 
             //assert
             result.Should().BeOfType<OkResult>();
@@ -63,7 +70,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             app.AddFeatureToggle("t1", null, "workItemId1");
             var toggle = app.FeatureToggles.Single();
             await _appRepository.AddAsync(app);
-            await _toggleSchedulerConstroller.ScheduleToggles(new ScheduleTogglesModel
+            await _toggleSchedulerController.ScheduleToggles(new ScheduleTogglesModel
             {
                 ApplicationId = app.Id,
                 FeatureToggles = new List<string> { "t1" },
@@ -72,15 +79,46 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 State = true
             });
 
-            //act
-            var result = await _featureToggleController.RemoveFeatureToggle(toggle.Id, app.Id);
+            var model = new DeleteFeatureToggleModel
+            {
+                ApplicationId = app.Id,
+                FeatureToggleId = toggle.Id,
+                Reason = "Reason"
+            };
 
+            //act
+            var result = await _featureToggleController.RemoveFeatureToggle(model);
 
             //assert
             result.Should().BeOfType<OkResult>();
             var schedulers = await _toggleScheduleRepository.GetAllAsync();
             var forToggle = schedulers.Where(ft => ft.ToggleName == "t1").ToList();
-            forToggle.Count().Should().Be(0);
+            forToggle.Count.Should().Be(0);
+        }
+
+        [TestMethod]
+        public async Task RemoveFeatureToggle_CreatesDeletedFeatureToggleEntry()
+        {
+            //arrange
+            var app = Application.Create("tst", "DEV", false);
+            app.AddFeatureToggle("t1", null, "workItemId1");
+            var toggle = app.FeatureToggles.Single();
+            await _appRepository.AddAsync(app);
+
+            var model = new DeleteFeatureToggleModel
+            {
+                ApplicationId = app.Id,
+                FeatureToggleId = toggle.Id,
+                Reason = "Reason"
+            };
+
+            //act
+            await _featureToggleController.RemoveFeatureToggle(model);
+
+            //assert
+            var deletedFeatureToggle = app.DeletedFeatureToggles.First();
+            deletedFeatureToggle.ToggleName.Should().Be("t1");
+            deletedFeatureToggle.Reason.Should().Be("Reason");
         }
     }
 }
