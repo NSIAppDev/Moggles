@@ -208,7 +208,7 @@ namespace Moggles.EndToEndTests.MogglesPages
                 WaitHelpers.ExplicitWait();
                 _deleteFeatureToggleReason.ActionClick();
                 _deleteFeatureToggleReason.ActionSendKeys(reasonToDelete);
-                _deleteFeatureToggleButton.ActionClick();
+                Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
                 _pageSpinner.WaitForSpinner();
             }
         }

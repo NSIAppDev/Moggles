@@ -11,7 +11,7 @@ namespace Moggles.EndToEndTests.SmokeTests
         [TestCategory("AddFeatureToggle")]
         [TestCategory("SmokeTests")]
 
-        public void AddAndDeleteANewFeatureToggle_TheFeatureToggleIsAddedDeletedAnHasHistoryVisible()
+        public void AddAndDeleteANewFeatureToggle_TheFeatureToggleIsAddedAndDeleted()
         {
             //act
             Pages.FeatureTogglesPage.Navigate();
@@ -24,30 +24,11 @@ namespace Moggles.EndToEndTests.SmokeTests
 
             //act
             Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
-            Pages.FeatureTogglesPage.DeleteToggleOnEdit(Constants.DeleteToggleOnEditReason);
+            Pages.FeatureTogglesPage.DeleteToggleOnEdit(Constants.DeleteToggleReason);
 
             //assert
             Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
 
-            // act
-            Pages.FeatureTogglesPage.AddFeatureToggle(Constants.NewFeatureToggleName);
-
-            // assert
-            Pages.FeatureTogglesPage.IsFeatureToggleDisplayed(Constants.NewFeatureToggleName).Should().BeTrue();
-
-            // act
-            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.NewFeatureToggleName, Constants.DeleteToggleReason);
-
-            //assert
-            Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
-
-            // act 
-            Pages.FeatureTogglesPage.GoToDeletedFeatureToggles();
-
-            // assert
-            Pages.FeatureTogglesPage.IsDeletedFeatureTogglesModalVisible();
-            var deletedFeatureToggleNameFromGrid = Pages.FeatureTogglesPage.GetDeletedFeatureToggleNameFromGrid();
-            deletedFeatureToggleNameFromGrid.Should().Be(Constants.NewFeatureToggleName);
         }
 
     }

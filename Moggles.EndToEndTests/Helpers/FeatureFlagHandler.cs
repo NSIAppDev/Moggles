@@ -53,6 +53,19 @@ namespace Moggles.EndToEndTests.Helpers
             request.AddHeader("Content-Type", "application/json;charset=UTF-8");
             return Client.Execute(request);
         }
+
+        public static IRestResponse AddFeatureToggles(string applicationId, string featureToggleName)
+        {
+            var body = new AddFeatureToggleModel
+            {
+                ApplicationId = new Guid(applicationId),
+                FeatureToggleName = featureToggleName
+            };
+            var request = RequestHelper.GetRequest("api/FeatureToggles/addFeatureToggle", body, Method.POST);
+            request.AddHeader("Content-Type", "application/json;charset=UTF-8");
+            return Client.Execute(request);
+        }
+
         public static IRestResponse DeleteApplication(string applicationId)
         {
             var request = RequestHelper.GetRequest("api/applications", Method.DELETE);
