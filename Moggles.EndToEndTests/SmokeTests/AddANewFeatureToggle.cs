@@ -11,7 +11,7 @@ namespace Moggles.EndToEndTests.SmokeTests
         [TestCategory("AddFeatureToggle")]
         [TestCategory("SmokeTests")]
 
-        public void AddAndDeleteANewFeatureToggle_TheFeatureToggleIsAddedAndDeleted()
+        public void AddAndDeleteANewFeatureToggle_TheFeatureToggleIsAddedDeletedAnHasHistoryVisible()
         {
             //act
             Pages.FeatureTogglesPage.Navigate();
@@ -40,6 +40,14 @@ namespace Moggles.EndToEndTests.SmokeTests
 
             //assert
             Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
+
+            // act 
+            Pages.FeatureTogglesPage.GoToDeletedFeatureToggles();
+
+            // assert
+            Pages.FeatureTogglesPage.IsDeletedFeatureTogglesModalVisible();
+            var deletedFeatureToggleNameFromGrid = Pages.FeatureTogglesPage.GetDeletedFeatureToggleNameFromGrid();
+            deletedFeatureToggleNameFromGrid.Should().Be(Constants.NewFeatureToggleName);
         }
 
     }
