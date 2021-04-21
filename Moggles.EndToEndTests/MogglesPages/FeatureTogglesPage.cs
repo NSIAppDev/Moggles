@@ -71,6 +71,8 @@ namespace Moggles.EndToEndTests.MogglesPages
         private readonly By _pageSpinner = By.CssSelector(".fa-spinner");
         private readonly By _applicationsList = By.CssSelector("body > ul > li > a");
 
+        private readonly By _deletedFeatureTogglesModal = By.CssSelector("body .modal-grid.fade .modal-header > h4");
+        private readonly By _deletedFeatureToggleName = By.CssSelector("#deletedTogglesGrid tbody > tr:nth-child(1) > td:nth-child(1)");
 
         public IWebElement FeatureTogglesGrid => Browser.WebDriver.FindElement(By.Id("toggleGrid"));
         #endregion
@@ -346,6 +348,26 @@ namespace Moggles.EndToEndTests.MogglesPages
             Browser.WebDriver.FindElements(_deleteFeatureToggleReason)[2].Click();
             Browser.WebDriver.FindElements(_deleteFeatureToggleReason)[2].SendKeys(reasonToDelete);
             Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
+        }
+
+        public void GoToDeletedFeatureToggles()
+        {
+            WaitHelpers.ExplicitWait();
+            Thread.Sleep(2000);
+            _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "View Deleted Feature Toggles");
+        }
+
+        public bool IsDeletedFeatureTogglesModalVisible()
+        {
+            WaitHelpers.ExplicitWait();
+            return _deletedFeatureTogglesModal.IsElementPresent();
+        }
+
+        public string GetDeletedFeatureToggleNameFromGrid()
+        {
+            WaitHelpers.ExplicitWait();
+            _deletedFeatureTogglesModal.WaitForElement();
+            return _deletedFeatureToggleName.GetText();
         }
 
     }

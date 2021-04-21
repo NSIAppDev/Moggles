@@ -41,12 +41,16 @@ namespace Moggles.EndToEndTests.Helpers
             var featureTogglesResultsOutput = JsonConvert.DeserializeObject<IEnumerable<FeatureToggleViewModel>>(featureToggles.Content);
             return featureTogglesResultsOutput.FirstOrDefault(x => x.ToggleName.Equals(featureToggleName));
         }
-        public static IRestResponse DeleteFeatureToggles(string applicationId, string featureToggleId)
+        public static IRestResponse DeleteFeatureToggles(string applicationId, string featureToggleId, string reasonToDelete)
         {
-            var request = RequestHelper.GetRequest("api/FeatureToggles", Method.DELETE);
+            var body = new DeleteFeatureToggleModel
+            {
+                ApplicationId = new Guid(applicationId),
+                FeatureToggleId = new Guid(featureToggleId),
+                Reason = reasonToDelete
+            };
+            var request = RequestHelper.GetRequest("api/FeatureToggles", body, Method.DELETE);
             request.AddHeader("Content-Type", "application/json;charset=UTF-8");
-            request.AddParameter("id", featureToggleId);
-            request.AddParameter("applicationId", applicationId);
             return Client.Execute(request);
         }
         public static IRestResponse DeleteApplication(string applicationId)
