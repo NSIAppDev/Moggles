@@ -24,8 +24,8 @@ namespace Moggles.EndToEndTests.SmokeTests
 
             //act
             Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
-            Pages.FeatureTogglesPage.DeleteToggleOnEdit();
-            
+            Pages.FeatureTogglesPage.DeleteToggleOnEdit(Constants.DeleteToggleOnEditReason);
+
             //assert
             Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
 
@@ -36,7 +36,7 @@ namespace Moggles.EndToEndTests.SmokeTests
             Pages.FeatureTogglesPage.IsFeatureToggleDisplayed(Constants.NewFeatureToggleName).Should().BeTrue();
 
             // act
-            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.NewFeatureToggleName);
+            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.NewFeatureToggleName, Constants.DeleteToggleReason);
 
             //assert
             Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();

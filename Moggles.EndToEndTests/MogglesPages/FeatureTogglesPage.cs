@@ -35,6 +35,7 @@ namespace Moggles.EndToEndTests.MogglesPages
         private readonly By _editFeatureToggleIcon = By.CssSelector("#toggleGrid span > a:nth-child(1) > i");
         private readonly By _deleteFeatureToggleButtonOnEdit = By.Id("deleteToggleBtnEditModal");
         private readonly By _deleteFeatureToggleButton = By.Id("deleteToggleBtn");
+        private readonly By _deleteFeatureToggleReason = By.CssSelector("body > div.modal.fade.in .modal-body .form-horizontal textarea");
 
         private readonly By _editApplicationIcon = By.Id("showEditApplicationModalBtn");
         private readonly By _editApplicationNameInput = By.Id("editApplicationNameInput");
@@ -189,7 +190,7 @@ namespace Moggles.EndToEndTests.MogglesPages
             return false;
         }
 
-        public void DeleteFeatureToggle(string newFeatureToggleName)
+        public void DeleteFeatureToggle(string newFeatureToggleName, string reasonToDelete)
         {
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
@@ -203,6 +204,8 @@ namespace Moggles.EndToEndTests.MogglesPages
                 FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_deleteFeatureToggleIcon)
                     .Click();
                 WaitHelpers.ExplicitWait();
+                _deleteFeatureToggleReason.ActionClick();
+                _deleteFeatureToggleReason.ActionSendKeys(reasonToDelete);
                 _deleteFeatureToggleButton.ActionClick();
                 _pageSpinner.WaitForSpinner();
             }
@@ -333,14 +336,17 @@ namespace Moggles.EndToEndTests.MogglesPages
             _refreshEnvironmentButton.ActionClick();
         }
 
-        public void DeleteToggleOnEdit()
+        public void DeleteToggleOnEdit(string reasonToDelete)
         {
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             _deleteFeatureToggleButtonOnEdit.WaitUntilElementIsVisible();
             _deleteFeatureToggleButtonOnEdit.ActionClick();
             WaitHelpers.ExplicitWait();
+            Browser.WebDriver.FindElements(_deleteFeatureToggleReason)[2].Click();
+            Browser.WebDriver.FindElements(_deleteFeatureToggleReason)[2].SendKeys(reasonToDelete);
             Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
         }
+
     }
 }
