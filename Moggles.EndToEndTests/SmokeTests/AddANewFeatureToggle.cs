@@ -24,22 +24,11 @@ namespace Moggles.EndToEndTests.SmokeTests
 
             //act
             Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
-            Pages.FeatureTogglesPage.DeleteToggleOnEdit();
-            
-            //assert
-            Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
-
-            // act
-            Pages.FeatureTogglesPage.AddFeatureToggle(Constants.NewFeatureToggleName);
-
-            // assert
-            Pages.FeatureTogglesPage.IsFeatureToggleDisplayed(Constants.NewFeatureToggleName).Should().BeTrue();
-
-            // act
-            Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.NewFeatureToggleName);
+            Pages.FeatureTogglesPage.DeleteToggleOnEdit(Constants.DeleteToggleReason);
 
             //assert
             Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
+
         }
 
     }

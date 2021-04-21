@@ -34,7 +34,7 @@ namespace Moggles.EndToEndTests.SmokeTests
             var featureToggleProperties = FeatureFlagHandler.GetFeatureToggleProperties(FeatureFlagHandler.SmokeTestsApplicationId, Constants.FeatureToggleName);
             _featureToggleUpdateModel = FeatureFlagHandler.SetFeatureToggleUpdateModel(featureToggleProperties, FeatureFlagHandler.SmokeTestsApplicationId, false, Constants.SecondEnvName);
             FeatureFlagHandler.UpdateFeatureFlag(_featureToggleUpdateModel);
-            FeatureFlagHandler.DeleteFeatureToggles(FeatureFlagHandler.SmokeTestsApplicationId, featureToggleProperties.Id.ToString());
+            FeatureFlagHandler.DeleteFeatureToggles(FeatureFlagHandler.SmokeTestsApplicationId, featureToggleProperties.Id.ToString(), Constants.DeleteToggleReason);
             base.After();
         }
     }

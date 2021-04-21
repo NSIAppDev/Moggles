@@ -41,14 +41,31 @@ namespace Moggles.EndToEndTests.Helpers
             var featureTogglesResultsOutput = JsonConvert.DeserializeObject<IEnumerable<FeatureToggleViewModel>>(featureToggles.Content);
             return featureTogglesResultsOutput.FirstOrDefault(x => x.ToggleName.Equals(featureToggleName));
         }
-        public static IRestResponse DeleteFeatureToggles(string applicationId, string featureToggleId)
+        public static IRestResponse DeleteFeatureToggles(string applicationId, string featureToggleId, string reasonToDelete)
         {
-            var request = RequestHelper.GetRequest("api/FeatureToggles", Method.DELETE);
+            var body = new DeleteFeatureToggleModel
+            {
+                ApplicationId = new Guid(applicationId),
+                FeatureToggleId = new Guid(featureToggleId),
+                Reason = reasonToDelete
+            };
+            var request = RequestHelper.GetRequest("api/FeatureToggles", body, Method.DELETE);
             request.AddHeader("Content-Type", "application/json;charset=UTF-8");
-            request.AddParameter("id", featureToggleId);
-            request.AddParameter("applicationId", applicationId);
             return Client.Execute(request);
         }
+
+        public static IRestResponse AddFeatureToggles(string applicationId, string featureToggleName)
+        {
+            var body = new AddFeatureToggleModel
+            {
+                ApplicationId = new Guid(applicationId),
+                FeatureToggleName = featureToggleName
+            };
+            var request = RequestHelper.GetRequest("api/FeatureToggles/addFeatureToggle", body, Method.POST);
+            request.AddHeader("Content-Type", "application/json;charset=UTF-8");
+            return Client.Execute(request);
+        }
+
         public static IRestResponse DeleteApplication(string applicationId)
         {
             var request = RequestHelper.GetRequest("api/applications", Method.DELETE);

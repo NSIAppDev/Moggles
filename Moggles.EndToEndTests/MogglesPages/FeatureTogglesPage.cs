@@ -35,6 +35,7 @@ namespace Moggles.EndToEndTests.MogglesPages
         private readonly By _editFeatureToggleIcon = By.CssSelector("#toggleGrid span > a:nth-child(1) > i");
         private readonly By _deleteFeatureToggleButtonOnEdit = By.Id("deleteToggleBtnEditModal");
         private readonly By _deleteFeatureToggleButton = By.Id("deleteToggleBtn");
+        private readonly By _deleteFeatureToggleReason = By.CssSelector("body > div.modal.fade.in .modal-body .form-horizontal textarea");
 
         private readonly By _editApplicationIcon = By.Id("showEditApplicationModalBtn");
         private readonly By _editApplicationNameInput = By.Id("editApplicationNameInput");
@@ -70,6 +71,8 @@ namespace Moggles.EndToEndTests.MogglesPages
         private readonly By _pageSpinner = By.CssSelector(".fa-spinner");
         private readonly By _applicationsList = By.CssSelector("body > ul > li > a");
 
+        private readonly By _deletedFeatureTogglesModal = By.CssSelector("body .modal-grid.fade .modal-header > h4");
+        private readonly By _deletedFeatureToggleName = By.CssSelector("#deletedTogglesGrid tbody > tr:nth-child(1) > td:nth-child(1)");
 
         public IWebElement FeatureTogglesGrid => Browser.WebDriver.FindElement(By.Id("toggleGrid"));
         #endregion
@@ -189,7 +192,7 @@ namespace Moggles.EndToEndTests.MogglesPages
             return false;
         }
 
-        public void DeleteFeatureToggle(string newFeatureToggleName)
+        public void DeleteFeatureToggle(string newFeatureToggleName, string reasonToDelete)
         {
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
@@ -203,7 +206,9 @@ namespace Moggles.EndToEndTests.MogglesPages
                 FeatureTogglesGrid.GetColumnSpecifiedByIndex(_rowSelector, i, 0).FindElement(_deleteFeatureToggleIcon)
                     .Click();
                 WaitHelpers.ExplicitWait();
-                _deleteFeatureToggleButton.ActionClick();
+                _deleteFeatureToggleReason.ActionClick();
+                _deleteFeatureToggleReason.ActionSendKeys(reasonToDelete);
+                Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
                 _pageSpinner.WaitForSpinner();
             }
         }
@@ -333,14 +338,37 @@ namespace Moggles.EndToEndTests.MogglesPages
             _refreshEnvironmentButton.ActionClick();
         }
 
-        public void DeleteToggleOnEdit()
+        public void DeleteToggleOnEdit(string reasonToDelete)
         {
             _pageSpinner.WaitForSpinner();
             WaitHelpers.ExplicitWait();
             _deleteFeatureToggleButtonOnEdit.WaitUntilElementIsVisible();
             _deleteFeatureToggleButtonOnEdit.ActionClick();
             WaitHelpers.ExplicitWait();
+            Browser.WebDriver.FindElements(_deleteFeatureToggleReason)[2].Click();
+            Browser.WebDriver.FindElements(_deleteFeatureToggleReason)[2].SendKeys(reasonToDelete);
             Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
         }
+
+        public void GoToDeletedFeatureToggles()
+        {
+            WaitHelpers.ExplicitWait();
+            Thread.Sleep(2000);
+            _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "View Deleted Feature Toggles");
+        }
+
+        public bool IsDeletedFeatureTogglesModalVisible()
+        {
+            WaitHelpers.ExplicitWait();
+            return _deletedFeatureTogglesModal.IsElementPresent();
+        }
+
+        public string GetDeletedFeatureToggleNameFromGrid()
+        {
+            WaitHelpers.ExplicitWait();
+            _deletedFeatureTogglesModal.WaitForElement();
+            return _deletedFeatureToggleName.GetText();
+        }
+
     }
 }
