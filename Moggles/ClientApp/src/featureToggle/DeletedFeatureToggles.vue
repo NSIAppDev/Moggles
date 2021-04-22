@@ -69,6 +69,7 @@
         },
         mounted() {
             Bus.$on(events.showDeletedFeatureTogglesModal, () => {
+                this.$refs['deletedTogglesGrid'].reset();
                 this.getFeatureToggles();
             });
         },
