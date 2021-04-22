@@ -64,7 +64,10 @@
                 return { enabled: true, perPage: this.rowsPerPage, dropdownAllowAll: false };
             },
             getSortOptions() {
-                return { enabled: true };
+                return {
+                    enabled: true,
+                    initialSortBy: { field: 'deletionDate', type: 'desc' }
+                };
             }
         },
         mounted() {
