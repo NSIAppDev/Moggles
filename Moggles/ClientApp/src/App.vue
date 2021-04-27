@@ -37,7 +37,6 @@
               <a id="toolsBtn" class="dropdown-toggle" role="button">Tools <span class="caret" /></a>
               <template slot="dropdown">
                 <li><a role="button" @click="reloadCurrentApplicationToggles()">Reload Application Toggles</a></li>
-                <li><a role="button" @click="showDeletedFeatureTogglesModal()">View Deleted Feature Toggles</a></li>
                 <li><a role="button" @click="showAddFeatureToggleModal()">Add Feature Toggle</a></li>
                 <li><a role="button" @click="showAddEnvModal()">Add New Environment</a></li>
                 <li><a role="button" @click="showAddFeatureToggleScheduleModal()">Add New Feature Toggle Schedule</a></li>
@@ -58,10 +57,6 @@
       <add-featuretoggle :application="selectedApp" />
     </modal>
 
-    <modal v-model="showDeletedFeatureToggles" title="Deleted Feature Toggles" :footer="false"
-           class="modal-grid">
-      <deleted-featuretoggles :application="selectedApp" />
-    </modal>
 
     <modal v-model="showAddApp" title="Add Application" :footer="false">
       <add-application />
@@ -94,6 +89,26 @@
       <div class="row">
         <div class="col-md-12">
           <toggles-list />
+        </div>
+      </div>
+      <div class="row margin-top-20">
+        <div class="col-sm-12">
+          <div class="panel panel-default">
+            <div class="panel-heading" @click="toggleDeletedFeatureToggles">
+              <a>
+                <span class="pull-right">
+                  <i v-if="!showDeletedFeatureToggles" class="fa fa-caret-down fa-2x" />
+                  <i v-else class="fa fa-caret-up fa-2x" />
+                </span>
+                <h4>Deleted Feature Toggles</h4>
+              </a>
+            </div>
+            <div class="panel-body padding-0">
+              <collapse v-model="showDeletedFeatureToggles">
+                <deleted-featuretoggles :application="selectedApp" />
+              </collapse>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -207,9 +222,9 @@
                 this.showAddEnv = true;
                 Bus.$emit(events.openAddEnvironmentModal);
             },
-            showDeletedFeatureTogglesModal() {
-                this.showDeletedFeatureToggles = true;
-                Bus.$emit(events.showDeletedFeatureTogglesModal);
+            toggleDeletedFeatureToggles() {
+                this.showDeletedFeatureToggles = !this.showDeletedFeatureToggles;
+				Bus.$emit(events.refreshDeletedFeatureToggles);
             },
             reloadCurrentApplicationToggles() {
                 Bus.$emit(events.reloadApplicationToggles);

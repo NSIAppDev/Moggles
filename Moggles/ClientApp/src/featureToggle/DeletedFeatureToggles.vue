@@ -43,12 +43,12 @@
                     },
                     {
                         field: 'reason',
-                        label: 'Reason',
+                        label: 'Reason for Deletion',
                         width: '300px'
                     },
                     {
                         field: 'deletionDate',
-                        label: 'Deleted',
+                        label: 'Deleted On',
                         sortable: true,
                         width: '140px',
                         thClass: 'sortable',
@@ -71,7 +71,7 @@
             }
         },
         mounted() {
-            Bus.$on(events.showDeletedFeatureTogglesModal, () => {
+			Bus.$on(events.refreshDeletedFeatureToggles, () => {
                 this.$refs['deletedTogglesGrid'].reset();
                 this.getFeatureToggles();
             });
