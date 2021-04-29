@@ -84,7 +84,8 @@
                     }
                 ).then(() => {
                     this.toggleToDelete = null
-                    Bus.$emit(events.closeDeleteFeatureToggleModal);
+					Bus.$emit(events.closeDeleteFeatureToggleModal);
+					Bus.$emit(events.refreshDeletedFeatureToggles);
                 }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             },
             cancelDeleteToggle() {

@@ -15,7 +15,7 @@ export const events = {
     closeDeleteEnvironmentModal: "close-deleteEnvironment",
     closeEditEnvironmentModal: "close-editEnvironment",
     togglesLoaded: "toggles-loaded",
-    showDeletedFeatureTogglesModal: "showDeletedFeatureTogglesModal",
+    refreshDeletedFeatureToggles: "refreshDeletedFeatureToggles",
     openAddFeatureToggleModal: "openAddFeatureToggleModal",
     toggleAdded: "toggle-added",
     closeAddFeatureToggleModal: "close-add-toggle",
