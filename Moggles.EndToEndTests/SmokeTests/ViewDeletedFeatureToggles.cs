@@ -30,10 +30,10 @@ namespace Moggles.EndToEndTests.SmokeTests
             Pages.FeatureTogglesPage.IsGridEmpty().Should().BeTrue();
 
             // act 
-            Pages.FeatureTogglesPage.GoToDeletedFeatureToggles();
+            Pages.FeatureTogglesPage.OpenDeletedFeatureTogglesSection();
 
             // assert
-            Pages.FeatureTogglesPage.IsDeletedFeatureTogglesModalVisible();
+            Pages.FeatureTogglesPage.IsDeletedFeatureTogglesPanelVisible();
             var deletedFeatureToggleNameFromGrid = Pages.FeatureTogglesPage.GetDeletedFeatureToggleNameFromGrid();
             deletedFeatureToggleNameFromGrid.Should().Be(Constants.FeatureToggleName);
         }

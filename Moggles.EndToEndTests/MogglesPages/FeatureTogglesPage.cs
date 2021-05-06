@@ -15,6 +15,7 @@ namespace Moggles.EndToEndTests.MogglesPages
         private readonly By _toolsMenuDropdown = By.CssSelector(".dropdown-menu li");
         private readonly By _statusesDropdown = By.CssSelector("tr:nth-child(2) > th:nth-child(8) > div > select");
         private readonly By _openAddApplicationModalBtn = By.Id("showAddApplicationModalBtn");
+        private readonly By _openDeletedFeatureTogglesSection = By.CssSelector("a > h4");
 
         private readonly By _addFeatureToggleButton = By.Id("addFeatureToggleBtn");
         private readonly By _closeAddToggleModalBtn = By.Id("closeAddToggleModalBtn");
@@ -71,7 +72,7 @@ namespace Moggles.EndToEndTests.MogglesPages
         private readonly By _pageSpinner = By.CssSelector(".fa-spinner");
         private readonly By _applicationsList = By.CssSelector("body > ul > li > a");
 
-        private readonly By _deletedFeatureTogglesModal = By.CssSelector("body .modal-grid.fade .modal-header > h4");
+        private readonly By _deletedFeatureTogglesPanel = By.CssSelector(".panel-body.padding-0");
         private readonly By _deletedFeatureToggleName = By.CssSelector("#deletedTogglesGrid tbody > tr:nth-child(1) > td:nth-child(1)");
 
         public IWebElement FeatureTogglesGrid => Browser.WebDriver.FindElement(By.Id("toggleGrid"));
@@ -350,23 +351,22 @@ namespace Moggles.EndToEndTests.MogglesPages
             Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
         }
 
-        public void GoToDeletedFeatureToggles()
+        public void OpenDeletedFeatureTogglesSection()
         {
             WaitHelpers.ExplicitWait();
-            Thread.Sleep(2000);
-            _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "View Deleted Feature Toggles");
+            _openDeletedFeatureTogglesSection.ActionClick();
         }
 
-        public bool IsDeletedFeatureTogglesModalVisible()
+        public bool IsDeletedFeatureTogglesPanelVisible()
         {
             WaitHelpers.ExplicitWait();
-            return _deletedFeatureTogglesModal.IsElementPresent();
+            return _deletedFeatureTogglesPanel.IsElementPresent();
         }
 
         public string GetDeletedFeatureToggleNameFromGrid()
         {
             WaitHelpers.ExplicitWait();
-            _deletedFeatureTogglesModal.WaitForElement();
+            _deletedFeatureTogglesPanel.WaitForElement();
             return _deletedFeatureToggleName.GetText();
         }
 
