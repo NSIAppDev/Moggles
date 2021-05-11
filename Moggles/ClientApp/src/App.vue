@@ -171,7 +171,8 @@
         created() {
             Bus.$on(events.applicationChanged, app => {
                 if (app) {
-                    this.selectedApp = app;
+					this.selectedApp = app;
+                    this.showDeletedFeatureToggles = false;
                 }
             });
 
