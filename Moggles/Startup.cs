@@ -1,24 +1,25 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using GreenPipes;
+﻿using GreenPipes;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Moggles.BackgroundServices;
-using Moggles.Consumers;
-using Moggles.Data.NoDb;
-using NoDb;
-using Moggles.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.SpaServices.Webpack;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Moggles.BackgroundServices;
+using Moggles.Consumers;
+using Moggles.Data.NoDb;
+using Moggles.Domain;
 using Moggles.Hubs;
+using NoDb;
+using System;
+using System.IO;
+using System.Net;
+using System.Text;
 
 namespace Moggles
 {
@@ -50,6 +51,10 @@ namespace Moggles
                 o.HandshakeTimeout = TimeSpan.FromSeconds(20);
             });
 
+            services.AddHttpsRedirection(o =>
+            {
+                o.RedirectStatusCode = (int)HttpStatusCode.TemporaryRedirect;
+            });
 
             services.AddApplicationInsightsTelemetry();
 
@@ -71,12 +76,13 @@ namespace Moggles
             });
         }
 
+
         public virtual void ConfigureAuthServices(IServiceCollection services)
         {
             var admins = Configuration["CustomRoles:Admins"];
-
+        
             services.AddAuthentication(IISDefaults.AuthenticationScheme);
-
+        
             RegisterJwtAuthentication(services);
             
             services.AddAuthorization(options =>
@@ -132,6 +138,7 @@ namespace Moggles
             }
 
             app.UseStaticFiles();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -143,10 +150,11 @@ namespace Moggles
                 endpoints.MapControllers();
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapFallbackToController("Index", "Home");
-                endpoints.MapHub<IsDueHub>("/isDueHub", options => {
+                endpoints.MapHub<IsDueHub>("/isDueHub", options =>
+                {
                     options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.LongPolling;
                 });
-                
+
             });
         }
 
