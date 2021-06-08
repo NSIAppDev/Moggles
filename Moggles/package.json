@@ -62,7 +62,7 @@
     "axios": "^0.21.1",
     "bootstrap-sass": "^3.4.1",
     "jquery": "^3.5.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "moment": "^2.27.0",
     "popper.js": "^1.12.9",
     "uiv": "^0.32.0",
