@@ -59,7 +59,7 @@ namespace Moggles.Controllers
                             Description = ftr.Description,
                             Environments = ftr.Environments
                         }).ToList()
-                }).OrderByDescending(ft => ft.CreatedDate);
+                }).OrderBy(ft => ft.ToggleName);
             return Ok(toggles);
 
         }
