@@ -184,6 +184,20 @@ namespace Moggles.Controllers
             return Ok();
         }
 
+        [HttpDelete]
+        [Route("deleteToggleFromHistory")]
+        public async Task<IActionResult> DeleteFeatureToggleFromHistory([FromBody] DeleteToggleFromHistoryModel model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var app = await _applicationsRepository.FindByIdAsync(model.ApplicationId);
+            app.DeleteFeatureToggleFromHistory(model.ToggleId);
+
+            await _applicationsRepository.UpdateAsync(app);
+            return Ok();
+        }
+
         [HttpPost]
         [Route("AddEnvironment")]
         public async Task<IActionResult> AddEnvironment([FromBody] AddEnvironmentModel environmentModel)
