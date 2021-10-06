@@ -114,7 +114,7 @@
                     deleteFeatureTogglesFromHistoryModel.toggleIds.push(row.id);
                 });
 
-                axios.delete('/api/FeatureToggles/deleteToggleFromHistory',
+                axios.delete('/api/FeatureToggles/deleteTogglesFromHistory',
                     {
                         headers: { 'Content-Type': 'application/json; charset=utf-8' },
                         data: deleteFeatureTogglesFromHistoryModel
