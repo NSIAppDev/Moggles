@@ -7,11 +7,12 @@ using Moggles.Domain;
 using Moggles.Models;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Moggles.UnitTests.FeatureTogglesTests
 {
-    public class DeleteToggleFromHistoryTests
+    public class DeleteTogglesFromHistoryTests
     {
         [TestClass]
         public class RemoveFeatureToggleTests
@@ -48,14 +49,14 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 });
                 await _appRepository.AddAsync(app);
 
-                var model = new DeleteToggleFromHistoryModel
+                var model = new DeleteTogglesFromHistoryModel
                 {
-                    ToggleId = toggleId,
+                    ToggleIds = new List<Guid> { toggleId},
                     ApplicationId = app.Id
                 };
 
                 //act
-                var result = await _featureToggleController.DeleteFeatureToggleFromHistory(model);
+                var result = await _featureToggleController.DeleteFeatureTogglesFromHistory(model);
 
                 //assert
                 result.Should().BeOfType<OkResult>();

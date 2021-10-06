@@ -185,10 +185,12 @@ namespace Moggles.Domain
             });
         }
 
-        public void DeleteFeatureToggleFromHistory(Guid toggleId)
+        public void DeleteFeatureToggleFromHistory(List<Guid> toggleIds)
         {
-            var toggle = DeletedFeatureToggles.FirstOrDefault(t => t.Id == toggleId);
-            DeletedFeatureToggles.Remove(toggle);
+            foreach(var toggleId in toggleIds)
+            {
+                DeletedFeatureToggles.RemoveAll(t => t.Id == toggleId);
+            }
         }
 
         public ToggleData GetFeatureToggleBasicData(Guid toggleId)

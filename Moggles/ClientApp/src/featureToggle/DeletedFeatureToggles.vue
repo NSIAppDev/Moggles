@@ -1,18 +1,30 @@
 ﻿<template>
-  <div>
-    <vue-good-table id="deletedTogglesGrid" ref="deletedTogglesGrid"
-                    :columns="gridColumns"
-                    :rows="toggles"
-                    :pagination-options="getPaginationOptions"
-                    :sort-options="getSortOptions"
-                    style-class="vgt-table striped condensed bordered">
-      <div slot="emptystate">
-        <div class="text-center">
-          There are no deleted toggles for this application
-        </div>
-      </div>
-    </vue-good-table>
-  </div>
+    <div>
+        <vue-good-table id="deletedTogglesGrid" ref="deletedTogglesGrid"
+                        :columns="gridColumns"
+                        :rows="toggles"
+                        :pagination-options="getPaginationOptions"
+                        :sort-options="getSortOptions"
+                        :select-options="{
+                        enabled: true,
+                        selectOnCheckboxOnly: true,
+                        clearSelectionText: 'clear',
+                        disableSelectInfo: false,
+                        selectAllByGroup: true,
+                    }"
+                        style-class="vgt-table striped condensed bordered">
+            <div slot="emptystate">
+                <div class="text-center">
+                    There are no deleted toggles for this application
+                </div>
+            </div>
+            <div slot="selected-row-actions">
+                <button @click ="deleteFeatureToggleFromHistory">
+                    Delete
+                </button>
+            </div>
+        </vue-good-table>
+    </div>
 </template>
 <script>
     import axios from 'axios';
@@ -53,6 +65,9 @@
                         width: '140px',
                         thClass: 'sortable',
                         formatFn: this.formatDate,
+                    },
+                    {
+                        field : ''
                     }
                 ],
                 toggles: [],
@@ -88,6 +103,24 @@
             },
             formatDate(date) {
                 return moment(date).format('M/D/YY hh:mm:ss A');
+            },
+            deleteFeatureToggleFromHistory() {
+                let deleteFeatureTogglesFromHistoryModel =
+                {
+                    applicationId: this.application.id,
+                    toggleIds: []
+                };
+                this.$refs['deletedTogglesGrid'].selectedRows.forEach((row) => {
+                    deleteFeatureTogglesFromHistoryModel.toggleIds.push(row.id);
+                });
+
+                axios.delete('/api/FeatureToggles/deleteToggleFromHistory',
+                    {
+                        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+                        data: deleteFeatureTogglesFromHistoryModel
+                    }).then(() => {
+                        this.getFeatureToggles();
+                    }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             }
         }
     }
