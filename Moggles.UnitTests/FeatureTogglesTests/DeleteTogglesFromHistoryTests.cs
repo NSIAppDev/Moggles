@@ -35,7 +35,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             }
 
             [TestMethod]
-            public async Task DeleteFeatureToggleFromHistory_FeatureToggleIsDeleted()
+            public async Task DeleteToggleFromHistory_FeatureToggleIsDeleted()
             {
                 //arrange
                 var app = Application.Create("TestDelete", "PROD", false);
@@ -56,7 +56,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
                 };
 
                 //act
-                var result = await _featureToggleController.DeleteFeatureTogglesFromHistory(model);
+                var result = await _featureToggleController.DeleteTogglesFromHistory(model);
 
                 //assert
                 result.Should().BeOfType<OkResult>();

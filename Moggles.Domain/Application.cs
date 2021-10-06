@@ -185,7 +185,7 @@ namespace Moggles.Domain
             });
         }
 
-        public void DeleteFeatureToggleFromHistory(List<Guid> toggleIds)
+        public void DeleteToggleFromHistory(List<Guid> toggleIds)
         {
             foreach(var toggleId in toggleIds)
             {

@@ -186,13 +186,13 @@ namespace Moggles.Controllers
 
         [HttpDelete]
         [Route("deleteTogglesFromHistory")]
-        public async Task<IActionResult> DeleteFeatureTogglesFromHistory([FromBody] DeleteTogglesFromHistoryModel model)
+        public async Task<IActionResult> DeleteTogglesFromHistory([FromBody] DeleteTogglesFromHistoryModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var app = await _applicationsRepository.FindByIdAsync(model.ApplicationId);
-            app.DeleteFeatureToggleFromHistory(model.ToggleIds);
+            app.DeleteToggleFromHistory(model.ToggleIds);
 
             await _applicationsRepository.UpdateAsync(app);
             return Ok();
