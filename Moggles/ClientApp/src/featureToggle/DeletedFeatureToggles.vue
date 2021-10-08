@@ -65,6 +65,7 @@
                         width: '140px',
                         thClass: 'sortable',
                         formatFn: this.formatDate,
+                    }
                 ],
                 toggles: [],
                 rowsPerPage: 10
