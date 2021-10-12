@@ -65,9 +65,6 @@
                         width: '140px',
                         thClass: 'sortable',
                         formatFn: this.formatDate,
-                    },
-                    {
-                        field : ''
                     }
                 ],
                 toggles: [],
