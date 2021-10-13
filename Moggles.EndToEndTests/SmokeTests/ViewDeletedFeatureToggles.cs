@@ -37,5 +37,12 @@ namespace Moggles.EndToEndTests.SmokeTests
             var deletedFeatureToggleNameFromGrid = Pages.FeatureTogglesPage.GetDeletedFeatureToggleNameFromGrid();
             deletedFeatureToggleNameFromGrid.Should().Be(Constants.FeatureToggleName);
         }
+
+        [TestCleanup]
+        public override void After()
+        {
+            Pages.FeatureTogglesPage.RemoveAllDeletedFeatureToggles();
+            base.After();
+        }
     }
 }

@@ -73,8 +73,10 @@ namespace Moggles.EndToEndTests.MogglesPages
         private readonly By _applicationsList = By.CssSelector("body > ul > li > a");
 
         private readonly By _deletedFeatureTogglesPanel = By.CssSelector(".panel-body.padding-0");
-        private readonly By _deletedFeatureToggleName = By.CssSelector("#deletedTogglesGrid tbody > tr:nth-child(1) > td:nth-child(1)");
-
+        private readonly By _deletedFeatureToggleName = By.CssSelector("#deletedTogglesGrid tbody > tr:nth-child(1) > td:nth-child(2)");
+        private readonly By _deleteAllDeletedFeatureTogglesCheckbox = By.CssSelector("#deletedTogglesGrid table > thead > tr:nth-child(1) > th > input[type=checkbox]");
+        private readonly By _removeDeletedFeatureTogglesButton = By.CssSelector(".vgt-selection-info-row div > div > button");
+      
         public IWebElement FeatureTogglesGrid => Browser.WebDriver.FindElement(By.Id("toggleGrid"));
         #endregion
 
@@ -370,5 +372,10 @@ namespace Moggles.EndToEndTests.MogglesPages
             return _deletedFeatureToggleName.GetText();
         }
 
+        public void  RemoveAllDeletedFeatureToggles()
+        {
+            _deleteAllDeletedFeatureTogglesCheckbox.ActionClick();
+            _removeDeletedFeatureTogglesButton.ActionClick();
+        }
     }
 }
