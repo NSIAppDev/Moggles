@@ -418,6 +418,7 @@
                 Bus.$emit(events.editEnvironment, environment);
             },
             openEditFeatureToggleModal(row) {
+				Bus.$emit(events.blockUI);
                 this.showEditModal = true;
                 Bus.$emit(events.openEditFeatureToggleModal, _.clone(row));
             },

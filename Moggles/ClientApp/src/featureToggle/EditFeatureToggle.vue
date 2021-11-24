@@ -192,7 +192,11 @@
 					}
 				}).then((response) => {
 					this.environments = response.data;
-				}).catch(() => Bus.$emit(events.showErrorAlertModal, { 'customErrorMessage': 'Error getting list of environments.' }));
+					Bus.$emit(events.unblockUI);
+				}).catch(() => {
+					Bus.$emit(events.showErrorAlertModal, { 'customErrorMessage': 'Error getting list of environments.' });
+					Bus.$emit(events.unblockUI);
+				});
 			},
 			saveToggle() {
 				this.validateEditModel();
