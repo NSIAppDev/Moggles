@@ -50,7 +50,7 @@ namespace Moggles.Controllers
                                 FirstTimeDeployDate = fts.FirstTimeDeployDate,
                                 UpdatedByUser = fts.UpdatedbyUser
                             }).ToList(),
-                    ReasonsToChange = ft.ReasonsToChange
+                    ReasonsToChange = ft.ReasonsToChange.OrderByDescending(ftr=>ftr.DateAdded).Take(100)
                         .Select(ftr =>
                         new FeatureToggleReasonToChangeViewModel
                         {
