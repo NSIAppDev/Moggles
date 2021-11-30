@@ -361,7 +361,7 @@
                             workItemIdentifier: toggle.workItemIdentifier,
                             createdDate: toggle.createdDate,
                             changedDate: toggle.changedDate,
-                            reasonsToChange: toggle.reasonsToChange.reverse()
+                            reasonsToChange: toggle.reasonsToChange
                         }
 
                         this.environmentsNameList.forEach(env => {
