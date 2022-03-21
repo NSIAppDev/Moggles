@@ -15,7 +15,7 @@
                     :pagination-options="getPaginationOptions"
                     :sort-options="{
                       enabled: true,
-                      initialSortBy: {field: 'toggleName', type: 'asc'}
+                      initialSortBy: {field: 'isPermanent', type: 'desc'}
                     }"
                     style-class="vgt-table striped condensed bordered"
                     @on-per-page-change="onPageChange">
