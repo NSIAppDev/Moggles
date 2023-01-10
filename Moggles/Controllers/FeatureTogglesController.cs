@@ -34,6 +34,8 @@ namespace Moggles.Controllers
                     Id = ft.Id,
                     ToggleName = ft.ToggleName,
                     UserAccepted = ft.UserAccepted,
+                    Status = ft.Status,
+                    HoldReason = ft.HoldReason,
                     Notes = ft.Notes,
                     CreatedDate = ft.CreatedDate,
                     ChangedDate = ft.FeatureToggleStatuses.OrderByDescending(_ => _.LastUpdated).FirstOrDefault().LastUpdated,
@@ -111,6 +113,18 @@ namespace Moggles.Controllers
                 }
 
             }
+
+            if (model.Status != toggleData.Status)
+            {
+                if (model.Status != null)
+                    app.UpdateFeatureToggleStatus(model.Id, (int)model.Status);
+            }
+
+            if (model.HoldReason != toggleData.HoldReason)
+            {
+                app.UpdateFeatureToggleHoldReason(model.Id, model.HoldReason);
+            }
+
             if (!string.IsNullOrEmpty(model.WorkItemIdentifier) && model.WorkItemIdentifier != toggleData.WorkItemIdentifier)
             {
                 app.UpdateFeaturetoggleWorkItemIdentifier(model.Id, model.WorkItemIdentifier);

@@ -8,6 +8,8 @@ namespace Moggles.Domain
     {
         public string ToggleName { get; set; }
         public bool UserAccepted { get; set; }
+        public int? Status { get; set; }
+        public string HoldReason { get; set; }
         public string Notes { get; set; }
         public DateTime CreatedDate { get; set; }
         public bool IsPermanent { get; set; }
@@ -60,6 +62,16 @@ namespace Moggles.Domain
         public void SetNotes(string notes)
         {
             Notes = notes;
+        }
+
+        public void SetToggleStatus(int? status)
+        {
+            Status = status;
+        }
+
+        public void SetHoldReason(string reason)
+        {
+            HoldReason = reason;
         }
 
         public void MarkAsAccepted()

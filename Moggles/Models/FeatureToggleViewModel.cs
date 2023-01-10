@@ -10,6 +10,8 @@ namespace Moggles.Models
         public bool UserAccepted { get; set; }
         public bool IsPermanent { get; set; }
         public string Notes { get; set; }
+        public int? Status { get; set; }
+        public string HoldReason { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ChangedDate { get; set; }
         public List<FeatureToggleStatusViewModel> Statuses { get; set; }

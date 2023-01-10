@@ -202,6 +202,8 @@ namespace Moggles.Domain
                 ToggleName = toggle.ToggleName,
                 IsPermanent = toggle.IsPermanent,
                 Notes = toggle.Notes,
+                Status = toggle.Status,
+                HoldReason = toggle.HoldReason,
                 UserAccepted = toggle.UserAccepted,
                 WorkItemIdentifier = toggle.WorkItemIdentifier,
                 ReasonsToChanges = toggle.ReasonsToChange
@@ -241,6 +243,18 @@ namespace Moggles.Domain
         {
             var toggle = FeatureToggles.Find(f => f.Id == toggleId);
             toggle.MarkUserRejected();
+        }
+
+        public void UpdateFeatureToggleStatus(Guid toggleId, int? status)
+        {
+            var toggle = FeatureToggles.Find(ft => ft.Id == toggleId);
+            toggle.SetToggleStatus(status);
+        }
+
+        public void UpdateFeatureToggleHoldReason(Guid toggleId, string reason)
+        {
+            var toggle = FeatureToggles.Find(ft => ft.Id == toggleId);
+            toggle.SetHoldReason(reason);
         }
 
         public void ChangeFeatureToggleName(Guid toggleId, string newName)
