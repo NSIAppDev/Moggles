@@ -68,7 +68,6 @@ namespace Moggles.Controllers
                             app.FeatureAcceptedByUser(toggle.Id);
                             break;
                         default:
-                            app.FeatureRejectedByUser(toggle.Id);
                             break;
                     }
                     app.UpdateFeatureToggleStatus(toggle.Id, null);
