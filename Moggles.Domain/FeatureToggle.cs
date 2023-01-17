@@ -64,16 +64,6 @@ namespace Moggles.Domain
             Notes = notes;
         }
 
-        public void SetToggleStatus(int? status)
-        {
-            Status = status;
-        }
-
-        public void SetHoldReason(string reason)
-        {
-            HoldReason = reason;
-        }
-
         public void MarkAsAccepted()
         {
             UserAccepted = true;

@@ -248,13 +248,13 @@ namespace Moggles.Domain
         public void UpdateFeatureToggleStatus(Guid toggleId, int? status)
         {
             var toggle = FeatureToggles.Find(ft => ft.Id == toggleId);
-            toggle.SetToggleStatus(status);
+            toggle.Status = status;
         }
 
         public void UpdateFeatureToggleHoldReason(Guid toggleId, string reason)
         {
             var toggle = FeatureToggles.Find(ft => ft.Id == toggleId);
-            toggle.SetHoldReason(reason);
+            toggle.HoldReason = reason;
         }
 
         public void ChangeFeatureToggleName(Guid toggleId, string newName)

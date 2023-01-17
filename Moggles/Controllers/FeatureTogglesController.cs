@@ -114,10 +114,9 @@ namespace Moggles.Controllers
 
             }
 
-            if (model.Status != toggleData.Status)
+            if (model.Status != toggleData.Status && model.Status != null)
             {
-                if (model.Status != null)
-                    app.UpdateFeatureToggleStatus(model.Id, (int)model.Status);
+                app.UpdateFeatureToggleStatus(model.Id, (int)model.Status);
             }
 
             if (model.HoldReason != toggleData.HoldReason)
