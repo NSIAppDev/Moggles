@@ -27,19 +27,37 @@
               <textarea v-model="rowToEdit.notes" class="form-control" rows="2" />
             </div>
           </div>
+          <div v-if="rowToEdit.showStatus">
+            <label class="col-sm-4 margin-top-8 control-label">Status</label>
+            <div class="col-sm-7 margin-top-8">
+              <select v-model="rowToEdit.status" class="form-control">
+                <option value="0" selected>Unaccepted</option>
+                <option value="1">Accepted</option>
+                <option value="2">On Hold</option>
+              </select>
+            </div>
+            <div v-if="rowToEdit.status == 2">
+              <label class="col-sm-4 margin-top-8 control-label">Hold Reason</label>
+              <div class="col-sm-7 margin-top-8">
+                <textarea v-model="rowToEdit.holdReason" class="form-control" rows="2" maxlength="500" />
+              </div>
+            </div>
+          </div>
+          <div v-else>
+            <div class="col-sm-12 margin-top-8">
+              <label class="col-sm-4 control-label">Accepted by User</label>
+              <div class="col-sm-1 margin-top-10">
+                <p-check id="editAcceptedByUserCheckbox" v-model="rowToEdit.userAccepted" class="p-icon p-fill"
+                  color="default">
+                  <i slot="extra" class="icon fas fa-check" />
+                </p-check>
+              </div>
+            </div>
+          </div>
           <div class="col-sm-12 margin-top-8">
             <label class="col-sm-4 control-label">Is Permanent</label>
             <div class="col-sm-1 margin-top-10">
               <p-check id="editIsPermanentCheckbox" v-model="rowToEdit.isPermanent" class="p-icon p-fill"
-                       color="default">
-                <i slot="extra" class="icon fas fa-check" />
-              </p-check>
-            </div>
-          </div>
-          <div class="col-sm-12 margin-top-8">
-            <label class="col-sm-4 control-label">Accepted by User</label>
-            <div class="col-sm-1 margin-top-10">
-              <p-check id="editAcceptedByUserCheckbox" v-model="rowToEdit.userAccepted" class="p-icon p-fill"
                        color="default">
                 <i slot="extra" class="icon fas fa-check" />
               </p-check>
@@ -168,7 +186,7 @@
 				this.initialiseModal();
 				this.rowToEdit = toggle;
 				this.initialToggle = _.cloneDeep(toggle);
-                this.getEnvironments();
+				this.getEnvironments();
 			});
 
 			Bus.$on(events.closeDeleteFeatureToggleModal, () => {
@@ -218,7 +236,9 @@
 				let toggleUpdateModel = {
 					id: this.rowToEdit.id,
 					applicationid: this.application.id,
-					userAccepted: this.rowToEdit.userAccepted,
+                    userAccepted: this.rowToEdit.userAccepted,
+                    status: parseInt(this.rowToEdit.status),
+					holdReason: this.rowToEdit.status == 2 ? this.rowToEdit.holdReason : null,
 					notes: this.rowToEdit.notes,
 					workItemIdentifier: !this.stringIsNullOrEmpty(this.rowToEdit.workItemIdentifier) ? this.rowToEdit.workItemIdentifier : null,
 					featureToggleName: this.rowToEdit.toggleName.trim(),
@@ -251,6 +271,10 @@
 					this.editFeatureToggleErrors.push("Change reason description cannot have more than 500 characters");
 				}
 
+                if (parseInt(this.rowToEdit.status) == 2 && !this.holdReasonIsValid(this.rowToEdit.holdReason)) {
+                    this.editFeatureToggleErrors.push("Hold Reason is required and cannot exceed 500 characters")
+                }
+
 				_.forEach(this.environments, environment => {
 					if (this.environmentStatusHasChanged(environment)) {
 						if ((!this.reasonToChangeWhenToggleDisabledIsValid(environment) || !this.reasonToChangeWhenToggleEnabledIsValid(environment))) {
@@ -261,9 +285,9 @@
 			},
 			environmentStatusHasChanged(environment) {
 				return this.initialToggle[environment.envName] != this.rowToEdit[environment.envName];
-            },
-            acceptedByUserHasChanged() {
-                return this.initialToggle.userAccepted != this.rowToEdit.userAccepted;
+			},
+            statusHasChanged() {
+                return this.initialToggle.status != this.rowToEdit.status;
             },
 			stringIsNullOrEmpty(text) {
 				return !text || /^\s*$/.test(text);
@@ -286,6 +310,9 @@
 			reasonToChangeIsValid(reasonToChange) {
 				return this.stringIsNullOrEmpty(reasonToChange) || (!this.stringIsNullOrEmpty(reasonToChange) && reasonToChange.length <= 500);
 			},
+            holdReasonIsValid(holdReason) {
+                return !this.stringIsNullOrEmpty(holdReason) && holdReason.length <= 500;
+            },
 			editModelHasErrors() {
 				return this.editFeatureToggleErrors.length > 0;
 			},

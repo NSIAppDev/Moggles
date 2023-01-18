@@ -44,6 +44,9 @@
           <span>{{ props.row.toggleName }}</span> <span v-if="props.row.isPermanent" class="label label-danger">Permanent</span>
           <a v-for="schedule in getSchedulesForToggle(props.row.toggleName)" :key="schedule.scheduleId" @click="editToggleSchedule(schedule)"><i class="fas fa-clock" /> <i /></a>
         </span>
+        <span v-else-if="props.column.field == 'status'">
+          <span>{{getStatusValue(props.row)}}</span>
+        </span>
         <span v-else>
           {{ props.formattedRow[props.column.field] }}
         </span>
@@ -109,7 +112,8 @@
                 showDeleteConfirmationModal: false,
                 showSchedulerModal: false,
                 isRefreshAlertVisible: false,
-                isCacheRefreshEnabled: false
+                isCacheRefreshEnabled: false,
+                statusValues: ["Unaccepted", "Accepted", "On Hold"],
             }
         },
         computed: {
@@ -123,6 +127,9 @@
                 return _.map(this.environments, (env) => {
                     return env.envName;
                 });
+            },
+            hasBeenMigrated() {
+                return this.toggles.some(ft => ft.status != null);
             }
         },
         created() {
@@ -130,6 +137,11 @@
                 this.isCacheRefreshEnabled = response.data;
             }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             this.subscribeToBusEvents();
+        },
+        watch: {
+            hasBeenMigrated() {
+                this.createGridColumns();
+            }
         },
         mounted() {
             this.createSignalRConnection();
@@ -257,13 +269,32 @@
                         hidden: true
                     },
                     {
+                        field: 'status',
+                        label: 'Status',
+                        type: 'int',
+                        sortable: false,
+                        hidden: !this.hasBeenMigrated,
+                        width: '140px',
+                        filterOptions: {
+                            enabled: this.hasBeenMigrated,
+                            filterDropdownItems: [
+                                { value: '1', text: 'Accepted' },
+                                { value: '0', text: 'Unaccepted' },
+                                { value: '2', text: 'On Hold' }
+                            ],
+                            filterValue: '0',
+                            placeholder: 'All'
+                        }
+                    },
+                    {
                         field: 'userAccepted',
                         label: 'User Accepted',
                         type: 'boolean',
-						sortable: false,
-						width: '140px',
+                        sortable: false,
+                        width: '140px',
+                        hidden: this.hasBeenMigrated,
                         filterOptions: {
-                            enabled: true,
+                            enabled: !this.hasBeenMigrated,
                             filterDropdownItems: [
                                 { value: 'true', text: 'Accepted' },
                                 { value: 'false', text: 'Unaccepted' }
@@ -358,6 +389,8 @@
                             userAccepted: toggle.userAccepted,
                             isPermanent: toggle.isPermanent,
                             notes: toggle.notes,
+                            status: toggle.status,
+                            holdReason: toggle.holdReason,
                             workItemIdentifier: toggle.workItemIdentifier,
                             createdDate: toggle.createdDate,
                             changedDate: toggle.changedDate,
@@ -420,6 +453,7 @@
             openEditFeatureToggleModal(row) {
 				Bus.$emit(events.blockUI);
                 this.showEditModal = true;
+                row.showStatus = this.hasBeenMigrated;
                 Bus.$emit(events.openEditFeatureToggleModal, _.clone(row));
             },
             openDeleteFeatureToggleConfirmationModal(row) {
@@ -457,7 +491,10 @@
                 this.isRefreshAlertVisible = false;
             },
             isEnvironmentColumn(column) {
-                return (column.type == 'boolean' && column.field != 'userAccepted');
+                return (column.type == 'boolean' && column.field != 'userAccepted' && column.field != 'status');
+            },
+            getStatusValue(row) {
+                return this.statusValues[row.status];
             }
         }
     }
