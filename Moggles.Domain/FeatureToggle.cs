@@ -17,7 +17,7 @@ namespace Moggles.Domain
         public string WorkItemIdentifier { get; set; }
         public List<ReasonToChange> ReasonsToChange { get; set; } = new List<ReasonToChange>();
 
-        public static FeatureToggle Create(string name, string notes, bool isPermanent, string workItemIdentifier)
+        public static FeatureToggle Create(string name, string notes, bool isPermanent, string workItemIdentifier, bool hasBeenMigrated = false)
         {
             return new FeatureToggle
             {
@@ -26,13 +26,14 @@ namespace Moggles.Domain
                 IsPermanent = isPermanent,
                 Notes = notes,
                 ToggleName = name,
-                WorkItemIdentifier = workItemIdentifier
+                WorkItemIdentifier = workItemIdentifier,
+                Status = hasBeenMigrated ? (int?)0 : null
             };
         }
 
-        public static FeatureToggle Create(string name, string notes, bool isPermanent, IEnumerable<DeployEnvironment> deployEnvironments, string workItemIdentifier)
+        public static FeatureToggle Create(string name, string notes, bool isPermanent, IEnumerable<DeployEnvironment> deployEnvironments, string workItemIdentifier, bool hasBeenMigrated = false)
         {
-            var newToggle = Create(name, notes, isPermanent, workItemIdentifier);
+            var newToggle = Create(name, notes, isPermanent, workItemIdentifier, hasBeenMigrated);
 
             foreach (var env in deployEnvironments)
             {

@@ -8,6 +8,7 @@ namespace Moggles.Domain
     public class Application : AggregateRoot
     {
         public string AppName { get; set; }
+        public bool HasBeenMigrated { get; set; }
 
         public List<DeployEnvironment> DeploymentEnvironments { get; set; } = new List<DeployEnvironment>();
         public List<FeatureToggle> FeatureToggles { get; set; } = new List<FeatureToggle>();
@@ -38,25 +39,26 @@ namespace Moggles.Domain
             return (DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, newName, stringComparison) == 0) && newName != oldName);
         }
 
-        public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment)
+        public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment, bool hasBeenMigrated = false)
         {
             var app = new Application
             {
                 Id = Guid.NewGuid(),
-                AppName = appName
+                AppName = appName,
+                HasBeenMigrated = hasBeenMigrated
             };
             app.AddDeployEnvironment(defaultEnvironmentName, defaultToggleValueForEnvironment, false, false);
             return app;
         }
 
-        public void AddFeatureToggle(string toggleName, string notes, string workItemIdentifier, bool isPermanent = false)
+        public void AddFeatureToggle(string toggleName, string notes, string workItemIdentifier, bool isPermanent = false, bool hasBeenMigrated = false)
         {
             if (FeatureToggles.Exists(f => string.Compare(f.ToggleName, toggleName, StringComparison.OrdinalIgnoreCase) == 0))
             {
                 throw new BusinessRuleValidationException("Feature toggle with the same name already exists for this application!");
             }
 
-            var ft = FeatureToggle.Create(toggleName, notes, isPermanent, DeploymentEnvironments, workItemIdentifier);
+            var ft = FeatureToggle.Create(toggleName, notes, isPermanent, DeploymentEnvironments, workItemIdentifier, hasBeenMigrated);
             FeatureToggles.Add(ft);
         }
 
