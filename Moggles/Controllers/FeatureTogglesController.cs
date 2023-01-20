@@ -165,7 +165,7 @@ namespace Moggles.Controllers
 
             try
             {
-                app.AddFeatureToggle(featureToggleModel.FeatureToggleName, featureToggleModel.Notes, featureToggleModel.WorkItemIdentifier, featureToggleModel.IsPermanent);
+                app.AddFeatureToggle(featureToggleModel.FeatureToggleName, featureToggleModel.Notes, featureToggleModel.WorkItemIdentifier, featureToggleModel.IsPermanent, app.HasBeenMigrated);
             }
             catch (BusinessRuleValidationException ex)
             {

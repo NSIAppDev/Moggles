@@ -129,7 +129,7 @@
                 });
             },
             hasBeenMigrated() {
-                return this.toggles.some(ft => ft.status != null);
+                return this.selectedApp.hasBeenMigrated;
             }
         },
         created() {

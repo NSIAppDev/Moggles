@@ -28,7 +28,8 @@ namespace Moggles.Controllers
             return Ok(allApps.Select(a => new ApplicationSummary //return summary objects to avoid sending un-needed data
             {
                 Id = a.Id,
-                AppName = a.AppName
+                AppName = a.AppName,
+                HasBeenMigrated = a.HasBeenMigrated
             }).AsEnumerable()
             .OrderBy(a => a.AppName)
             .ToList());
@@ -45,10 +46,12 @@ namespace Moggles.Controllers
             var apps = await _applicationsRepository.GetAllAsync();
             var app = apps.FirstOrDefault(a => string.Compare(a.AppName, applicationModel.ApplicationName, StringComparison.OrdinalIgnoreCase) == 0);
 
+            var hasBeenMigrated = apps.Any(a => a.HasBeenMigrated);
+
             if (app != null)
                 return BadRequest("Application with same name already exists!");
 
-            var application = Application.Create(applicationModel.ApplicationName, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue);
+            var application = Application.Create(applicationModel.ApplicationName, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue, hasBeenMigrated);
 
             await _applicationsRepository.AddAsync(application);
 
