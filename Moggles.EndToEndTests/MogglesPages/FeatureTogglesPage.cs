@@ -129,6 +129,7 @@ namespace Moggles.EndToEndTests.MogglesPages
             WaitHelpers.ExplicitWait();
             Thread.Sleep(2000);
             _toolsButton.SelectFromDropdown(_toolsMenuDropdown, "Add Feature Toggle");
+            _featureToggleNameInput.WaitUntilElementIsVisible();
             _featureToggleNameInput.ActionSendKeys(newFeatureToggleName);
             //_workItemIdInput.ActionSendKeys("TESTING PBI 00000");
             _notesInput.ActionSendKeys("test notes");
@@ -331,6 +332,7 @@ namespace Moggles.EndToEndTests.MogglesPages
 
         public void UpdateDevEnvironment()
         {
+            _deleteFeatureToggleButtonOnEdit.WaitForElementToBeClickable();
             Browser.WebDriver.FindElement(_devCheckbox).Click();
             _saveButton.ActionClick();
         }
