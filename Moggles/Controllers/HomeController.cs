@@ -43,6 +43,7 @@ namespace Moggles.Controllers
                         app.UpdateFeatureToggleStatus(toggle.Id, 0);
                 }
 
+                app.HasBeenMigrated = true;
                 await _applicationsRepository.UpdateAsync(app);
             }
 
@@ -74,6 +75,7 @@ namespace Moggles.Controllers
                     app.UpdateFeatureToggleHoldReason(toggle.Id, null);
                 }
 
+                app.HasBeenMigrated = false;
                 await _applicationsRepository.UpdateAsync(app);
             }
 
