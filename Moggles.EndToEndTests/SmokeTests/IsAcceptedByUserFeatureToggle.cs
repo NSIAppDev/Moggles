@@ -11,7 +11,6 @@ namespace Moggles.EndToEndTests.SmokeTests
             [TestMethod]
             [TestCategory("IsAcceptedByUser")]
             [TestCategory("SmokeTests")]
-            [Ignore]
             public void EditAFeatureToggleToBeAcceptedByUser()
             {
             //act

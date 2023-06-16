@@ -57,9 +57,9 @@ namespace Moggles.EndToEndTests.MogglesPages
         private readonly By _deleteFeatureToggleIcon = By.CssSelector("#toggleGrid span > a:nth-child(2) > i");
         private readonly By _isPermanentFlag = By.CssSelector(".label-danger");
         private readonly By _devCheckbox =
-            By.CssSelector("div:nth-child(4) > div > div > div > input[type=checkbox]");
+            By.CssSelector(".form-horizontal > div > div:nth-child(4) > div > div > div > input[type=checkbox]");
         private readonly By _qaCheckbox =
-            By.CssSelector("div:nth-child(5) > div > div > div > input[type=checkbox]");
+            By.CssSelector(".form-horizontal > div > div:nth-child(5) > div > div > div > input[type=checkbox]");
         private readonly By _devLastUpdatedDate =
             By.CssSelector("div:nth-child(4) > .col-sm-8 > div:nth-child(1)");
         private readonly By _qaLastUpdatedDate =
