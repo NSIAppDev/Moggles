@@ -13,7 +13,7 @@ namespace Moggles
 
         public static string GetTokenSigningKey(this IConfiguration config)
         {
-            var tokenSigningKey = config["MogglesTokenSigningKey"];
+            var tokenSigningKey = config["MogglesTokenSigningKeyTest"];
 
             if (string.IsNullOrEmpty(tokenSigningKey))
                 tokenSigningKey = config["Jwt:TokenSigningKey"];
