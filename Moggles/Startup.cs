@@ -20,6 +20,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Moggles
 {
@@ -80,11 +81,11 @@ namespace Moggles
         public virtual void ConfigureAuthServices(IServiceCollection services)
         {
             var admins = Configuration["CustomRoles:Admins"];
-        
+
             services.AddAuthentication(IISDefaults.AuthenticationScheme);
-        
+
             RegisterJwtAuthentication(services);
-            
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("OnlyAdmins", policy => policy.RequireRole(admins));
@@ -110,6 +111,25 @@ namespace Moggles
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey =
                             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSigningKey))
+                    };
+
+                    o.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+
+                            var response = new
+                            {
+                                ApplicationName = context.HttpContext.Request.Query["applicationName"].ToString(), 
+                                Time = DateTime.Now
+                            };
+                            string path = @"./nodb_storage/projects/moggles/authenticationResponse.json";
+
+                            using StreamWriter writer = File.AppendText(path);
+                            writer.WriteLine(response);                               
+                            
+                            return Task.CompletedTask;  
+                        }
                     };
                 });
         }
