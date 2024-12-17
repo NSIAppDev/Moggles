@@ -186,7 +186,7 @@ namespace Moggles.EndToEndTests.MogglesPages
             {
                 var cells = row.FindElements(By.TagName("td"));
                 if (!cells[1].Text.Equals(newFeatureToggleName)) continue;
-                var creationDateAndTime = cells[8].Text;
+                var creationDateAndTime = cells[6].Text;
                 var creationDate =
                     creationDateAndTime.Substring(0, creationDateAndTime.IndexOf(" ", StringComparison.Ordinal));
                 var formattedCreationDate = DateTime.Parse(creationDate).Date;

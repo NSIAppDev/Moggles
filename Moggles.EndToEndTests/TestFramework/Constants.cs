@@ -1,10 +1,13 @@
-﻿namespace Moggles.EndToEndTests.TestFramework
+﻿using System;
+
+namespace Moggles.EndToEndTests.TestFramework
 {
     internal class Constants
     {
+        public static Random random = new Random();
         public static string BaseUrl;
 
-        public static string FeatureToggleName = "SmokeTestsFeatureToggle";
+        public static string FeatureToggleName = "SmokeTestsFeatureToggle"+random.Next(10);
         public static string SmokeTestsApplication = "SmokeTests";
         public static string AcceptedByUserStatus = "Accepted";
         public static string NewApplicationName = "ApplicationToDelete";
