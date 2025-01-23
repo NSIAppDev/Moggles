@@ -9,6 +9,7 @@ namespace Moggles.Domain
     {
         public string AppName { get; set; }
         public bool HasBeenMigrated { get; set; }
+        public bool IsDeleted { get; set; }
 
         public List<DeployEnvironment> DeploymentEnvironments { get; set; } = new List<DeployEnvironment>();
         public List<FeatureToggle> FeatureToggles { get; set; } = new List<FeatureToggle>();
@@ -17,6 +18,11 @@ namespace Moggles.Domain
         public void UpdateName(string newName)
         {
             AppName = newName;
+        }
+
+        public void MarkAsDeleted()
+        {
+            IsDeleted = true;
         }
 
         public void AddDeployEnvironment(string name, bool defaultToggleValue, bool requireReasonWhenToggleEnabled, bool requireReasonWhenToggleDisabled, int sortOrder = 1)
@@ -39,13 +45,14 @@ namespace Moggles.Domain
             return (DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, newName, stringComparison) == 0) && newName != oldName);
         }
 
-        public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment, bool hasBeenMigrated = false)
+        public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment, bool hasBeenMigrated = false, bool isDeleted = false)
         {
             var app = new Application
             {
                 Id = Guid.NewGuid(),
                 AppName = appName,
-                HasBeenMigrated = hasBeenMigrated
+                HasBeenMigrated = hasBeenMigrated,
+                IsDeleted = isDeleted
             };
             app.AddDeployEnvironment(defaultEnvironmentName, defaultToggleValueForEnvironment, false, false);
             return app;
