@@ -91,7 +91,7 @@ namespace Moggles.Controllers
             if (app == null)
                 throw  new InvalidOperationException("Application does not exist!");
 
-            await _applicationsRepository.DeleteAsync(app);
+            app.MarkAsDeleted();
             await DeleteAllSchedulersForApp(app.AppName);
             
             return Ok();
