@@ -232,7 +232,8 @@ namespace Moggles.UnitTests.ApplicationsTests
 
             //assert
             result.Should().BeOfType<OkResult>();
-            (await _appApplicationRepository.GetAllAsync()).Count().Should().Be(0);
+            (await _appApplicationRepository.GetAllAsync()).Count().Should().Be(1);
+            (await _appApplicationRepository.FindByIdAsync(app.Id)).IsDeleted.Should().BeTrue();  
 
         }
 
