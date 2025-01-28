@@ -29,7 +29,8 @@ namespace Moggles.Controllers
             {
                 Id = a.Id,
                 AppName = a.AppName,
-                HasBeenMigrated = a.HasBeenMigrated
+                HasBeenMigrated = a.HasBeenMigrated,
+                IsDeleted = a.IsDeleted
             }).AsEnumerable()
             .OrderBy(a => a.AppName)
             .ToList());
