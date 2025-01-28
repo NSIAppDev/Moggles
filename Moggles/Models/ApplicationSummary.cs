@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Moggles.Models
 {
@@ -10,5 +7,6 @@ namespace Moggles.Models
         public Guid Id { get; set; }
         public string AppName { get; set; }
         public bool HasBeenMigrated { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
