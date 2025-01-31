@@ -93,6 +93,8 @@ namespace Moggles.Controllers
                 throw  new InvalidOperationException("Application does not exist!");
 
             app.MarkAsDeleted();
+            await _applicationsRepository.UpdateAsync(app);
+
             await DeleteAllSchedulersForApp(app.AppName);
             
             return Ok();
