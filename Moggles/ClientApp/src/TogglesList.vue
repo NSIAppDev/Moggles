@@ -18,7 +18,9 @@
                       initialSortBy: {field: 'isPermanent', type: 'desc'}
                     }"
                     style-class="vgt-table striped condensed bordered"
-                    @on-per-page-change="onPageChange">
+                    :class="{ 'disabled-table': disableGrid }"
+                    @on-per-page-change="onPageChange"
+                    enabled="false">
       <div slot="emptystate">
         <div class="text-center">
           There are no toggles for this application or filtered search
@@ -130,6 +132,9 @@
             },
             hasBeenMigrated() {
                 return this.selectedApp.hasBeenMigrated;
+            },
+            disableGrid() {
+                return this.selectedApp.isDeleted;
             }
         },
         created() {
@@ -514,5 +519,11 @@
         -webkit-border-radius: 5px;
         -moz-border-radius: 5px;
         border-radius: 5px;
+    }
+
+    .disabled-table {
+        pointer-events: none; 
+        opacity: 0.5; 
+        user-select: none; 
     }
 </style>
