@@ -19,8 +19,7 @@
                     }"
                     style-class="vgt-table striped condensed bordered"
                     :class="{ 'disabled-table': disableGrid }"
-                    @on-per-page-change="onPageChange"
-                    enabled="false">
+                    @on-per-page-change="onPageChange">
       <div slot="emptystate">
         <div class="text-center">
           There are no toggles for this application or filtered search
