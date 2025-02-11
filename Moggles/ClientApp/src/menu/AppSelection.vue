@@ -80,6 +80,7 @@
                     this.getApplications();
                 } else {
                     this.setNewApplicationSelection();
+                    this.refreshApps();
                 }
             },
             setNewApplicationSelection() {
