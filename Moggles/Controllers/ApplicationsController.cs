@@ -77,8 +77,9 @@ namespace Moggles.Controllers
             if (existingApp != null)
                 return BadRequest("Application with same name already exists!");
 
-
-            app.UpdateName(applicationModel.ApplicationName);
+            var appName = applicationModel.ApplicationName ?? app.AppName;
+            var isDeleted = applicationModel.isDeleted ?? app.IsDeleted;
+            app.Update(appName, isDeleted);
             await _applicationsRepository.UpdateAsync(app);
 
             return Ok();
@@ -90,13 +91,13 @@ namespace Moggles.Controllers
             var app = await _applicationsRepository.FindByIdAsync(id);
 
             if (app == null)
-                throw  new InvalidOperationException("Application does not exist!");
+                throw new InvalidOperationException("Application does not exist!");
 
             app.MarkAsDeleted();
             await _applicationsRepository.UpdateAsync(app);
 
             await DeleteAllSchedulersForApp(app.AppName);
-            
+
             return Ok();
         }
 

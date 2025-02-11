@@ -15,6 +15,12 @@ namespace Moggles.Domain
         public List<FeatureToggle> FeatureToggles { get; set; } = new List<FeatureToggle>();
         public List<DeletedFeatureToggle> DeletedFeatureToggles { get; set; } = new List<DeletedFeatureToggle>();
 
+        public void Update(string newName, bool isDeleted)
+        {
+            AppName = newName;
+            IsDeleted = isDeleted;
+        }
+
         public void UpdateName(string newName)
         {
             AppName = newName;
