@@ -10,5 +10,6 @@ namespace Moggles.Models
         [Required]
         [MaxLength(100)]
         public string ApplicationName { get; set; }
+        public bool? isDeleted { get; set; }
     }
 }
