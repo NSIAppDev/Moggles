@@ -4,9 +4,6 @@
   <!-- Parameters used by tests at runtime -->
   <TestRunParameters>
     <Parameter name="webAppUrl" value="moggles.northernsafety-dev.com/" />
-    <Parameter name="envUrl" value="moggles.northernsafety-dev.com/" />
-    <Parameter name="user" value ="EnterUserHere" />
-    <Parameter name="password" value ="EnterPasswordHere"></Parameter>
   </TestRunParameters>
 
   </RunSettings>

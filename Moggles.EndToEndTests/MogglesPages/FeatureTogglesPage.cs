@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading;
 using System.Web;
+using GreenPipes.Caching.Internals;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.TestFramework;
 using NsTestFrameworkUI.Helpers;
 using NsTestFrameworkUI.KendoHelpers;
@@ -14,7 +16,7 @@ namespace Moggles.EndToEndTests.MogglesPages
     {
         #region selectors
         private readonly By _toolsMenuDropdown = By.CssSelector(".dropdown-menu li");
-        private readonly By _statusesDropdown = By.CssSelector("tr:nth-child(2) > th:nth-child(8) > div > select");
+        private readonly By _statusesDropdown = By.CssSelector("tr:nth-child(2) > th:nth-child(6) > div > select");
         private readonly By _openAddApplicationModalBtn = By.Id("showAddApplicationModalBtn");
         private readonly By _openDeletedFeatureTogglesSection = By.CssSelector("a > h4");
 
@@ -84,9 +86,10 @@ namespace Moggles.EndToEndTests.MogglesPages
         public void Navigate()
         {
             var pass = HttpUtility.UrlEncode(Constants.MogglesPassword);
-            Browser.GoTo($"https://{Constants.MogglesUser}:{pass}@{Constants.EnvUrl}");
+            var url = $"https://{Constants.MogglesUser}:{pass}@moggles.northernsafety-dev.com";
+            Browser.GoTo(url);
             if (!_addApplicationButton.IsElementPresent())
-                Browser.GoTo($"https://{Constants.MogglesUser}:{Constants.MogglesPassword}@{Constants.EnvUrl}");
+                Browser.GoTo(url);
         }
 
         public bool IsGridEmpty() => _noFeatureToggleDisplayedText.IsElementPresent();
@@ -122,8 +125,14 @@ namespace Moggles.EndToEndTests.MogglesPages
 
         public void FilterAcceptedByUserColumn(string status)
         {
-            _statusesDropdown.WaitForElementToBeClickable();
-            _statusesDropdown.SelectFromDropdownByText(status);
+            try
+            {
+                _statusesDropdown.WaitForElementToBeClickable();
+                _statusesDropdown.SelectFromDropdownByText(status);
+            }
+            catch (Exception ex) {
+                Assert.Fail($"Exception in selecting element from User accepted drop-down: {ex.Message}");
+            }
         }
 
         public void AddFeatureToggle(string newFeatureToggleName)

@@ -6,79 +6,161 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Moggles.EndToEndTests.TestFramework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Moggles.EndToEndTests.Helpers
 {
     public static class FeatureFlagHandler
     {
         private static RestClient Client => RequestHelper.GetRestClient(Constants.BaseUrl, Constants.MogglesUser, Constants.MogglesPassword);
-        public static string SmokeTestsApplicationId => FeatureFlagHandler.GetApplicationProperties(Constants.SmokeTestsApplication)?.Id.ToString();
+        public static string SmokeTestsApplicationId => GetApplicationProperties(Constants.SmokeTestsApplication)?.Id.ToString();
 
         public static IRestResponse GetApplications()
         {
-            var request = RequestHelper.GetRequest("api/applications");
-            request.AddHeader("Content-Type", "application/json;charset=UTF-8");
-            return Client.Execute(request);
+            try
+            {
+                var request = RequestHelper.GetRequest("api/applications");
+                request.AddHeader("Content-Type", "application/json;charset=UTF-8");
+                var response = Client.Execute(request);
+                if (!response.IsSuccessful)
+                {
+                    Assert.Fail($"API call failed! Status: {response.StatusCode}, Message: {response.ErrorMessage}");
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Test setup failed due to an exception: {ex.Message}");
+                throw;
+            }
         }
         public static Application GetApplicationProperties(string applicationName)
         {
-            var applications = GetApplications();
-            var applicationsResultsOutput = JsonConvert.DeserializeObject<IEnumerable<Application>>(applications.Content);
-            return applicationsResultsOutput.FirstOrDefault(x => x.AppName.Equals(applicationName));
+            try
+            {
+                var applications = GetApplications();
+                if (!applications.IsSuccessful)
+                {
+                    Assert.Fail($"API call failed! Status: {applications.StatusCode}, Message: {applications.ErrorMessage}");
+                }
+                var applicationsResultsOutput = JsonConvert.DeserializeObject<IEnumerable<Application>>(applications.Content);
+                var response = applicationsResultsOutput.FirstOrDefault(x => x.AppName.Equals(applicationName));
+                if (response == null)
+                {
+                    throw new Exception($"Application '{applicationName}' not found.");
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Exception in GetApplicationProperties: {ex.Message}");
+                throw;
+            }
         }
 
         public static IRestResponse GetFeatureToggles(string applicationId)
         {
-            var request = RequestHelper.GetRequest("api/FeatureToggles");
-            request.AddHeader("Content-Type", "application/json;charset=UTF-8");
-            request.AddParameter("applicationId", applicationId);
-            return Client.Execute(request);
+            try
+            {
+                var request = RequestHelper.GetRequest("api/FeatureToggles");
+                request.AddHeader("Content-Type", "application/json;charset=UTF-8");
+                request.AddParameter("applicationId", applicationId);
+                return Client.Execute(request);
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Exception in GetFeatureToggles: {ex.Message}");
+                throw;
+            }
         }
 
         public static FeatureToggleViewModel GetFeatureToggleProperties(string applicationId, string featureToggleName)
         {
-            var featureToggles = GetFeatureToggles(applicationId);
-            var featureTogglesResultsOutput = JsonConvert.DeserializeObject<IEnumerable<FeatureToggleViewModel>>(featureToggles.Content);
-            return featureTogglesResultsOutput.FirstOrDefault(x => x.ToggleName.Equals(featureToggleName));
+            try
+            {
+                var featureToggles = GetFeatureToggles(applicationId);
+                var featureTogglesResultsOutput = JsonConvert.DeserializeObject<IEnumerable<FeatureToggleViewModel>>(featureToggles.Content);
+                return featureTogglesResultsOutput.FirstOrDefault(x => x.ToggleName.Equals(featureToggleName));
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Exception in GetFeatureToggleProperties: {ex.Message}");
+                throw;
+            }
         }
         public static IRestResponse DeleteFeatureToggles(string applicationId, string featureToggleId, string reasonToDelete)
         {
-            var body = new DeleteFeatureToggleModel
+            try
             {
-                ApplicationId = new Guid(applicationId),
-                FeatureToggleId = new Guid(featureToggleId),
-                Reason = reasonToDelete
-            };
-            var request = RequestHelper.GetRequest("api/FeatureToggles", body, Method.DELETE);
-            request.AddHeader("Content-Type", "application/json;charset=UTF-8");
-            return Client.Execute(request);
+                var body = new DeleteFeatureToggleModel
+                {
+                    ApplicationId = new Guid(applicationId),
+                    FeatureToggleId = new Guid(featureToggleId),
+                    Reason = reasonToDelete
+                };
+                var request = RequestHelper.GetRequest("api/FeatureToggles", body, Method.DELETE);
+                request.AddHeader("Content-Type", "application/json;charset=UTF-8");
+                return Client.Execute(request);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Exception in DeleteFeatureToggles: {ex.Message}");
+                throw;
+            }
         }
 
         public static IRestResponse AddFeatureToggles(string applicationId, string featureToggleName)
         {
-            var body = new AddFeatureToggleModel
+            try
             {
-                ApplicationId = new Guid(applicationId),
-                FeatureToggleName = featureToggleName
-            };
-            var request = RequestHelper.GetRequest("api/FeatureToggles/addFeatureToggle", body, Method.POST);
-            request.AddHeader("Content-Type", "application/json;charset=UTF-8");
-            return Client.Execute(request);
+                var body = new AddFeatureToggleModel
+                {
+                    ApplicationId = new Guid(applicationId),
+                    FeatureToggleName = featureToggleName
+                };
+                var request = RequestHelper.GetRequest("api/FeatureToggles/addFeatureToggle", body, Method.POST);
+                request.AddHeader("Content-Type", "application/json;charset=UTF-8");
+                return Client.Execute(request);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Exception in AddFeatureToggles: {ex.Message}");
+                throw;
+            }
         }
 
         public static IRestResponse DeleteApplication(string applicationId)
         {
-            var request = RequestHelper.GetRequest("api/applications", Method.DELETE);
-            request.AddHeader("Content-Type", "application/json;charset=UTF-8");
-            request.AddParameter("id", applicationId);
-            return Client.Execute(request);
+            try
+            {
+                var request = RequestHelper.GetRequest("api/applications", Method.DELETE);
+                request.AddHeader("Content-Type", "application/json;charset=UTF-8");
+                request.AddParameter("id", applicationId);
+                return Client.Execute(request);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Exception in DeleteApplication: {ex.Message}");
+                throw;
+            }
         }
         public static void UpdateFeatureFlag(FeatureToggleUpdateModel featureToggleUpdateModel)
         {
-            var request = RequestHelper.GetRequest("api/featuretoggles", featureToggleUpdateModel, Method.PUT);
-            request.AddHeader("Content-Type", "application/json;charset=UTF-8");
-            Client.Execute(request);
+            try
+            {
+                var request = RequestHelper.GetRequest("api/featuretoggles", featureToggleUpdateModel, Method.PUT);
+                request.AddHeader("Content-Type", "application/json;charset=UTF-8");
+                Client.Execute(request);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Exception in UpdateFeatureFlag: {ex.Message}");
+                throw;
+            }
         }
+
         public static FeatureToggleUpdateModel SetFeatureToggleUpdateModel(FeatureToggleViewModel featureToggleProperties, string applicationId, bool enabled, string environment)
         {
             return new FeatureToggleUpdateModel
@@ -97,6 +179,22 @@ namespace Moggles.EndToEndTests.Helpers
                 WorkItemIdentifier = featureToggleProperties.WorkItemIdentifier
                 
             };
+        }
+
+        public static void ReactivateApp(UpdateApplicationModel updateApplicationModel)
+        {
+            try
+            {
+                var request = RequestHelper.GetRequest("api/applications/update", updateApplicationModel, Method.PUT);
+                request.AddHeader("Content-Type", "application/json;charset=UTF-8");
+                request.AddJsonBody(updateApplicationModel);
+                Client.Execute(request);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Exception in ReactivateApp: {ex.Message}");
+                throw;
+            }
         }
 
     }

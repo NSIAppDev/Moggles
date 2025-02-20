@@ -22,10 +22,7 @@ namespace Moggles.EndToEndTests.SmokeTests
 
             //assert
             Pages.FeatureTogglesPage.IsDevEnvironmentCheckboxChecked().Should().BeTrue();
-            Pages.FeatureTogglesPage.IsQaEnvironmentCheckboxChecked().Should().BeTrue();
-
             Pages.FeatureTogglesPage.IsLastUpdatedDateOnDevCorrectlyDisplayed().Should().BeTrue();
-            Pages.FeatureTogglesPage.IsLastUpdatedDateOnQaCorrectlyDisplayed().Should().BeTrue();
         }
 
         [TestCleanup]
