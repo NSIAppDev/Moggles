@@ -10,5 +10,13 @@ namespace Moggles.EndToEndTests.TestFramework
         {
             Browser.InitializeDriver();
         }
+
+        [TestCleanup]
+        public virtual void After()
+        {
+            Browser.Cleanup();
+            Browser.WebDriver.Dispose();
+            Browser.WebDriver.Quit();
+        }
     }
 }
