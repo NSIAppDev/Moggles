@@ -110,8 +110,8 @@
                     setTimeout(() => {
                         this.showSuccessAlert = false;
                     }, this.alertDuration)
-                }).catch(e => {
-                    this.errors.push(e.response.data);
+                }).catch(error => {
+                    Bus.$emit(events.showErrorAlertModal, { 'error': error })
                 }).finally(() => {
                     Bus.$emit(events.unblockUI)
                 });
