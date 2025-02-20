@@ -2,12 +2,27 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.Helpers;
 using Moggles.EndToEndTests.TestFramework;
+using Moggles.Models;
 
 namespace Moggles.EndToEndTests.SmokeTests
 {
     [TestClass]
     public class EditAndDeleteEnvironment : BaseTest
-    {      
+    {
+        [TestInitialize]
+        public override void Before()
+        {
+            base.Before();
+            var applicationInfo = FeatureFlagHandler.GetApplicationProperties(Constants.NewApplicationName);
+            var body = new UpdateApplicationModel
+            {
+                ApplicationName = applicationInfo.AppName,
+                Id = applicationInfo.Id,
+                isDeleted = false
+            };
+            FeatureFlagHandler.ReactivateApp(body);
+        }
+
         [TestMethod]   
         [TestCategory("EditANewEnvironment")]
         [TestCategory("SmokeTests")]
@@ -16,7 +31,7 @@ namespace Moggles.EndToEndTests.SmokeTests
         {
             //act
             Pages.FeatureTogglesPage.Navigate();
-            Pages.FeatureTogglesPage.AddNewApplication(Constants.NewApplicationName, Constants.FirstEnvName);
+            Pages.FeatureTogglesPage.SelectApplicationByName(Constants.NewApplicationName);
             Pages.FeatureTogglesPage.AddNewEnvironment(Constants.SecondEnvName);
             Pages.FeatureTogglesPage.EditEnvironment(Constants.SecondEnvName);
             Pages.FeatureTogglesPage.ChangeEnvironmentName(Constants.EditedSecondEnvName);
