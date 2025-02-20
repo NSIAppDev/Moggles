@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Web;
 using Moggles.EndToEndTests.TestFramework;
 using NsTestFrameworkUI.Helpers;
 using NsTestFrameworkUI.KendoHelpers;
@@ -82,9 +83,10 @@ namespace Moggles.EndToEndTests.MogglesPages
 
         public void Navigate()
         {
-            Browser.GoTo(Constants.BaseUrl);
+            var pass = HttpUtility.UrlEncode(Constants.MogglesPassword);
+            Browser.GoTo($"https://{Constants.MogglesUser}:{pass}@{Constants.EnvUrl}");
             if (!_addApplicationButton.IsElementPresent())
-                Browser.GoTo(Constants.BaseUrl);
+                Browser.GoTo($"https://{Constants.MogglesUser}:{Constants.MogglesPassword}@{Constants.EnvUrl}");
         }
 
         public bool IsGridEmpty() => _noFeatureToggleDisplayedText.IsElementPresent();
