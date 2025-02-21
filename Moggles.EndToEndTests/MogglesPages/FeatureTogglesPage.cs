@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Web;
-using GreenPipes.Caching.Internals;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.TestFramework;
 using NsTestFrameworkUI.Helpers;
@@ -86,7 +85,7 @@ namespace Moggles.EndToEndTests.MogglesPages
         public void Navigate()
         {
             var pass = HttpUtility.UrlEncode(Constants.MogglesPassword);
-            var url = $"https://{Constants.MogglesUser}:{pass}@moggles.northernsafety-dev.com";
+            var url = $"https://{Constants.MogglesUser}:{pass}@{Constants.BaseUrl}";
             Browser.GoTo(url);
             if (!_addApplicationButton.IsElementPresent())
                 Browser.GoTo(url);
