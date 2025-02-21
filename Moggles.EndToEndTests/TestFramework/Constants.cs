@@ -1,4 +1,5 @@
-﻿using NSTestFrameworkDotNetCoreUI.Helpers;
+﻿using Moggles.EndToEndTests.Helpers;
+using NSTestFrameworkDotNetCoreUI.Helpers;
 using System;
 
 namespace Moggles.EndToEndTests.TestFramework
@@ -9,7 +10,8 @@ namespace Moggles.EndToEndTests.TestFramework
 
         public static string MogglesUser = KeyVaultHelper.GetSecret("MogglesUser");
         public static string MogglesPassword = KeyVaultHelper.GetSecret("MogglesPassword");
-        public static string BaseUrl;
+        public static string BaseUrl = ConfigurationRoot.GetApplicationConfiguration().BaseUrl;
+        public static string APIBaseUrl = $"https://{ConfigurationRoot.GetApplicationConfiguration().BaseUrl}";
 
         public static string FeatureToggleName = "SmokeTestsFeatureToggle"+random.Next(10);
         public static string SmokeTestsApplication = "SmokeTests";

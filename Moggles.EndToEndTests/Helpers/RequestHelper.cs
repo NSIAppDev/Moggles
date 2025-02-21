@@ -25,6 +25,12 @@ namespace Moggles.EndToEndTests.Helpers
 
         public static RestClient GetRestClient(string url, string user = "", string password = "")
         {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new ArgumentException("URL cannot be null or empty.");
+
+            if (!Uri.TryCreate(url, UriKind.Absolute, out Uri validUri))
+                throw new ArgumentException($"Invalid URL format: {url}");
+
             var client = new RestClient(url);
 
             if (user.Equals("") | password.Equals("")) return client;

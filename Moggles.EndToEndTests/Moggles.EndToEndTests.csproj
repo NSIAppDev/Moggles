@@ -42,6 +42,15 @@
 </ItemGroup>
 
 <ItemGroup>
+	<None Update="appsettings.dev.json">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="appsettings.json">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="appsettings.LIVE.json">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
 	<None Update="chromedriver.exe">
 		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
