@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Moggles.EndToEndTests.TestFramework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Net;
 
 namespace Moggles.EndToEndTests.Helpers
 {
@@ -90,6 +91,29 @@ namespace Moggles.EndToEndTests.Helpers
                 throw;
             }
         }
+
+        private static List<EnvironmentForFTDeserialized> GetFeatureToggleEnvironments(string applicationId)
+        {
+            try
+            {
+                var request = new RestRequest($"api/FeatureToggles/environments", Method.GET);
+                request.AddHeader("Content-Type", "application/json;charset=UTF-8");
+                request.AddParameter("applicationId", applicationId);
+                var response = Client.Execute(request);
+                if (!response.IsSuccessful)
+                {
+                    return new List<EnvironmentForFTDeserialized>(); // return empty list
+                }
+                var data = JsonConvert.DeserializeObject<List<EnvironmentForFTDeserialized>>(response.Content);
+                if (data == null || !data.Any()) return new List<EnvironmentForFTDeserialized>();
+                return data;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Exception in GetFeatureToggleEnvironments: {ex.Message}");
+                throw;
+            }
+        }
         public static IRestResponse DeleteFeatureToggles(string applicationId, string featureToggleId, string reasonToDelete)
         {
             try
@@ -146,6 +170,42 @@ namespace Moggles.EndToEndTests.Helpers
                 throw;
             }
         }
+        
+        public static IRestResponse DeleteFeatureToggleEnvironment(string applicationId, string env)
+        {
+            try
+            {
+                var envsForApp = GetFeatureToggleEnvironments(applicationId);
+                if (envsForApp == null || envsForApp.Any(x => x.EnvName.ToLower() == env.ToLower()))
+                    throw new Exception("Data not found, cannot proceed with delete.");
+
+                var body = new DeleteEnvironmentModel
+                {
+                    ApplicationId = new Guid(applicationId),
+                    EnvName = env
+                };
+
+                var request = RequestHelper.GetRequest("api/FeatureToggles/environments", body, Method.DELETE);
+                request.AddHeader("Content-Type", "application/json;charset=UTF-8");
+                request.AddJsonBody(body);
+                var response = Client.Execute(request);
+
+                if (!response.IsSuccessful)
+                {
+                    Assert.Fail($"[ERROR] Delete request failed: {response.StatusCode} - {response.Content}");
+                    return response;
+                }
+                return response;
+            }
+            catch (Exception ex) {
+                return new RestResponse
+                {
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    Content = $"Exception occurred: {ex.Message}"
+                };
+            }
+        }
+
         public static void UpdateFeatureFlag(FeatureToggleUpdateModel featureToggleUpdateModel)
         {
             try

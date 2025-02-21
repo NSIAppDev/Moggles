@@ -21,6 +21,7 @@ namespace Moggles.EndToEndTests.SmokeTests
                 isDeleted = false
             };
             FeatureFlagHandler.ReactivateApp(body);
+            FeatureFlagHandler.DeleteFeatureToggleEnvironment(applicationInfo.Id.ToString(), Constants.SecondEnvName);
         }
 
         [TestMethod]   
