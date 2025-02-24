@@ -37,9 +37,9 @@
               <a id="toolsBtn" class="dropdown-toggle" role="button">Tools <span class="caret" /></a>
               <template slot="dropdown">
                 <li><a role="button" @click="reloadCurrentApplicationToggles()">Reload Application Toggles</a></li>
-                <li><a role="button" @click="showAddFeatureToggleModal()">Add Feature Toggle</a></li>
-                <li><a role="button" @click="showAddEnvModal()">Add New Environment</a></li>
-                <li><a role="button" @click="showAddFeatureToggleScheduleModal()">Add New Feature Toggle Schedule</a></li>
+                <li><a role="button" :class="{ 'disabled': appIsDeleted }" @click="showAddFeatureToggleModal()">Add Feature Toggle</a></li>
+                <li><a role="button" :class="{ 'disabled': appIsDeleted }" @click="showAddEnvModal()">Add New Environment</a></li>
+                <li><a role="button" :class="{ 'disabled': appIsDeleted }" @click="showAddFeatureToggleScheduleModal()">Add New Feature Toggle Schedule</a></li>
                 <li v-if="isCacheRefreshEnabled">
                   <a role="button" @click="showForceCacheRefresh = true">Force Cache Refresh</a>
                 </li>
@@ -240,6 +240,19 @@
                 this.showScheduler = true;
                 Bus.$emit(events.openAddSchedulerModal);
             }
+        },
+        computed: {
+            appIsDeleted() {
+                return this.selectedApp.isDeleted;
+            }
         }
     }
 </script>
+
+<style scoped>
+    .disabled {
+        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+</style>
