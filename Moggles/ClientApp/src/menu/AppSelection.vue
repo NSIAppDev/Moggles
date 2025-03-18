@@ -26,7 +26,7 @@
             groupedApplications() {
                 return this.applications.map(app =>
                     Object.assign({}, app, { group: !app.isDeleted ? 'Active' : 'Inactive' })
-                )
+                ).sort((a, b) => a.group.localeCompare(b.group))
             }
         },
         created() {
@@ -107,3 +107,10 @@
         }
     }
 </script>
+<style>
+    .dropdown-menu .dropdown-header {
+        font-weight: bold;
+        color: black;
+        background-color: gainsboro;
+    }
+</style>
