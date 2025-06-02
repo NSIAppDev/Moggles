@@ -14,6 +14,16 @@
                                class="form-control" name="appName">
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="assignedTo">Assigned to:</label>
+                    <div class="col-sm-7">
+                        <select id="assignedToDropdown" v-model="assignedTo" class="form-control" name="assignedTo">
+                            <option v-for="option in assignedToOptions" :key="option" :value="option">
+                                {{ option }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
                 <div class="clearfix">
                     <div v-if="!application.isDeleted" class="col-sm-6">
                         <button id="deleteApplicationBtn" type="button" class="btn btn-danger"
@@ -57,11 +67,21 @@
         data() {
             return {
                 editAppErrors: [],
-                appName: ""
+                appName: "",
+                assignedTo: "",
+                assignedToOptions: []
             }
         },
         created() {
             this.appName = this.application.appName;
+            this.assignedTo = this.application.assignedTo;
+            axios.get('/api/applications/assignedto-options')
+                .then(response => {
+                    this.assignedToOptions = response.data;
+                    if (!this.assignedToOptions.includes(this.assignedTo)) {
+                        this.assignedTo = "";
+                    }
+                });
         },
         methods: {
             updateApp(reactivateButtonClicked) {
@@ -74,6 +94,7 @@
                 let appUpdateModel = {
                     id: this.application.id,
                     applicationName: this.appName,
+                    applicationAssignedTo: this.assignedTo,
                     isDeleted: reactivateButtonClicked ? false : this.application.isDeleted
                 }
 

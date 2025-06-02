@@ -6,6 +6,7 @@ namespace Moggles.Models
     {
         public Guid Id { get; set; }
         public string AppName { get; set; }
+        public string AssignedTo { get; set; }
         public bool HasBeenMigrated { get; set; }
         public bool IsDeleted { get; set; }
     }

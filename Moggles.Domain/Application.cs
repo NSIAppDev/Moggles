@@ -14,11 +14,13 @@ namespace Moggles.Domain
         public List<DeployEnvironment> DeploymentEnvironments { get; set; } = new List<DeployEnvironment>();
         public List<FeatureToggle> FeatureToggles { get; set; } = new List<FeatureToggle>();
         public List<DeletedFeatureToggle> DeletedFeatureToggles { get; set; } = new List<DeletedFeatureToggle>();
+        public string AssignedTo { get; set; }
 
-        public void Update(string newName, bool isDeleted)
+        public void Update(string newName, bool isDeleted, string assignedTo)
         {
             AppName = newName;
             IsDeleted = isDeleted;
+            AssignedTo = assignedTo;
         }
 
         public void UpdateName(string newName)
