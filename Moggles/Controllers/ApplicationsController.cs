@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Moggles.Domain;
 using Moggles.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,11 +15,16 @@ namespace Moggles.Controllers
     {
         private readonly IRepository<Application> _applicationsRepository;
         private readonly IRepository<ToggleSchedule> _toggleScheduleRepository;
+        private readonly IConfiguration _configuration;
 
-        public ApplicationsController(IRepository<Application> applicationsRepository, IRepository<ToggleSchedule> toggleScheduleRepository)
+        public ApplicationsController(
+            IRepository<Application> applicationsRepository, 
+            IRepository<ToggleSchedule> toggleScheduleRepository,
+            IConfiguration configuration)
         {
             _applicationsRepository = applicationsRepository;
             _toggleScheduleRepository = toggleScheduleRepository;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -29,6 +36,7 @@ namespace Moggles.Controllers
             {
                 Id = a.Id,
                 AppName = a.AppName,
+                AssignedTo = a.AssignedTo,
                 HasBeenMigrated = a.HasBeenMigrated,
                 IsDeleted = a.IsDeleted
             }).AsEnumerable()
@@ -78,11 +86,19 @@ namespace Moggles.Controllers
                 return BadRequest("Application with same name already exists!");
 
             var appName = applicationModel.ApplicationName ?? app.AppName;
+            var assignedTo = applicationModel.ApplicationAssignedTo ?? app.AssignedTo;
             var isDeleted = applicationModel.isDeleted ?? app.IsDeleted;
-            app.Update(appName, isDeleted);
+            app.Update(appName, isDeleted, assignedTo);
             await _applicationsRepository.UpdateAsync(app);
 
             return Ok();
+        }
+
+        [HttpGet("assignedto-options")]
+        public IActionResult GetAssignedToOptions()
+        {
+            var options = _configuration.GetSection("AssignedToOptions").Get<List<string>>();
+            return Ok(options);
         }
 
         [HttpDelete]
