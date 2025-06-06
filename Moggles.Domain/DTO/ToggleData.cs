@@ -8,6 +8,7 @@ namespace Moggles.Domain.DTO
         public bool UserAccepted { get; set; }
         public string Notes { get; set; }
         public int? Status { get; set; }
+        public string ProgressStatus { get; set; }
         public string HoldReason { get; set; }
         public bool IsPermanent { get; set; }
         public string WorkItemIdentifier { get; set; }
