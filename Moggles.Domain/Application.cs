@@ -220,6 +220,7 @@ namespace Moggles.Domain
                 IsPermanent = toggle.IsPermanent,
                 Notes = toggle.Notes,
                 Status = toggle.Status,
+                ProgressStatus = toggle.ProgressStatus,
                 HoldReason = toggle.HoldReason,
                 UserAccepted = toggle.UserAccepted,
                 WorkItemIdentifier = toggle.WorkItemIdentifier,
@@ -237,6 +238,11 @@ namespace Moggles.Domain
         {
             var toggle = FeatureToggles.Find(f => f.Id == toggleId);
             toggle.SetPermanentStatus(isPermanent);
+        }
+        public void UpdateFeatureToggleProgressStatus(Guid toggleId, string progressStatus)
+        {
+            var toggle = FeatureToggles.Find(f => f.Id == toggleId);
+            toggle.SetProgressStatus(progressStatus);
         }
 
         public void UpdateFeatureToggleNotes(Guid toggleId, string notes)

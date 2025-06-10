@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Moggles.Domain;
 using Moggles.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,12 +17,18 @@ namespace Moggles.Controllers
         private readonly IRepository<Application> _applicationsRepository;
         private readonly IRepository<ToggleSchedule> _toggleScheduleRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _configuration;
 
-        public FeatureTogglesController(IRepository<Application> applicationsRepository, IHttpContextAccessor httpContextAccessor, IRepository<ToggleSchedule> toggleScheduleRepository)
+        public FeatureTogglesController(
+            IRepository<Application> applicationsRepository, 
+            IHttpContextAccessor httpContextAccessor, 
+            IRepository<ToggleSchedule> toggleScheduleRepository,
+            IConfiguration configuration)
         {
             _applicationsRepository = applicationsRepository;
             _toggleScheduleRepository = toggleScheduleRepository;
             _httpContextAccessor = httpContextAccessor;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -35,6 +43,7 @@ namespace Moggles.Controllers
                     ToggleName = ft.ToggleName,
                     UserAccepted = ft.UserAccepted,
                     Status = ft.Status,
+                    ProgressStatus = ft.ProgressStatus,
                     HoldReason = ft.HoldReason,
                     Notes = ft.Notes,
                     CreatedDate = ft.CreatedDate,
@@ -90,6 +99,10 @@ namespace Moggles.Controllers
                 app.UpdateFeatureToggleReasonsToChange(model.Id, updatedBy, model.ReasonToChange.Description, model.ReasonToChange.Environments);
             }
 
+            if (model.ProgressStatus != toggleData.ProgressStatus)
+            {
+                app.UpdateFeatureToggleProgressStatus(model.Id, model.ProgressStatus);
+            }
 
             if (model.IsPermanent != toggleData.IsPermanent)
             {
@@ -328,6 +341,13 @@ namespace Moggles.Controllers
         {
             var app = await _applicationsRepository.FindByIdAsync(applicationId);
             return Ok(app.DeletedFeatureToggles.OrderByDescending(x => x.DeletionDate));
+        }
+
+        [HttpGet("status-options")]
+        public IActionResult GetAssignedToOptions()
+        {
+            var options = _configuration.GetSection("ProgressStatusOptions").Get<List<string>>();
+            return Ok(options);
         }
     }
 }
