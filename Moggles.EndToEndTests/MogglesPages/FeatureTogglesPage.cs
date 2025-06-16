@@ -213,6 +213,7 @@ namespace Moggles.EndToEndTests.MogglesPages
             var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
             for (var i = 0; i <= rows.Count - 1; i++)
             {
+                rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
                 var cells = rows[i].FindElements(By.TagName("td"));
                 if (!cells[1].Text.Contains(newFeatureToggleName)) continue;
                 WaitHelpers.ExplicitWait();
@@ -224,6 +225,7 @@ namespace Moggles.EndToEndTests.MogglesPages
                 _deleteFeatureToggleReason.ActionSendKeys(reasonToDelete);
                 Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
                 _pageSpinner.WaitForSpinner();
+                break;
             }
         }
 
