@@ -1,16 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
 using Moggles.Data.NoDb;
 using Moggles.Domain;
 using Moggles.Models;
 using Moggles.UnitTests.Helpers;
+using Moq;
 using NoDb;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Moggles.UnitTests.FeatureTogglesTests
 {
@@ -27,7 +29,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             _appRepository = new InMemoryApplicationRepository();
             _toggleScheduleRepository = new InMemoryRepository<ToggleSchedule>();
-            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository);
+            var mockConfiguration = new Mock<IConfiguration>().Object;
+            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository, mockConfiguration);
         }
 
         [TestMethod]
