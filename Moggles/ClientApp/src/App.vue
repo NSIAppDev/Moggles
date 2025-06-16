@@ -168,6 +168,11 @@
                 selectedApp: {}
             }
         },
+        computed: {
+            appIsDeleted() {
+                return this.selectedApp.isDeleted;
+            }
+        },
         created() {
             Bus.$on(events.applicationChanged, app => {
                 if (app) {
@@ -239,11 +244,6 @@
             showAddFeatureToggleScheduleModal() {
                 this.showScheduler = true;
                 Bus.$emit(events.openAddSchedulerModal);
-            }
-        },
-        computed: {
-            appIsDeleted() {
-                return this.selectedApp.isDeleted;
             }
         }
     }
