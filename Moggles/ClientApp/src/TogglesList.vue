@@ -46,7 +46,7 @@
           <a v-for="schedule in getSchedulesForToggle(props.row.toggleName)" :key="schedule.scheduleId" @click="editToggleSchedule(schedule)"><i class="fas fa-clock" /> <i /></a>
         </span>
         <span v-else-if="props.column.field == 'status'">
-          <span>{{getStatusValue(props.row)}}</span>
+          <span>{{ getStatusValue(props.row) }}</span>
         </span>
         <span v-else>
           {{ props.formattedRow[props.column.field] }}
@@ -136,16 +136,16 @@
                 return this.selectedApp.isDeleted;
             }
         },
+        watch: {
+            hasBeenMigrated() {
+                this.createGridColumns();
+            }
+        },
         created() {
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
             }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             this.subscribeToBusEvents();
-        },
-        watch: {
-            hasBeenMigrated() {
-                this.createGridColumns();
-            }
         },
         mounted() {
             this.createSignalRConnection();
