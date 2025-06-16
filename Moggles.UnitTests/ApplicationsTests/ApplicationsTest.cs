@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
 using Moggles.Domain;
@@ -20,12 +21,14 @@ namespace Moggles.UnitTests.ApplicationsTests
         private InMemoryApplicationRepository _appApplicationRepository;
         private IHttpContextAccessor _httpContextAccessor;
         private IRepository<ToggleSchedule> _toggleScheduleRepository;
+        private Mock<IConfiguration> _mockConfiguration;
 
         [TestInitialize]
         public void BeforeTest()
         {
             _appApplicationRepository = new InMemoryApplicationRepository();
             _toggleScheduleRepository = new InMemoryRepository<ToggleSchedule>();
+            _mockConfiguration = new Mock<IConfiguration>();
         }
 
         [TestMethod]
@@ -41,7 +44,7 @@ namespace Moggles.UnitTests.ApplicationsTests
             var bccSummary = new ApplicationSummary { Id = bccApp.Id, AppName = bccApp.AppName };
             var cmmSummary = new ApplicationSummary { Id = cmmApp.Id, AppName = cmmApp.AppName };
 
-            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository, _mockConfiguration.Object);
 
             //act
             var result = await controller.GetAllApplications() as OkObjectResult;
@@ -57,7 +60,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task AddApplication_ReturnBadRequestResult_WhenModelStateIsInvalid()
         {
             //arrange
-            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository, _mockConfiguration.Object);
             controller.ModelState.AddModelError("error", "some error");
 
             //act
@@ -72,7 +75,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         {
             //arrange
             var appModel = new AddApplicationModel { ApplicationName = "BCC" , UpdatedByUser = "updatedBy" };
-            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository, _mockConfiguration.Object);
 
 
             //act
@@ -89,7 +92,7 @@ namespace Moggles.UnitTests.ApplicationsTests
             var app = Application.Create("bcc", "dev", false);
             await _appApplicationRepository.AddAsync(app);
             var appModel = new AddApplicationModel { ApplicationName = "BCC" };
-            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository, _mockConfiguration.Object);
 
             //act
             var result  = await controller.AddApplication(appModel);
@@ -104,7 +107,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         {
             //arrange
             var appModel = new AddApplicationModel { ApplicationName = "BCC", EnvironmentName = "Test", DefaultToggleValue = false};
-            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository, _mockConfiguration.Object);
 
             //act
             await controller.AddApplication(appModel);
@@ -140,7 +143,7 @@ namespace Moggles.UnitTests.ApplicationsTests
                 ApplicationName = updatedAppName
             };
 
-            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository, _mockConfiguration.Object);
 
             //act
             var result = await controller.UpdateApplication(updatedApp);
@@ -166,7 +169,7 @@ namespace Moggles.UnitTests.ApplicationsTests
                 ApplicationName = updatedAppName
             };
 
-            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository, _mockConfiguration.Object);
 
             //act
             await controller.UpdateApplication(updatedApp);
@@ -179,7 +182,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task EditApplication_ReturnBadRequestResult_WhenModelStateIsInvalid()
         {
             //arrange
-            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository, _mockConfiguration.Object);
             controller.ModelState.AddModelError("error", "some error");
 
             //act
@@ -204,7 +207,7 @@ namespace Moggles.UnitTests.ApplicationsTests
                 ApplicationName = "TestAppUpdated"
             };
 
-            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository, _mockConfiguration.Object);
 
             //act
             var result = await controller.UpdateApplication(updatedApp);
@@ -225,7 +228,7 @@ namespace Moggles.UnitTests.ApplicationsTests
 
             await _appApplicationRepository.AddAsync(app);
 
-            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository, _mockConfiguration.Object);
 
             //act
             var result = await controller.RemoveApp(app.Id);
@@ -245,7 +248,7 @@ namespace Moggles.UnitTests.ApplicationsTests
             var app = Application.Create("TestApp", "dev", false);
             await _appApplicationRepository.AddAsync(app);
 
-            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository, _mockConfiguration.Object);
 
             //act
             await controller.RemoveApp(Guid.NewGuid());
@@ -269,7 +272,7 @@ namespace Moggles.UnitTests.ApplicationsTests
             var schedule = ToggleSchedule.Create("TestApp", "t1", new[] { "dev" }, true, date, "updatedBy", true);
             await _toggleScheduleRepository.AddAsync(schedule);
 
-            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository);
+            var controller = new ApplicationsController(_appApplicationRepository, _toggleScheduleRepository, _mockConfiguration.Object);
 
             //act
             await controller.RemoveApp(app.Id);
