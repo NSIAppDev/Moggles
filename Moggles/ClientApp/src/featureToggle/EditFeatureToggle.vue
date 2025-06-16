@@ -27,53 +27,60 @@
               <textarea v-model="rowToEdit.notes" class="form-control" rows="2" />
             </div>
           </div>
-		  <div>
-			  <label class="col-sm-4 margin-top-8 control-label">Progress Status</label>
-			  <div class="col-sm-7 margin-top-8">
-				  <select v-model="rowToEdit.progressStatus" class="form-control">
-					  <option v-for="option in progressStatusOptions" :key="option" :value="option">
-						  {{ option }}
-					  </option>
-				  </select>
-			  </div>
-		  </div>
-			  <div v-if="rowToEdit.showStatus">
-				  <label class="col-sm-4 margin-top-8 control-label">Status</label>
-				  <div class="col-sm-7 margin-top-8">
-					  <select v-model="rowToEdit.status" class="form-control">
-						  <option value="0" selected>Unaccepted</option>
-						  <option value="1">Accepted</option>
-						  <option value="2">On Hold</option>
-					  </select>
-				  </div>
-				  <div v-if="rowToEdit.status == 2">
-					  <label class="col-sm-4 margin-top-8 control-label">Hold Reason</label>
-					  <div class="col-sm-7 margin-top-8">
-						  <textarea v-model="rowToEdit.holdReason" class="form-control" rows="2" maxlength="500" />
-					  </div>
-				  </div>
-			  </div>
-			  <div v-else>
-				  <div class="col-sm-12 margin-top-8">
-					  <label class="col-sm-4 control-label">Accepted by User</label>
-					  <div class="col-sm-1 margin-top-10">
-						  <p-check id="editAcceptedByUserCheckbox" v-model="rowToEdit.userAccepted" class="p-icon p-fill"
-					   color="default">
-							  <i slot="extra" class="icon fas fa-check" />
-						  </p-check>
-					  </div>
-				  </div>
-			  </div>
-			  <div class="col-sm-12 margin-top-8">
-				  <label class="col-sm-4 control-label">Is Permanent</label>
-				  <div class="col-sm-1 margin-top-10">
-					  <p-check id="editIsPermanentCheckbox" v-model="rowToEdit.isPermanent" class="p-icon p-fill"
-					 color="default">
-						  <i slot="extra" class="icon fas fa-check" />
-					  </p-check>
-				  </div>
-			  </div>
-		  </div>
+          <div>
+            <label class="col-sm-4 margin-top-8 control-label">Progress Status</label>
+            <div class="col-sm-7 margin-top-8">
+              <select v-model="rowToEdit.progressStatus" class="form-control">
+                <option v-for="option in progressStatusOptions" :key="option" :value="option">
+                  {{ option }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div v-if="rowToEdit.showStatus">
+            <label class="col-sm-4 margin-top-8 control-label">Status</label>
+            <div class="col-sm-7 margin-top-8">
+              <select v-model="rowToEdit.status" class="form-control">
+                <option value="0" selected>
+                  Unaccepted
+                </option>
+                <option value="1">
+                  Accepted
+                </option>
+                <option value="2">
+                  On Hold
+                </option>
+              </select>
+            </div>
+            <div v-if="rowToEdit.status == 2">
+              <label class="col-sm-4 margin-top-8 control-label">Hold Reason</label>
+              <div class="col-sm-7 margin-top-8">
+                <textarea v-model="rowToEdit.holdReason" class="form-control" rows="2" 
+                          maxlength="500" />
+              </div>
+            </div>
+          </div>
+          <div v-else>
+            <div class="col-sm-12 margin-top-8">
+              <label class="col-sm-4 control-label">Accepted by User</label>
+              <div class="col-sm-1 margin-top-10">
+                <p-check id="editAcceptedByUserCheckbox" v-model="rowToEdit.userAccepted" class="p-icon p-fill" 
+                         color="default">
+                  <i slot="extra" class="icon fas fa-check" />
+                </p-check>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 margin-top-8">
+            <label class="col-sm-4 control-label">Is Permanent</label>
+            <div class="col-sm-1 margin-top-10">
+              <p-check id="editIsPermanentCheckbox" v-model="rowToEdit.isPermanent" class="p-icon p-fill" 
+                       color="default">
+                <i slot="extra" class="icon fas fa-check" />
+              </p-check>
+            </div>
+          </div>
+        </div>
         <div class="col-sm-12">
           <h5 class="margin-top-20">
             <strong>Environments</strong>
