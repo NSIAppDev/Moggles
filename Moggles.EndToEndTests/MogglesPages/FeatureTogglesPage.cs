@@ -196,7 +196,7 @@ namespace Moggles.EndToEndTests.MogglesPages
             {
                 var cells = row.FindElements(By.TagName("td"));
                 if (!cells[1].Text.Equals(newFeatureToggleName)) continue;
-                var creationDateAndTime = cells[6].Text;
+                var creationDateAndTime = cells[7].Text;
                 var creationDate =
                     creationDateAndTime.Substring(0, creationDateAndTime.IndexOf(" ", StringComparison.Ordinal));
                 var formattedCreationDate = DateTime.Parse(creationDate).Date;
@@ -213,6 +213,7 @@ namespace Moggles.EndToEndTests.MogglesPages
             var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
             for (var i = 0; i <= rows.Count - 1; i++)
             {
+                rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
                 var cells = rows[i].FindElements(By.TagName("td"));
                 if (!cells[1].Text.Contains(newFeatureToggleName)) continue;
                 WaitHelpers.ExplicitWait();
@@ -224,6 +225,7 @@ namespace Moggles.EndToEndTests.MogglesPages
                 _deleteFeatureToggleReason.ActionSendKeys(reasonToDelete);
                 Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
                 _pageSpinner.WaitForSpinner();
+                break;
             }
         }
 
