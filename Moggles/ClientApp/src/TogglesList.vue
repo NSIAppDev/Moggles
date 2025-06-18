@@ -161,6 +161,7 @@
 
                 Bus.$on(events.applicationEdited, applicationUpdateModel => {
                     this.selectedApp.appName = applicationUpdateModel.applicationName
+                    this.selectedApp.assignedTo = applicationUpdateModel.applicationAssignedTo
                 })
 
                 Bus.$on(events.environmentAdded, () => {
