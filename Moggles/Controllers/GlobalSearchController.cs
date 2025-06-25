@@ -10,7 +10,6 @@ namespace Moggles.Controllers
 	[ApiController]
 	public class GlobalSearchController(IRepository<Application> applicationRepository) : ControllerBase
 	{
-
 		[HttpPost]
 		public async Task<IActionResult> Search([FromBody] GlobalSearchModel model)
 		{
@@ -65,9 +64,7 @@ namespace Moggles.Controllers
 			if (model.ChangedEnd.HasValue)
 				featureToggles = featureToggles.Where(f => f.Toggle.FeatureToggleStatuses.OrderByDescending(_ => _.LastUpdated).FirstOrDefault().LastUpdated <= model.ChangedEnd.Value);
 
-
 			var result = featureToggles
-
 				.Select(f => new GlobalSearchFeatureToggleViewModel
 				{
 					Id = f.Toggle.Id,

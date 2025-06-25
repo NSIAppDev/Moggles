@@ -73,7 +73,7 @@ namespace Moggles
 
             services.AddMvc(options =>
             {
-                //options.Conventions.Add(new AuthorizationPolicyConvention("OnlyAdmins", Configuration.UseJwt(), JwtBearerDefaults.AuthenticationScheme));
+                options.Conventions.Add(new AuthorizationPolicyConvention("OnlyAdmins", Configuration.UseJwt(), JwtBearerDefaults.AuthenticationScheme));
             });
         }
 
@@ -86,12 +86,11 @@ namespace Moggles
 
             RegisterJwtAuthentication(services);
 
-            //services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy("OnlyAdmins", policy => policy.RequireRole(admins));
-            //});
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("OnlyAdmins", policy => policy.RequireRole(admins));
+            });
         }
-
 
         private void RegisterJwtAuthentication(IServiceCollection services)
         {

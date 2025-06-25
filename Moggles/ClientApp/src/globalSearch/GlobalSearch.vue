@@ -16,7 +16,6 @@
                             <input type="text" id="keyword" v-model="globalSearch.keyword" class="form-control" placeholder="Enter keyword..." />
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label class="control-label col-md-4" for="application">Application</label>
                         <multi-select class="col-md-8" id="selectedApps" v-model="globalSearch.applicationIds" filterable
@@ -24,7 +23,6 @@
                                       :options="applications" :value-key="'id'" :label-key="'appName'"
                                       :selected-icon="'fas fa-check'" append-to-body />
                     </div>
-
                     <div class="form-group">
                         <label class="control-label col-md-4" for="status">Status</label>
                         <multi-select class="col-md-8"
@@ -37,7 +35,6 @@
                                       :limit="1"
                                       append-to-body />
                     </div>
-
                     <div class="form-group">
                         <label class="control-label col-md-4">Created Within:</label>
                         <div class="col-md-4">
@@ -47,7 +44,6 @@
                             <input type="date" v-model="globalSearch.createdEnd" class="form-control" />
                         </div>
                     </div>
-
                     <div v-for="(env, index) in globalSearch.environments" :key="index" class="form-group">
                         <label class="col-md-4 control-label">Environment:</label>
                         <div class="col-md-4">
@@ -67,7 +63,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="col-md-4 control-label" for="workItemIdentifier">Work Item ID:</label>
@@ -75,7 +70,6 @@
                             <input type="text" id="workItemIdentifier" v-model="globalSearch.workItemIdentifier" class="form-control" />
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label class="col-md-4 control-label" for="assignedTo">Assigned To:</label>
                         <multi-select class="col-md-8"
@@ -87,7 +81,6 @@
                                       :selected-icon="'fas fa-check'"
                                       append-to-body />
                     </div>
-
                     <div class="form-group">
                         <label class="col-md-4 control-label">Permanent:</label>
                         <div class="col-md-8">
@@ -102,7 +95,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label class="col-md-4 control-label">Changed Within:</label>
                         <div class="col-md-4">
@@ -112,7 +104,6 @@
                             <input type="date" v-model="globalSearch.changedEnd" class="form-control" />
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label class="col-md-4 control-label">User Accepted:</label>
                         <div class="col-md-8">
@@ -250,7 +241,6 @@
             }
         },
         mounted() {
-
         },
         created() {
             this.getCacheRefreshAvailability();

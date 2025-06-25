@@ -53,7 +53,6 @@
             getApplications(applicationName = null) {
                 axios.get('/api/applications')
                     .then((response) => {
-                
                         this.applications = response.data;
                         if (applicationName) {
                             let selectedApp = _.find(this.applications, (application) => application.appName == applicationName);
