@@ -127,20 +127,31 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-lg-12">
-                        <div class="hr-line-dashed"></div>
-                        <div class="pull-right">
-                            <a class="btn btn-default" @click="$emit('back')">
-                                Cancel
-                            </a>
-                            <button class="btn btn-primary" @click="search">Search</button>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div class="hr-line-dashed"></div>
+                            <div class="pull-right">
+                                <a class="btn btn-default" @click="reset">
+                                    Reset
+                                </a>
+                                <button class="btn btn-primary" @click="search">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div class="hr-line-dashed"></div>
+                            <div class="pull-right">
+                                <a class="btn btn-default" @click="$emit('back')">
+                                    Back
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div v-if="featureToggles.length > 0">
+        <div v-if="featureToggles && featureToggles.length > 0">
             <vue-good-table id="toggleGrid" ref="toggleGrid"
                             :columns="gridColumns"
                             :pagination-options="paginationOptions"
@@ -186,6 +197,11 @@
                 <delete-featureToggle :application="selectedApp" />
             </modal>
         </div>
+        <div v-if="featureToggles && featureToggles.length === 0" slot="emptystate">
+            <div class="text-center">
+                There are no toggles for this application or filtered search
+            </div>
+        </div>
     </div>
 </template>
 
@@ -214,7 +230,7 @@
                 progressStatusOptionsRawData: [],
                 statusAsArray: [],
                 assignedToOptions: [],
-                featureToggles: [],
+                featureToggles: null,
                 gridColumns: [],
                 paginationOptions: {
                     enabled: true,
@@ -307,6 +323,11 @@
                             this.createGridColumns();
                         });
                     });
+            },
+            reset() {
+                this.globalSearch = new GlobalSearchModel();
+                this.statusAsArray = [];
+                this.featureToggles = null;
             },
             createGridColumns() {
                 if (this.$refs['toggleGrid'] && typeof this.$refs['toggleGrid'].reset === 'function') {
