@@ -12,8 +12,8 @@
             <span class="icon-bar" />
           </button>
           <a class="navbar-brand" href="/">
-            <img src="/img/Moggles-LogoType.png" alt="Moggles, Toggles for non development wizards" class="d-inline-block align-top"
-                 height="30">
+            <img src="/img/Moggles-LogoType.png" alt="Moggles, Toggles for non development wizards"
+                 class="d-inline-block align-top" height="30">
           </a>
         </div>
 
@@ -24,10 +24,15 @@
               <div class="vertical-align">
                 <label for="app-sel" class="margin-top-8">Select Application </label>
                 <app-selection />
-                <a class="margin-left-10" @click="showEditAppModal(true)"><i id="showEditApplicationModalBtn" class="fas fa-edit fa-lg" /></a>
+                <a class="margin-left-10" @click="showEditAppModal(true)"><i id="showEditApplicationModalBtn"
+                                                                             class="fas fa-edit fa-lg" /></a>
                 <button id="showAddApplicationModalBtn" type="button" class="margin-left-10 btn btn-primary"
                         @click="showAddAppModal()">
                   Add Application
+                </button>
+                <button id="showGlobalSearchModalBtn" type="button" class="margin-left-10 btn btn-primary"
+                        @click="currentPage = 'search'">
+                  Global Search
                 </button>
               </div>
             </li>
@@ -36,10 +41,21 @@
             <dropdown tag="li">
               <a id="toolsBtn" class="dropdown-toggle" role="button">Tools <span class="caret" /></a>
               <template slot="dropdown">
-                <li><a role="button" @click="reloadCurrentApplicationToggles()">Reload Application Toggles</a></li>
-                <li><a role="button" :class="{ 'disabled': appIsDeleted }" @click="showAddFeatureToggleModal()">Add Feature Toggle</a></li>
-                <li><a role="button" :class="{ 'disabled': appIsDeleted }" @click="showAddEnvModal()">Add New Environment</a></li>
-                <li><a role="button" :class="{ 'disabled': appIsDeleted }" @click="showAddFeatureToggleScheduleModal()">Add New Feature Toggle Schedule</a></li>
+                <li>
+                  <a role="button" @click="reloadCurrentApplicationToggles()">Reload Application Toggles</a>
+                </li>
+                <li>
+                  <a role="button" :class="{ 'disabled': appIsDeleted }" @click="showAddFeatureToggleModal()">Add
+                    Feature Toggle</a>
+                </li>
+                <li>
+                  <a role="button" :class="{ 'disabled': appIsDeleted }" @click="showAddEnvModal()">Add New
+                    Environment</a>
+                </li>
+                <li>
+                  <a role="button" :class="{ 'disabled': appIsDeleted }"
+                     @click="showAddFeatureToggleScheduleModal()">Add New Feature Toggle Schedule</a>
+                </li>
                 <li v-if="isCacheRefreshEnabled">
                   <a role="button" @click="showForceCacheRefresh = true">Force Cache Refresh</a>
                 </li>
@@ -52,207 +68,217 @@
 
     <block-ui ref="blockUi" />
 
-    <modal v-if="showAddToggle" v-model="showAddToggle" title="Add Feature Toggle"
+    <modal v-if="showAddToggle" v-model="showAddToggle" title="Add Feature Toggle" 
            :footer="false">
       <add-featuretoggle :application="selectedApp" />
     </modal>
 
-
-    <modal v-model="showAddApp" title="Add Application" :footer="false">
+    <modal v-model="showAddApp" title="Add Application" 
+           :footer="false">
       <add-application />
     </modal>
 
-    <modal v-model="showAddEnv" title="Add Environment" :footer="false">
+    <modal v-model="showAddEnv" title="Add Environment" 
+           :footer="false">
       <add-env :application="selectedApp" />
     </modal>
 
-    <modal v-model="showForceCacheRefresh" title="Force Cache Refresh" :footer="false">
+    <modal v-model="showForceCacheRefresh" title="Force Cache Refresh" 
+           :footer="false">
       <force-cache-refresh />
     </modal>
 
-    <modal v-if="editAppModalIsActive" v-model="editAppModalIsActive" title="Edit Application"
+    <modal v-if="editAppModalIsActive" v-model="editAppModalIsActive" title="Edit Application" 
            :footer="false">
       <edit-application :application="selectedApp" @close-app-edit-modal="showEditAppModal(false)" />
     </modal>
 
-    <modal v-if="showDeleteAppConfirmation" v-model="showDeleteAppConfirmation" title="You are about to delete an application"
-           :footer="false">
-      <delete-application :application="selectedApp" @cancel="showDeleteAppConfirmation = false" @deleteAppCompleted="showEditAppModal(false)" />
+    <modal v-if="showDeleteAppConfirmation" v-model="showDeleteAppConfirmation"
+           title="You are about to delete an application" :footer="false">
+      <delete-application :application="selectedApp" @cancel="showDeleteAppConfirmation = false"
+                          @deleteAppCompleted="showEditAppModal(false)" />
     </modal>
 
-    <modal v-if="showScheduler" v-model="showScheduler" title="Schedule Toggles"
+    <modal v-if="showScheduler" v-model="showScheduler" title="Schedule Toggles" 
            :footer="false">
       <add-toggle-schedule :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" />
     </modal>
-
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-12">
-          <toggles-list />
+    <div v-if="currentPage === 'main'">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <toggles-list />
+          </div>
         </div>
-      </div>
-      <div class="row margin-top-20">
-        <div class="col-sm-12">
-          <div class="panel panel-default">
-            <div class="panel-heading" @click="toggleDeletedFeatureToggles">
-              <a>
-                <span class="pull-right">
-                  <i v-if="!showDeletedFeatureToggles" class="fa fa-caret-down fa-2x" />
-                  <i v-else class="fa fa-caret-up fa-2x" />
-                </span>
-                <h4>Deleted Feature Toggles</h4>
-              </a>
-            </div>
-            <div class="panel-body padding-0">
-              <collapse v-model="showDeletedFeatureToggles">
-                <deleted-featuretoggles :application="selectedApp" />
-              </collapse>
+        <div class="row margin-top-20">
+          <div class="col-sm-12">
+            <div class="panel panel-default">
+              <div class="panel-heading" @click="toggleDeletedFeatureToggles">
+                <a>
+                  <span class="pull-right">
+                    <i v-if="!showDeletedFeatureToggles" class="fa fa-caret-down fa-2x" />
+                    <i v-else class="fa fa-caret-up fa-2x" />
+                  </span>
+                  <h4>Deleted Feature Toggles</h4>
+                </a>
+              </div>
+              <div class="panel-body padding-0">
+                <collapse v-model="showDeletedFeatureToggles">
+                  <deleted-featuretoggles :application="selectedApp" />
+                </collapse>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <modal v-if="showErrorAlert" v-model="showErrorAlert" title="Error"
+    <global-search v-if="currentPage === 'search'" @back="goBack" />
+    <modal v-if="showErrorAlert" v-model="showErrorAlert" title="Error" 
            :footer="false">
       <alert-error :error="error" :custom-error-message="customErrorMessage" @cancel="showErrorAlert = false" />
     </modal>
   </div>
 </template>
 <script>
-    import TogglesList from "./TogglesList";
-    import AppSelection from './menu/AppSelection'
-    import AddApplication from './application/AddApplication'
-    import EditApplication from './application/EditApplication'
-    import DeleteApplication from './application/DeleteApplication'
-    import AddFeatureToggle from './featureToggle/AddFeatureToggle'
-    import DeletedFeatureToggles from './featureToggle/DeletedFeatureToggles'
-    import AddEnvironment from './environment/AddEnvironment'
-    import ForceCacheRefresh from './menu/ForceCacheRefresh'
-    import AddToggleSchedule from './featureToggleSchedule/AddToggleSchedule'
-    import BlockUi from './common/BlockUi'
-    import { Bus } from './common/event-bus'
-    import axios from 'axios'
-    import { events } from './common/events';
-    import AlertError from './alerts/AlertError';
+import TogglesList from "./TogglesList";
+import AppSelection from './menu/AppSelection'
+import AddApplication from './application/AddApplication'
+import EditApplication from './application/EditApplication'
+import DeleteApplication from './application/DeleteApplication'
+import AddFeatureToggle from './featureToggle/AddFeatureToggle'
+import DeletedFeatureToggles from './featureToggle/DeletedFeatureToggles'
+import AddEnvironment from './environment/AddEnvironment'
+import ForceCacheRefresh from './menu/ForceCacheRefresh'
+import AddToggleSchedule from './featureToggleSchedule/AddToggleSchedule'
+import GlobalSearch from './globalSearch/GlobalSearch'
+import BlockUi from './common/BlockUi'
+import { Bus } from './common/event-bus'
+import axios from 'axios'
+import { events } from './common/events';
+import AlertError from './alerts/AlertError';
 
-    export default {
-        components: {
-            "toggles-list": TogglesList,
-            "app-selection": AppSelection,
-            "add-application": AddApplication,
-            "edit-application": EditApplication,
-            "delete-application": DeleteApplication,
-            "add-featuretoggle": AddFeatureToggle,
-            "deleted-featuretoggles": DeletedFeatureToggles,
-            "add-env": AddEnvironment,
-            'force-cache-refresh': ForceCacheRefresh,
-            'block-ui': BlockUi,
-            'add-toggle-schedule': AddToggleSchedule,
-            'alert-error': AlertError
-        },
-        data() {
-            return {
-                showAddApp: false,
-                showAddEnv: false,
-                showDeletedFeatureToggles : false,
-                showAddToggle: false,
-                showForceCacheRefresh: false,
-                isCacheRefreshEnabled: false,
-                editAppModalIsActive: false,
-                showDeleteAppConfirmation: false,
-                showScheduler: false,
-                showErrorAlert: false,
-                error: null,
-                customErrorMessage: '',
-                selectedApp: {}
-            }
-        },
-        computed: {
-            appIsDeleted() {
-                return this.selectedApp.isDeleted;
-            }
-        },
-        created() {
-            Bus.$on(events.applicationChanged, app => {
-                if (app) {
-					this.selectedApp = app;
-                    this.showDeletedFeatureToggles = false;
-                }
-            });
-
-            Bus.$on(events.showErrorAlertModal, args => {
-                this.error = args.error != null ? args.error : null;
-                this.customErrorMessage = args.customErrorMessage != null ? args.customErrorMessage : null;
-                this.showErrorAlert = true;
-            });
-
-            Bus.$on(events.showDeleteApplicationConfirmationModal, () => {
-                this.showDeleteAppConfirmation = true;
-            });
-
-            Bus.$on(events.closeAddFeatureToggleModal, () => {
-                this.showAddToggle = false;
-            });
-
-            Bus.$on(events.closeAddApplicationModal, () => {
-                this.showAddApp = false;
-            });
-
-            Bus.$on(events.closeAddEnvironmentModal, () => {
-                this.showAddEnv = false;
-            });
-
-            Bus.$on(events.closeForceCacheRefreshModal, () => {
-                this.showForceCacheRefresh = false;
-            });
-
-            Bus.$on(events.closeToggleSchedulerModal, () => {
-                this.showScheduler = false;
-            });
-
-            axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
-                this.isCacheRefreshEnabled = response.data;
-            }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
-        },
-        methods: {
-            showAddFeatureToggleModal() {
-                this.showAddToggle = true;
-                Bus.$emit(events.openAddFeatureToggleModal);
-            },
-            showAddAppModal() {
-                this.showAddApp = true;
-                Bus.$emit(events.openAddApplicationModal);
-            },
-            showAddEnvModal() {
-                this.showAddEnv = true;
-                Bus.$emit(events.openAddEnvironmentModal);
-            },
-            toggleDeletedFeatureToggles() {
-                this.showDeletedFeatureToggles = !this.showDeletedFeatureToggles;
-				Bus.$emit(events.refreshDeletedFeatureToggles);
-            },
-            reloadCurrentApplicationToggles() {
-                Bus.$emit(events.reloadApplicationToggles);
-            },
-            showEditAppModal(value) {
-                this.editAppModalIsActive = value;
-            },
-            confirmDeleteApp() {
-                this.showDeleteAppConfirmation = true;
-            },
-            showAddFeatureToggleScheduleModal() {
-                this.showScheduler = true;
-                Bus.$emit(events.openAddSchedulerModal);
-            }
-        }
+export default {
+  components: {
+    "toggles-list": TogglesList,
+    "app-selection": AppSelection,
+    "add-application": AddApplication,
+    "edit-application": EditApplication,
+    "delete-application": DeleteApplication,
+    "add-featuretoggle": AddFeatureToggle,
+    "deleted-featuretoggles": DeletedFeatureToggles,
+    "add-env": AddEnvironment,
+    'force-cache-refresh': ForceCacheRefresh,
+    'block-ui': BlockUi,
+    'add-toggle-schedule': AddToggleSchedule,
+    "global-search": GlobalSearch,
+    'alert-error': AlertError
+  },
+  data() {
+    return {
+      currentPage: 'main',
+      showAddApp: false,
+      showAddEnv: false,
+      showDeletedFeatureToggles: false,
+      showAddToggle: false,
+      showForceCacheRefresh: false,
+      isCacheRefreshEnabled: false,
+      editAppModalIsActive: false,
+      showDeleteAppConfirmation: false,
+      showScheduler: false,
+      showErrorAlert: false,
+      error: null,
+      customErrorMessage: '',
+      selectedApp: {}
     }
+  },
+  computed: {
+    appIsDeleted() {
+      return this.selectedApp.isDeleted;
+    }
+  },
+  created() {
+    Bus.$on(events.applicationChanged, app => {
+      if (app) {
+        this.selectedApp = app;
+        this.showDeletedFeatureToggles = false;
+      }
+    });
+
+    Bus.$on(events.showErrorAlertModal, args => {
+      this.error = args.error != null ? args.error : null;
+      this.customErrorMessage = args.customErrorMessage != null ? args.customErrorMessage : null;
+      this.showErrorAlert = true;
+    });
+
+    Bus.$on(events.showDeleteApplicationConfirmationModal, () => {
+      this.showDeleteAppConfirmation = true;
+    });
+
+    Bus.$on(events.closeAddFeatureToggleModal, () => {
+      this.showAddToggle = false;
+    });
+
+    Bus.$on(events.closeAddApplicationModal, () => {
+      this.showAddApp = false;
+    });
+
+    Bus.$on(events.closeAddEnvironmentModal, () => {
+      this.showAddEnv = false;
+    });
+
+    Bus.$on(events.closeForceCacheRefreshModal, () => {
+      this.showForceCacheRefresh = false;
+    });
+
+    Bus.$on(events.closeToggleSchedulerModal, () => {
+      this.showScheduler = false;
+    });
+
+    axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
+      this.isCacheRefreshEnabled = response.data;
+    }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
+  },
+  methods: {
+    goBack() {
+      window.location.href = '/';
+    },
+    showAddFeatureToggleModal() {
+      this.showAddToggle = true;
+      Bus.$emit(events.openAddFeatureToggleModal);
+    },
+    showAddAppModal() {
+      this.showAddApp = true;
+      Bus.$emit(events.openAddApplicationModal);
+    },
+    showAddEnvModal() {
+      this.showAddEnv = true;
+      Bus.$emit(events.openAddEnvironmentModal);
+    },
+    toggleDeletedFeatureToggles() {
+      this.showDeletedFeatureToggles = !this.showDeletedFeatureToggles;
+      Bus.$emit(events.refreshDeletedFeatureToggles);
+    },
+    reloadCurrentApplicationToggles() {
+      Bus.$emit(events.reloadApplicationToggles);
+    },
+    showEditAppModal(value) {
+      this.editAppModalIsActive = value;
+    },
+    confirmDeleteApp() {
+      this.showDeleteAppConfirmation = true;
+    },
+    showAddFeatureToggleScheduleModal() {
+      this.showScheduler = true;
+      Bus.$emit(events.openAddSchedulerModal);
+    }
+  }
+}
 </script>
 
 <style scoped>
-    .disabled {
-        pointer-events: none;
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 </style>

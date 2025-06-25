@@ -66,9 +66,9 @@ namespace Moggles
 
             services.AddNoDb<Application>();
             services.AddNoDb<ToggleSchedule>();
-            services.AddScoped<IRepository<Application>, ApplicationsRepository>();
+			services.AddScoped<IRepository<Application>, ApplicationsRepository>();
             services.AddScoped<IRepository<ToggleSchedule>, ToggleSchedulesRepository>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHostedService<ScheduledFeatureTogglesService>();
 
             services.AddMvc(options =>
@@ -91,7 +91,6 @@ namespace Moggles
                 options.AddPolicy("OnlyAdmins", policy => policy.RequireRole(admins));
             });
         }
-
 
         private void RegisterJwtAuthentication(IServiceCollection services)
         {

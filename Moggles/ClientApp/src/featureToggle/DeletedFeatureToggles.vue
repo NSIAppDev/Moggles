@@ -83,8 +83,10 @@
             }
         },
         mounted() {
-			Bus.$on(events.refreshDeletedFeatureToggles, () => {
-                this.$refs['deletedTogglesGrid'].reset();
+            Bus.$on(events.refreshDeletedFeatureToggles, () => {
+                if (this.$refs['deletedTogglesGrid']) {
+                    this.$refs['deletedTogglesGrid'].reset();
+                }
                 this.getFeatureToggles();
             });
         },
