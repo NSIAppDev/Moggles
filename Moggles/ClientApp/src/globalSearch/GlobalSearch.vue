@@ -122,20 +122,13 @@
                         <div class="col-md-12">
                             <div class="hr-line-dashed"></div>
                             <div class="pull-right">
+                                <a class="btn btn-default" @click="$emit('back')">
+                                    Back
+                                </a>
                                 <a class="btn btn-default" @click="reset">
                                     Reset
                                 </a>
                                 <button class="btn btn-primary" @click="search">Search</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-12">
-                            <div class="hr-line-dashed"></div>
-                            <div class="pull-right">
-                                <a class="btn btn-default" @click="$emit('back')">
-                                    Back
-                                </a>
                             </div>
                         </div>
                     </div>
