@@ -8,6 +8,7 @@ namespace Moggles.Models
 		public Guid Id { get; set; }
 		public string ToggleName { get; set; }
 		public string ApplicationName { get; set; }
+		public Guid ApplicationId { get; set; }
 		public List<FeatureToggleStatusViewModel> Environments { get; set; }
 		public string AssignedTo { get; set; }
 		public string WorkItemIdentifier { get; set; }
@@ -17,5 +18,6 @@ namespace Moggles.Models
 		public DateTime CreatedDate { get; set; }
 		public DateTime ChangedDate { get; set; }
 		public bool IsPermanent { get; set; }
+		public bool HasBeenMigrated { get; set; }
 	}
 }

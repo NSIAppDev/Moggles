@@ -7,8 +7,8 @@
             <div class="col-md-4">
             </div>
         </div>
-        <div class="form-horizontal">
-            <div class="row">
+        <div class="form-horizontal panel panel-default">
+            <div class="row" style="padding: 25px">
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label col-md-4" for="keyword">Keyword</label>
@@ -20,6 +20,7 @@
                     <div class="form-group">
                         <label class="control-label col-md-4" for="application">Application</label>
                         <multi-select class="col-md-8" id="selectedApps" v-model="globalSearch.applicationIds" filterable
+                                      placeholder="Select application"
                                       :options="applications" :value-key="'id'" :label-key="'appName'"
                                       :selected-icon="'fas fa-check'" append-to-body />
                     </div>
@@ -90,13 +91,13 @@
                     <div class="form-group">
                         <label class="col-md-4 control-label">Permanent:</label>
                         <div class="col-md-8">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <input type="radio" :value="null" v-model="globalSearch.isPermanent" /> All
                             </div>
                             <div class="col-md-4">
                                 <input type="radio" :value="true" v-model="globalSearch.isPermanent" /> Is Permanent
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <input type="radio" :value="false" v-model="globalSearch.isPermanent" /> Is Not Permanent
                             </div>
                         </div>
@@ -115,13 +116,13 @@
                     <div class="form-group">
                         <label class="col-md-4 control-label">User Accepted:</label>
                         <div class="col-md-8">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <input type="radio" :value="null" v-model="globalSearch.userAccepted" /> All
                             </div>
                             <div class="col-md-4">
                                 <input type="radio" :value="true" v-model="globalSearch.userAccepted" /> Accepted
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <input type="radio" :value="false" v-model="globalSearch.userAccepted" /> Unaccepted
                             </div>
                         </div>
@@ -176,8 +177,14 @@
                         {{ props.formattedRow[props.column.field] }}
                     </span>
                 </template>
-
             </vue-good-table>
+            <modal v-model="showEditModal" title="Edit Feature Flag" :footer="false" append-to-body>
+                <edit-featureToggle :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" />
+            </modal>
+            <modal v-model="showDeleteConfirmationModal" title="You are about to delete a feature toggle" :footer="false"
+                   append-to-body>
+                <delete-featureToggle :application="selectedApp" />
+            </modal>
         </div>
     </div>
 </template>
@@ -185,14 +192,19 @@
 <script>
     import PrettyCheck from 'pretty-checkbox-vue/check';
     import { Bus } from '../common/event-bus'
-    import moment from 'moment';
-    import axios from 'axios'
     import { events } from '../common/events';
+    import moment from 'moment';
+    import axios from 'axios';
+    import _ from 'lodash';
     import GlobalSearchModel from './models/GlobalSearchModel';
+    import EditFeatureToggle from './../featureToggle/EditFeatureToggle';
+    import DeleteFeatureToggle from './../featureToggle/DeleteFeatureToggle';
 
     export default {
         components: {
             'p-check': PrettyCheck,
+            'edit-featureToggle': EditFeatureToggle,
+            'delete-featureToggle': DeleteFeatureToggle
         },
         data() {
             return {
@@ -210,6 +222,10 @@
                     perPageDropdown: [10, 20, 50],
                     dropdownAllowAll: false
                 },
+                showEditModal: false,
+                selectedApp: {},
+                isCacheRefreshEnabled: false,
+                showDeleteConfirmationModal: false,
             }
         },
         watch: {
@@ -218,13 +234,31 @@
             }
         },
         mounted() {
+
         },
         created() {
+            this.getCacheRefreshAvailability();
+            this.subscribeToBusEvents();
             this.getApplicationOptions();
             this.fetchProgressStatusOptions();
             this.getAssignedToOptions();
         },
         methods: {
+            subscribeToBusEvents() {
+                Bus.$on(events.closeEditFeatureToggleModal, () => {
+                    this.showEditModal = false;
+                    this.search();
+                })
+                Bus.$on(events.closeDeleteFeatureToggleModal, () => {
+                    this.showDeleteConfirmationModal = false;
+                    this.search();
+                })
+            },
+            getCacheRefreshAvailability() {
+                axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
+                    this.isCacheRefreshEnabled = response.data;
+                }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
+            },
             onEnvironmentNameChange(env) {
                 if (env.name && env.enabled === null) {
                     this.$set(env, 'enabled', true);
@@ -382,7 +416,22 @@
             },
             formatDate(date) {
                 return moment(date).format('M/D/YY hh:mm:ss A');
-            }
+            },
+            openEditFeatureToggleModal(row) {
+                this.selectedApp = this.applications.find(a => a.id == row.applicationId);
+                Bus.$emit(events.blockUI);
+                this.$nextTick(() => {
+                    this.showEditModal = true;
+                    Bus.$emit(events.openEditFeatureToggleModal, _.clone(row));
+                });
+            },
+            openDeleteFeatureToggleConfirmationModal(row) {
+                this.selectedApp = this.applications.find(a => a.id == row.applicationId);
+                this.$nextTick(() => {
+                    this.showDeleteConfirmationModal = true
+                    Bus.$emit(events.deleteFeatureToggle, row);
+                });
+            },
         }
     }
 </script>

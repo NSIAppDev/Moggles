@@ -73,6 +73,7 @@ namespace Moggles.Controllers
 					Id = f.Toggle.Id,
 					ToggleName = f.Toggle.ToggleName,
 					ApplicationName = f.Application.AppName,
+					ApplicationId = f.Application.Id,
 					Environments = f.Toggle.FeatureToggleStatuses
 						.Select(fts =>
 							new FeatureToggleStatusViewModel
@@ -91,7 +92,8 @@ namespace Moggles.Controllers
 					UserAccepted = f.Toggle.UserAccepted,
 					CreatedDate = f.Toggle.CreatedDate,
 					ChangedDate = f.Toggle.FeatureToggleStatuses.OrderByDescending(_ => _.LastUpdated).FirstOrDefault().LastUpdated,
-					IsPermanent = f.Toggle.IsPermanent
+					IsPermanent = f.Toggle.IsPermanent,
+					HasBeenMigrated = f.Application.HasBeenMigrated
 				})
 				.OrderBy(f => f.ToggleName)
 				.ToList();
