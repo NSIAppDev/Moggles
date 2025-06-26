@@ -19,6 +19,9 @@
           <div class="col-sm-7">
             <select id="assignedToDropdown" v-model="assignedTo" class="form-control" 
                     name="assignedTo">
+              <option :value="''">
+                None
+              </option>
               <option v-for="option in assignedToOptions" :key="option" :value="option">
                 {{ option }}
               </option>
@@ -95,7 +98,7 @@
                 let appUpdateModel = {
                     id: this.application.id,
                     applicationName: this.appName,
-                    applicationAssignedTo: this.assignedTo,
+                    applicationAssignedTo: this.assignedTo === "" ? null : this.assignedTo,
                     isDeleted: reactivateButtonClicked ? false : this.application.isDeleted
                 }
 

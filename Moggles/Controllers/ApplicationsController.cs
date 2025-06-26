@@ -86,7 +86,7 @@ namespace Moggles.Controllers
                 return BadRequest("Application with same name already exists!");
 
             var appName = applicationModel.ApplicationName ?? app.AppName;
-            var assignedTo = applicationModel.ApplicationAssignedTo ?? app.AssignedTo;
+            var assignedTo = applicationModel.ApplicationAssignedTo;
             var isDeleted = applicationModel.isDeleted ?? app.IsDeleted;
             app.Update(appName, isDeleted, assignedTo);
             await _applicationsRepository.UpdateAsync(app);
