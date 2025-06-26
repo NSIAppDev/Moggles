@@ -40,7 +40,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             public async Task DeleteToggleFromHistory_FeatureToggleIsDeleted()
             {
                 //arrange
-                var app = Application.Create("TestDelete", "PROD", false);
+                var app = Application.Create("TestDelete", null, "PROD", false);
                 var toggleId = Guid.NewGuid();
                 app.DeletedFeatureToggles.Add(new DeletedFeatureToggle
                 {

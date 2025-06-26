@@ -42,7 +42,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task EnvironmentIsDeleted_FeatureToggleStatusForThatEnvironmentIsDeletedForAllToggles()
         {
             //arrange
-            var app = Application.Create("TestApp", "TestEnv", false);
+            var app = Application.Create("TestApp", null, "TestEnv", false);
             app.AddFeatureToggle("t1", "", "workItemId1");
             app.AddFeatureToggle("t2", "", "workItemId2");
             app.AddFeatureToggle("t3", "", "workItemId3");
@@ -69,7 +69,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task EnvironmentIsDeleted_FeatureTogglesAreNotDeleted()
         {
             //arrange
-            var app = Application.Create("TestApp", "TestEnv", false);
+            var app = Application.Create("TestApp", null, "TestEnv", false);
             app.AddFeatureToggle("t1", "", "workItemId1");
             app.AddFeatureToggle("t2", "", "workItemId2");
             app.AddFeatureToggle("t3", "", "workItemId3");
@@ -95,7 +95,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task WhenEnvironmentIsDeletedWithInvalidID_ThrowsInvalidOperationException()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", null, "DEV", false);
             await _appRepository.AddAsync(app);
 
             var environmentToRemove = new DeleteEnvironmentModel
@@ -116,7 +116,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
-            var app = Application.Create("tst", "DEV", false);
+            var app = Application.Create("tst", null, "DEV", false);
             app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", null, "workItemId1");
             var toggle = app.FeatureToggles.Single();
@@ -143,7 +143,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task DeletingAnEnvironment_DeletesEnvironmentNameForAllReasons()
         {
             //arrange
-            var app = Application.Create("TestApp", "TestEnv", false);
+            var app = Application.Create("TestApp", null, "TestEnv", false);
             app.AddFeatureToggle("t1", "", "workItemId1");
             app.AddDeployEnvironment("Env", false, false, true);
             await _appRepository.AddAsync(app);
@@ -171,7 +171,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task DeletingAnEnvironment_WhenReasonHasOnlyOneEnvironment_DeletesReason()
         {
             //arrange
-            var app = Application.Create("TestApp", "TestEnv", false);
+            var app = Application.Create("TestApp", null, "TestEnv", false);
             app.AddFeatureToggle("t1", "", "workItemId1");
             app.AddDeployEnvironment("Env", false, false, true);
             await _appRepository.AddAsync(app);

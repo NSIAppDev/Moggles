@@ -38,7 +38,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task ANewEnvironmentIsBeingCreatedWithProperInformation()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", null, "DEV", false);
             await _appRepository.AddAsync(app);
             var createdEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "QA", DefaultToggleValue = true, RequireReasonToChangeWhenToggleEnabled = true, RequireReasonToChangeWhenToggleDisabled=false,SortOrder = 99 };
 
@@ -74,7 +74,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task ReturnBadRequestResult_WhenEnvironmentAlreadyExists()
         {
             //arrange
-            var app = Application.Create("tst", "dev", false);
+            var app = Application.Create("tst", null, "dev", false);
             await _appRepository.AddAsync(app);
 
 
@@ -89,7 +89,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task EveryExistingFeatureToggle_IsMarkedAs_Off_ForTheNewEnvironment()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", null, "DEV", false);
             app.AddFeatureToggle("t1", string.Empty, "workItemId1");
             app.AddFeatureToggle("t2", string.Empty, "workItemId2");
             await _appRepository.AddAsync(app);
@@ -110,7 +110,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task EveryExistingFeatureToggle_IsMarkedAs_On_ForTheNewEnvironment_WhenTheDefaultValueForTheToggleIsTrue()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", null, "DEV", false);
             var newEnvironment = new AddEnvironmentModel { ApplicationId = app.Id, EnvName = "QA", DefaultToggleValue = true };
             app.AddFeatureToggle("t1", string.Empty, "workItemId1");
             app.AddFeatureToggle("t2", string.Empty, "workItemId2");
