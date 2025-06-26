@@ -19,6 +19,20 @@
           </div>
         </div>
         <div class="col-sm-12 form-group">
+          <label class="col-sm-4 control-label" for="assignedTo">Assigned to</label>
+          <div class="col-sm-8">
+            <select id="assignedToDropdown" v-model="assignedTo" class="form-control" 
+                    name="assignedTo">
+              <option :value="''">
+                None
+              </option>
+              <option v-for="option in assignedToOptions" :key="option" :value="option">
+                {{ option }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-12 form-group">
           <label class="col-sm-4 control-label" for="envname">Add a first environment</label>
           <div class="col-sm-8">
             <input id="addFirstEnvironmentInput" v-model="environmentName" class="form-control"
@@ -67,8 +81,16 @@
                 environmentName: "",
                 defaultToggleValue: true,
                 errors: [],
-                alertDuration: 1500
+                alertDuration: 1500,
+                assignedTo: "",
+                assignedToOptions: []
             }
+        },
+        created() {
+            axios.get('/api/applications/assignedto-options')
+                .then(response => {
+                    this.assignedToOptions = response.data;
+                });
         },
         mounted() {
             Bus.$on(events.openAddApplicationModal, () => {
@@ -96,11 +118,13 @@
 
                 axios.post('api/Applications/add', {
                     applicationName: this.applicationName,
+                    applicationAssignedTo: this.assignedTo,
                     environmentName: this.environmentName,
                     defaultToggleValue: this.defaultToggleValue
                 }).then(() => {
                     Bus.$emit(events.newApplicationAdded, this.applicationName);
                     this.applicationName = '';
+                    this.assignedTo = '';
                     this.environmentName = '';
                     this.defaultToggleValue = true;
                     this.showSuccessAlert = true;
