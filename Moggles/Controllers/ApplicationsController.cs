@@ -60,7 +60,7 @@ namespace Moggles.Controllers
             if (app != null)
                 return BadRequest("Application with same name already exists!");
 
-            var application = Application.Create(applicationModel.ApplicationName, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue, hasBeenMigrated);
+            var application = Application.Create(applicationModel.ApplicationName, applicationModel.ApplicationAssignedTo, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue, hasBeenMigrated);
 
             await _applicationsRepository.AddAsync(application);
 
@@ -86,7 +86,7 @@ namespace Moggles.Controllers
                 return BadRequest("Application with same name already exists!");
 
             var appName = applicationModel.ApplicationName ?? app.AppName;
-            var assignedTo = applicationModel.ApplicationAssignedTo ?? app.AssignedTo;
+            var assignedTo = applicationModel.ApplicationAssignedTo;
             var isDeleted = applicationModel.isDeleted ?? app.IsDeleted;
             app.Update(appName, isDeleted, assignedTo);
             await _applicationsRepository.UpdateAsync(app);

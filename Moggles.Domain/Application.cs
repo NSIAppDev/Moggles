@@ -53,12 +53,13 @@ namespace Moggles.Domain
             return (DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, newName, stringComparison) == 0) && newName != oldName);
         }
 
-        public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment, bool hasBeenMigrated = false, bool isDeleted = false)
+        public static Application Create(string appName, string assignedTo, string defaultEnvironmentName, bool defaultToggleValueForEnvironment, bool hasBeenMigrated = false, bool isDeleted = false)
         {
             var app = new Application
             {
                 Id = Guid.NewGuid(),
                 AppName = appName,
+                AssignedTo = assignedTo,
                 HasBeenMigrated = hasBeenMigrated,
                 IsDeleted = isDeleted
             };
