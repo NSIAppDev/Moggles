@@ -9,19 +9,24 @@ import { Bus } from '../src/common/event-bus'
 
 describe('AddApplication.vue', () => {
 
-    let mockAdapter = new MockAdapter(axios);
+    const mockAdapter = new MockAdapter(axios);
 
     beforeEach(() => {
+        mockAdapter.onGet('/api/applications/assignedto-options').reply(200, []);
+    });
+
+    afterEach(() => {
         mockAdapter.reset();
+        jest.useRealTimers();
     });
 
     test('Shows empty input on show', function () {
         const wrapper = shallowMount(AddApplication);
-        let txt = wrapper.find('input').text();
-        expect(txt).toBe("");
+        const inputValue = wrapper.find('input').element.value;
+        expect(inputValue).toBe("");
     })
 
-    test('Application name is cleared on successful add', async () => {
+    test('Application name is cleared on successfull add', async () => {
         const wrapper = shallowMount(AddApplication);
         wrapper.find('button').trigger('click');
 
@@ -31,19 +36,15 @@ describe('AddApplication.vue', () => {
         expect(wrapper.vm.applicationName).toBe('');
     })
 
-    test('A success alert is shown on successful add and goes away after a while', async () => {
+    test('A success alert is shown on successfull add and goes away after a while', async () => {
 
         jest.useFakeTimers();
 
         const wrapper = shallowMount(AddApplication);
 
-        const appname = wrapper.find('input[name="appName"]');
-        appname.setValue('App');
+        setInputValues(wrapper);
 
-        const envname = wrapper.find('input[name="envName"]');
-        envname.setValue('Env');
-
-		wrapper.find('button.btn-primary').trigger('click');
+        triggerAdd(wrapper);
 
         mockAdapter.onPost().reply(200);
         await flushPromises();
@@ -59,18 +60,14 @@ describe('AddApplication.vue', () => {
 
     test('Emits app added event on succesfull Add', async () => {
 
-        let spy = sinon.spy(Bus, '$emit');
+        const spy = sinon.spy(Bus, '$emit');
 
         const wrapper = shallowMount(AddApplication);
         mockAdapter.onPost().reply(200);
 
-        const appname = wrapper.find('input[name="appName"]');
-        appname.setValue('App');
+        setInputValues(wrapper);
 
-        const envname = wrapper.find('input[name="envName"]');
-        envname.setValue('Env');
-
-		wrapper.find('button.btn-primary').trigger('click');
+        triggerAdd(wrapper);
         await flushPromises();
 
         expect(spy.calledWithExactly('app-added', 'App')).toBe(true);
@@ -80,12 +77,24 @@ describe('AddApplication.vue', () => {
 
     test('Calls the right URL passing the appName and environment name', async () => {
 
-        let mock = sinon.mock(axios);
-        mock.expects('post').withArgs('api/Applications/add', { applicationName: 'testApp', environmentName: "test", defaultToggleValue: true }).returns(Promise.resolve({}));
-        const wrapper = shallowMount(AddApplication);
-        wrapper.setData({ applicationName: 'testApp', environmentName: "test", defaultToggleValue: true });
+        const mock = sinon.mock(axios);
+        mock.expects('post').withArgs('api/Applications/add', {
+            applicationName: 'testApp',
+            applicationAssignedTo: '',
+            environmentName: "test",
+            defaultToggleValue: true
+        }).returns(Promise.resolve({}));
 
-		wrapper.find('button.btn-primary').trigger('click');
+        const wrapper = shallowMount(AddApplication);
+
+        wrapper.setData({
+            applicationName: 'testApp',
+            applicationAssignedTo: '',
+            environmentName: "test",
+            defaultToggleValue: true
+        });
+
+        triggerAdd(wrapper);
 
         await flushPromises();
 
@@ -95,15 +104,11 @@ describe('AddApplication.vue', () => {
 
     test('Shows a spinner while request is in process', async () => {
 		const wrapper = shallowMount(AddApplication);
-		let spy = sinon.spy(Bus, '$emit');
+        const spy = sinon.spy(Bus, '$emit');
 
-        const appname = wrapper.find('input[name="appName"]');
-        appname.setValue('App');
+        setInputValues(wrapper);
 
-        const envname = wrapper.find('input[name="envName"]');
-        envname.setValue('Env');
-
-		wrapper.find('button.btn-primary').trigger('click');
+        triggerAdd(wrapper);
         mockAdapter.onPost().reply(200);
 
 		expect(spy.calledWithExactly('block-ui')).toBe(true);
@@ -114,5 +119,14 @@ describe('AddApplication.vue', () => {
 
 		spy.restore();
     })
+
+    function setInputValues(wrapper, appName = 'App', envName = 'Env') {
+        wrapper.find('input[name="appName"]').setValue(appName);
+        wrapper.find('input[name="envName"]').setValue(envName);
+    }
+
+    function triggerAdd(wrapper) {
+        wrapper.find('button.btn-primary').trigger('click');
+    }
 
 })
