@@ -13,6 +13,7 @@ describe('AddApplication.vue', () => {
 
     beforeEach(() => {
         mockAdapter.reset();
+        mockAdapter.onGet('/api/applications/assignedto-options').reply(200, []);
     });
 
     test('Shows empty input on show', function () {
@@ -81,9 +82,21 @@ describe('AddApplication.vue', () => {
     test('Calls the right URL passing the appName and environment name', async () => {
 
         let mock = sinon.mock(axios);
-        mock.expects('post').withArgs('api/Applications/add', { applicationName: 'testApp', environmentName: "test", defaultToggleValue: true }).returns(Promise.resolve({}));
+        mock.expects('post').withArgs('api/Applications/add', {
+            applicationName: 'testApp',
+            applicationAssignedTo: '',
+            environmentName: "test",
+            defaultToggleValue: true
+        }).returns(Promise.resolve({}));
+
         const wrapper = shallowMount(AddApplication);
-        wrapper.setData({ applicationName: 'testApp', environmentName: "test", defaultToggleValue: true });
+
+        wrapper.setData({
+            applicationName: 'testApp',
+            applicationAssignedTo: '',
+            environmentName: "test",
+            defaultToggleValue: true
+        });
 
 		wrapper.find('button.btn-primary').trigger('click');
 
