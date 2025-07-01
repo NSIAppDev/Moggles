@@ -19,10 +19,10 @@
           </div>
         </div>
         <div class="col-sm-12 form-group">
-          <label class="col-sm-4 control-label" for="assignedTo">Assigned to</label>
+          <label class="col-sm-4 control-label" for="applicationAssignedTo">Assigned to</label>
           <div class="col-sm-8">
-            <select id="assignedToDropdown" v-model="assignedTo" class="form-control" 
-                    name="assignedTo">
+            <select id="assignedToDropdown" v-model="applicationAssignedTo" class="form-control" 
+                    name="applicationAssignedTo">
               <option :value="''">
                 None
               </option>
@@ -82,7 +82,7 @@
                 defaultToggleValue: true,
                 errors: [],
                 alertDuration: 1500,
-                assignedTo: "",
+                applicationAssignedTo: "",
                 assignedToOptions: []
             }
         },
@@ -118,13 +118,13 @@
 
                 axios.post('api/Applications/add', {
                     applicationName: this.applicationName,
-                    applicationAssignedTo: this.assignedTo,
+                    applicationAssignedTo: this.applicationAssignedTo,
                     environmentName: this.environmentName,
                     defaultToggleValue: this.defaultToggleValue
                 }).then(() => {
                     Bus.$emit(events.newApplicationAdded, this.applicationName);
                     this.applicationName = '';
-                    this.assignedTo = '';
+                    this.applicationAssignedTo = '';
                     this.environmentName = '';
                     this.defaultToggleValue = true;
                     this.showSuccessAlert = true;
