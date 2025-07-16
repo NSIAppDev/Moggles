@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moggles.Domain;
 using Moggles.Models;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +16,7 @@ namespace Moggles.Controllers
 		{
 			var allApplications = await applicationRepository.GetAllAsync();
 
-			var featureToggles = allApplications
+			var featureToggles = allApplications.Where(a => !a.IsDeleted)
 			.SelectMany(app => app.FeatureToggles.Select(f => new
 			{
 				Application = app,
@@ -23,7 +24,7 @@ namespace Moggles.Controllers
 			}));
 
 			if (!string.IsNullOrWhiteSpace(model.Keyword))
-				featureToggles = featureToggles.Where(f => f.Toggle.ToggleName.Trim().Contains(model.Keyword.Trim(), System.StringComparison.OrdinalIgnoreCase));
+				featureToggles = featureToggles.Where(f => f.Toggle.ToggleName.Trim().Contains(model.Keyword.Trim(), System.StringComparison.OrdinalIgnoreCase) || f.Toggle.Notes.Trim().Contains(model.Keyword.Trim(), System.StringComparison.OrdinalIgnoreCase));
 
 			if (model.ApplicationIds.Count > 0)
 			{
@@ -45,7 +46,8 @@ namespace Moggles.Controllers
 			}
 
 			if (!string.IsNullOrWhiteSpace(model.WorkItemIdentifier))
-				featureToggles = featureToggles.Where(f => f.Toggle.WorkItemIdentifier.Trim().Equals(model.WorkItemIdentifier.Trim(), System.StringComparison.OrdinalIgnoreCase));
+				featureToggles = featureToggles.Where(f => !string.IsNullOrWhiteSpace(f.Toggle.WorkItemIdentifier) && f.Toggle.WorkItemIdentifier.Trim()
+						.Contains(model.WorkItemIdentifier?.Trim(), StringComparison.OrdinalIgnoreCase));
 
 			if (model.AssignedTo.Count > 0)
 			{
@@ -59,10 +61,30 @@ namespace Moggles.Controllers
 				featureToggles = featureToggles.Where(f => f.Toggle.UserAccepted == model.UserAccepted);
 
 			if (model.ChangedStart.HasValue)
-				featureToggles = featureToggles.Where(f => f.Toggle.FeatureToggleStatuses.OrderByDescending(_ => _.LastUpdated).FirstOrDefault().LastUpdated >= model.ChangedStart.Value);
+			{
+				featureToggles = featureToggles.Where(f =>
+				{
+					var statuses = f.Toggle.FeatureToggleStatuses;
+					if (statuses == null || !statuses.Any())
+						return false;
+
+					var latest = statuses.OrderByDescending(s => s.LastUpdated).FirstOrDefault();
+					return latest != null && latest.LastUpdated >= model.ChangedStart.Value;
+				});
+			}
 
 			if (model.ChangedEnd.HasValue)
-				featureToggles = featureToggles.Where(f => f.Toggle.FeatureToggleStatuses.OrderByDescending(_ => _.LastUpdated).FirstOrDefault().LastUpdated <= model.ChangedEnd.Value);
+			{
+				featureToggles = featureToggles.Where(f =>
+				{
+					var statuses = f.Toggle.FeatureToggleStatuses;
+					if (statuses == null || !statuses.Any())
+						return false;
+
+					var latest = statuses.OrderByDescending(s => s.LastUpdated).FirstOrDefault();
+					return latest != null && latest.LastUpdated <= model.ChangedEnd.Value;
+				});
+			}
 
 			var result = featureToggles
 				.Select(f => new GlobalSearchFeatureToggleViewModel
