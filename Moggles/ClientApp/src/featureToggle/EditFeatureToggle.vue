@@ -202,7 +202,7 @@
 		created() {
 			Bus.$on(events.openEditFeatureToggleModal, (toggle) => {
 				this.initialiseModal();
-				this.rowToEdit = toggle;
+                this.rowToEdit = toggle;
 				this.initialToggle = _.cloneDeep(toggle);
 				this.getEnvironments();
 			});
@@ -229,7 +229,7 @@
 						applicationId: this.application.id
 					}
 				}).then((response) => {
-					this.environments = response.data;
+                    this.environments = response.data;
 					Bus.$emit(events.unblockUI);
 				}).catch(() => {
 					Bus.$emit(events.showErrorAlertModal, { 'customErrorMessage': 'Error getting list of environments.' });

@@ -17,10 +17,10 @@
           </div>
           <div class="form-group">
             <label class="control-label col-md-4" for="application">Application</label>
-            <multi-select id="selectedApps" v-model="globalSearch.applicationIds" class="col-md-8"
-                          filterable placeholder="Select application" :options="applications" 
-                          :value-key="'id'" 
-                          :label-key="'appName'"
+            <multi-select id="selectedApps" v-model="globalSearch.applicationIds" class="col-md-8" 
+                          filterable placeholder="Select application" 
+                          :options="applications" 
+                          :value-key="'id'" :label-key="'appName'"
                           :selected-icon="'fas fa-check'" append-to-body />
           </div>
           <div class="form-group">
@@ -42,15 +42,15 @@
           <div v-for="(env, index) in globalSearch.environments" :key="index" class="form-group">
             <label class="col-md-4 control-label">Environment:</label>
             <div class="col-md-4">
-              <input v-model="env.name" class="form-control" type="text"
+              <input v-model="env.name" class="form-control" type="text" 
                      @input="onEnvironmentNameChange(env)">
             </div>
             <div class="col-md-2">
-              <input v-model="env.enabled" type="radio" :value="true"
+              <input v-model="env.enabled" type="radio" :value="true" 
                      :disabled="!env.name"> On
             </div>
             <div class="col-md-2">
-              <input v-model="env.enabled" type="radio" :value="false"
+              <input v-model="env.enabled" type="radio" :value="false" 
                      :disabled="!env.name"> Off
             </div>
           </div>
@@ -59,15 +59,14 @@
           <div class="form-group">
             <label class="col-md-4 control-label" for="workItemIdentifier">Work Item ID:</label>
             <div class="col-md-8">
-              <input id="workItemIdentifier" v-model="globalSearch.workItemIdentifier" type="text"
+              <input id="workItemIdentifier" v-model="globalSearch.workItemIdentifier" type="text" 
                      class="form-control">
             </div>
           </div>
           <div class="form-group">
             <label class="col-md-4 control-label" for="assignedTo">Assigned To:</label>
             <multi-select v-model="globalSearch.assignedTo" class="col-md-8" :options="assignedToOptions"
-                          :value-key="'id'" 
-                          :label-key="'label'" placeholder="Select Assigned To" 
+                          :value-key="'id'" :label-key="'label'" placeholder="Select Assigned To" 
                           :selected-icon="'fas fa-check'"
                           append-to-body />
           </div>
@@ -149,10 +148,12 @@
 
           <span v-else-if="props.column.field == 'id'">
             <a @click="openEditFeatureToggleModal(props.row)"><i class="fas fa-edit" /></a>
-            <a v-if="!props.row.isPermanent" @click="openDeleteFeatureToggleConfirmationModal(props.row)"><i
-              class="fas fa-trash-alt" /></a>
-            <span v-if="props.row.isPermanent" title="Permanent flags cannot be deleted!" class="disabled-link"><i
-              class="fas fa-trash-alt" /></span>
+            <a v-if="!props.row.isPermanent" @click="openDeleteFeatureToggleConfirmationModal(props.row)">
+              <i class="fas fa-trash-alt" />
+            </a>
+            <span v-if="props.row.isPermanent" title="Permanent flags cannot be deleted!" class="disabled-link">
+              <i class="fas fa-trash-alt" />
+            </span>
           </span>
 
           <span v-else>
@@ -214,6 +215,7 @@ export default {
       selectedApp: {},
       isCacheRefreshEnabled: false,
       showDeleteConfirmationModal: false,
+      environmentsNameList: []
     }
   },
   watch: {
@@ -256,7 +258,7 @@ export default {
     getApplicationOptions() {
       axios.get('/api/applications')
         .then((response) => {
-          this.applications = response.data;
+          this.applications = response.data.filter(app => !app.isDeleted);
         }).catch(error => {
           Bus.$emit(events.showErrorAlertModal, { 'error': error });
         });
@@ -289,7 +291,49 @@ export default {
     search() {
       axios.post('api/globalSearch', this.globalSearch)
         .then(response => {
-          this.featureToggles = response.data;
+          const gridRowModels = _.map(response.data, toggle => {
+            let rowModel = {
+              id: toggle.id,
+              toggleName: toggle.toggleName,
+              userAccepted: toggle.userAccepted,
+              isPermanent: toggle.isPermanent,
+              notes: toggle.notes,
+              status: toggle.status,
+              progressStatus: toggle.progressStatus,
+              holdReason: toggle.holdReason,
+              workItemIdentifier: toggle.workItemIdentifier,
+              createdDate: toggle.createdDate,
+              changedDate: toggle.changedDate,
+              reasonsToChange: toggle.reasonsToChange,
+              applicationName: toggle.applicationName,
+              assignedTo: toggle.assignedTo,
+              applicationId: toggle.applicationId
+            };
+            if (toggle.environments && Array.isArray(toggle.environments)) {
+              this.environmentsNameList = toggle.environments.map(item => item.environment);
+            }
+            this.environmentsNameList.forEach(env => {
+              const envStatus = _.find(toggle.environments, status => status.environment === env);
+              rowModel[env] = envStatus ? envStatus.enabled : false;
+              rowModel[`${env}_IsDeployed`] = envStatus ? envStatus.isDeployed : false;
+              rowModel[`${env}_FirstTimeDeployDate`] = envStatus ? envStatus.firstTimeDeployDate : '';
+              rowModel[`${env}_LastUpdated`] = envStatus ? envStatus.lastUpdated : '';
+              rowModel[`${env}_UpdatedByUser`] = envStatus ? envStatus.updatedByUser : '';
+            });
+
+            rowModel.environments = this.environmentsNameList.map(env => {
+              const envStatus = _.find(toggle.environments, status => status.environment === env);
+              return {
+                environment: env,
+                enabled: envStatus ? envStatus.enabled : false,
+                isDeployed: envStatus ? envStatus.isDeployed : false
+              };
+            });
+
+            return rowModel;
+          });
+          this.featureToggles = gridRowModels;
+
           this.$nextTick(() => {
             this.createGridColumns();
           });
@@ -403,7 +447,6 @@ export default {
           formatFn: this.formatDate,
         },
       ];
-
       this.gridColumns = columns;
     },
     formatDate(date) {

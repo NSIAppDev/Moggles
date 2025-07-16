@@ -22,10 +22,14 @@
           <ul class="nav navbar-nav navbar-left">
             <li>
               <div class="vertical-align">
-                <label for="app-sel" class="margin-top-8">Select Application </label>
-                <app-selection />
-                <a class="margin-left-10" @click="showEditAppModal(true)"><i id="showEditApplicationModalBtn"
-                                                                             class="fas fa-edit fa-lg" /></a>
+                <label v-if="currentPageIsMain()" for="app-sel" class="margin-top-8">Select Application </label>
+                <div v-if="currentPageIsMain()">
+                  <app-selection />
+                </div>
+                <a v-if="currentPageIsMain()" class="margin-left-10" @click="showEditAppModal(true)">
+                  <i id="showEditApplicationModalBtn"
+                     class="fas fa-edit fa-lg" />
+                </a>
                 <button id="showAddApplicationModalBtn" type="button" class="margin-left-10 btn btn-primary"
                         @click="showAddAppModal()">
                   Add Application
@@ -270,6 +274,9 @@ export default {
     showAddFeatureToggleScheduleModal() {
       this.showScheduler = true;
       Bus.$emit(events.openAddSchedulerModal);
+    },
+    currentPageIsMain() {
+        return this.currentPage === 'main';
     }
   }
 }
