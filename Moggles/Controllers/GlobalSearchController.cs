@@ -97,7 +97,7 @@ namespace Moggles.Controllers
 						.Select(fts =>
 							new FeatureToggleStatusViewModel
 							{
-								Environment = fts.EnvironmentName.ToUpper(),
+								Environment = fts.EnvironmentName,
 								Enabled = fts.Enabled,
 								IsDeployed = fts.IsDeployed,
 								LastUpdated = fts.LastUpdated,
