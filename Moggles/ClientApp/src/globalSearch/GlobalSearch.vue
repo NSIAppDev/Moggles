@@ -378,7 +378,8 @@ export default {
         {
           label: 'Environments',
           field: 'environments',
-          width: '200px'
+          width: '200px',
+          sortable: false
         },
         {
           field: 'assignedTo',
