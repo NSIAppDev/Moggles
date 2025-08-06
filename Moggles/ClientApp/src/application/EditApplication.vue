@@ -19,9 +19,6 @@
           <div class="col-sm-7">
             <select id="assignedToDropdown" v-model="assignedTo" class="form-control" 
                     name="assignedTo">
-              <option :value="''">
-                None
-              </option>
               <option v-for="option in assignedToOptions" :key="option" :value="option">
                 {{ option }}
               </option>

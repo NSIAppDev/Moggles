@@ -23,9 +23,6 @@
           <div class="col-sm-8">
             <select id="assignedToDropdown" v-model="applicationAssignedTo" class="form-control" 
                     name="applicationAssignedTo">
-              <option :value="''">
-                None
-              </option>
               <option v-for="option in assignedToOptions" :key="option" :value="option">
                 {{ option }}
               </option>
@@ -82,7 +79,7 @@
                 defaultToggleValue: true,
                 errors: [],
                 alertDuration: 1500,
-                applicationAssignedTo: "",
+                applicationAssignedTo: "None",
                 assignedToOptions: []
             }
         },

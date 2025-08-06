@@ -1,80 +1,72 @@
 ﻿<template>
-  <div>
-    <alert v-if="showRefreshAlert" type="info">
-      <button type="button" class="close" @click="closeRefreshAlert">
-        <span>×</span>
-      </button>
-      <h4>Toggles Have Been Modified, would you like to refresh the environments?</h4>
-      <span v-for="(env, index) in environmentsToRefresh" :key="env" class="env-button">
-        <button id="refreshEnvironmentsBtn" class="btn btn-default text-uppercase" @click="refreshEnvironmentToggles(env, index)"><strong>{{ env }}</strong></button>
-      </span>
-    </alert>
-    <vue-good-table id="toggleGrid" ref="toggleGrid"
-                    :columns="gridColumns"
-                    :rows="toggles"
-                    :pagination-options="getPaginationOptions"
-                    :sort-options="{
+    <div>
+        <alert-cacheRefresh :show-refresh-alert="showRefreshAlert" :environments-to-refresh="environmentsToRefresh" :selected-app="selectedApp" />
+        <vue-good-table id="toggleGrid" ref="toggleGrid"
+                        :columns="gridColumns"
+                        :rows="toggles"
+                        :pagination-options="getPaginationOptions"
+                        :sort-options="{
                       enabled: true,
                       initialSortBy: {field: 'isPermanent', type: 'desc'}
                     }"
-                    style-class="vgt-table striped condensed bordered"
-                    :class="{ 'disabled-table': disableGrid }"
-                    @on-per-page-change="onPageChange">
-      <div slot="emptystate">
-        <div class="text-center">
-          There are no toggles for this application or filtered search
-        </div>
-      </div>
-      <template slot="table-row" slot-scope="props">
-        <span v-if="props.column.type == 'boolean'" class="pull-left" :class="{ 'is-deployed': props.row[props.column.field + '_IsDeployed']}">
-          <p-check v-if="props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
-                   color="success">
-            <i slot="extra" class="icon fas fa-check" />
-          </p-check>
-          <p-check v-if="!props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
-                   color="default">
-            <i slot="extra" class="icon fas fa-check" />
-          </p-check>
-        </span>
-        <span v-else-if="props.column.field == 'id'">
-          <a @click="openEditFeatureToggleModal(props.row)"><i class="fas fa-edit" /></a>
-          <a v-if="!props.row.isPermanent" @click="openDeleteFeatureToggleConfirmationModal(props.row)"><i class="fas fa-trash-alt" /></a>
-          <span v-if="props.row.isPermanent" title="Permanent flags cannot be deleted!" class="disabled-link"><i class="fas fa-trash-alt" /></span>
-        </span>
-        <span v-else-if="props.column.field == 'toggleName' ">
-          <span>{{ props.row.toggleName }}</span> <span v-if="props.row.isPermanent" class="label label-danger">Permanent</span>
-          <a v-for="schedule in getSchedulesForToggle(props.row.toggleName)" :key="schedule.scheduleId" @click="editToggleSchedule(schedule)"><i class="fas fa-clock" /> <i /></a>
-        </span>
-        <span v-else-if="props.column.field == 'status'">
-          <span>{{ getStatusValue(props.row) }}</span>
-        </span>
-        <span v-else>
-          {{ props.formattedRow[props.column.field] }}
-        </span>
-      </template>
-      <template slot="table-column" slot-scope="props">
-        {{ props.column.label }}
-        <a v-if="isEnvironmentColumn(props.column)" @click="openEditEnvironmentModal(props.column)"><i class="fas fa-edit" /></a>
-      </template>
-    </vue-good-table>
+                        style-class="vgt-table striped condensed bordered"
+                        :class="{ 'disabled-table': disableGrid }"
+                        @on-per-page-change="onPageChange">
+            <div slot="emptystate">
+                <div class="text-center">
+                    There are no toggles for this application or filtered search
+                </div>
+            </div>
+            <template slot="table-row" slot-scope="props">
+                <span v-if="props.column.type == 'boolean'" class="pull-left" :class="{ 'is-deployed': props.row[props.column.field + '_IsDeployed']}">
+                    <p-check v-if="props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
+                             color="success">
+                        <i slot="extra" class="icon fas fa-check" />
+                    </p-check>
+                    <p-check v-if="!props.row[props.column.field + '_IsDeployed']" v-model="props.formattedRow[props.column.field]" class="p-icon p-fill p-locked"
+                             color="default">
+                        <i slot="extra" class="icon fas fa-check" />
+                    </p-check>
+                </span>
+                <span v-else-if="props.column.field == 'id'">
+                    <a @click="openEditFeatureToggleModal(props.row)"><i class="fas fa-edit" /></a>
+                    <a v-if="!props.row.isPermanent" @click="openDeleteFeatureToggleConfirmationModal(props.row)"><i class="fas fa-trash-alt" /></a>
+                    <span v-if="props.row.isPermanent" title="Permanent flags cannot be deleted!" class="disabled-link"><i class="fas fa-trash-alt" /></span>
+                </span>
+                <span v-else-if="props.column.field == 'toggleName' ">
+                    <span>{{ props.row.toggleName }}</span> <span v-if="props.row.isPermanent" class="label label-danger">Permanent</span>
+                    <a v-for="schedule in getSchedulesForToggle(props.row.toggleName)" :key="schedule.scheduleId" @click="editToggleSchedule(schedule)"><i class="fas fa-clock" /> <i /></a>
+                </span>
+                <span v-else-if="props.column.field == 'status'">
+                    <span>{{ getStatusValue(props.row) }}</span>
+                </span>
+                <span v-else>
+                    {{ props.formattedRow[props.column.field] }}
+                </span>
+            </template>
+            <template slot="table-column" slot-scope="props">
+                {{ props.column.label }}
+                <a v-if="isEnvironmentColumn(props.column)" @click="openEditEnvironmentModal(props.column)"><i class="fas fa-edit" /></a>
+            </template>
+        </vue-good-table>
 
-    <modal v-model="showDeleteConfirmationModal" title="You are about to delete a feature toggle" :footer="false"
-           append-to-body>
-      <delete-featureToggle :application="selectedApp" />
-    </modal>
-    <modal v-if="showSchedulerModal" v-model="showSchedulerModal" title="Edit Feature Toggle Schedule"
-           :footer="false" append-to-body>
-      <edit-toggle-schedule :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" :schedule="scheduleToEdit" />
-    </modal>
-    <modal v-model="showEditModal" title="Edit Feature Flag" :footer="false"
-           append-to-body>
-      <edit-featureToggle :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" />
-    </modal>
-    <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false"
-           append-to-body>
-      <edit-environment :application="selectedApp" :environment-count="environments.length" />
-    </modal>
-  </div>
+        <modal v-model="showDeleteConfirmationModal" title="You are about to delete a feature toggle" :footer="false"
+               append-to-body>
+            <delete-featureToggle :application="selectedApp" />
+        </modal>
+        <modal v-if="showSchedulerModal" v-model="showSchedulerModal" title="Edit Feature Toggle Schedule"
+               :footer="false" append-to-body>
+            <edit-toggle-schedule :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" :schedule="scheduleToEdit" />
+        </modal>
+        <modal v-model="showEditModal" title="Edit Feature Flag" :footer="false"
+               append-to-body>
+            <edit-featureToggle :application="selectedApp" :is-cache-refresh-enabled="isCacheRefreshEnabled" />
+        </modal>
+        <modal v-model="showEditEnvironmentModal" title="Edit Environment" :footer="false"
+               append-to-body>
+            <edit-environment :application="selectedApp" :environment-count="environments.length" />
+        </modal>
+    </div>
 </template>
 <script>
     import axios from 'axios';
@@ -88,6 +80,7 @@
     import EditFeatureToggle from './featureToggle/EditFeatureToggle';
     import EditEnvironment from './environment/EditEnvironment';
     import DeleteFeatureToggle from './featureToggle/DeleteFeatureToggle';
+    import AlertCacheRefresh from './common/AlertCacheRefresh';
 
     export default {
         components: {
@@ -95,7 +88,8 @@
             'edit-toggle-schedule': EditToggleSchedule,
             'edit-featureToggle': EditFeatureToggle,
             'edit-environment': EditEnvironment,
-            'delete-featureToggle': DeleteFeatureToggle
+            'delete-featureToggle': DeleteFeatureToggle,
+            'alert-cacheRefresh': AlertCacheRefresh
         },
         data() {
             return {
@@ -483,36 +477,6 @@
             openDeleteFeatureToggleConfirmationModal(row) {
                 this.showDeleteConfirmationModal = true
                 Bus.$emit(events.deleteFeatureToggle, row);
-            },
-            refreshEnvironmentToggles(env, index) {
-                if (!this.selectedApp)
-                    return;
-
-                Bus.$emit(events.blockUI)
-
-                axios.post('api/CacheRefresh', {
-                    applicationId: this.selectedApp.id,
-                    envName: env
-                })
-                    .then(() => {
-                        this.environmentsToRefresh.splice(index, 1);
-                        ///shouldn't need the below code, but computed value doesn't register the length as 0 without it
-                        if (this.environmentsToRefresh.length === 0) {
-                            this.environmentsToRefresh = [];
-                        }
-                        this.$notify({
-                            type: 'success',
-                            content: `${env} Cache Refreshed.`,
-                            offsetY: 70,
-                            icon: 'fas fa-check-circle'
-                        })
-                    }).catch(error => { Bus.$emit(events.showErrorAlertModal, { 'error': error })
-                    }).finally(() => {
-                        Bus.$emit(events.unblockUI)
-                    });
-            },
-            closeRefreshAlert() {
-                this.isRefreshAlertVisible = false;
             },
             isEnvironmentColumn(column) {
                 return (column.type == 'boolean' && column.field != 'userAccepted' && column.field != 'status');
