@@ -1,5 +1,6 @@
 ﻿<template>
     <div class="container-fluid">
+        <alert-cacheRefresh :show-refresh-alert="showRefreshAlert" :environments-to-refresh="environmentsToRefresh" :selected-app="selectedApp" />
         <div class="row">
             <div class="col-md-8">
                 <h1>Global search</h1>
@@ -126,7 +127,6 @@
             </div>
         </div>
         <div v-if="featureToggles && featureToggles.length > 0">
-            <alert-cacheRefresh :show-refresh-alert="showRefreshAlert" :environments-to-refresh="environmentsToRefresh" :selected-app="selectedApp" />
             <vue-good-table id="toggleGrid" ref="toggleGrid" :columns="gridColumns"
                             :pagination-options="paginationOptions"
                             :rows="featureToggles" style-class="vgt-table striped condensed bordered">
