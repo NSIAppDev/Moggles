@@ -14,6 +14,14 @@ namespace Moggles.Domain
         public List<DeployEnvironment> DeploymentEnvironments { get; set; } = new List<DeployEnvironment>();
         public List<FeatureToggle> FeatureToggles { get; set; } = new List<FeatureToggle>();
         public List<DeletedFeatureToggle> DeletedFeatureToggles { get; set; } = new List<DeletedFeatureToggle>();
+        public string AssignedTo { get; set; }
+
+        public void Update(string newName, bool isDeleted, string assignedTo)
+        {
+            AppName = newName;
+            IsDeleted = isDeleted;
+            AssignedTo = assignedTo;
+        }
 
         public void UpdateName(string newName)
         {
@@ -45,12 +53,13 @@ namespace Moggles.Domain
             return (DeploymentEnvironments.Exists(e => string.Compare(e.EnvName, newName, stringComparison) == 0) && newName != oldName);
         }
 
-        public static Application Create(string appName, string defaultEnvironmentName, bool defaultToggleValueForEnvironment, bool hasBeenMigrated = false, bool isDeleted = false)
+        public static Application Create(string appName, string assignedTo, string defaultEnvironmentName, bool defaultToggleValueForEnvironment, bool hasBeenMigrated = false, bool isDeleted = false)
         {
             var app = new Application
             {
                 Id = Guid.NewGuid(),
                 AppName = appName,
+                AssignedTo = assignedTo,
                 HasBeenMigrated = hasBeenMigrated,
                 IsDeleted = isDeleted
             };
@@ -212,6 +221,7 @@ namespace Moggles.Domain
                 IsPermanent = toggle.IsPermanent,
                 Notes = toggle.Notes,
                 Status = toggle.Status,
+                ProgressStatus = toggle.ProgressStatus,
                 HoldReason = toggle.HoldReason,
                 UserAccepted = toggle.UserAccepted,
                 WorkItemIdentifier = toggle.WorkItemIdentifier,
@@ -229,6 +239,11 @@ namespace Moggles.Domain
         {
             var toggle = FeatureToggles.Find(f => f.Id == toggleId);
             toggle.SetPermanentStatus(isPermanent);
+        }
+        public void UpdateFeatureToggleProgressStatus(Guid toggleId, string progressStatus)
+        {
+            var toggle = FeatureToggles.Find(f => f.Id == toggleId);
+            toggle.SetProgressStatus(progressStatus);
         }
 
         public void UpdateFeatureToggleNotes(Guid toggleId, string notes)

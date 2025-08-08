@@ -46,7 +46,7 @@
           <a v-for="schedule in getSchedulesForToggle(props.row.toggleName)" :key="schedule.scheduleId" @click="editToggleSchedule(schedule)"><i class="fas fa-clock" /> <i /></a>
         </span>
         <span v-else-if="props.column.field == 'status'">
-          <span>{{getStatusValue(props.row)}}</span>
+          <span>{{ getStatusValue(props.row) }}</span>
         </span>
         <span v-else>
           {{ props.formattedRow[props.column.field] }}
@@ -136,16 +136,16 @@
                 return this.selectedApp.isDeleted;
             }
         },
+        watch: {
+            hasBeenMigrated() {
+                this.createGridColumns();
+            }
+        },
         created() {
             axios.get("/api/CacheRefresh/getCacheRefreshAvailability").then((response) => {
                 this.isCacheRefreshEnabled = response.data;
             }).catch(error => Bus.$emit(events.showErrorAlertModal, { 'error': error }));
             this.subscribeToBusEvents();
-        },
-        watch: {
-            hasBeenMigrated() {
-                this.createGridColumns();
-            }
         },
         mounted() {
             this.createSignalRConnection();
@@ -161,6 +161,7 @@
 
                 Bus.$on(events.applicationEdited, applicationUpdateModel => {
                     this.selectedApp.appName = applicationUpdateModel.applicationName
+                    this.selectedApp.assignedTo = applicationUpdateModel.applicationAssignedTo
                 })
 
                 Bus.$on(events.environmentAdded, () => {
@@ -308,6 +309,24 @@
                         }
                     },
                     {
+                        field: 'progressStatus',
+                        label: 'Progress Status',
+                        type: 'string',
+                        sortable: false,
+                        width: '140px',
+                        filterOptions: {
+                            enabled: true,
+                            filterDropdownItems: [
+                                { value: 'Development', text: 'Development' },
+                                { value: 'Testing', text: 'Testing' },
+                                { value: 'BPO Ready', text: 'BPO Ready' },
+                                { value: 'BPO Notified', text: 'BPO Notified' },
+                                { value: 'Live Validation', text: 'Live Validation' }
+                            ],
+                            placeholder: 'All'
+                        }
+                    },
+                    {
                         field: 'createdDate',
                         label: 'Created',
 						sortable: true,
@@ -394,6 +413,7 @@
                             isPermanent: toggle.isPermanent,
                             notes: toggle.notes,
                             status: toggle.status,
+                            progressStatus: toggle.progressStatus,
                             holdReason: toggle.holdReason,
                             workItemIdentifier: toggle.workItemIdentifier,
                             createdDate: toggle.createdDate,

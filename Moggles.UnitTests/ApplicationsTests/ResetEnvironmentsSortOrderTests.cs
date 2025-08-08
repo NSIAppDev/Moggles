@@ -25,7 +25,7 @@ namespace Moggles.UnitTests.ApplicationsTests
         public async Task ResetEnvironmentsSortOrder()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", null, "DEV", false);
             await _applicationRepository.AddAsync(app);
             app.AddDeployEnvironment("QA", false, false, true);
             app.AddDeployEnvironment("LIVE", false, true, true);

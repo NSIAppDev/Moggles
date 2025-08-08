@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Web;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.TestFramework;
 using NsTestFrameworkUI.Helpers;
 using NsTestFrameworkUI.KendoHelpers;
@@ -13,7 +15,7 @@ namespace Moggles.EndToEndTests.MogglesPages
     {
         #region selectors
         private readonly By _toolsMenuDropdown = By.CssSelector(".dropdown-menu li");
-        private readonly By _statusesDropdown = By.CssSelector("tr:nth-child(2) > th:nth-child(8) > div > select");
+        private readonly By _statusesDropdown = By.CssSelector("tr:nth-child(2) > th:nth-child(6) > div > select");
         private readonly By _openAddApplicationModalBtn = By.Id("showAddApplicationModalBtn");
         private readonly By _openDeletedFeatureTogglesSection = By.CssSelector("a > h4");
 
@@ -82,9 +84,11 @@ namespace Moggles.EndToEndTests.MogglesPages
 
         public void Navigate()
         {
-            Browser.GoTo(Constants.BaseUrl);
+            var pass = HttpUtility.UrlEncode(Constants.MogglesPassword);
+            var url = $"https://{Constants.MogglesUser}:{pass}@{Constants.BaseUrl}";
+            Browser.GoTo(url);
             if (!_addApplicationButton.IsElementPresent())
-                Browser.GoTo(Constants.BaseUrl);
+                Browser.GoTo(url);
         }
 
         public bool IsGridEmpty() => _noFeatureToggleDisplayedText.IsElementPresent();
@@ -120,8 +124,14 @@ namespace Moggles.EndToEndTests.MogglesPages
 
         public void FilterAcceptedByUserColumn(string status)
         {
-            _statusesDropdown.WaitForElementToBeClickable();
-            _statusesDropdown.SelectFromDropdownByText(status);
+            try
+            {
+                _statusesDropdown.WaitForElementToBeClickable();
+                _statusesDropdown.SelectFromDropdownByText(status);
+            }
+            catch (Exception ex) {
+                Assert.Fail($"Exception in selecting element from User accepted drop-down: {ex.Message}");
+            }
         }
 
         public void AddFeatureToggle(string newFeatureToggleName)
@@ -186,7 +196,7 @@ namespace Moggles.EndToEndTests.MogglesPages
             {
                 var cells = row.FindElements(By.TagName("td"));
                 if (!cells[1].Text.Equals(newFeatureToggleName)) continue;
-                var creationDateAndTime = cells[6].Text;
+                var creationDateAndTime = cells[7].Text;
                 var creationDate =
                     creationDateAndTime.Substring(0, creationDateAndTime.IndexOf(" ", StringComparison.Ordinal));
                 var formattedCreationDate = DateTime.Parse(creationDate).Date;
@@ -203,6 +213,7 @@ namespace Moggles.EndToEndTests.MogglesPages
             var rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
             for (var i = 0; i <= rows.Count - 1; i++)
             {
+                rows = FeatureTogglesGrid.GetAllRowsFromGrid(_rowSelector);
                 var cells = rows[i].FindElements(By.TagName("td"));
                 if (!cells[1].Text.Contains(newFeatureToggleName)) continue;
                 WaitHelpers.ExplicitWait();
@@ -214,6 +225,7 @@ namespace Moggles.EndToEndTests.MogglesPages
                 _deleteFeatureToggleReason.ActionSendKeys(reasonToDelete);
                 Browser.WebDriver.FindElements(_deleteFeatureToggleButton)[1].Click();
                 _pageSpinner.WaitForSpinner();
+                break;
             }
         }
 

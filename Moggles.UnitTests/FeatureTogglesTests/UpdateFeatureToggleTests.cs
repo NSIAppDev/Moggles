@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
 using Moggles.Domain;
@@ -29,14 +30,15 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             _mockHttpContextAccessor.Setup(x => x.HttpContext.User.Identity.Name).Returns("bla");
             _httpContextAccessor = _mockHttpContextAccessor.Object;
             _toggleScheduleRepository = new InMemoryRepository<ToggleSchedule>();
-            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository);
+            var mockConfiguration = new Mock<IConfiguration>().Object;
+            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository, mockConfiguration);
         }
 
         [TestMethod]
         public async Task ExistingFeatureToggleBasicDataIsUpdated()
         {
             //arrange
-            var app = Application.Create("test", "DEV", false);
+            var app = Application.Create("test", null, "DEV", false);
             app.AddFeatureToggle("TestToggle", "FirstNote", "WorkItemId", false);
             await _appRepository.AddAsync(app);
 
@@ -81,7 +83,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task ChangingToggleName_ToExistingName_IsNotAllowed()
         {
             //arrange
-            var app = Application.Create("test", "DEV", false);
+            var app = Application.Create("test", null, "DEV", false);
             app.AddFeatureToggle("t1", "", "workItemId1");
             app.AddFeatureToggle("t2", "", "workItemId1");
             await _appRepository.AddAsync(app);
@@ -115,7 +117,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task FeatureToggleCanBeTurnedOn_ForAllExistingEnvironments()
         {
             //arrange
-            var app = Application.Create("test", "DEV", false);
+            var app = Application.Create("test", null, "DEV", false);
             app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", "", "workItemId1");
             await _appRepository.AddAsync(app);
@@ -161,7 +163,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task FeatureToggleUpdate_ByDifferentUser_UsernameChanged()
         {
             //arrange
-            var app = Application.Create("test", "DEV", false);
+            var app = Application.Create("test", null, "DEV", false);
             app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", "", "workItemId1");
             await _appRepository.AddAsync(app);

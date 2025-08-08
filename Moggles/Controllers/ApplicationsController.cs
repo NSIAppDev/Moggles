@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Moggles.Domain;
 using Moggles.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,11 +15,16 @@ namespace Moggles.Controllers
     {
         private readonly IRepository<Application> _applicationsRepository;
         private readonly IRepository<ToggleSchedule> _toggleScheduleRepository;
+        private readonly IConfiguration _configuration;
 
-        public ApplicationsController(IRepository<Application> applicationsRepository, IRepository<ToggleSchedule> toggleScheduleRepository)
+        public ApplicationsController(
+            IRepository<Application> applicationsRepository, 
+            IRepository<ToggleSchedule> toggleScheduleRepository,
+            IConfiguration configuration)
         {
             _applicationsRepository = applicationsRepository;
             _toggleScheduleRepository = toggleScheduleRepository;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -29,6 +36,7 @@ namespace Moggles.Controllers
             {
                 Id = a.Id,
                 AppName = a.AppName,
+                AssignedTo = a.AssignedTo,
                 HasBeenMigrated = a.HasBeenMigrated,
                 IsDeleted = a.IsDeleted
             }).AsEnumerable()
@@ -52,7 +60,7 @@ namespace Moggles.Controllers
             if (app != null)
                 return BadRequest("Application with same name already exists!");
 
-            var application = Application.Create(applicationModel.ApplicationName, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue, hasBeenMigrated);
+            var application = Application.Create(applicationModel.ApplicationName, applicationModel.ApplicationAssignedTo, applicationModel.EnvironmentName, applicationModel.DefaultToggleValue, hasBeenMigrated);
 
             await _applicationsRepository.AddAsync(application);
 
@@ -77,11 +85,20 @@ namespace Moggles.Controllers
             if (existingApp != null)
                 return BadRequest("Application with same name already exists!");
 
-
-            app.UpdateName(applicationModel.ApplicationName);
+            var appName = applicationModel.ApplicationName ?? app.AppName;
+            var assignedTo = applicationModel.ApplicationAssignedTo;
+            var isDeleted = applicationModel.isDeleted ?? app.IsDeleted;
+            app.Update(appName, isDeleted, assignedTo);
             await _applicationsRepository.UpdateAsync(app);
 
             return Ok();
+        }
+
+        [HttpGet("assignedto-options")]
+        public IActionResult GetAssignedToOptions()
+        {
+            var options = _configuration.GetSection("AssignedToOptions").Get<List<string>>();
+            return Ok(options);
         }
 
         [HttpDelete]
@@ -90,13 +107,13 @@ namespace Moggles.Controllers
             var app = await _applicationsRepository.FindByIdAsync(id);
 
             if (app == null)
-                throw  new InvalidOperationException("Application does not exist!");
+                throw new InvalidOperationException("Application does not exist!");
 
             app.MarkAsDeleted();
             await _applicationsRepository.UpdateAsync(app);
 
             await DeleteAllSchedulersForApp(app.AppName);
-            
+
             return Ok();
         }
 

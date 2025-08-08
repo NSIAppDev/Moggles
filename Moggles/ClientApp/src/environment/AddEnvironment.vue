@@ -116,7 +116,7 @@
 
                 this.errors = [];
 
-                if (this.existingEnvs.some(env => env.envName === this.envName)) {
+                if (this.existingEnvs.some(env => env.envName.toLowerCase() === this.envName.toLowerCase())) {
                     this.errors.push("Environment already exists")
                     return;
                 }

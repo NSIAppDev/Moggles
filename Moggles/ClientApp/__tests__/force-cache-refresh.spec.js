@@ -14,10 +14,11 @@ describe('ForceCacheRefresh.vue', () => {
             mock.expects('post').withArgs('api/CacheRefresh', { applicationId: 13, envName: 'BAR' })
                 .returns(Promise.resolve({}));
 
-
             const wrapper = shallowMount(ForceCacheRefresh, {
                 stubs: {
-                    'alert': '<div id="alert"></div>'
+                    alert: {
+                        template: '<div id="alert"></div>'
+                    }
                 }
             });
             wrapper.setData({
@@ -57,7 +58,9 @@ describe('ForceCacheRefresh.vue', () => {
         function() {
             const wrapper = shallowMount(ForceCacheRefresh, {
                 stubs: {
-                    'alert': '<div id="alert"></div>'
+                    alert: {
+                        template: '<div id="alert"></div>'
+                    }
                 }
             });
             let txt = wrapper.find('select').text();

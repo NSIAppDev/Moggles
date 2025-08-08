@@ -16,6 +16,7 @@ namespace Moggles.Domain
         public List<FeatureToggleStatus> FeatureToggleStatuses { get; set; } = new List<FeatureToggleStatus>();
         public string WorkItemIdentifier { get; set; }
         public List<ReasonToChange> ReasonsToChange { get; set; } = new List<ReasonToChange>();
+        public string ProgressStatus { get; set; }
 
         public static FeatureToggle Create(string name, string notes, bool isPermanent, string workItemIdentifier, bool hasBeenMigrated = false)
         {
@@ -27,7 +28,8 @@ namespace Moggles.Domain
                 Notes = notes,
                 ToggleName = name,
                 WorkItemIdentifier = workItemIdentifier,
-                Status = hasBeenMigrated ? (int?)0 : null
+                Status = hasBeenMigrated ? (int?)0 : null,
+                ProgressStatus = "Development"
             };
         }
 
@@ -78,6 +80,11 @@ namespace Moggles.Domain
         public void ChangeName(string newName)
         {
             ToggleName = newName;
+        }
+
+        public void SetProgressStatus(string progressStatus)
+        {
+            ProgressStatus = progressStatus;
         }
 
         public void Toggle(string environment, bool isEnabled, string updatedBy)

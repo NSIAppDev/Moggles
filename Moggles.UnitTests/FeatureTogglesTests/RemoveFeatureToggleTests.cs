@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
 using Moggles.Domain;
@@ -31,7 +32,8 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             _mockHttpContextAccessor.Setup(x => x.HttpContext.User.Identity.Name).Returns("bla");
             _httpContextAccessor = _mockHttpContextAccessor.Object;
             _toggleScheduleRepository = new InMemoryRepository<ToggleSchedule>();
-            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository);
+            var mockConfiguration = new Mock<IConfiguration>().Object;
+            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository, mockConfiguration);
             _toggleSchedulerController = new ToggleSchedulerController(_toggleScheduleRepository, _appRepository, _httpContextAccessor);
 
         }
@@ -40,7 +42,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task RemoveFeatureToggle_FeatureToggleIsDeleted()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", null, "DEV", false);
             app.AddFeatureToggle("t1", "", "workItemId1");
             var theToggle = app.FeatureToggles.Single();
             await _appRepository.AddAsync(app);
@@ -65,7 +67,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             //arrange
             var date = new DateTime(2099, 3, 2, 15, 45, 0);
-            var app = Application.Create("tst", "DEV", false);
+            var app = Application.Create("tst", null, "DEV", false);
             app.AddDeployEnvironment("QA", false, false, false);
             app.AddFeatureToggle("t1", null, "workItemId1");
             var toggle = app.FeatureToggles.Single();
@@ -100,7 +102,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task RemoveFeatureToggle_CreatesDeletedFeatureToggleEntry()
         {
             //arrange
-            var app = Application.Create("tst", "DEV", false);
+            var app = Application.Create("tst", null, "DEV", false);
             app.AddFeatureToggle("t1", null, "workItemId1");
             var toggle = app.FeatureToggles.Single();
             await _appRepository.AddAsync(app);

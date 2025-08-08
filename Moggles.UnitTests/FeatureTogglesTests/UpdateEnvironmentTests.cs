@@ -1,16 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.Controllers;
 using Moggles.Data.NoDb;
 using Moggles.Domain;
 using Moggles.Models;
 using Moggles.UnitTests.Helpers;
+using Moq;
 using NoDb;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Moggles.UnitTests.FeatureTogglesTests
 {
@@ -27,14 +29,15 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
             _appRepository = new InMemoryApplicationRepository();
             _toggleScheduleRepository = new InMemoryRepository<ToggleSchedule>();
-            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository);
+            var mockConfiguration = new Mock<IConfiguration>().Object;
+            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository, mockConfiguration);
         }
 
         [TestMethod]
         public async Task EnvironmentIsBeingModified()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", null, "DEV", false);
             await _appRepository.AddAsync(app);
 
             var updatedEnvironmentName = "QA";
@@ -60,7 +63,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task WhenNewInvironmentName_MatchesAnExistingEnvrionmentWithDifferentCase_EnvironmentNameIsChanged()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", null, "DEV", false);
             await _appRepository.AddAsync(app);
 
             var updatedEnvironment = new UpdateEnvironmentModel
@@ -83,7 +86,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task WhenEnvironmentIsModifiedWithInvalidID_ThrowsInvalidOperationException()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", false);
+            var app = Application.Create("TestApp", null, "DEV", false);
             await _appRepository.AddAsync(app);
 
             var updatedEnvironmentName = "QA";
@@ -106,7 +109,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task WhenEnvironmentIsModified_EnvironmentNameForFeatureToggleStatusesUpdated()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", true);
+            var app = Application.Create("TestApp", null, "DEV", true);
             await _appRepository.AddAsync(app);
             app.AddFeatureToggle("t1", string.Empty, "workItemId1");
             app.AddFeatureToggle("t2", string.Empty, "workItemId2");
@@ -141,7 +144,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task WhenEnvironmentNameIsChanged_EnvironmentNameForToggleSchedulersIsChanged()
         {
             //arrange
-            var app = Application.Create("TestApp", "DEV", true);
+            var app = Application.Create("TestApp", null, "DEV", true);
             await _appRepository.AddAsync(app);
             app.AddFeatureToggle("t1", string.Empty, "workItemId1");
             app.AddFeatureToggle("t2", string.Empty, "workItemId2");
@@ -171,7 +174,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         [TestMethod]
         public async Task DefaultToggleValueChanged_NextToggleHasDefaultValue()
         {
-            var app = Application.Create("TestApp", "DEV", true);
+            var app = Application.Create("TestApp", null, "DEV", true);
             await _appRepository.AddAsync(app);
             app.AddFeatureToggle("t1", string.Empty, "workItemId1");
             var t1 = app.FeatureToggles.ToList().FirstOrDefault(ft => ft.ToggleName == "t1");
@@ -199,7 +202,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
 
             //arrange
-            var application = Application.Create("Test", "DEV", false);
+            var application = Application.Create("Test", null, "DEV", false);
             await _appRepository.AddAsync(application);
             application.DeploymentEnvironments.First().SortOrder = 0;
             application.AddDeployEnvironment("QA", false, false, false, sortOrder:1);
@@ -236,7 +239,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task EnvironmentSortOrderChanged_WhenPositionChangedToRight_OrderIsChanged()
         {
             //arrange
-            var application = Application.Create("Test", "DEV", false);
+            var application = Application.Create("Test", null, "DEV", false);
             await _appRepository.AddAsync(application);
             application.DeploymentEnvironments.First().SortOrder = 0;
             application.AddDeployEnvironment("QA", false, false, false, sortOrder: 1);
@@ -274,7 +277,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         {
 
             //arrange
-            var application = Application.Create("Test", "DEV", false);
+            var application = Application.Create("Test", null, "DEV", false);
             await _appRepository.AddAsync(application);
             application.DeploymentEnvironments.First().SortOrder = 0;
             application.AddDeployEnvironment("QA", false, false, false, sortOrder: 1);
@@ -302,7 +305,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task EnvironmentIsOnTheFirstPosition_WhenMoveToLeftIsTrue_SortOrderForEnvironmentIsNotChanged()
         {
             //arrange
-            var application = Application.Create("Test", "DEV", false);
+            var application = Application.Create("Test", null, "DEV", false);
             await _appRepository.AddAsync(application);
             application.DeploymentEnvironments.First().SortOrder = 0;
             application.AddDeployEnvironment("QA", false, false, false, sortOrder: 1);
@@ -332,7 +335,7 @@ namespace Moggles.UnitTests.FeatureTogglesTests
         public async Task EnvironmentIsOnTheLastPosition_WhenMoveToRightIsTrue_SortOrderForEnvironmentIsNotChanged()
         {
             //arrange
-            var application = Application.Create("Test", "DEV", false);
+            var application = Application.Create("Test", null, "DEV", false);
             await _appRepository.AddAsync(application);
             application.DeploymentEnvironments.First().SortOrder = 0;
             application.AddDeployEnvironment("QA", false, false, false, sortOrder: 1);

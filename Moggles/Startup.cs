@@ -68,9 +68,9 @@ namespace Moggles
 
             services.AddNoDb<Application>();
             services.AddNoDb<ToggleSchedule>();
-            services.AddScoped<IRepository<Application>, ApplicationsRepository>();
+			services.AddScoped<IRepository<Application>, ApplicationsRepository>();
             services.AddScoped<IRepository<ToggleSchedule>, ToggleSchedulesRepository>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHostedService<ScheduledFeatureTogglesService>();
 
             services.AddMvc(options =>
@@ -102,7 +102,6 @@ namespace Moggles
                 options.AddPolicy("OnlyAdmins", policy => policy.RequireRole(admins));
             });
         }
-
 
         private void RegisterJwtAuthentication(IServiceCollection services)
         {
@@ -151,13 +150,6 @@ namespace Moggles
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-
-#pragma warning disable CS0618 // Type or member is obsolete
-                app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
-#pragma warning restore CS0618 // Type or member is obsolete
-                {
-                    HotModuleReplacement = true
-                });
             }
             else if (env.IsStaging())
             {
