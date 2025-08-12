@@ -1,6 +1,8 @@
 ﻿using GreenPipes;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -82,7 +84,16 @@ namespace Moggles
         {
             var admins = Configuration["CustomRoles:Admins"];
 
-            services.AddAuthentication(IISDefaults.AuthenticationScheme);
+            var enableEntraId = bool.TryParse(Configuration["AzureAd:EnableEntraId"], out bool isEnabled) && isEnabled;
+
+            if (enableEntraId) 
+            {
+                ConfigureEntraId(services);
+            }
+            else
+            {
+                services.AddAuthentication(IISDefaults.AuthenticationScheme);
+            }
 
             RegisterJwtAuthentication(services);
 
@@ -205,6 +216,43 @@ namespace Moggles
                     e.Consumer<FeatureToggleDeployStatusConsumer>(serviceProvider);
                     e.PrefetchCount = 1;
                 });
+            });
+        }
+
+        private static string EnsureTrailingSlash(string value)
+        {
+            if (value == null)
+            {
+                value = string.Empty;
+            }
+
+            if (!value.EndsWith("/", StringComparison.Ordinal))
+            {
+                return value + "/";
+            }
+
+            return value;
+        }
+
+        private void ConfigureEntraId(IServiceCollection services)
+        {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            }).AddCookie(options =>
+            {
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.AccessDeniedPath = "/Account/AccessDenied"; // Set the Access Denied path
+            })
+            .AddOpenIdConnect(options =>
+            {
+                options.ClientId = Configuration["AzureAd:ClientId"];
+                options.Authority = EnsureTrailingSlash(Configuration["AzureAd:AADInstance"]) + Configuration["AzureAd:TenantId"];
+                options.SignedOutRedirectUri = Configuration["AzureAd:PostLogoutRedirectUri"];
+                options.CallbackPath = Configuration["AzureAd:CallbackPath"];
+                options.RequireHttpsMetadata = false;
             });
         }
     }
