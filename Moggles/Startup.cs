@@ -84,7 +84,7 @@ namespace Moggles
         {
             var admins = Configuration["CustomRoles:Admins"];
 
-            var enableEntraId = bool.TryParse(Configuration["AzureAd:EnableEntraId"], out bool isEnabled) && isEnabled;
+            var enableEntraId = bool.TryParse(Configuration["EnableEntraId"], out bool isEnabled) && isEnabled;
 
             if (enableEntraId) 
             {
