@@ -13,12 +13,20 @@ namespace Moggles.Tests
             config["Messaging:UseMessaging"] = "true";
         }
 
-        public override void ConfigureAuthServices(IServiceCollection services)
-        {
-            services.AddAuthorization(options => { options.AddPolicy("OnlyAdmins", policy => policy.RequireAssertion(ctx => true)); });
-        }
+		public override void ConfigureAuthServices(IServiceCollection services)
+		{
+			// Add a test authentication scheme
+			services.AddAuthentication("Test")
+				.AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, TestAuthHandler>(
+					"Test", options => { });
 
-        public override IBusControl ConfigureMessageBus(IServiceProvider serviceProvider)
+			services.AddAuthorization(options =>
+			{
+				options.AddPolicy("OnlyAdmins", policy => policy.RequireAssertion(ctx => true));
+			});
+		}
+
+		public override IBusControl ConfigureMessageBus(IServiceProvider serviceProvider)
         {
             var busControl =  Bus.Factory.CreateUsingInMemory(sbc =>
             {
