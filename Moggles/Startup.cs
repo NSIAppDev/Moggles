@@ -249,7 +249,7 @@ namespace Moggles
             .AddOpenIdConnect(options =>
             {
                 options.ClientId = Configuration["AzureAd:ClientId"];
-                options.Authority = EnsureTrailingSlash(Configuration["AzureAd:AADInstance"]) + Configuration["AzureAd:TenantId"];
+                options.Authority = EnsureTrailingSlash(Configuration["AzureAd:Instance"]) + Configuration["AzureAd:TenantId"];
                 options.SignedOutRedirectUri = Configuration["AzureAd:PostLogoutRedirectUri"];
                 options.CallbackPath = Configuration["AzureAd:CallbackPath"];
                 options.RequireHttpsMetadata = false;
