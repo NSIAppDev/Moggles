@@ -17,7 +17,6 @@ namespace Moggles
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                    .UseUrls("https://localhost:44363;http://localhost:7000");
                 });
     }
 }
