@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Moggles.BackgroundServices;
 using Moggles.Consumers;
@@ -165,6 +167,12 @@ namespace Moggles
 
             app.UseRouting();
 
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
+            });
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -243,14 +251,17 @@ namespace Moggles
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             }).AddCookie(options =>
             {
+                options.Cookie.SameSite = SameSiteMode.None;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.AccessDeniedPath = "/Account/AccessDenied"; // Set the Access Denied path
             })
             .AddOpenIdConnect(options =>
             {
-                options.ClientId = Configuration["AzureAd:ClientId"];
                 options.Authority = EnsureTrailingSlash(Configuration["AzureAd:Instance"]) + Configuration["AzureAd:TenantId"];
+                options.ClientId = Configuration["AzureAd:ClientId"];
                 options.SignedOutRedirectUri = Configuration["AzureAd:PostLogoutRedirectUri"];
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.SaveTokens = true;
                 options.CallbackPath = Configuration["AzureAd:CallbackPath"];
                 options.RequireHttpsMetadata = false;
             });
