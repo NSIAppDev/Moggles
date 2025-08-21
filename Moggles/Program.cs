@@ -16,7 +16,7 @@ namespace Moggles
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>()
+                    webBuilder.UseStartup<Startup>();
                 });
     }
 }
