@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
 using Moggles.BackgroundServices;
 using Moggles.Consumers;
@@ -93,11 +94,11 @@ namespace Moggles
             else
             {
                 services.AddAuthentication(IISDefaults.AuthenticationScheme);
-            }
+			}
 
-            RegisterJwtAuthentication(services);
+			RegisterJwtAuthentication(services);
 
-            services.AddAuthorization(options =>
+			services.AddAuthorization(options =>
             {
                 options.AddPolicy("OnlyAdmins", policy => policy.RequireRole(admins));
             });
@@ -236,24 +237,20 @@ namespace Moggles
 
         private void ConfigureEntraId(IServiceCollection services)
         {
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            }).AddCookie(options =>
-            {
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.AccessDeniedPath = "/Account/AccessDenied"; // Set the Access Denied path
-            })
-            .AddOpenIdConnect(options =>
-            {
-                options.ClientId = Configuration["AzureAd:ClientId"];
-                options.Authority = EnsureTrailingSlash(Configuration["AzureAd:Instance"]) + Configuration["AzureAd:TenantId"];
-                options.SignedOutRedirectUri = Configuration["AzureAd:PostLogoutRedirectUri"];
-                options.CallbackPath = Configuration["AzureAd:CallbackPath"];
-                options.RequireHttpsMetadata = false;
-            });
-        }
+
+			services
+				.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+				.AddMicrosoftIdentityWebApp(Configuration);
+			services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+			{
+				options.ExpireTimeSpan = TimeSpan.FromMinutes(120);
+				options.SlidingExpiration = true;
+			});
+
+			services.ConfigureApplicationCookie(options =>
+			{
+				options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+			});
+		}
     }
 }
