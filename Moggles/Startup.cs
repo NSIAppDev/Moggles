@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
 using Moggles.BackgroundServices;
@@ -87,16 +89,15 @@ namespace Moggles
 
             var enableEntraId = bool.TryParse(Configuration["EnableEntraId"], out bool isEnabled) && isEnabled;
 
-            if (enableEntraId) 
-            {
+			if (enableEntraId)
+			{
                 ConfigureEntraId(services);
-            }
-            else
-            {
-                services.AddAuthentication(IISDefaults.AuthenticationScheme);
 			}
-
-			RegisterJwtAuthentication(services);
+			else
+			{
+				services.AddAuthentication(IISDefaults.AuthenticationScheme);
+				RegisterJwtAuthentication(services);
+			}
 
 			services.AddAuthorization(options =>
             {
@@ -220,35 +221,18 @@ namespace Moggles
             });
         }
 
-        private static string EnsureTrailingSlash(string value)
-        {
-            if (value == null)
-            {
-                value = string.Empty;
-            }
-
-            if (!value.EndsWith("/", StringComparison.Ordinal))
-            {
-                return value + "/";
-            }
-
-            return value;
-        }
-
         private void ConfigureEntraId(IServiceCollection services)
         {
+			var tokenSigningKey = Configuration.GetTokenSigningKey();
 
 			services
-				.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-				.AddMicrosoftIdentityWebApp(Configuration);
+			   .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+			   .AddMicrosoftIdentityWebApp(Configuration);
+
 			services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 			{
 				options.ExpireTimeSpan = TimeSpan.FromMinutes(120);
 				options.SlidingExpiration = true;
-			});
-
-			services.ConfigureApplicationCookie(options =>
-			{
 				options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 			});
 		}
