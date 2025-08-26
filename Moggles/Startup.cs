@@ -223,8 +223,6 @@ namespace Moggles
 
         private void ConfigureEntraId(IServiceCollection services)
         {
-			var tokenSigningKey = Configuration.GetTokenSigningKey();
-
 			services
 			   .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 			   .AddMicrosoftIdentityWebApp(Configuration);
