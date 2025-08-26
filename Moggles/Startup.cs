@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
 using Moggles.BackgroundServices;
 using Moggles.Consumers;
@@ -88,18 +89,17 @@ namespace Moggles
 
             var enableEntraId = bool.TryParse(Configuration["EnableEntraId"], out bool isEnabled) && isEnabled;
 
-            if (enableEntraId) 
-            {
+			if (enableEntraId)
+			{
                 ConfigureEntraId(services);
-            }
-            else
-            {
-                services.AddAuthentication(IISDefaults.AuthenticationScheme);
-            }
+			}
+			else
+			{
+				services.AddAuthentication(IISDefaults.AuthenticationScheme);
+				RegisterJwtAuthentication(services);
+			}
 
-            RegisterJwtAuthentication(services);
-
-            services.AddAuthorization(options =>
+			services.AddAuthorization(options =>
             {
                 options.AddPolicy("OnlyAdmins", policy => policy.RequireRole(admins));
             });
@@ -167,12 +167,6 @@ namespace Moggles
 
             app.UseRouting();
 
-
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
-            });
-
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -227,44 +221,18 @@ namespace Moggles
             });
         }
 
-        private static string EnsureTrailingSlash(string value)
-        {
-            if (value == null)
-            {
-                value = string.Empty;
-            }
-
-            if (!value.EndsWith("/", StringComparison.Ordinal))
-            {
-                return value + "/";
-            }
-
-            return value;
-        }
-
         private void ConfigureEntraId(IServiceCollection services)
         {
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            }).AddCookie(options =>
-            {
-                options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.AccessDeniedPath = "/Account/AccessDenied"; // Set the Access Denied path
-            })
-            .AddOpenIdConnect(options =>
-            {
-                options.Authority = EnsureTrailingSlash(Configuration["AzureAd:Instance"]) + Configuration["AzureAd:TenantId"];
-                options.ClientId = Configuration["AzureAd:ClientId"];
-                options.SignedOutRedirectUri = Configuration["AzureAd:PostLogoutRedirectUri"];
-                options.ResponseType = OpenIdConnectResponseType.Code;
-                options.SaveTokens = true;
-                options.CallbackPath = Configuration["AzureAd:CallbackPath"];
-                options.RequireHttpsMetadata = false;
-            });
-        }
+			services
+			   .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+			   .AddMicrosoftIdentityWebApp(Configuration);
+
+			services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+			{
+				options.ExpireTimeSpan = TimeSpan.FromMinutes(120);
+				options.SlidingExpiration = true;
+				options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+			});
+		}
     }
 }
