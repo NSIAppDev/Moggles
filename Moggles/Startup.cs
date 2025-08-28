@@ -1,5 +1,6 @@
 ﻿using GreenPipes;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -12,8 +13,6 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
 using Moggles.BackgroundServices;
 using Moggles.Consumers;
@@ -25,214 +24,240 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Moggles
 {
-    public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+	public class Startup
+	{
+		public Startup(IConfiguration configuration)
+		{
+			Configuration = configuration;
+		}
 
-        public IConfiguration Configuration { get; }
+		public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddControllersWithViews();
+		// This method gets called by the runtime. Use this method to add services to the container.
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services.AddControllersWithViews();
 
-            ConfigureAuthServices(services);
+			ConfigureAuthServices(services);
 
-            services.AddSignalR(o =>
-            {
-                //The recommended value is double the KeepAliveInterval value, as per documentation
-                o.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
+			services.AddSignalR(o =>
+			{
+				//The recommended value is double the KeepAliveInterval value, as per documentation
+				o.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
 
-                //The recommended value for KeepAliveInterval is half the serverTimeoutInMilliseconds on the client
-                o.KeepAliveInterval = TimeSpan.FromSeconds(60);
+				//The recommended value for KeepAliveInterval is half the serverTimeoutInMilliseconds on the client
+				o.KeepAliveInterval = TimeSpan.FromSeconds(60);
 
-                o.EnableDetailedErrors = true;
-                o.HandshakeTimeout = TimeSpan.FromSeconds(20);
-            });
+				o.EnableDetailedErrors = true;
+				o.HandshakeTimeout = TimeSpan.FromSeconds(20);
+			});
 
-            services.AddHttpsRedirection(o =>
-            {
-                o.RedirectStatusCode = (int)HttpStatusCode.TemporaryRedirect;
-            });
+			services.AddHttpsRedirection(o =>
+			{
+				o.RedirectStatusCode = (int)HttpStatusCode.TemporaryRedirect;
+			});
 
-            services.AddApplicationInsightsTelemetry();
+			services.AddApplicationInsightsTelemetry();
 
-            if (bool.TryParse(Configuration["Messaging:UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
-            {
-                ConfigureMassTransitAndMessageBus(services);
-            }
+			if (bool.TryParse(Configuration["Messaging:UseMessaging"], out bool useMassTransitAndMessaging) && useMassTransitAndMessaging)
+			{
+				ConfigureMassTransitAndMessageBus(services);
+			}
 
-            services.AddNoDb<Application>();
-            services.AddNoDb<ToggleSchedule>();
+			services.AddNoDb<Application>();
+			services.AddNoDb<ToggleSchedule>();
 			services.AddScoped<IRepository<Application>, ApplicationsRepository>();
-            services.AddScoped<IRepository<ToggleSchedule>, ToggleSchedulesRepository>();
+			services.AddScoped<IRepository<ToggleSchedule>, ToggleSchedulesRepository>();
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddHostedService<ScheduledFeatureTogglesService>();
+			services.AddHostedService<ScheduledFeatureTogglesService>();
 
-            services.AddMvc(options =>
-            {
-                options.Conventions.Add(new AuthorizationPolicyConvention("OnlyAdmins", Configuration.UseJwt(), JwtBearerDefaults.AuthenticationScheme));
-            });
-        }
+			services.AddMvc(options =>
+			{
+				options.Conventions.Add(new AuthorizationPolicyConvention("OnlyAdmins", Configuration.UseJwt(), JwtBearerDefaults.AuthenticationScheme));
+			});
+		}
 
+		public virtual void ConfigureAuthServices(IServiceCollection services)
+		{
+			var admins = Configuration["CustomRoles:Admins"];
 
-        public virtual void ConfigureAuthServices(IServiceCollection services)
-        {
-            var admins = Configuration["CustomRoles:Admins"];
+			var enableEntraId = bool.TryParse(Configuration["EnableEntraId"], out bool isEnabled) && isEnabled;
 
-            var enableEntraId = bool.TryParse(Configuration["EnableEntraId"], out bool isEnabled) && isEnabled;
-
+			AuthenticationBuilder authBuilder;
 			if (enableEntraId)
 			{
-                ConfigureEntraId(services);
+				authBuilder = services.AddAuthentication(options =>
+				{
+					options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+					options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+					options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+				})
+				.AddCookie(options =>
+				{
+					options.ExpireTimeSpan = TimeSpan.FromMinutes(120);
+					options.SlidingExpiration = true;
+					options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+				})
+				.AddOpenIdConnect(options =>
+				{
+					options.ClientId = Configuration["AzureAd:ClientId"];
+					options.Authority = $"{Configuration["AzureAd:Instance"]}/{Configuration["AzureAd:TenantId"]}";
+					options.CallbackPath = Configuration["AzureAd:CallbackPath"];
+					// Use implicit flow for public client (no client secret)
+					options.ResponseType = "id_token";
+					options.SaveTokens = true;
+					options.GetClaimsFromUserInfoEndpoint = true;
+					options.TokenValidationParameters = new TokenValidationParameters
+					{
+						ValidateIssuer = true,
+						ValidIssuer = $"{Configuration["AzureAd:Instance"]}/{Configuration["AzureAd:TenantId"]}/v2.0",
+						ValidateAudience = true,
+						ValidAudience = Configuration["AzureAd:ClientId"]
+					};
+					options.Events = new OpenIdConnectEvents
+					{
+						OnAuthenticationFailed = context =>
+						{
+							context.Response.Redirect("/Home/Error");
+							context.HandleResponse();
+							return Task.CompletedTask;
+						}
+					};
+				});
 			}
 			else
 			{
-				services.AddAuthentication(IISDefaults.AuthenticationScheme);
-				RegisterJwtAuthentication(services);
+				authBuilder = services.AddAuthentication(IISDefaults.AuthenticationScheme);
+			}
+
+			// Add JWT as an additional scheme if key is present
+			var jwtConfigAction = GetJwtConfigAction();
+			if (jwtConfigAction != null)
+			{
+				authBuilder.AddJwtBearer(jwtConfigAction);
 			}
 
 			services.AddAuthorization(options =>
-            {
-                options.AddPolicy("OnlyAdmins", policy => policy.RequireRole(admins));
-            });
-        }
-
-        private void RegisterJwtAuthentication(IServiceCollection services)
-        {
-            var tokenSigningKey = Configuration.GetTokenSigningKey();
-
-            if (string.IsNullOrEmpty(tokenSigningKey))
-                return;
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(o =>
-                {
-                    o.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey =
-                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSigningKey))
-                    };
-
-                    o.Events = new JwtBearerEvents
-                    {
-                        OnAuthenticationFailed = context =>
-                        {
-
-                            var response = new
-                            {
-                                ApplicationName = context.HttpContext.Request.Query["applicationName"].ToString(), 
-                                Time = DateTime.Now
-                            };
-                            string path = @"./nodb_storage/projects/moggles/authenticationResponse.json";
-
-                            using StreamWriter writer = File.AppendText(path);
-                            writer.WriteLine(response);                               
-                            
-                            return Task.CompletedTask;  
-                        }
-                    };
-                });
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else if (env.IsStaging())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseStaticFiles();
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapFallbackToController("Index", "Home");
-                endpoints.MapHub<IsDueHub>("/isDueHub", options =>
-                {
-                    options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.LongPolling;
-                });
-
-            });
-        }
-
-        private void ConfigureMassTransitAndMessageBus(IServiceCollection services)
-        {
-            services.AddMassTransit(c => { c.AddConsumer<FeatureToggleDeployStatusConsumer>(); });
-
-            services.AddSingleton(ConfigureMessageBus);
-
-            services.AddSingleton<IPublishEndpoint>(provider => provider.GetRequiredService<IBusControl>());
-            services.AddSingleton<ISendEndpointProvider>(provider => provider.GetRequiredService<IBusControl>());
-            services.AddSingleton<IBus>(provider => provider.GetRequiredService<IBusControl>());
-
-            services.AddSingleton<IHostedService, BusService>();
-        }
-
-        public virtual IBusControl ConfigureMessageBus(IServiceProvider serviceProvider)
-        {
-            return Bus.Factory.CreateUsingRabbitMq(sbc =>
-            {
-                sbc.Host(new Uri(Configuration["Messaging:Url"]), h =>
-                {
-                    h.Username(Configuration["Messaging:Username"]);
-                    h.Password(Configuration["Messaging:Password"]);
-                });
-
-                sbc.UseRetry(retryCfg =>
-                {
-                    retryCfg.Handle<IOException>();
-
-                    retryCfg.Interval(10, TimeSpan.FromMinutes(1));
-                });
-
-                sbc.ReceiveEndpoint(Configuration["Messaging:QueueName"], e =>
-                {
-                    e.Consumer<FeatureToggleDeployStatusConsumer>(serviceProvider);
-                    e.PrefetchCount = 1;
-                });
-            });
-        }
-
-        private void ConfigureEntraId(IServiceCollection services)
-        {
-			services
-			   .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-			   .AddMicrosoftIdentityWebApp(Configuration);
-
-			services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 			{
-				options.ExpireTimeSpan = TimeSpan.FromMinutes(120);
-				options.SlidingExpiration = true;
-				options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+				options.AddPolicy("OnlyAdmins", policy => policy.RequireRole(admins));
 			});
 		}
-    }
+
+		private Action<JwtBearerOptions> GetJwtConfigAction()
+		{
+			var tokenSigningKey = Configuration.GetTokenSigningKey();
+
+			if (string.IsNullOrEmpty(tokenSigningKey))
+				return null;
+
+			return o =>
+			{
+				o.TokenValidationParameters = new TokenValidationParameters
+				{
+					ValidateIssuer = false,
+					ValidateAudience = false,
+					ValidateLifetime = true,
+					ValidateIssuerSigningKey = true,
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSigningKey))
+				};
+
+				o.Events = new JwtBearerEvents
+				{
+					OnAuthenticationFailed = context =>
+					{
+						var response = new
+						{
+							ApplicationName = context.HttpContext.Request.Query["applicationName"].ToString(),
+							Time = DateTime.Now
+						};
+						string path = @"./nodb_storage/projects/moggles/authenticationResponse.json";
+
+						using StreamWriter writer = File.AppendText(path);
+						writer.WriteLine(JsonSerializer.Serialize(response));
+
+						return Task.CompletedTask;
+					}
+				};
+			};
+		}
+
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		{
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+			}
+			else if (env.IsStaging())
+			{
+				app.UseDeveloperExceptionPage();
+			}
+			else
+			{
+				app.UseDeveloperExceptionPage();
+			}
+
+			app.UseStaticFiles();
+			app.UseHttpsRedirection();
+
+			app.UseRouting();
+
+			app.UseAuthentication();
+			app.UseAuthorization();
+
+			app.UseEndpoints(endpoints =>
+			{
+				endpoints.MapControllers();
+				endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+				endpoints.MapFallbackToController("Index", "Home");
+				endpoints.MapHub<IsDueHub>("/isDueHub", options =>
+				{
+					options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.LongPolling;
+				});
+			});
+		}
+
+		private void ConfigureMassTransitAndMessageBus(IServiceCollection services)
+		{
+			services.AddMassTransit(c => { c.AddConsumer<FeatureToggleDeployStatusConsumer>(); });
+
+			services.AddSingleton(ConfigureMessageBus);
+
+			services.AddSingleton<IPublishEndpoint>(provider => provider.GetRequiredService<IBusControl>());
+			services.AddSingleton<ISendEndpointProvider>(provider => provider.GetRequiredService<IBusControl>());
+			services.AddSingleton<IBus>(provider => provider.GetRequiredService<IBusControl>());
+
+			services.AddSingleton<IHostedService, BusService>();
+		}
+
+		public virtual IBusControl ConfigureMessageBus(IServiceProvider serviceProvider)
+		{
+			return Bus.Factory.CreateUsingRabbitMq(sbc =>
+			{
+				sbc.Host(new Uri(Configuration["Messaging:Url"]), h =>
+				{
+					h.Username(Configuration["Messaging:Username"]);
+					h.Password(Configuration["Messaging:Password"]);
+				});
+
+				sbc.UseRetry(retryCfg =>
+				{
+					retryCfg.Handle<IOException>();
+
+					retryCfg.Interval(10, TimeSpan.FromMinutes(1));
+				});
+
+				sbc.ReceiveEndpoint(Configuration["Messaging:QueueName"], e =>
+				{
+					e.Consumer<FeatureToggleDeployStatusConsumer>(serviceProvider);
+					e.PrefetchCount = 1;
+				});
+			});
+		}
+	}
 }
