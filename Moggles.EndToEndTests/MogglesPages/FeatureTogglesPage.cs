@@ -1,13 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Web;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moggles.EndToEndTests.TestFramework;
 using NsTestFrameworkUI.Helpers;
 using NsTestFrameworkUI.KendoHelpers;
 using NsTestFrameworkUI.Pages;
 using OpenQA.Selenium;
+using System;
+using System.Linq;
+using System.Threading;
 
 namespace Moggles.EndToEndTests.MogglesPages
 {
@@ -78,18 +77,9 @@ namespace Moggles.EndToEndTests.MogglesPages
         private readonly By _deletedFeatureToggleName = By.CssSelector("#deletedTogglesGrid tbody > tr:nth-child(1) > td:nth-child(2)");
         private readonly By _deleteAllDeletedFeatureTogglesCheckbox = By.CssSelector("#deletedTogglesGrid table > thead > tr:nth-child(1) > th > input[type=checkbox]");
         private readonly By _removeDeletedFeatureTogglesButton = By.CssSelector(".vgt-selection-info-row div > div > button");
-      
+
         public IWebElement FeatureTogglesGrid => Browser.WebDriver.FindElement(By.Id("toggleGrid"));
         #endregion
-
-        public void Navigate()
-        {
-            var pass = HttpUtility.UrlEncode(Constants.MogglesPassword);
-            var url = $"https://{Constants.MogglesUser}:{pass}@{Constants.BaseUrl}";
-            Browser.GoTo(url);
-            if (!_addApplicationButton.IsElementPresent())
-                Browser.GoTo(url);
-        }
 
         public bool IsGridEmpty() => _noFeatureToggleDisplayedText.IsElementPresent();
         public bool IsDevEnvironmentCheckboxChecked()
@@ -129,7 +119,8 @@ namespace Moggles.EndToEndTests.MogglesPages
                 _statusesDropdown.WaitForElementToBeClickable();
                 _statusesDropdown.SelectFromDropdownByText(status);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Assert.Fail($"Exception in selecting element from User accepted drop-down: {ex.Message}");
             }
         }
@@ -386,7 +377,7 @@ namespace Moggles.EndToEndTests.MogglesPages
             return _deletedFeatureToggleName.GetText();
         }
 
-        public void  RemoveAllDeletedFeatureToggles()
+        public void RemoveAllDeletedFeatureToggles()
         {
             _deleteAllDeletedFeatureTogglesCheckbox.ActionClick();
             _removeDeletedFeatureTogglesButton.ActionClick();

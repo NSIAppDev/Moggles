@@ -31,7 +31,9 @@ namespace Moggles.EndToEndTests.SmokeTests
         public void EditAndDeleteEnvironment_TheEnvironmentIsUpdatedAndAfterThatDeleted()
         {
             //act
-            Pages.FeatureTogglesPage.Navigate();
+            NavigateToUrl();
+            Pages.AuthenticationPage.Login();
+
             Pages.FeatureTogglesPage.SelectApplicationByName(Constants.NewApplicationName);
             Pages.FeatureTogglesPage.AddNewEnvironment(Constants.SecondEnvName);
             Pages.FeatureTogglesPage.EditEnvironment(Constants.SecondEnvName);

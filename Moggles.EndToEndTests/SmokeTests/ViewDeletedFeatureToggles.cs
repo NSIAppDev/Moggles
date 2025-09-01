@@ -22,7 +22,9 @@ namespace Moggles.EndToEndTests.SmokeTests
         public void CheckFeatureTogglesThatWereDeletedAreVisibleInGrid()
         {
             // act
-            Pages.FeatureTogglesPage.Navigate();
+            NavigateToUrl();
+            Pages.AuthenticationPage.Login();
+
             Pages.FeatureTogglesPage.SelectApplicationByName(Constants.SmokeTestsApplication);
             Pages.FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName, Constants.DeleteToggleReason);
 

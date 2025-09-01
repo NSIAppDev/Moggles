@@ -6,7 +6,7 @@ namespace Moggles.EndToEndTests.SmokeTests
 {
     [TestClass]
     public class AddAndDeleteNewFeatureToggle : BaseTest
-    {       
+    {
         [TestMethod]
         [TestCategory("AddFeatureToggle")]
         [TestCategory("SmokeTests")]
@@ -14,7 +14,9 @@ namespace Moggles.EndToEndTests.SmokeTests
         public void AddAndDeleteANewFeatureToggle_TheFeatureToggleIsAddedAndDeleted()
         {
             //act
-            Pages.FeatureTogglesPage.Navigate();
+            NavigateToUrl();
+            Pages.AuthenticationPage.Login();
+
             Pages.FeatureTogglesPage.SelectApplicationByName(Constants.SmokeTestsApplication);
             Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
 
