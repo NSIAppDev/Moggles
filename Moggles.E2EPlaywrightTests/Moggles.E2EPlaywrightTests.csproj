@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AwesomeAssertions" Version="9.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="Microsoft.Playwright.MSTest" Version="1.54.0" />
     <PackageReference Include="MSTest" Version="3.10.3" />
