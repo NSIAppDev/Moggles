@@ -251,8 +251,7 @@ namespace Moggles.E2EPlaywrightTests.Pages
             await _deleteApplicationButton.ClickAsync();
             await _confirmDeleteApplicationButton.ClickAsync();
         }
-
-        async Task<bool> IsApplicationListed(string applicationName)
+        public async Task<bool> IsApplicationListed(string applicationName)
         {
             await _pageSpinner.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
             var dropdownElements = _featureTogglesPage.Locator("#selectedApp ul li");

@@ -13,6 +13,7 @@ public abstract class BaseTest : BaseTestPW
     protected string Role { get; private set; } = null!;
     protected string EncryptedFileForUser { get; private set; } = null!;
     protected RestClient Client { get; private set; } = null!;
+    protected FeatureFlagHelper FeatureFlagHelper { get; private set; } = null!;
     protected FeatureTogglesPage FeatureTogglesPage { get; private set; }
 
     [TestInitialize]
@@ -29,8 +30,10 @@ public abstract class BaseTest : BaseTestPW
         _page = await _context.NewPageAsync();
         ApiHelpers.APIContext = _page.APIRequest;
 
-        PageInitializer();
         ClientInitializer();
+        FeatureFlagHelper = new FeatureFlagHelper(Client);
+
+        PageInitializer();
     }
 
     private void ClientInitializer()
