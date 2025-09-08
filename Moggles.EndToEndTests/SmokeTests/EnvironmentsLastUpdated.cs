@@ -15,7 +15,9 @@ namespace Moggles.EndToEndTests.SmokeTests
         public void AddFeatureToggle_DevAndQaEnvironmentsAreUpdated()
         {
             //act
-            Pages.FeatureTogglesPage.Navigate();
+            NavigateToUrl();
+            Pages.AuthenticationPage.Login();
+
             Pages.FeatureTogglesPage.SelectApplicationByName(Constants.SmokeTestsApplication);
             Pages.FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
             Pages.FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);

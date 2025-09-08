@@ -31,7 +31,8 @@ namespace Moggles.EndToEndTests.SmokeTests
         public void EditAndDeleteApplication_TheApplicationIsUpdatedAndAfterThatDeleted()
         {
             //act
-            Pages.FeatureTogglesPage.Navigate();
+            NavigateToUrl();
+            Pages.AuthenticationPage.Login();
 
             Pages.FeatureTogglesPage.SelectApplicationByName(Constants.NewApplicationName);
             Pages.FeatureTogglesPage.ChangeApplicationName(Constants.NewApplicationName,Constants.EditedApplicationName);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSTestFrameworkDotNetCoreUI.Helpers;
+using Browser = NsTestFrameworkUI.Helpers.Browser;
 
 namespace Moggles.EndToEndTests.TestFramework
 {
@@ -9,15 +10,19 @@ namespace Moggles.EndToEndTests.TestFramework
         public virtual void Before()
         {
             KeyVaultHelper.InitializeVault("AppDev-Dev");
-            NsTestFrameworkUI.Helpers.Browser.InitializeDriver();
+            Browser.InitializeDriver();
         }
 
         [TestCleanup]
         public virtual void After()
         {
-            NsTestFrameworkUI.Helpers.Browser.Cleanup();
-            NsTestFrameworkUI.Helpers.Browser.WebDriver.Dispose();
-            NsTestFrameworkUI.Helpers.Browser.WebDriver.Quit();
+            Browser.Cleanup();
+            Browser.WebDriver.Dispose();
+            Browser.WebDriver.Quit();
+        }
+        public void NavigateToUrl()
+        {
+            Browser.GoTo(Constants.BaseUrl);
         }
     }
 }
