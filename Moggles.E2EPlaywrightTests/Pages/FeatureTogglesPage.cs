@@ -1,7 +1,5 @@
-﻿using Microsoft.Identity.Client;
-using Microsoft.Playwright;
+﻿using Microsoft.Playwright;
 using Moggles.E2EPlaywrightTests.Helpers;
-using NSTestFrameworkDotNetCoreApi.RestSharp;
 
 namespace Moggles.E2EPlaywrightTests.Pages
 {
@@ -41,8 +39,7 @@ namespace Moggles.E2EPlaywrightTests.Pages
         private ILocator _saveApplicationChangesButton => _featureTogglesPage.Locator("#saveEditApplicationBtn");
         private ILocator _confirmDeleteApplicationButton => _featureTogglesPage.Locator("#confirmDeleteApplicationBtn");
         private ILocator _deleteApplicationButton => _featureTogglesPage.Locator("#deleteApplicationBtn");
-
-        private ILocator _editEnvironmentIcon => _featureTogglesPage.Locator("#toggleGrid tr:nth-child(1) > th:nth-child(4) > a > i");
+        private ILocator _editEnvironmentIcon => _featureTogglesPage.Locator("tr:nth-child(1) > th:nth-child(4) > a > i");
         private ILocator _editEnvironmentNameInput => _featureTogglesPage.Locator("#editEnvironmentNameInput");
         private ILocator _confirmDeleteEnvironmentButton => _featureTogglesPage.Locator("#confirmDeleteEnvironmentBtn");
         private ILocator _saveEnvironmentChangesButton => _featureTogglesPage.Locator("#saveEditEnvironmentBtn");
@@ -61,6 +58,7 @@ namespace Moggles.E2EPlaywrightTests.Pages
         private ILocator _refreshedEnvMessage => _featureTogglesPage.Locator("body > div.fade.alert.alert-success.alert-dismissible.in");
         private ILocator _selectedApplication => _featureTogglesPage.Locator("#selectedApp");
         private ILocator _toolsButton => _featureTogglesPage.Locator("li.dropdown");
+        private ILocator _toolsButtonList => _featureTogglesPage.Locator("li.dropdown ul>li");
         private ILocator _selectedAppName => _featureTogglesPage.Locator("#app-sel  div  div  div:nth-child(1)");
         private ILocator _pageSpinner => _featureTogglesPage.Locator(".fa-spinner");
         private ILocator _applicationsList => _featureTogglesPage.Locator("body > ul > li > a");
@@ -69,8 +67,8 @@ namespace Moggles.E2EPlaywrightTests.Pages
         private ILocator _deletedFeatureToggleName => _featureTogglesPage.Locator("#deletedTogglesGrid tbody > tr:nth-child(1) > td:nth-child(2)");
         private ILocator _deleteAllDeletedFeatureTogglesCheckbox => _featureTogglesPage.Locator("#deletedTogglesGrid table > thead > tr:nth-child(1) > th > input[type=checkbox]");
         private ILocator _removeDeletedFeatureTogglesButton => _featureTogglesPage.Locator(".vgt-selection-info-row div > div > button");
+        private ILocator FeatureTogglesGrid => _featureTogglesPage.Locator("#toggleGrid");
 
-        public ILocator FeatureTogglesGrid => _featureTogglesPage.Locator("#toggleGrid");
         #endregion
         public async Task<bool> IsGridEmpty()
         {
@@ -101,7 +99,7 @@ namespace Moggles.E2EPlaywrightTests.Pages
         }
         public async Task AddFeatureToggle(string newFeatureToggleName)
         {
-            Thread.Sleep(2000);
+            await _featureTogglesPage.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
             await Utils.SelectFromDropdownAsync(_toolsButton, _toolsMenuDropdown ,"Add Feature Toggle");
             await _featureToggleNameInput.WaitForAsync();
             await _featureToggleNameInput.FillAsync(newFeatureToggleName);
@@ -113,7 +111,7 @@ namespace Moggles.E2EPlaywrightTests.Pages
         public async Task AddNewApplication(string newApplicationName, string firstEnvName)
         {
             await _pageSpinner.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Hidden });
-            Thread.Sleep(2000);
+            await _featureTogglesPage.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
             await _openAddApplicationModalBtn.WaitForAsync();
             await _openAddApplicationModalBtn.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Hidden });
             await _applicationNameInput.FillAsync(newApplicationName);
@@ -123,8 +121,9 @@ namespace Moggles.E2EPlaywrightTests.Pages
         }
         public async Task AddNewEnvironment(string newEnvironmentName)
         {
-            Thread.Sleep(2000);
-            await _toolsButton.SelectOptionAsync("Add New Environment");
+            await _featureTogglesPage.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+            await _toolsButton.ClickAsync();
+            await Utils.SelectOptionFromListAsync(_toolsButtonList, "Add New Environment");
             await _environmentNameInput.FillAsync(newEnvironmentName);
             await _addEnvironmentButton.ClickAsync();
             await _closeAddEnvironmentModalBtn.ClickAsync();
@@ -237,6 +236,7 @@ namespace Moggles.E2EPlaywrightTests.Pages
 
         public async Task ChangeApplicationName(string currentApplicationName, string editedApplicationName)
         {
+            await _featureTogglesPage.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
             if (currentApplicationName != await GetSelectedApplicationName()) return;
             await _editApplicationIcon.ClickAsync();
             await _editApplicationNameInput.ClearAsync();
@@ -266,27 +266,26 @@ namespace Moggles.E2EPlaywrightTests.Pages
 
         public async Task EditEnvironment(string environmentName)
         {
-            var element = await Utils.GetHeaderSpecifiedByIndexAsync("#FeatureTogglesGrid", 3);
+            var element = await Utils.GetHeaderSpecifiedByIndexAsync(FeatureTogglesGrid, 3);
             var text = await element.InnerTextAsync();
-            if (text.Equals(environmentName))
-            {
-                await element.Locator(_editEnvironmentIcon).First.ClickAsync();
-            }
+            if (text.Trim().Equals(environmentName))
+                await element.Locator("a").ClickAsync();
         }
 
         public async Task ChangeEnvironmentName(string editedEnvName)
         {
+            await _featureTogglesPage.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
             await _editEnvironmentNameInput.ClearAsync();
             await _editEnvironmentNameInput.FillAsync(editedEnvName);
             await _saveEnvironmentChangesButton.ClickAsync();
         }
 
-        async Task<bool> IsEnvironmentNameDisplayed(string envName)
+        public async Task<bool> IsEnvironmentNameDisplayed(string envName)
         {
             await _pageSpinner.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
-            var element = await Utils.GetHeaderSpecifiedByIndexAsync("#FeatureTogglesGrid", 3);
-
-            return element.InnerTextAsync().Equals(envName);
+            var element = await Utils.GetHeaderSpecifiedByIndexAsync(FeatureTogglesGrid, 3);
+            var txt = await element.InnerTextAsync();
+            return txt.Trim().Equals(envName);
         }
 
         public async Task DeleteEnvironment(string editedEnvName)

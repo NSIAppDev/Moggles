@@ -12,9 +12,9 @@ namespace Moggles.E2EPlaywrightTests.Helpers
             return formattedDateValue == DateTime.Now.Date;
         }
 
-        public async Task<ILocator> GetHeaderSpecifiedByIndexAsync(string gridSelector, int columnIndex)
+        public async Task<ILocator> GetHeaderSpecifiedByIndexAsync(ILocator gridSelector, int columnIndex)
         {
-            var header = page.Locator($"{gridSelector} .vgt-responsive>table>thead> tr:nth-child(1)");
+            var header = gridSelector.Locator($".vgt-responsive>table>thead> tr:nth-child(1)");
             var cell = header.Locator("th").Nth(columnIndex);
             return cell;
         }

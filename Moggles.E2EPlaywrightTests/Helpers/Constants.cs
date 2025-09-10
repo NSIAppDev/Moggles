@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-
-namespace Moggles.E2EPlaywrightTests.Helpers
+﻿namespace Moggles.E2EPlaywrightTests.Helpers
 {
     public static class Constants
     {

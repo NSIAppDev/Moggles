@@ -11,16 +11,17 @@ namespace Moggles.E2EPlaywrightTests.Tests
         public override async Task SetupAsync()
         {
             await base.SetupAsync();
+            var applicationInfo = await FeatureFlagHelper.GetApplicationProperties(Constants.NewApplicationName);
 
-            var applicationInfo = FeatureFlagHelper.GetApplicationProperties(Constants.NewApplicationName);
             var body = new UpdateApplicationModel
             {
                 ApplicationName = applicationInfo.AppName,
                 Id = applicationInfo.Id,
                 isDeleted = false
             };
-            FeatureFlagHelper.ReactivateApp(body);
+            await FeatureFlagHelper.ReactivateApp(body);
         }
+
 
         [TestMethod, TestCategory("EditANewApplication"), TestCategory("SmokeTests")]
         [Description("Check soft delete for test. Message in UI should be visible when adding app with the same name as existing (and deleted) one")]
