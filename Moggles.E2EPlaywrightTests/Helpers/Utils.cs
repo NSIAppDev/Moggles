@@ -12,7 +12,7 @@ namespace Moggles.E2EPlaywrightTests.Helpers
             return formattedDateValue == DateTime.Now.Date;
         }
 
-        public async Task<ILocator> GetHeaderSpecifiedByIndexAsync(ILocator gridSelector, int columnIndex)
+        public ILocator GetHeaderSpecifiedByIndex(ILocator gridSelector, int columnIndex)
         {
             var header = gridSelector.Locator($".vgt-responsive>table>thead> tr:nth-child(1)");
             var cell = header.Locator("th").Nth(columnIndex);
@@ -25,10 +25,10 @@ namespace Moggles.E2EPlaywrightTests.Helpers
             await optionElement.ClickAsync();
         }
 
-        public async Task SelectFromDropdownAsync(ILocator dropdownSelector, ILocator optionsListSelector, string option)
+        public async Task SelectOptionFromDropdownAsync(ILocator dropdownSelector, string optionsListSelector, string option)
         {
             await dropdownSelector.ClickAsync();
-            var optionElement = optionsListSelector.Filter(new() { HasText = option }).First;
+            var optionElement = dropdownSelector.Locator(optionsListSelector).Filter(new() { HasText = option }).First;
             await optionElement.ClickAsync();
         }
     }
