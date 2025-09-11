@@ -4,7 +4,8 @@ namespace Moggles.EndToEndTests.TestFramework
 {
     public static class Pages
     {
-        public static FeatureTogglesPage FeatureTogglesPage => new FeatureTogglesPage();
+        public static FeatureTogglesPage FeatureTogglesPage => new();
+        public static AuthenticationPage AuthenticationPage => new();
     }
 }
 

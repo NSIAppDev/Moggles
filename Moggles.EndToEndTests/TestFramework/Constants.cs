@@ -6,14 +6,13 @@ namespace Moggles.EndToEndTests.TestFramework
 {
     internal class Constants
     {
-        public static Random random = new Random();
+        public static Random Random = new();
 
         public static string MogglesUser = KeyVaultHelper.GetSecret("MogglesUser");
         public static string MogglesPassword = KeyVaultHelper.GetSecret("MogglesPassword");
-        public static string BaseUrl = ConfigurationRoot.GetApplicationConfiguration().BaseUrl;
-        public static string APIBaseUrl = $"https://{ConfigurationRoot.GetApplicationConfiguration().BaseUrl}";
+        public static string BaseUrl = $"https://{ConfigurationRoot.GetApplicationConfiguration().BaseUrl}";
 
-        public static string FeatureToggleName = "SmokeTestsFeatureToggle"+random.Next(10);
+        public static string FeatureToggleName = "SmokeTestsFeatureToggle" + Random.Next(10);
         public static string SmokeTestsApplication = "SmokeTests";
         public static string AcceptedByUserStatus = "Accepted";
         public static string NewApplicationName = "ApplicationToDelete";

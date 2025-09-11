@@ -6,6 +6,7 @@ using Moggles.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Moggles.Controllers
@@ -92,9 +93,11 @@ namespace Moggles.Controllers
             var app = await _applicationsRepository.FindByIdAsync(model.ApplicationId);
             var toggleData = app.GetFeatureToggleBasicData(model.Id);
 
-            var updatedBy = _httpContextAccessor.HttpContext.User.Identity.Name;
+			var entraIdEnabled = _configuration.GetValue<bool>("EnableEntraId");
+			var updatedBy = entraIdEnabled ? _httpContextAccessor.HttpContext.User?.FindFirstValue("name") 
+                                           : _httpContextAccessor.HttpContext.User.Identity.Name;
 
-            if (model.ReasonToChange!=null)
+			if (model.ReasonToChange!=null)
             {
                 app.UpdateFeatureToggleReasonsToChange(model.Id, updatedBy, model.ReasonToChange.Description, model.ReasonToChange.Environments);
             }
