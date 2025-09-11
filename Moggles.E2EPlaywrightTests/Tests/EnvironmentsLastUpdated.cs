@@ -6,7 +6,7 @@ namespace Moggles.E2EPlaywrightTests.Tests
     [TestClass]
     public class EnvironmentsLastUpdated : BaseTest
     {
-        private static string FeatureToggleName = "My test 2";
+        private static string FeatureToggleName = Constants.FeatureToggleName;
 
         [TestMethod, TestCategory("SmokeTests")]
         [TestProperty("role", "admin")]

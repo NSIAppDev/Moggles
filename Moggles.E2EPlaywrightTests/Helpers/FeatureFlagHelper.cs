@@ -1,7 +1,6 @@
 ﻿using Microsoft.Playwright;
 using Moggles.E2EPlaywrightTests.Helpers.Models;
 using Moggles.Models;
-using Newtonsoft.Json;
 using RestSharp;
 using System.Text.Json;
 using WGSHelpers.Authentication;

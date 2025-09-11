@@ -20,15 +20,6 @@ namespace Moggles.E2EPlaywrightTests
 
         public static async Task AssemblyInitAsync(TestContext context)
         {
-            if (context.Properties.Contains("webAppUrl"))
-            {
-                Console.WriteLine("webAppUrl found: " + context.Properties["webAppUrl"]);
-            }
-            else
-            {
-                Console.WriteLine("webAppUrl NOT found!");
-            }
-
             Url = context.Properties["webAppUrl"]?.ToString() ?? throw new InvalidOperationException();
 
             KeyVaultName = "AppDev-Dev";

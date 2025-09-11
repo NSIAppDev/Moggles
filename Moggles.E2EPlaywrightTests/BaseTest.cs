@@ -6,8 +6,6 @@ using WGSHelpers;
 using WGSHelpers.Authentication;
 using WGSHelpers.Helpers;
 
-[assembly: Parallelize(Scope = ExecutionScope.MethodLevel)]
-
 public abstract class BaseTest : BaseTestPW
 {
     protected string Role { get; private set; } = null!;
@@ -24,8 +22,7 @@ public abstract class BaseTest : BaseTestPW
 
         _context = await BrowserManager.SetupWithAuthAsync(
             encryptedAuthFile: EncryptedFileForUser,
-            userRole: Role,
-            isHeadless: false
+            userRole: Role
         );
         _page = await _context.NewPageAsync();
         ApiHelpers.APIContext = _page.APIRequest;
