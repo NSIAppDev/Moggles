@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
 using Moggles.E2EPlaywrightTests.Helpers.Models;
 using Moggles.Models;
+using Newtonsoft.Json;
 using RestSharp;
 using System.Text.Json;
 using WGSHelpers.Authentication;
@@ -15,9 +16,12 @@ namespace Moggles.E2EPlaywrightTests.Helpers
             _client = client;
         }
 
-        public string SmokeTestsApplicationId => GetApplicationProperties(Constants.SmokeTestsApplication)?.Id.ToString();
-        
-
+        #region Applications
+        public async Task<string?> GetSmokeTestsApplicationIdAsync(string applicationName)
+        {
+            var app = await GetApplicationProperties(applicationName);
+            return app?.Id.ToString();
+        }
         private Task<ApiResult<List<ApplicationDto>>> GetApplications()
         {
             return SafeApiCall<List<ApplicationDto>>(async () => 
@@ -49,7 +53,68 @@ namespace Moggles.E2EPlaywrightTests.Helpers
 
             return app;
         }
-        
+        public async Task<ApiResult<ApplicationDto>> ReactivateApp(UpdateApplicationModel updateApplicationModel)
+        {
+            return await SafeApiCall<ApplicationDto>(async () =>
+            {
+                var resp = await ApiHelpers.SendApiRequestAsync(
+                    TestSuiteSetup.Url + "api/applications/update",
+                    ApiHelpers.HttpMethodType.Put,
+                    updateApplicationModel,
+                    true
+                );
+
+                return resp as IAPIResponse ?? throw new InvalidOperationException("SendApiRequestAsync did not return IAPIResponse");
+            });
+        }
+        public async Task<ApiResult<bool>> DeleteApplication(string applicationId)
+        {
+            return await SafeApiCall<bool>(async () =>
+            {
+                var resp = await ApiHelpers.SendApiRequestAsync(
+                    TestSuiteSetup.Url+ $"/api/applications?id={applicationId}",
+                    ApiHelpers.HttpMethodType.Delete,
+                    null,
+                    true
+                );
+                return resp as IAPIResponse ?? throw new InvalidOperationException("SendApiRequestAsync did not return IAPIResponse");
+            }); 
+        }
+        #endregion
+
+        #region featureToggles 
+        private async Task<ApiResult<List<FeatureToggleViewModel>>> GetFeatureToggles(string applicationId)
+        {
+            return await SafeApiCall<List<FeatureToggleViewModel>>(async () =>
+            {
+                return await ApiHelpers.SendApiRequestAsync(
+                    TestSuiteSetup.Url + "api/FeatureToggles" + $"?applicationId={applicationId}",
+                    ApiHelpers.HttpMethodType.Get,
+                    null,
+                    true
+                );
+            });
+        }
+        public async Task<FeatureToggleViewModel> GetFeatureToggleProperties(string applicationId, string featureToggleName)
+        {
+            var featureTogglesResult = await GetFeatureToggles(applicationId);
+
+            if (!featureTogglesResult.Success)
+            {
+                Assert.Fail($"Failed to get feature toggle properties: {featureTogglesResult.ErrorMessage}");
+                return null;
+            }
+
+            var featureToggle = featureTogglesResult.Data?
+                .FirstOrDefault(x => x.ToggleName.Equals(featureToggleName, StringComparison.OrdinalIgnoreCase));
+
+            if (featureToggle == null)
+            {
+                Assert.Fail($"Feature toggle '{featureToggleName}' not found for application {applicationId}");
+            }
+
+            return featureToggle;
+        }
         private async Task<ApiResult<List<EnvironmentForFTDeserialized>>> GetFeatureToggleEnvironments(string applicationId)
         {
             return await SafeApiCall<List<EnvironmentForFTDeserialized>>(async () =>
@@ -66,12 +131,11 @@ namespace Moggles.E2EPlaywrightTests.Helpers
                 return response;
             });
         }
-
         public async Task<ApiResult<bool>> DeleteFeatureToggleEnvironment(string applicationId, string env)
         {
             var envsForApp = await GetFeatureToggleEnvironments(applicationId);
             if (envsForApp == null || !envsForApp.Data.Any(x => x.EnvName.ToLower() == env.ToLower()))
-                return null; 
+                return null;
             var body = new DeleteEnvironmentModel
             {
                 ApplicationId = new Guid(applicationId),
@@ -88,35 +152,30 @@ namespace Moggles.E2EPlaywrightTests.Helpers
                 return resp as IAPIResponse ?? throw new InvalidOperationException("SendApiRequestAsync did not return IAPIResponse");
             });
         }
-
-        public async Task<ApiResult<ApplicationDto>> ReactivateApp(UpdateApplicationModel updateApplicationModel)
+        
+        public async Task<ApiResult<bool>> DeleteFeatureToggles(string applicationId, string featureToggleId, string reasonToDelete)
         {
-            return await SafeApiCall<ApplicationDto>(async () =>
+            var body = new DeleteFeatureToggleModel
             {
-                var resp = await ApiHelpers.SendApiRequestAsync(
-                    TestSuiteSetup.Url + "api/applications/update",
-                    ApiHelpers.HttpMethodType.Put,
-                    updateApplicationModel,
-                    true
-                );
-
-                return resp as IAPIResponse ?? throw new InvalidOperationException("SendApiRequestAsync did not return IAPIResponse");
-            });
-        }
-
-        public async Task<ApiResult<bool>> DeleteApplication(string applicationId)
-        {
+                ApplicationId = new Guid(applicationId),
+                FeatureToggleId = new Guid(featureToggleId),
+                Reason = reasonToDelete
+            };
+            
             return await SafeApiCall<bool>(async () =>
             {
                 var resp = await ApiHelpers.SendApiRequestAsync(
-                    TestSuiteSetup.Url+ $"/api/applications?id={applicationId}",
+                    TestSuiteSetup.Url + "api/FeatureToggles",
                     ApiHelpers.HttpMethodType.Delete,
-                    null,
+                    body,
                     true
                 );
                 return resp as IAPIResponse ?? throw new InvalidOperationException("SendApiRequestAsync did not return IAPIResponse");
-            }); 
+            });
         }
+        #endregion
+
+        #region General methods
         private async Task<ApiResult<T>> SafeApiCall<T>(Func<Task<IAPIResponse>> apiCall)
         {
             try
@@ -175,5 +234,7 @@ namespace Moggles.E2EPlaywrightTests.Helpers
                 };
             }
         }
+
+        #endregion
     }
 }

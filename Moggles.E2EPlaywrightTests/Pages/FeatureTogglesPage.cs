@@ -296,9 +296,9 @@ namespace Moggles.E2EPlaywrightTests.Pages
             await _confirmDeleteEnvironmentButton.ClickAsync();
         }
 
-        async Task<bool> IsLastUpdatedDateOnDevCorrectlyDisplayed() => await Utils.IsLastUpdatedDateCorrectlyDisplayedAsync(_devLastUpdatedDate);
+        public async Task<bool> IsLastUpdatedDateOnDevCorrectlyDisplayed() => await Utils.IsLastUpdatedDateCorrectlyDisplayedAsync(_devLastUpdatedDate);
 
-        async Task<bool> IsLastUpdatedDateOnQaCorrectlyDisplayed() => await Utils.IsLastUpdatedDateCorrectlyDisplayedAsync(_qaLastUpdatedDate);
+        public async Task<bool> IsLastUpdatedDateOnQaCorrectlyDisplayed() => await Utils.IsLastUpdatedDateCorrectlyDisplayedAsync(_qaLastUpdatedDate);
 
         public async Task UpdateDevEnvironment()
         {
@@ -333,9 +333,9 @@ namespace Moggles.E2EPlaywrightTests.Pages
 
         public async Task OpenDeletedFeatureTogglesSection() => await _openDeletedFeatureTogglesSection.ClickAsync();
 
-        async Task<bool> IsDeletedFeatureTogglesPanelVisible() => await _deletedFeatureTogglesPanel.IsVisibleAsync();
+        public async Task<bool> IsDeletedFeatureTogglesPanelVisible() => await _deletedFeatureTogglesPanel.IsVisibleAsync();
 
-        async Task<string> GetDeletedFeatureToggleNameFromGrid()
+        public async Task<string> GetDeletedFeatureToggleNameFromGrid()
         {
             await _deletedFeatureTogglesPanel.WaitForAsync();
             return await _deletedFeatureToggleName.InnerTextAsync();
