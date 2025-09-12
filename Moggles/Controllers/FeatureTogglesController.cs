@@ -93,7 +93,7 @@ namespace Moggles.Controllers
             var app = await _applicationsRepository.FindByIdAsync(model.ApplicationId);
             var toggleData = app.GetFeatureToggleBasicData(model.Id);
 
-			var entraIdEnabled = _configuration.GetValue<bool>("EnableEntraId");
+			var entraIdEnabled = bool.Parse(_configuration["EnableEntraId"]);
 			var updatedBy = entraIdEnabled ? _httpContextAccessor.HttpContext.User?.FindFirstValue("name") 
                                            : _httpContextAccessor.HttpContext.User.Identity.Name;
 
