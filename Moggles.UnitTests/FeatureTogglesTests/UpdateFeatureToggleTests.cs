@@ -30,8 +30,9 @@ namespace Moggles.UnitTests.FeatureTogglesTests
             _mockHttpContextAccessor.Setup(x => x.HttpContext.User.Identity.Name).Returns("bla");
             _httpContextAccessor = _mockHttpContextAccessor.Object;
             _toggleScheduleRepository = new InMemoryRepository<ToggleSchedule>();
-            var mockConfiguration = new Mock<IConfiguration>().Object;
-            _featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository, mockConfiguration);
+            var mockConfiguration = new Mock<IConfiguration>();
+            mockConfiguration.SetupGet(c => c["EnableEntraId"]).Returns("false");
+			_featureToggleController = new FeatureTogglesController(_appRepository, _httpContextAccessor, _toggleScheduleRepository, mockConfiguration.Object);
         }
 
         [TestMethod]
