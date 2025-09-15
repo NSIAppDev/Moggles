@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36408.4 d17.14
+VisualStudioVersion = 17.14.36408.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles", "Moggles\Moggles.csproj", "{3A22C921-C180-4DCF-983A-7A0CE920AFE9}"
 EndProject
@@ -14,8 +14,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles.UnitTests", "Moggles.UnitTests\Moggles.UnitTests.csproj", "{22F4174B-F892-4ECB-8DA5-B989E85324EB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles.Data.NoDb", "Moggles.Data.NoDb\Moggles.Data.NoDb.csproj", "{6AB5B659-582E-4C4C-86B8-19C1100118F3}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moggles.EndToEndTests", "Moggles.EndToEndTests\Moggles.EndToEndTests.csproj", "{2EB99974-1E6B-451D-ABC1-E8430C9F19BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moggles.E2EPlaywrightTests", "Moggles.E2EPlaywrightTests\Moggles.E2EPlaywrightTests.csproj", "{505F2A68-E9A0-EB64-4C32-F1C9F5AC754F}"
 EndProject
@@ -101,18 +99,6 @@ Global
 		{6AB5B659-582E-4C4C-86B8-19C1100118F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6AB5B659-582E-4C4C-86B8-19C1100118F3}.Staging|Any CPU.ActiveCfg = Debug|Any CPU
 		{6AB5B659-582E-4C4C-86B8-19C1100118F3}.Staging|Any CPU.Build.0 = Debug|Any CPU
-		{2EB99974-1E6B-451D-ABC1-E8430C9F19BA}.Debug|Any CPU.ActiveCfg = DEV|Any CPU
-		{2EB99974-1E6B-451D-ABC1-E8430C9F19BA}.Debug|Any CPU.Build.0 = DEV|Any CPU
-		{2EB99974-1E6B-451D-ABC1-E8430C9F19BA}.DEV|Any CPU.ActiveCfg = Debug|Any CPU
-		{2EB99974-1E6B-451D-ABC1-E8430C9F19BA}.DEV|Any CPU.Build.0 = Debug|Any CPU
-		{2EB99974-1E6B-451D-ABC1-E8430C9F19BA}.LIVE|Any CPU.ActiveCfg = LIVE|Any CPU
-		{2EB99974-1E6B-451D-ABC1-E8430C9F19BA}.LIVE|Any CPU.Build.0 = LIVE|Any CPU
-		{2EB99974-1E6B-451D-ABC1-E8430C9F19BA}.QA|Any CPU.ActiveCfg = Release|Any CPU
-		{2EB99974-1E6B-451D-ABC1-E8430C9F19BA}.QA|Any CPU.Build.0 = Release|Any CPU
-		{2EB99974-1E6B-451D-ABC1-E8430C9F19BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2EB99974-1E6B-451D-ABC1-E8430C9F19BA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2EB99974-1E6B-451D-ABC1-E8430C9F19BA}.Staging|Any CPU.ActiveCfg = Debug|Any CPU
-		{2EB99974-1E6B-451D-ABC1-E8430C9F19BA}.Staging|Any CPU.Build.0 = Debug|Any CPU
 		{505F2A68-E9A0-EB64-4C32-F1C9F5AC754F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{505F2A68-E9A0-EB64-4C32-F1C9F5AC754F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{505F2A68-E9A0-EB64-4C32-F1C9F5AC754F}.DEV|Any CPU.ActiveCfg = Release|Any CPU

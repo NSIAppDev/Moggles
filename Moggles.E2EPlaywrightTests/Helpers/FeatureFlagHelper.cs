@@ -82,6 +82,24 @@ namespace Moggles.E2EPlaywrightTests.Helpers
         #endregion
 
         #region featureToggles 
+        public async Task<ApiResult<bool>> AddFeatureToggles(string applicationId, string featureToggleName)
+        {
+            var body = new AddFeatureToggleModel
+            {
+                ApplicationId = new Guid(applicationId),
+                FeatureToggleName = featureToggleName
+            };
+            return await SafeApiCall<bool>(async () =>
+            {
+                var resp = await ApiHelpers.SendApiRequestAsync(
+                    TestSuiteSetup.Url + "api/FeatureToggles/addFeatureToggle",
+                    ApiHelpers.HttpMethodType.Post,
+                    body,
+                    true
+                );
+                return resp as IAPIResponse ?? throw new InvalidOperationException("SendApiRequestAsync did not return IAPIResponse");
+            });
+        }
         private async Task<ApiResult<List<FeatureToggleViewModel>>> GetFeatureToggles(string applicationId)
         {
             return await SafeApiCall<List<FeatureToggleViewModel>>(async () =>
@@ -151,7 +169,6 @@ namespace Moggles.E2EPlaywrightTests.Helpers
                 return resp as IAPIResponse ?? throw new InvalidOperationException("SendApiRequestAsync did not return IAPIResponse");
             });
         }
-        
         public async Task<ApiResult<bool>> DeleteFeatureToggles(string applicationId, string featureToggleId, string reasonToDelete)
         {
             var body = new DeleteFeatureToggleModel
