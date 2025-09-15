@@ -78,7 +78,17 @@ namespace Moggles.E2EPlaywrightTests.Pages
         public async Task<bool> IsDevEnvironmentCheckboxChecked() => await _devCheckbox.IsCheckedAsync();
         public async Task<bool> IsQaEnvironmentCheckboxChecked() => await _qaCheckbox.IsCheckedAsync();
         public async Task<bool> IsRefreshedEnvironmentMessageIsDisplayed() => await _refreshedEnvMessage.IsEnabledAsync();
-        public async Task<string> GetSelectedApplicationName() => await _selectedAppName.InnerTextAsync();
+        public async Task<string> GetSelectedApplicationName() {
+            var elementHandle = await _selectedAppName.ElementHandleAsync();
+            if (elementHandle == null)
+                throw new Exception($"Element not found.");
+            await _featureTogglesPage.WaitForFunctionAsync(
+                @"el => !!el.innerText && !el.innerText.includes('Select')",
+                elementHandle,
+                new() { Timeout = 5000 }
+            );
+            return await _selectedAppName.InnerTextAsync();
+        } 
         public async Task SelectApplicationByName(string applicationName)
         {
             await _pageSpinner.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Hidden});
@@ -151,7 +161,7 @@ namespace Moggles.E2EPlaywrightTests.Pages
         {
             // Wait for spinner to disappear
             await _pageSpinner.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Hidden });
-            await _rowSelector.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible });
+            await FeatureTogglesGrid.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible });
 
             var rows = FeatureTogglesGrid.Locator(_rowSelector);
             int rowCount = await rows.CountAsync();
@@ -279,8 +289,30 @@ namespace Moggles.E2EPlaywrightTests.Pages
         {
             await _pageSpinner.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
             var element = Utils.GetHeaderSpecifiedByIndex(FeatureTogglesGrid, 3);
+            var elementHandle = await element.ElementHandleAsync();
+            if (elementHandle == null)
+                throw new Exception($"Element not found.");
+            await _featureTogglesPage.WaitForFunctionAsync(
+                @"el => !!el.innerText && el.innerText.includes('QA')",
+                elementHandle,
+                new() { Timeout = 20000 }
+            );
             var txt = await element.InnerTextAsync();
             return txt.Trim().Equals(envName);
+        }
+        
+        public async Task<bool> IsEnvironmentNameNotDisplayed(string envName)
+        {
+            var element = Utils.GetHeaderSpecifiedByIndex(FeatureTogglesGrid, 3);
+            var elementHandle = await element.ElementHandleAsync();
+            if (elementHandle == null)
+                throw new Exception($"Element not found.");
+            await _featureTogglesPage.WaitForFunctionAsync(
+                @"el => !!el.innerText && !el.innerText.includes('QA')",
+                elementHandle,
+                new() { Timeout = 5000 }
+            );
+            return true;
         }
 
         public async Task DeleteEnvironment(string editedEnvName)

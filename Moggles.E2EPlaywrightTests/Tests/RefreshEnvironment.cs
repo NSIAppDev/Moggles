@@ -1,11 +1,13 @@
 ﻿using AwesomeAssertions;
 using Moggles.E2EPlaywrightTests.Helpers;
 
-namespace Moggles.EndToEndTests.SmokeTests
+namespace Moggles.E2EPlaywrightTests.Tests
 {
     [TestClass]
     public class RefreshEnvironment : BaseTest
     {
+        private static string FeatureToggleName = Constants.FeatureToggleName;
+
         [TestMethod]
         [TestCategory("RefreshEnvironment")]
         [TestCategory("SmokeTests")]
@@ -16,8 +18,8 @@ namespace Moggles.EndToEndTests.SmokeTests
             await _page.GotoAsync(Constants.BaseUrl);
 
             await FeatureTogglesPage.SelectApplicationByName(Constants.SmokeTestsApplication);
-            await FeatureTogglesPage.AddFeatureToggle(Constants.FeatureToggleName);
-            await FeatureTogglesPage.EditFeatureToggle(Constants.FeatureToggleName);
+            await FeatureTogglesPage.AddFeatureToggle(FeatureToggleName);
+            await FeatureTogglesPage.EditFeatureToggle(FeatureToggleName);
             await FeatureTogglesPage.UpdateDevEnvironment();
             await FeatureTogglesPage.RefreshEnvironment();
 

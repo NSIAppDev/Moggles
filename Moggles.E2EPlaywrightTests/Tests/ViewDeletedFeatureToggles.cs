@@ -1,7 +1,7 @@
 ﻿using AwesomeAssertions;
 using Moggles.E2EPlaywrightTests.Helpers;
 
-namespace Moggles.EndToEndTests.SmokeTests
+namespace Moggles.E2EPlaywrightTests.Tests
 {
     [TestClass]
     public class ViewDeletedFeatureToggles : BaseTest

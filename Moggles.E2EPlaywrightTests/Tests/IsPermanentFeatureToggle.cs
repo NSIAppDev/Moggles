@@ -31,7 +31,7 @@ namespace Moggles.E2EPlaywrightTests.Tests
         {
             var appId = await FeatureFlagHelper.GetSmokeTestsApplicationIdAsync(Constants.SmokeTestsApplication);
             var featureToggleProperties = await FeatureFlagHelper.GetFeatureToggleProperties(appId, FeatureToggleName);
-            
+
             await FeatureFlagHelper.DeleteFeatureToggles(
                 appId,
                 featureToggleProperties.Id.ToString(),
@@ -42,3 +42,4 @@ namespace Moggles.E2EPlaywrightTests.Tests
         }
 
     }
+}

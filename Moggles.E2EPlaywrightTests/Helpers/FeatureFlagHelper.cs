@@ -1,7 +1,9 @@
-﻿using Microsoft.Playwright;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Playwright;
 using Moggles.E2EPlaywrightTests.Helpers.Models;
 using Moggles.Models;
 using RestSharp;
+using System;
 using System.Text.Json;
 using WGSHelpers.Authentication;
 
@@ -51,6 +53,38 @@ namespace Moggles.E2EPlaywrightTests.Helpers
             }
 
             return app;
+        }
+        public async Task<bool?> DoesApplicationExists(string applicationName)
+        {
+            var appsResult = await GetApplications();
+
+            if (!appsResult.Success)
+            {
+                Assert.Fail($"Exception in GetApplicationProperties: {appsResult.ErrorMessage}");
+                return null;
+            }
+            var app = appsResult.Data.FirstOrDefault(x =>x.AppName.Equals(applicationName));
+
+            if (app == null)
+            {
+                Console.WriteLine($"Warning: Application '{applicationName}' not found in API response.");
+                return null;
+            }
+
+            return true;
+        }
+        public async Task<ApiResult<bool>> UpdateApplicationProperties(UpdateApplicationModel updateBody)
+        {
+            return await SafeApiCall<bool>(async () =>
+            {
+                var resp = await ApiHelpers.SendApiRequestAsync(
+                    TestSuiteSetup.Url + "api/applications/update",
+                    ApiHelpers.HttpMethodType.Put,
+                    updateBody,
+                    true
+                );
+                return resp as IAPIResponse ?? throw new InvalidOperationException("SendApiRequestAsync did not return IAPIResponse");
+            });
         }
         public async Task<ApiResult<ApplicationDto>> ReactivateApp(UpdateApplicationModel updateApplicationModel)
         {

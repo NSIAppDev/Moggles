@@ -1,5 +1,6 @@
 ﻿using AwesomeAssertions;
 using Moggles.E2EPlaywrightTests.Helpers;
+using Moggles.E2EPlaywrightTests.Helpers.Models;
 using Moggles.Models;
 
 namespace Moggles.E2EPlaywrightTests.Tests
@@ -7,21 +8,34 @@ namespace Moggles.E2EPlaywrightTests.Tests
     [TestClass]
     public class EditAndDeleteApplication : BaseTest
     {
+        private ApplicationDto ApplicationInfo;
         [TestInitialize]
         public override async Task SetupAsync()
         {
             await base.SetupAsync();
-            var applicationInfo = await FeatureFlagHelper.GetApplicationProperties(Constants.NewApplicationName);
-
-            var body = new UpdateApplicationModel
+            if(await FeatureFlagHelper.DoesApplicationExists(Constants.NewApplicationName) == true)
             {
-                ApplicationName = applicationInfo.AppName,
-                Id = applicationInfo.Id,
-                isDeleted = false
-            };
-            await FeatureFlagHelper.ReactivateApp(body);
+                ApplicationInfo = await FeatureFlagHelper.GetApplicationProperties(Constants.NewApplicationName);
+                var body = new UpdateApplicationModel
+                {
+                    ApplicationName = ApplicationInfo.AppName,
+                    Id = ApplicationInfo.Id,
+                    isDeleted = false
+                };
+                await FeatureFlagHelper.ReactivateApp(body);
+            }
+            else
+            {
+                ApplicationInfo = await FeatureFlagHelper.GetApplicationProperties(Constants.EditedApplicationName);
+                var body = new UpdateApplicationModel
+                {
+                    ApplicationName = Constants.NewApplicationName,
+                    Id = ApplicationInfo.Id,
+                    isDeleted = false
+                };
+                await FeatureFlagHelper.UpdateApplicationProperties(body);
+            }
         }
-
 
         [TestMethod, TestCategory("EditANewApplication"), TestCategory("SmokeTests")]
         [Description("Check soft delete for test. Message in UI should be visible when adding app with the same name as existing (and deleted) one")]
@@ -43,6 +57,22 @@ namespace Moggles.E2EPlaywrightTests.Tests
 
             //assert
             (await FeatureTogglesPage.IsApplicationListed(Constants.EditedApplicationName)).Should().BeFalse();
+        }
+
+        [TestCleanup]
+        public override async Task TeardownAsync()
+        {
+            if (await FeatureFlagHelper.DoesApplicationExists(Constants.EditedApplicationName) == true)
+            {
+                var body = new UpdateApplicationModel
+                {
+                    ApplicationName =Constants.NewApplicationName,
+                    Id = ApplicationInfo.Id,
+                    isDeleted = false
+                };
+                await FeatureFlagHelper.UpdateApplicationProperties(body);
+            }
+            await base.TeardownAsync();
         }
     }
 }

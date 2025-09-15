@@ -43,7 +43,7 @@ namespace Moggles.E2EPlaywrightTests.Tests
             await FeatureTogglesPage.DeleteEnvironment(Constants.EditedSecondEnvName);
 
             //assert
-            (await FeatureTogglesPage.IsEnvironmentNameDisplayed(Constants.EditedSecondEnvName)).Should().BeFalse();
+            (await FeatureTogglesPage.IsEnvironmentNameNotDisplayed(Constants.EditedSecondEnvName)).Should().BeTrue();
         }
 
         [TestCleanup]
