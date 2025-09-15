@@ -11,7 +11,8 @@ namespace Moggles.Tests
         public TestStartup(IConfiguration config) : base(config)
         {
             config["Messaging:UseMessaging"] = "true";
-        }
+            config["EnableEntraId"] = "false";
+		}
 
 		public override void ConfigureAuthServices(IServiceCollection services)
 		{
