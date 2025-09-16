@@ -6,7 +6,7 @@
 
         public static string BaseUrl { get; set; } = "https://moggles.northernsafety-dev.com/";
 
-        public static string FeatureToggleName = "SmokeTests" + Faker.Name.First + random.Next(10);
+        public static string FeatureToggleName = "SmokeTests" + Faker.Name.Last() + random.Next(10);
         public static string SmokeTestsApplication = "SmokeTests";
         public static string AcceptedByUserStatus = "Accepted";
         public static string NewApplicationName = "ApplicationToDelete";

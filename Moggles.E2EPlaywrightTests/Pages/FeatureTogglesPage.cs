@@ -1,4 +1,5 @@
-﻿using Microsoft.Playwright;
+﻿using Automatonymous;
+using Microsoft.Playwright;
 using Moggles.E2EPlaywrightTests.Helpers;
 
 namespace Moggles.E2EPlaywrightTests.Pages
@@ -44,12 +45,11 @@ namespace Moggles.E2EPlaywrightTests.Pages
         private ILocator _confirmDeleteEnvironmentButton => _featureTogglesPage.Locator("#confirmDeleteEnvironmentBtn");
         private ILocator _saveEnvironmentChangesButton => _featureTogglesPage.Locator("#saveEditEnvironmentBtn");
         private ILocator _deleteEnvironmentButton => _featureTogglesPage.Locator("#deleteEnvironmentBtn");
-
-        private ILocator _filterByACriteria => _featureTogglesPage.Locator("tr:nth-child(2) > th:nth-child(2) > div > input");
+        private ILocator _filterByACriteria => _featureTogglesPage.Locator("[placeholder='Filter Toggle Name']");
         private ILocator _refreshEnvironmentButton => _featureTogglesPage.Locator("#refreshEnvironmentsBtn");
         private ILocator _rowSelector => _featureTogglesPage.Locator(".vgt-responsive> table > tbody> tr");
-        private ILocator _noFeatureToggleDisplayedText => _featureTogglesPage.Locator("#toggleGrid tr td div div");
-        private ILocator _deleteFeatureToggleIcon => _featureTogglesPage.Locator("#toggleGrid span > a:nth-child(2) > i");
+        private ILocator _noFeatureToggleDisplayedText => _featureTogglesPage.Locator("#toggleGrid .text-center");
+        private ILocator _deleteFeatureToggleIcon => _featureTogglesPage.Locator("span > a:nth-child(2) > i");
         private ILocator _isPermanentFlag => _featureTogglesPage.Locator(".label-danger");
         private ILocator _devCheckbox => _featureTogglesPage.Locator(".form-horizontal > div > div:nth-child(4) > div > div > div > input[type=checkbox]");
         private ILocator _qaCheckbox => _featureTogglesPage.Locator(".form-horizontal > div > div:nth-child(5) > div > div > div > input[type=checkbox]");
@@ -62,7 +62,6 @@ namespace Moggles.E2EPlaywrightTests.Pages
         private ILocator _selectedAppName => _featureTogglesPage.Locator("#app-sel  div  div  div:nth-child(1)");
         private ILocator _pageSpinner => _featureTogglesPage.Locator(".fa-spinner");
         private ILocator _applicationsList => _featureTogglesPage.Locator("body > ul > li > a");
-
         private ILocator _deletedFeatureTogglesPanel => _featureTogglesPage.Locator(".panel-body.padding-0");
         private ILocator _deletedFeatureToggleName => _featureTogglesPage.Locator("#deletedTogglesGrid tbody > tr:nth-child(1) > td:nth-child(2)");
         private ILocator _deleteAllDeletedFeatureTogglesCheckbox => _featureTogglesPage.Locator("#deletedTogglesGrid table > thead > tr:nth-child(1) > th > input[type=checkbox]");
@@ -72,13 +71,27 @@ namespace Moggles.E2EPlaywrightTests.Pages
         #endregion
         public async Task<bool> IsGridEmpty()
         {
-            await _pageSpinner.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Hidden });
+            await _pageSpinner.WaitForAsync(new() { State = WaitForSelectorState.Detached });
+            await _noFeatureToggleDisplayedText.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible });
             return await _noFeatureToggleDisplayedText.IsVisibleAsync();
         }
         public async Task<bool> IsDevEnvironmentCheckboxChecked() => await _devCheckbox.IsCheckedAsync();
         public async Task<bool> IsQaEnvironmentCheckboxChecked() => await _qaCheckbox.IsCheckedAsync();
         public async Task<bool> IsRefreshedEnvironmentMessageIsDisplayed() => await _refreshedEnvMessage.IsEnabledAsync();
-        public async Task<string> GetSelectedApplicationName() => await _selectedAppName.InnerTextAsync();
+        public async Task<string> GetSelectedApplicationName(string desiredAppName) 
+        {
+            var elementHandle = await _selectedAppName.ElementHandleAsync();
+            if (elementHandle == null)
+                throw new Exception($"Element not found.");
+            await _featureTogglesPage.WaitForFunctionAsync(
+               @$"el => !!el.innerText 
+                && !el.innerText.includes('Select') 
+                && el.innerText.includes('{desiredAppName}')",
+               elementHandle,
+               new() { Timeout = 5000 }
+           );
+            return await _selectedAppName.InnerTextAsync();
+        } 
         public async Task SelectApplicationByName(string applicationName)
         {
             await _pageSpinner.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Hidden});
@@ -90,7 +103,7 @@ namespace Moggles.E2EPlaywrightTests.Pages
             try
             {
                 await _statusesDropdown.WaitForAsync();
-                await Utils.SelectOptionFromListAsync(_statusesDropdown, status);
+                await _statusesDropdown.SelectOptionAsync(status);
             }
             catch (Exception ex)
             {
@@ -100,7 +113,7 @@ namespace Moggles.E2EPlaywrightTests.Pages
         public async Task AddFeatureToggle(string newFeatureToggleName)
         {
             await _featureTogglesPage.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
-            await Utils.SelectFromDropdownAsync(_toolsButton, _toolsMenuDropdown ,"Add Feature Toggle");
+            await Utils.SelectOptionFromDropdownAsync(_toolsButton, "li" ,"Add Feature Toggle");
             await _featureToggleNameInput.WaitForAsync();
             await _featureToggleNameInput.FillAsync(newFeatureToggleName);
             await _notesInput.FillAsync("test notes");
@@ -129,37 +142,44 @@ namespace Moggles.E2EPlaywrightTests.Pages
             await _closeAddEnvironmentModalBtn.ClickAsync();
             await _pageSpinner.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Hidden });
         }
-        public async Task<bool> IsFeatureToggleDisplayed(string newFeatureToggleName)
+        public async Task<bool> IsFeatureToggleDisplayed(string newFeatureToggleName, string status)
         {
-            // Wait for spinner to disappear
-            await _pageSpinner.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Hidden });
+            await _featureTogglesPage.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+            // wait until status is accepted by user
+            var elementHandle = await _statusesDropdown.ElementHandleAsync();
+            if (elementHandle == null)
+                throw new Exception($"Element not found."); 
+            await _featureTogglesPage.WaitForFunctionAsync(
+                $@"el => !!el.innerText 
+                && el.innerText.includes('{status}')",
+                elementHandle,
+                new() { Timeout = 5000 }
+            );
+            var tempRow = FeatureTogglesGrid
+                .Locator(_rowSelector)
+                .Filter(new LocatorFilterOptions { HasText = "SmokeTests" });
 
-            // Locate all rows inside the grid
+            // wait until at least one matching row exists
+            await tempRow.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+
             var rows = FeatureTogglesGrid.Locator(_rowSelector);
             int rowCount = await rows.CountAsync();
 
             for (int i = 0; i < rowCount; i++)
             {
                 var row = rows.Nth(i);
-
-                // Get all cells in the current row
                 var cells = row.Locator("td");
-                int cellCount = await cells.CountAsync();
-
-                for (int j = 0; j < cellCount; j++)
-                {
-                    var text = await cells.Nth(j).InnerTextAsync();
-                    if (text.Equals(newFeatureToggleName, StringComparison.OrdinalIgnoreCase))
-                        return true;
-                }
+                var text = await cells.Nth(1).InnerTextAsync();
+                if (text.Equals(newFeatureToggleName, StringComparison.OrdinalIgnoreCase))
+                    return true;
             }
-
             return false;
         }
         public async Task<bool> IsCreationDateCorrectlyDisplayed(string newFeatureToggleName)
         {
             // Wait for spinner to disappear
             await _pageSpinner.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Hidden });
+            await FeatureTogglesGrid.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible });
 
             var rows = FeatureTogglesGrid.Locator(_rowSelector);
             int rowCount = await rows.CountAsync();
@@ -218,26 +238,31 @@ namespace Moggles.E2EPlaywrightTests.Pages
         }
         public async Task SetFeatureToggleAsPermanent()
         {
+            await _featureTogglesPage.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
             await _isPermanentCheckbox.ClickAsync();
             await _saveButton.ClickAsync();
             await _pageSpinner.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
         }
         public async Task SetFeatureToggleAsAcceptedByUser()
         {
+            await _featureTogglesPage.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
             await _isAcceptedByUserCheckbox.ClickAsync();
             await _saveButton.ClickAsync();
         }
 
-        public async Task<bool> IsFeatureTogglePermanent()
+        public async Task FilterFeatureToggle()
         {
-            await _filterByACriteria.FillAsync(Constants.FeatureToggleName);
-            return await _isPermanentFlag.IsVisibleAsync();
+            await _featureTogglesPage.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+            var filter = FeatureTogglesGrid.Locator(_filterByACriteria);
+            await filter.ClickAsync();
+            await filter.FillAsync(Constants.FeatureToggleName);
         }
+        public async Task<bool> IsFeatureTogglePermanent() => await _isPermanentFlag.IsVisibleAsync();
 
         public async Task ChangeApplicationName(string currentApplicationName, string editedApplicationName)
         {
             await _featureTogglesPage.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
-            if (currentApplicationName != await GetSelectedApplicationName()) return;
+            if (currentApplicationName != await GetSelectedApplicationName(currentApplicationName)) return;
             await _editApplicationIcon.ClickAsync();
             await _editApplicationNameInput.ClearAsync();
             await _editApplicationNameInput.FillAsync(editedApplicationName);
@@ -246,7 +271,7 @@ namespace Moggles.E2EPlaywrightTests.Pages
         public async Task DeleteApplication(string expectedApplicationName)
         {
             await _pageSpinner.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
-            if (expectedApplicationName != await GetSelectedApplicationName()) return;
+            if (expectedApplicationName != await GetSelectedApplicationName(expectedApplicationName)) return;
             await _editApplicationIcon.ClickAsync();
             await _deleteApplicationButton.ClickAsync();
             await _confirmDeleteApplicationButton.ClickAsync();
@@ -266,7 +291,7 @@ namespace Moggles.E2EPlaywrightTests.Pages
 
         public async Task EditEnvironment(string environmentName)
         {
-            var element = await Utils.GetHeaderSpecifiedByIndexAsync(FeatureTogglesGrid, 3);
+            var element = Utils.GetHeaderSpecifiedByIndex(FeatureTogglesGrid, 3);
             var text = await element.InnerTextAsync();
             if (text.Trim().Equals(environmentName))
                 await element.Locator("a").ClickAsync();
@@ -283,9 +308,32 @@ namespace Moggles.E2EPlaywrightTests.Pages
         public async Task<bool> IsEnvironmentNameDisplayed(string envName)
         {
             await _pageSpinner.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
-            var element = await Utils.GetHeaderSpecifiedByIndexAsync(FeatureTogglesGrid, 3);
+            var element = Utils.GetHeaderSpecifiedByIndex(FeatureTogglesGrid, 3);
+            var elementHandle = await element.ElementHandleAsync();
+            if (elementHandle == null)
+                throw new Exception($"Element not found.");
+            await _featureTogglesPage.WaitForFunctionAsync(
+                $@"el => !!el.innerText 
+                && el.innerText.includes('{envName}')",
+                elementHandle,
+                new() { Timeout = 20000 }
+            );
             var txt = await element.InnerTextAsync();
             return txt.Trim().Equals(envName);
+        }
+        
+        public async Task<bool> IsEnvironmentNameNotDisplayed(string envName)
+        {
+            var element = Utils.GetHeaderSpecifiedByIndex(FeatureTogglesGrid, 3);
+            var elementHandle = await element.ElementHandleAsync();
+            if (elementHandle == null)
+                throw new Exception($"Element not found.");
+            await _featureTogglesPage.WaitForFunctionAsync(
+                @"el => !!el.innerText && !el.innerText.includes('QA')",
+                elementHandle,
+                new() { Timeout = 5000 }
+            );
+            return true;
         }
 
         public async Task DeleteEnvironment(string editedEnvName)

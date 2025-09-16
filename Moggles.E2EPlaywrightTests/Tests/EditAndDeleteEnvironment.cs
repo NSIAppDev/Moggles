@@ -19,8 +19,8 @@ namespace Moggles.E2EPlaywrightTests.Tests
                 isDeleted = false
             };
             await FeatureFlagHelper.ReactivateApp(body);
-            await FeatureFlagHelper.DeleteFeatureToggleEnvironment(applicationInfo.Id.ToString(), Constants.SecondEnvName);
-            await FeatureFlagHelper.DeleteFeatureToggleEnvironment(applicationInfo.Id.ToString(), Constants.EditedSecondEnvName);
+            await FeatureFlagHelper.DeleteFeatureToggleEnvironment(applicationInfo.Id, Constants.SecondEnvName);
+            await FeatureFlagHelper.DeleteFeatureToggleEnvironment(applicationInfo.Id, Constants.EditedSecondEnvName);
         }
 
         [TestProperty("role", "admin")]
@@ -43,14 +43,14 @@ namespace Moggles.E2EPlaywrightTests.Tests
             await FeatureTogglesPage.DeleteEnvironment(Constants.EditedSecondEnvName);
 
             //assert
-            (await FeatureTogglesPage.IsEnvironmentNameDisplayed(Constants.EditedSecondEnvName)).Should().BeFalse();
+            (await FeatureTogglesPage.IsEnvironmentNameNotDisplayed(Constants.EditedSecondEnvName)).Should().BeTrue();
         }
 
         [TestCleanup]
         public override async Task TeardownAsync()
         {
             var applicationProperties = await FeatureFlagHelper.GetApplicationProperties(Constants.NewApplicationName);
-            await FeatureFlagHelper.DeleteApplication(applicationProperties.Id.ToString());
+            await FeatureFlagHelper.DeleteApplication(applicationProperties.Id);
             await base.TeardownAsync();
         }
 

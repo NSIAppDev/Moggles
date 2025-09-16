@@ -4,23 +4,27 @@ using Moggles.E2EPlaywrightTests.Helpers;
 namespace Moggles.E2EPlaywrightTests.Tests
 {
     [TestClass]
-    public class EnvironmentsLastUpdated : BaseTest
+    public class IsPermanentFeatureToggle : BaseTest
     {
         private static string FeatureToggleName = Constants.FeatureToggleName;
 
-        [TestMethod, TestCategory("SmokeTests")]
+        [TestMethod]
+        [TestCategory("IsPermanent")]
+        [TestCategory("SmokeTests")]
         [TestProperty("role", "admin")]
-        public async Task AddFeatureToggle_DevAndQaEnvironmentsAreUpdated()
+        public async Task EditAFeatureToggleToBePermanent()
         {
             //act
             await _page.GotoAsync(Constants.BaseUrl);
+
             await FeatureTogglesPage.SelectApplicationByName(Constants.SmokeTestsApplication);
             await FeatureTogglesPage.AddFeatureToggle(FeatureToggleName);
             await FeatureTogglesPage.EditFeatureToggle(FeatureToggleName);
+            await FeatureTogglesPage.SetFeatureToggleAsPermanent();
+            await FeatureTogglesPage.FilterFeatureToggle();
 
             //assert
-            (await FeatureTogglesPage.IsDevEnvironmentCheckboxChecked()).Should().BeTrue();
-            (await FeatureTogglesPage.IsLastUpdatedDateOnDevCorrectlyDisplayed()).Should().BeTrue();
+            (await FeatureTogglesPage.IsFeatureTogglePermanent()).Should().BeTrue();
         }
 
         [TestCleanup]
@@ -28,11 +32,15 @@ namespace Moggles.E2EPlaywrightTests.Tests
         {
             var appId = await FeatureFlagHelper.GetSmokeTestsApplicationIdAsync(Constants.SmokeTestsApplication);
             var featureToggleProperties = await FeatureFlagHelper.GetFeatureToggleProperties(appId, FeatureToggleName);
+
             await FeatureFlagHelper.DeleteFeatureToggles(
-                appId, 
-                featureToggleProperties.Id, 
+                appId,
+                featureToggleProperties.Id,
                 Constants.DeleteToggleReason);
             await base.TeardownAsync();
+
+            await base.TeardownAsync();
         }
+
     }
 }
