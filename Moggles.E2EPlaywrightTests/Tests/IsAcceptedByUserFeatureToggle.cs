@@ -27,7 +27,7 @@ namespace Moggles.E2EPlaywrightTests.Tests
             await FeatureTogglesPage.FilterAcceptedByUserColumn(Constants.AcceptedByUserStatus);
 
             //assert
-            (await FeatureTogglesPage.IsFeatureToggleDisplayed(FeatureToggleName)).Should().BeTrue();
+            (await FeatureTogglesPage.IsFeatureToggleDisplayed(FeatureToggleName, Constants.AcceptedByUserStatus)).Should().BeTrue();
         }
 
         [TestCleanup]
@@ -37,7 +37,7 @@ namespace Moggles.E2EPlaywrightTests.Tests
             var featureToggleProperties = await FeatureFlagHelper.GetFeatureToggleProperties(appId, FeatureToggleName);
             await FeatureFlagHelper.DeleteFeatureToggles(
                 appId,
-                featureToggleProperties.Id.ToString(),
+                featureToggleProperties.Id,
                 Constants.DeleteToggleReason);
             await base.TeardownAsync();
         }

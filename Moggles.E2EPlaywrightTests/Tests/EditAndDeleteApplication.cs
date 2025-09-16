@@ -9,13 +9,16 @@ namespace Moggles.E2EPlaywrightTests.Tests
     public class EditAndDeleteApplication : BaseTest
     {
         private ApplicationDto ApplicationInfo;
+        private string ApplicationToDelete = "AppForDeletion";
+        private string EditedApplicationToDelete = "EditedAppForDeletion";
+
         [TestInitialize]
         public override async Task SetupAsync()
         {
             await base.SetupAsync();
-            if(await FeatureFlagHelper.DoesApplicationExists(Constants.NewApplicationName) == true)
+            if(await FeatureFlagHelper.DoesApplicationExists(ApplicationToDelete) == true)
             {
-                ApplicationInfo = await FeatureFlagHelper.GetApplicationProperties(Constants.NewApplicationName);
+                ApplicationInfo = await FeatureFlagHelper.GetApplicationProperties(ApplicationToDelete);
                 var body = new UpdateApplicationModel
                 {
                     ApplicationName = ApplicationInfo.AppName,
@@ -26,10 +29,10 @@ namespace Moggles.E2EPlaywrightTests.Tests
             }
             else
             {
-                ApplicationInfo = await FeatureFlagHelper.GetApplicationProperties(Constants.EditedApplicationName);
+                ApplicationInfo = await FeatureFlagHelper.GetApplicationProperties(EditedApplicationToDelete);
                 var body = new UpdateApplicationModel
                 {
-                    ApplicationName = Constants.NewApplicationName,
+                    ApplicationName = ApplicationToDelete,
                     Id = ApplicationInfo.Id,
                     isDeleted = false
                 };
@@ -45,28 +48,28 @@ namespace Moggles.E2EPlaywrightTests.Tests
             //act
             await _page.GotoAsync(Constants.BaseUrl);
 
-            await FeatureTogglesPage.SelectApplicationByName(Constants.NewApplicationName);
-            await FeatureTogglesPage.ChangeApplicationName(Constants.NewApplicationName, Constants.EditedApplicationName);
+            await FeatureTogglesPage.SelectApplicationByName(ApplicationToDelete);
+            await FeatureTogglesPage.ChangeApplicationName(ApplicationToDelete, EditedApplicationToDelete);
 
             //assert
-            (await FeatureTogglesPage.GetSelectedApplicationName()).Equals(Constants.EditedApplicationName).Should().BeTrue();
+            (await FeatureTogglesPage.GetSelectedApplicationName(EditedApplicationToDelete)).Equals(EditedApplicationToDelete).Should().BeTrue();
             (await FeatureTogglesPage.IsGridEmpty()).Should().BeTrue();
 
             //act
-            await FeatureTogglesPage.ChangeApplicationName(Constants.EditedApplicationName, Constants.NewApplicationName);
+            await FeatureTogglesPage.ChangeApplicationName(EditedApplicationToDelete, ApplicationToDelete);
 
             //assert
-            (await FeatureTogglesPage.IsApplicationListed(Constants.EditedApplicationName)).Should().BeFalse();
+            (await FeatureTogglesPage.IsApplicationListed(EditedApplicationToDelete)).Should().BeFalse();
         }
 
         [TestCleanup]
         public override async Task TeardownAsync()
         {
-            if (await FeatureFlagHelper.DoesApplicationExists(Constants.EditedApplicationName) == true)
+            if (await FeatureFlagHelper.DoesApplicationExists(EditedApplicationToDelete) == true)
             {
                 var body = new UpdateApplicationModel
                 {
-                    ApplicationName =Constants.NewApplicationName,
+                    ApplicationName =ApplicationToDelete,
                     Id = ApplicationInfo.Id,
                     isDeleted = false
                 };

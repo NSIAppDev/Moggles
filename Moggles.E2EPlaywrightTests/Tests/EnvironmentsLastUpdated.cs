@@ -30,7 +30,7 @@ namespace Moggles.E2EPlaywrightTests.Tests
             var featureToggleProperties = await FeatureFlagHelper.GetFeatureToggleProperties(appId, FeatureToggleName);
             await FeatureFlagHelper.DeleteFeatureToggles(
                 appId, 
-                featureToggleProperties.Id.ToString(), 
+                featureToggleProperties.Id, 
                 Constants.DeleteToggleReason);
             await base.TeardownAsync();
         }

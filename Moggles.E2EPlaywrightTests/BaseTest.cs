@@ -22,8 +22,7 @@ public abstract class BaseTest : BaseTestPW
 
         _context = await BrowserManager.SetupWithAuthAsync(
             encryptedAuthFile: EncryptedFileForUser,
-            userRole: Role,
-            isHeadless: false
+            userRole: Role
         );
         _page = await _context.NewPageAsync();
         ApiHelpers.APIContext = _page.APIRequest;

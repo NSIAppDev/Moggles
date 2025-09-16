@@ -11,7 +11,7 @@ namespace Moggles.E2EPlaywrightTests.Tests
         [TestMethod]
         [TestCategory("IsPermanent")]
         [TestCategory("SmokeTests")]
-
+        [TestProperty("role", "admin")]
         public async Task EditAFeatureToggleToBePermanent()
         {
             //act
@@ -21,6 +21,7 @@ namespace Moggles.E2EPlaywrightTests.Tests
             await FeatureTogglesPage.AddFeatureToggle(FeatureToggleName);
             await FeatureTogglesPage.EditFeatureToggle(FeatureToggleName);
             await FeatureTogglesPage.SetFeatureToggleAsPermanent();
+            await FeatureTogglesPage.FilterFeatureToggle();
 
             //assert
             (await FeatureTogglesPage.IsFeatureTogglePermanent()).Should().BeTrue();
@@ -34,7 +35,7 @@ namespace Moggles.E2EPlaywrightTests.Tests
 
             await FeatureFlagHelper.DeleteFeatureToggles(
                 appId,
-                featureToggleProperties.Id.ToString(),
+                featureToggleProperties.Id,
                 Constants.DeleteToggleReason);
             await base.TeardownAsync();
 

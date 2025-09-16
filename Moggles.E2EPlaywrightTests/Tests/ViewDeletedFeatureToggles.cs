@@ -6,25 +6,28 @@ namespace Moggles.E2EPlaywrightTests.Tests
     [TestClass]
     public class ViewDeletedFeatureToggles : BaseTest
     {
+        private Guid AppId;
+        private string FeatureToggleName = Constants.FeatureToggleName;
+
         [TestInitialize]
         public override async Task SetupAsync()
         {
             await base.SetupAsync();
-            var applicationInfo = await FeatureFlagHelper.GetApplicationProperties(Constants.SmokeTestsApplication);
-
-            await FeatureFlagHelper.AddFeatureToggles(applicationInfo.Id.ToString(), Constants.FeatureToggleName);
+            AppId = await FeatureFlagHelper.GetSmokeTestsApplicationIdAsync(Constants.SmokeTestsApplication);
+            await FeatureFlagHelper.AddFeatureToggles(AppId, FeatureToggleName);
         }
 
         [TestMethod]
         [TestCategory("DeletedFeatureToggles")]
         [TestCategory("SmokeTests")]
+        [TestProperty("role", "admin")]
         public async Task CheckFeatureTogglesThatWereDeletedAreVisibleInGrid()
         {
             // act
             await _page.GotoAsync(Constants.BaseUrl);
 
             await FeatureTogglesPage.SelectApplicationByName(Constants.SmokeTestsApplication);
-            await FeatureTogglesPage.DeleteFeatureToggle(Constants.FeatureToggleName, Constants.DeleteToggleReason);
+            await FeatureTogglesPage.DeleteFeatureToggle(FeatureToggleName, Constants.DeleteToggleReason);
 
             //assert
             (await FeatureTogglesPage.IsGridEmpty()).Should().BeTrue();
@@ -35,13 +38,14 @@ namespace Moggles.E2EPlaywrightTests.Tests
             // assert
             await FeatureTogglesPage.IsDeletedFeatureTogglesPanelVisible();
             var deletedFeatureToggleNameFromGrid = await FeatureTogglesPage.GetDeletedFeatureToggleNameFromGrid();
-            deletedFeatureToggleNameFromGrid.Should().Be(Constants.FeatureToggleName);
+            deletedFeatureToggleNameFromGrid.Should().Be(FeatureToggleName);
         }
 
         [TestCleanup]
         public override async Task TeardownAsync()
         {
-            await FeatureTogglesPage.RemoveAllDeletedFeatureToggles();
+            var featureToggleId = (await FeatureFlagHelper.GetDeletedFeatureToggleProperties(AppId, FeatureToggleName)).Id;
+            await FeatureFlagHelper.DeleteFeatureTogglesFromHistory(AppId, featureToggleId);
             await base.TeardownAsync();
         }
     }

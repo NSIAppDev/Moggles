@@ -11,7 +11,7 @@ namespace Moggles.E2EPlaywrightTests.Tests
         [TestMethod]
         [TestCategory("RefreshEnvironment")]
         [TestCategory("SmokeTests")]
-
+        [TestProperty("role", "admin")]
         public async Task UpdateEnvironment_RefreshIsTriggered()
         {
             //act
@@ -35,7 +35,7 @@ namespace Moggles.E2EPlaywrightTests.Tests
 
             await FeatureFlagHelper.DeleteFeatureToggles(
                 appId,
-                featureToggleProperties.Id.ToString(),
+                featureToggleProperties.Id,
                 Constants.DeleteToggleReason);
             await base.TeardownAsync();
         }

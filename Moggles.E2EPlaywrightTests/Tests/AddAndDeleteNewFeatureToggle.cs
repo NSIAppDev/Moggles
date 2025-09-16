@@ -20,7 +20,7 @@ public class AddAndDeleteNewFeatureToggle : BaseTest
         await FeatureTogglesPage.AddFeatureToggle(FeatureToggleName);
 
         //assert
-        (await FeatureTogglesPage.IsFeatureToggleDisplayed(FeatureToggleName)).Should().BeTrue();
+        (await FeatureTogglesPage.IsFeatureToggleDisplayed(FeatureToggleName, "Unaccepted")).Should().BeTrue();
         (await FeatureTogglesPage.IsCreationDateCorrectlyDisplayed(FeatureToggleName)).Should().BeTrue();
 
         //act
@@ -39,7 +39,7 @@ public class AddAndDeleteNewFeatureToggle : BaseTest
             var featureToggleProperties = await FeatureFlagHelper.GetFeatureToggleProperties(appId, FeatureToggleName);
             await FeatureFlagHelper.DeleteFeatureToggles(
                 appId,
-                featureToggleProperties.Id.ToString(),
+                featureToggleProperties.Id,
                 Constants.DeleteToggleReason);
         }
         catch (Exception ex) { 
