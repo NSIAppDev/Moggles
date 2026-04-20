@@ -193,13 +193,22 @@ namespace Moggles.Domain
 
         public void RemoveFeatureToggle(Guid id, string featureToggleName, string reason)
         {
+            var toggle = FeatureToggles.FirstOrDefault(t => t.Id == id);
+            var statusesAtDeletion = toggle?.FeatureToggleStatuses
+                .Select(s => new DeletedFeatureToggleStatus
+                {
+                    EnvironmentName = s.EnvironmentName,
+                    Enabled = s.Enabled
+                }).ToList() ?? new List<DeletedFeatureToggleStatus>();
+
             FeatureToggles.RemoveAll(t => t.Id == id);
             DeletedFeatureToggles.Add(new DeletedFeatureToggle
             {
                 Id = id,
                 ToggleName = featureToggleName,
                 Reason = reason,
-                DeletionDate = DateTime.UtcNow
+                DeletionDate = DateTime.UtcNow,
+                StatusesAtDeletion = statusesAtDeletion
             });
         }
 
