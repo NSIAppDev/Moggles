@@ -65,6 +65,12 @@
                         width: '140px',
                         thClass: 'sortable',
                         formatFn: this.formatDate,
+                    },
+                    {
+                        field: 'statusesAtDeletion',
+                        label: 'Status at Deletion',
+                        width: '220px',
+                        formatFn: this.formatStatuses,
                     }
                 ],
                 toggles: [],
@@ -102,6 +108,10 @@
             },
             formatDate(date) {
                 return moment(date).format('M/D/YY hh:mm:ss A');
+            },
+            formatStatuses(statuses) {
+                if (!statuses || statuses.length === 0) return 'N/A';
+                return statuses.map(s => `${s.environmentName}: ${s.enabled ? 'ON' : 'OFF'}`).join(' | ');
             },
             deleteFeatureToggleFromHistory() {
                 let deleteFeatureTogglesFromHistoryModel =

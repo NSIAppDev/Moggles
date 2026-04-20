@@ -138,7 +138,7 @@
     <div class="row">
       <div class="col-xs-6">
         <div v-if="rowToEdit">
-          <button id="deleteToggleBtnEditModal" :disabled="rowToEdit.isPermanent" type="button"
+          <button id="deleteToggleBtnEditModal" :disabled="rowToEdit && rowToEdit.isPermanent" type="button"
                   class="btn btn-danger"
                   @click="openDeleteFeatureToggleConfirmationModal(rowToEdit)">
             Delete
